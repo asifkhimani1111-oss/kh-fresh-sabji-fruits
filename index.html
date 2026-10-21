@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K.H Fresh Sabji & Fruits</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4faf4;color:#203326}
+header{background:#168343;color:white;text-align:center;padding:25px 10px}
+header h1{margin:0;font-size:30px}
+header p{margin:8px 0 0}
+main{max-width:900px;margin:auto;padding:16px}
+input,select{width:100%;padding:12px;margin:5px 0;border:1px solid #ccc;border-radius:9px;font-size:16px}
+h2{color:#16783d}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card,.cart{background:white;padding:13px;border-radius:13px;border:1px solid #dce9dc}
+.pic{font-size:42px;text-align:center;background:#edf8ee;border-radius:10px;padding:12px}
+.name{font-weight:bold;margin-top:8px}
+.price{color:#168343;font-weight:bold;margin:8px 0}
+button{border:0;background:#168343;color:white;padding:11px;border-radius:9px;font-weight:bold;cursor:pointer}
+.card button{width:100%}
+.cart{margin-top:20px}
+.item{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid #eee;padding:9px 0}
+.total{font-size:20px;font-weight:bold;margin:15px 0}
+.order{width:100%;padding:14px}
+small{color:#667366}
+footer{text-align:center;padding:20px;color:#667366}
+@media(min-width:600px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header>
+<h1>🍎 K.H Fresh</h1>
+<p>🥬 Sabji & Fruits 🍇</p>
+<p>તાજાં શાકભાજી અને ફળો તમારા ઘરે!</p>
+</header>
+<main>
+<h2>અમારી વસ્તુઓ</h2>
+<input id="search" placeholder="શાકભાજી કે ફળ શોધો..." oninput="showProducts()">
+<select id="category" onchange="showProducts()">
+<option value="all">બધી વસ્તુઓ</option>
+<option value="veg">શાકભાજી</option>
+<option value="fruit">ફળો</option>
+</select>
+<div class="grid" id="products"></div>
+
+<div class="cart">
+<h2>🛒 તમારો ઓર્ડર</h2>
+<div id="items">હજુ કોઈ વસ્તુ પસંદ કરી નથી.</div>
+<div class="total" id="total">કુલ: ₹0</div>
+<h2>ગ્રાહકની માહિતી</h2>
+<input id="customer" placeholder="તમારું નામ">
+<input id="phone" type="tel" placeholder="મોબાઇલ નંબર">
+<input id="address" placeholder="ઘરનું સરનામું">
+<button class="order" onclick="orderNow()">WhatsApp પર ઓર્ડર કરો</button>
+</div>
+</main>
+<footer>K.H Fresh Sabji & Fruits ❤️</footer>
+<script>
+// અહીં દુકાનનો WhatsApp નંબર country code સાથે નાખજો.
+// ઉદાહરણ: 919876543210 (પ્લસનું ચિહ્ન નહીં)
+const SHOP_NUMBER = "91XXXXXXXXXX";
+
+// આ ભાવ નમૂના માટે છે. તમારા સાચા ભાવ નાખજો.
+const productsData = [
+{id:1,name:"બટાકા",en:"Potato",cat:"veg",price:30,unit:"કિલો",emoji:"🥔"},
+{id:2,name:"ડુંગળી",en:"Onion",cat:"veg",price:35,unit:"કિલો",emoji:"🧅"},
+{id:3,name:"ટામેટાં",en:"Tomato",cat:"veg",price:40,unit:"કિલો",emoji:"🍅"},
+{id:4,name:"ગાજર",en:"Carrot",cat:"veg",price:40,unit:"કિલો",emoji:"🥕"},
+{id:5,name:"કાકડી",en:"Cucumber",cat:"veg",price:30,unit:"કિલો",emoji:"🥒"},
+{id:6,name:"રીંગણ",en:"Brinjal",cat:"veg",price:35,unit:"કિલો",emoji:"🍆"},
+{id:7,name:"સફરજન",en:"Apple",cat:"fruit",price:160,unit:"કિલો",emoji:"🍎"},
+{id:8,name:"કેળાં",en:"Banana",cat:"fruit",price:60,unit:"ડઝન",emoji:"🍌"},
+{id:9,name:"નારંગી",en:"Orange",cat:"fruit",price:90,unit:"કિલો",emoji:"🍊"},
+{id:10,name:"દ્રાક્ષ",en:"Grapes",cat:"fruit",price:100,unit:"કિલો",emoji:"🍇"},
+{id:11,name:"કેરી",en:"Mango",cat:"fruit",price:120,unit:"કિલો",emoji:"🥭"},
+{id:12,name:"તરબૂચ",en:"Watermelon",cat:"fruit",price:70,unit:"નંગ",emoji:"🍉"}
+];
+
+let cart = {};
+
+function showProducts(){
+ const q=document.getElementById("search").value.toLowerCase();
+ const cat=document.getElementById("category").value;
+ const list=productsData.filter(p=>
+ (cat==="all"||p.cat===cat)&&
+ (p.name.toLowerCase().includes(q)||p.en.toLowerCase().includes(q))
+ );
+ document.getElementById("products").innerHTML=list.map(p=>`
+ <div class="card">
+ <div class="pic">${p.emoji}</div>
+ <div class="name">${p.name}</div>
+ <small>પ્રતિ ${p.unit}</small>
+ <div class="price">₹${p.price}</div>
+ <button onclick="add(${p.id})">+ કાર્ટમાં ઉમેરો</button>
+ </div>`).join("")||"કોઈ વસ્તુ મળી નથી.";
+}
+
+function add(id){cart[id]=(cart[id]||0)+1;showCart()}
+function change(id,n){
+ cart[id]=(cart[id]||0)+n;
+ if(cart[id]<=0)delete cart[id];
+ showCart();
+}
+function showCart(){
+ const entries=Object.entries(cart);
+ let total=0;
+ document.getElementById("items").innerHTML=entries.length?entries.map(([id,qty])=>{
+ const p=productsData.find(x=>x.id==id);
+ total+=p.price*qty;
+ return `<div class="item">
+ <span>${p.emoji} ${p.name}<br><small>₹${p.price} × ${qty}</small></span>
+ <span><button onclick="change(${id},-1)">−</button>
+ ${qty} <button onclick="change(${id},1)">+</button></span>
+ </div>`;
+ }).join(""):"હજુ કોઈ વસ્તુ પસંદ કરી નથી.";
+ document.getElementById("total").textContent="કુલ: ₹"+total;
+}
+
+function orderNow(){
+ const name=document.getElementById("customer").value.trim();
+ const phone=document.getElementById("phone").value.trim();
+ const address=document.getElementById("address").value.trim();
+ const entries=Object.entries(cart);
+ if(!entries.length){alert("પહેલા વસ્તુ કાર્ટમાં ઉમેરો.");return}
+ if(!name||!phone||!address){alert("નામ, મોબાઇલ અને સરનામું લખો.");return}
+ if(SHOP_NUMBER.includes("X")){alert("પહેલા કોડમાં SHOP_NUMBER માં તમારો WhatsApp નંબર ઉમેરો.");return}
+ let total=0;
+ let lines=entries.map(([id,qty])=>{
+ const p=productsData.find(x=>x.id==id);
+ total+=p.price*qty;
+ return `${p.name}: ${qty} ${p.unit} - ₹${p.price*qty}`;
+ });
+ const msg=`K.H Fresh Sabji & Fruits - નવો ઓર્ડર\nનામ: ${name}\nમોબાઇલ: ${phone}\nસરનામું: ${address}\n\n${lines.join("\n")}\nકુલ: ₹${total}\nડિલિવરી ચાર્જ અલગ હોઈ શકે.`;
+ window.open("https://wa.me/"+SHOP_NUMBER+"?text="+encodeURIComponent(msg),"_blank");
+}
+showProducts();
+showCart();
+</script>
+</body>
+</html>
