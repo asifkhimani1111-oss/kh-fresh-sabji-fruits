@@ -62,7 +62,7 @@
 
         <!-- Product Grid -->
         <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <!-- Products will be loaded dynamically via JavaScript -->
+            <!-- Products will be loaded dynamically -->
         </div>
 
     </main>
@@ -134,10 +134,9 @@
             { id: 8, name: "દાડમ (Pomegranate)", category: "fruit", price: 160, icon: "🍑" }
         ];
 
-        let cart = {}; // key: productId, value: quantity in kg (e.g., 0.25, 0.5, 1, 1.5...)
+        let cart = {}; 
         let currentCategory = 'all';
 
-        // Render Products
         function renderProducts() {
             const grid = document.getElementById('product-grid');
             const searchVal = document.getElementById('search-box').value.toLowerCase();
@@ -203,7 +202,7 @@
             if (updated <= 0) {
                 delete cart[productId];
             } else {
-                cart[productId] = Math.round(updated * 100) / 100; // fix decimals
+                cart[productId] = Math.round(updated * 100) / 100;
             }
             renderProducts();
             updateCartCount();
@@ -258,7 +257,6 @@
         function toggleAdminPanel() {
             const modal = document.getElementById('admin-modal');
             if (modal.classList.contains('hidden')) {
-                // Load admin products
                 const list = document.getElementById('admin-product-list');
                 list.innerHTML = '';
                 products.forEach(p => {
@@ -325,13 +323,12 @@
             msg += `%0A*કુલ વજન:* ${totalWeight} કિલો`;
             msg += `%0A*કુલ રકમ:* ₹${totalPrice}`;
 
-            // Replace with your WhatsApp number (e.g., 919876543210)
-            let phoneNo = "919999999999"; 
+            // Your WhatsApp Number
+            let phoneNo = "919426852334"; 
             let url = `https://wa.me/${phoneNo}?text=${msg}`;
             window.open(url, '_blank');
         }
 
-        // Initial render
         renderProducts();
     </script>
 </body>
