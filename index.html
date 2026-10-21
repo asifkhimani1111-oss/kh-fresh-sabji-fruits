@@ -1,151 +1,338 @@
-
 <!DOCTYPE html>
 <html lang="gu">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>K.H Fresh Sabji & Fruits</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f4faf4;color:#203326}
-header{background:#168343;color:white;text-align:center;padding:25px 10px}
-header h1{margin:0;font-size:30px}
-header p{margin:8px 0 0}
-main{max-width:900px;margin:auto;padding:16px}
-input,select{width:100%;padding:12px;margin:5px 0;border:1px solid #ccc;border-radius:9px;font-size:16px}
-h2{color:#16783d}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.card,.cart{background:white;padding:13px;border-radius:13px;border:1px solid #dce9dc}
-.pic{font-size:42px;text-align:center;background:#edf8ee;border-radius:10px;padding:12px}
-.name{font-weight:bold;margin-top:8px}
-.price{color:#168343;font-weight:bold;margin:8px 0}
-button{border:0;background:#168343;color:white;padding:11px;border-radius:9px;font-weight:bold;cursor:pointer}
-.card button{width:100%}
-.cart{margin-top:20px}
-.item{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid #eee;padding:9px 0}
-.total{font-size:20px;font-weight:bold;margin:15px 0}
-.order{width:100%;padding:14px}
-small{color:#667366}
-footer{text-align:center;padding:20px;color:#667366}
-@media(min-width:600px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K.H Fresh - Sabji & Fruits</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+    </style>
 </head>
-<body>
-<header>
-<h1>🍎 K.H Fresh</h1>
-<p>🥬 Sabji & Fruits 🍇</p>
-<p>તાજાં શાકભાજી અને ફળો તમારા ઘરે!</p>
-</header>
-<main>
-<h2>અમારી વસ્તુઓ</h2>
-<input id="search" placeholder="શાકભાજી કે ફળ શોધો..." oninput="showProducts()">
-<select id="category" onchange="showProducts()">
-<option value="all">બધી વસ્તુઓ</option>
-<option value="veg">શાકભાજી</option>
-<option value="fruit">ફળો</option>
-</select>
-<div class="grid" id="products"></div>
+<body class="bg-gray-50 text-gray-800">
 
-<div class="cart">
-<h2>🛒 તમારો ઓર્ડર</h2>
-<div id="items">હજુ કોઈ વસ્તુ પસંદ કરી નથી.</div>
-<div class="total" id="total">કુલ: ₹0</div>
-<h2>ગ્રાહકની માહિતી</h2>
-<input id="customer" placeholder="તમારું નામ">
-<input id="phone" type="tel" placeholder="મોબાઇલ નંબર">
-<input id="address" placeholder="ઘરનું સરનામું">
-<button class="order" onclick="orderNow()">WhatsApp પર ઓર્ડર કરો</button>
-</div>
-</main>
-<footer>K.H Fresh Sabji & Fruits ❤️</footer>
-<script>
-// અહીં દુકાનનો WhatsApp નંબર country code સાથે નાખજો.
-// ઉદાહરણ: 919876543210 (પ્લસનું ચિહ્ન નહીં)
-const SHOP_NUMBER = "919426852334";
+    <!-- Header / Logo -->
+    <header class="bg-emerald-700 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-inner overflow-hidden border-2 border-emerald-400">
+                    <span class="text-2xl">🥦🍎</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide">K.H Fresh</h1>
+                    <p class="text-xs text-emerald-200">Sabji & Fruits</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="toggleAdminPanel()" class="bg-emerald-800 hover:bg-emerald-900 text-xs px-3 py-2 rounded-lg font-medium border border-emerald-600 transition">
+                    ⚙️ એડમિન (ભાવ બદલો)
+                </button>
+                <div class="relative bg-emerald-800 p-2 rounded-full cursor-pointer" onclick="openCart()">
+                    🛒 <span id="cart-count" class="absolute -top-1 -right-1 bg-amber-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
 
-// આ ભાવ નમૂના માટે છે. તમારા સાચા ભાવ નાખજો.
-const productsData = [
-{id:1,name:"બટાકા",en:"Potato",cat:"veg",price:30,unit:"કિલો",emoji:"🥔"},
-{id:2,name:"ડુંગળી",en:"Onion",cat:"veg",price:35,unit:"કિલો",emoji:"🧅"},
-{id:3,name:"ટામેટાં",en:"Tomato",cat:"veg",price:40,unit:"કિલો",emoji:"🍅"},
-{id:4,name:"ગાજર",en:"Carrot",cat:"veg",price:40,unit:"કિલો",emoji:"🥕"},
-{id:5,name:"કાકડી",en:"Cucumber",cat:"veg",price:30,unit:"કિલો",emoji:"🥒"},
-{id:6,name:"રીંગણ",en:"Brinjal",cat:"veg",price:35,unit:"કિલો",emoji:"🍆"},
-{id:7,name:"સફરજન",en:"Apple",cat:"fruit",price:160,unit:"કિલો",emoji:"🍎"},
-{id:8,name:"કેળાં",en:"Banana",cat:"fruit",price:60,unit:"ડઝન",emoji:"🍌"},
-{id:9,name:"નારંગી",en:"Orange",cat:"fruit",price:90,unit:"કિલો",emoji:"🍊"},
-{id:10,name:"દ્રાક્ષ",en:"Grapes",cat:"fruit",price:100,unit:"કિલો",emoji:"🍇"},
-{id:11,name:"કેરી",en:"Mango",cat:"fruit",price:120,unit:"કિલો",emoji:"🥭"},
-{id:12,name:"તરબૂચ",en:"Watermelon",cat:"fruit",price:70,unit:"નંગ",emoji:"🍉"}
-];
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 py-6 pb-24">
 
-let cart = {};
+        <!-- Banner -->
+        <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-2xl p-6 shadow-lg mb-6 relative overflow-hidden">
+            <div class="relative z-10">
+                <h2 class="text-2xl font-bold mb-2">શુદ્ધ અને તાજા શાકભાજી તથા ફળો</h2>
+                <p class="text-emerald-100 text-sm mb-4">૧૦૦% તાજા અને શુદ્ધ ફળો અને શાકભાજી તમારા ઘર સુધી. આજે જ ઓર્ડર કરો!</p>
+                <div class="inline-block bg-amber-400 text-emerald-950 text-xs font-bold px-3 py-1.5 rounded-full shadow">
+                    ⚠️ નિયમ: મિનિમમ ઓર્ડર ૧ કિલો (એક વસ્તુ ૨૫૦ ગ્રામ લઈ શકાય)
+                </div>
+            </div>
+        </div>
 
-function showProducts(){
- const q=document.getElementById("search").value.toLowerCase();
- const cat=document.getElementById("category").value;
- const list=productsData.filter(p=>
- (cat==="all"||p.cat===cat)&&
- (p.name.toLowerCase().includes(q)||p.en.toLowerCase().includes(q))
- );
- document.getElementById("products").innerHTML=list.map(p=>`
- <div class="card">
- <div class="pic">${p.emoji}</div>
- <div class="name">${p.name}</div>
- <small>પ્રતિ ${p.unit}</small>
- <div class="price">₹${p.price}</div>
- <button onclick="add(${p.id})">+ કાર્ટમાં ઉમેરો</button>
- </div>`).join("")||"કોઈ વસ્તુ મળી નથી.";
-}
+        <!-- Search & Filter -->
+        <div class="mb-6 space-y-3">
+            <input type="text" id="search-box" placeholder="શાકભાજી કે ફળ શોધો..." oninput="filterProducts()" class="w-full px-4 py-3 rounded-xl border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+            
+            <div class="flex space-x-2 overflow-x-auto pb-2">
+                <button onclick="setCategory('all')" id="cat-all" class="category-btn px-4 py-2 rounded-xl text-sm font-medium bg-emerald-700 text-white shadow-sm whitespace-nowrap">બધા (All)</button>
+                <button onclick="setCategory('sabji')" id="cat-sabji" class="category-btn px-4 py-2 rounded-xl text-sm font-medium bg-white text-gray-600 border border-gray-200 shadow-sm whitespace-nowrap">🌿 શાકભાજી (Vegetables)</button>
+                <button onclick="setCategory('fruit')" id="cat-fruit" class="category-btn px-4 py-2 rounded-xl text-sm font-medium bg-white text-gray-600 border border-gray-200 shadow-sm whitespace-nowrap">🍎 ફળો (Fruits)</button>
+            </div>
+        </div>
 
-function add(id){cart[id]=(cart[id]||0)+1;showCart()}
-function change(id,n){
- cart[id]=(cart[id]||0)+n;
- if(cart[id]<=0)delete cart[id];
- showCart();
-}
-function showCart(){
- const entries=Object.entries(cart);
- let total=0;
- document.getElementById("items").innerHTML=entries.length?entries.map(([id,qty])=>{
- const p=productsData.find(x=>x.id==id);
- total+=p.price*qty;
- return `<div class="item">
- <span>${p.emoji} ${p.name}<br><small>₹${p.price} × ${qty}</small></span>
- <span><button onclick="change(${id},-1)">−</button>
- ${qty} <button onclick="change(${id},1)">+</button></span>
- </div>`;
- }).join(""):"હજુ કોઈ વસ્તુ પસંદ કરી નથી.";
- document.getElementById("total").textContent="કુલ: ₹"+total;
-}
+        <!-- Product Grid -->
+        <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <!-- Products will be loaded dynamically via JavaScript -->
+        </div>
 
-function orderNow(){
- const name=document.getElementById("customer").value.trim();
- const phone=document.getElementById("phone").value.trim();
- const address=document.getElementById("address").value.trim();
- const entries=Object.entries(cart);
- if(!entries.length){alert("પહેલા વસ્તુ કાર્ટમાં ઉમેરો.");return}
- if(!name||!phone||!address){alert("નામ, મોબાઇલ અને સરનામું લખો.");return}
- if(SHOP_NUMBER.includes("X")){alert("પહેલા કોડમાં SHOP_NUMBER માં તમારો WhatsApp નંબર ઉમેરો.");return}
- let total=0;
- let lines=entries.map(([id,qty])=>{
- const p=productsData.find(x=>x.id==id);
- total+=p.price*qty;
- return `${p.name}: ${qty} ${p.unit} - ₹${p.price*qty}`;
- });
- const msg=`K.H Fresh Sabji & Fruits - નવો ઓર્ડર\nનામ: ${name}\nમોબાઇલ: ${phone}\nસરનામું: ${address}\n\n${lines.join("\n")}\nકુલ: ₹${total}\nડિલિવરી ચાર્જ અલગ હોઈ શકે.`;
+    </main>
 
-window.open(
-  "https://wa.me/" + SHOP_NUMBER +
-  "?text=" + encodeURIComponent(msg),
-  "_blank"
-);
+    <!-- Cart Floating Bar / Modal -->
+    <div id="cart-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="bg-white w-full max-w-lg rounded-t-3xl md:rounded-2xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <h3 class="text-lg font-bold text-gray-800">🛒 તમારું શોપિંગ કાર્ટ</h3>
+                <button onclick="closeCart()" class="text-gray-400 hover:text-gray-600 font-bold text-xl">✕</button>
+            </div>
 
-}
+            <div id="cart-items" class="space-y-3 mb-4 max-h-60 overflow-y-auto pr-1">
+                <!-- Cart items list -->
+            </div>
 
-showProducts();
-showCart();
+            <div class="border-t pt-3 mb-4 space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-600">કુલ વજન:</span>
+                    <span id="cart-total-weight" class="font-semibold text-gray-800">0.0 કિલો</span>
+                </div>
+                <div class="flex justify-between text-base font-bold">
+                    <span>કુલ રકમ:</span>
+                    <span id="cart-total-price" class="text-emerald-700">₹0</span>
+                </div>
+                <p id="weight-error-msg" class="text-xs text-red-500 font-medium hidden">⚠️ કુલ ઓર્ડર ઓછામાં ઓછો ૧ કિલો (1.0 kg) હોવો જરૂરી છે!</p>
+            </div>
 
-</script>
+            <div class="space-y-3 mb-4">
+                <input type="text" id="customer-name" placeholder="તમારું નામ (Name)" class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <textarea id="customer-address" placeholder="પૂરું સરનામું (Delivery Address)" rows="2" class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+            </div>
+
+            <button onclick="sendWhatsAppOrder()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold shadow-lg transition flex items-center justify-center space-x-2">
+                <span>💬 WhatsApp પર ઓર્ડર મોકલો</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Admin Modal for Price Editing -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-2xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <h3 class="text-lg font-bold text-gray-800">⚙️ એડમિન પેનલ (ભાવ બદલો)</h3>
+                <button onclick="toggleAdminPanel()" class="text-gray-400 hover:text-gray-600 font-bold text-xl">✕</button>
+            </div>
+            <p class="text-xs text-gray-500 mb-4">અહીંથી તમે કોઈપણ વસ્તુનો પ્રતિ કિલો ભાવ બદલી શકો છો:</p>
+            
+            <div id="admin-product-list" class="space-y-3 mb-4 max-h-72 overflow-y-auto pr-1">
+                <!-- Admin dynamic list -->
+            </div>
+
+            <button onclick="toggleAdminPanel()" class="w-full bg-gray-800 text-white py-2.5 rounded-xl font-medium text-sm">
+                બંધ કરો (Close)
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Initial Products Database
+        let products = [
+            { id: 1, name: "બટેટા (Potato)", category: "sabji", price: 40, icon: "🥔" },
+            { id: 2, name: "ડુંગળી (Onion)", category: "sabji", price: 50, icon: "🧅" },
+            { id: 3, name: "ટમેટા (Tomato)", category: "sabji", price: 60, icon: "🍅" },
+            { id: 4, name: "લીલા મરચાં (Green Chilli)", category: "sabji", price: 80, icon: "🌶️" },
+            { id: 5, name: "લીંબુ (Lemon)", category: "sabji", price: 100, icon: "🍋" },
+            { id: 6, name: "કેળા (Banana)", category: "fruit", price: 60, icon: "🍌" },
+            { id: 7, name: "સફરજન (Apple)", category: "fruit", price: 140, icon: "🍎" },
+            { id: 8, name: "દાડમ (Pomegranate)", category: "fruit", price: 160, icon: "🍑" }
+        ];
+
+        let cart = {}; // key: productId, value: quantity in kg (e.g., 0.25, 0.5, 1, 1.5...)
+        let currentCategory = 'all';
+
+        // Render Products
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            const searchVal = document.getElementById('search-box').value.toLowerCase();
+            grid.innerHTML = '';
+
+            const filtered = products.filter(p => {
+                const matchesCat = currentCategory === 'all' || p.category === currentCategory;
+                const matchesSearch = p.name.toLowerCase().includes(searchVal);
+                return matchesCat && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400">કોઈ વસ્તુ મળી નથી.</div>`;
+                return;
+            }
+
+            filtered.forEach(p => {
+                let qty = cart[p.id] || 0;
+                grid.innerHTML += `
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col justify-between">
+                        <div>
+                            <div class="text-4xl text-center mb-2">${p.icon}</div>
+                            <h4 class="font-bold text-gray-800 text-sm mb-1 text-center">${p.name}</h4>
+                            <p class="text-emerald-700 font-bold text-center text-sm mb-3">₹${p.price} / કિલો</p>
+                        </div>
+                        <div>
+                            ${qty === 0 ? `
+                                <button onclick="updateQty(${p.id}, 0.25)" class="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold py-2 rounded-xl border border-emerald-200 transition">
+                                    + ઉમેરો (કાર્ટમાં)
+                                </button>
+                            ` : `
+                                <div class="flex items-center justify-between bg-emerald-50 rounded-xl p-1 border border-emerald-200">
+                                    <button onclick="updateQty(${p.id}, -0.25)" class="w-7 h-7 bg-white rounded-lg shadow-sm font-bold text-emerald-700 flex items-center justify-center">-</button>
+                                    <span class="text-xs font-bold text-emerald-900">${qty} કિલો</span>
+                                    <button onclick="updateQty(${p.id}, 0.25)" class="w-7 h-7 bg-emerald-600 text-white rounded-lg shadow-sm font-bold flex items-center justify-center">+</button>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function setCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('bg-emerald-700', 'text-white');
+                btn.classList.add('bg-white', 'text-gray-600', 'border');
+            });
+            const activeBtn = document.getElementById(`cat-${cat}`);
+            activeBtn.classList.remove('bg-white', 'text-gray-600', 'border');
+            activeBtn.classList.add('bg-emerald-700', 'text-white');
+            renderProducts();
+        }
+
+        function filterProducts() {
+            renderProducts();
+        }
+
+        function updateQty(productId, change) {
+            let current = cart[productId] || 0;
+            let updated = current + change;
+            if (updated <= 0) {
+                delete cart[productId];
+            } else {
+                cart[productId] = Math.round(updated * 100) / 100; // fix decimals
+            }
+            renderProducts();
+            updateCartCount();
+        }
+
+        function updateCartCount() {
+            let totalItems = Object.keys(cart).length;
+            document.getElementById('cart-count').innerText = totalItems;
+        }
+
+        function openCart() {
+            const container = document.getElementById('cart-items');
+            container.innerHTML = '';
+            let totalPrice = 0;
+            let totalWeight = 0;
+
+            if (Object.keys(cart).length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-400 py-6">તમારું કાર્ટ ખાલી છે.</p>`;
+            } else {
+                for (let id in cart) {
+                    let p = products.find(prod => prod.id == id);
+                    let qty = cart[id];
+                    let itemTotal = p.price * qty;
+                    totalPrice += itemTotal;
+                    totalWeight += qty;
+
+                    container.innerHTML += `
+                        <div class="flex justify-between items-center bg-gray-50 p-2.5 rounded-xl border">
+                            <div>
+                                <h5 class="font-bold text-xs text-gray-800">${p.icon} ${p.name}</h5>
+                                <p class="text-xs text-gray-500">${qty} કિલો × ₹${p.price} = ₹${itemTotal}</p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="updateQty(${id}, -0.25)" class="w-6 h-6 bg-white border rounded font-bold text-xs">-</button>
+                                <span class="text-xs font-bold">${qty}</span>
+                                <button onclick="updateQty(${id}, 0.25)" class="w-6 h-6 bg-emerald-600 text-white rounded font-bold text-xs">+</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            document.getElementById('cart-total-weight').innerText = totalWeight + " કિલો";
+            document.getElementById('cart-total-price').innerText = "₹" + totalPrice;
+            document.getElementById('cart-modal').classList.remove('hidden');
+        }
+
+        function closeCart() {
+            document.getElementById('cart-modal').classList.add('hidden');
+        }
+
+        function toggleAdminPanel() {
+            const modal = document.getElementById('admin-modal');
+            if (modal.classList.contains('hidden')) {
+                // Load admin products
+                const list = document.getElementById('admin-product-list');
+                list.innerHTML = '';
+                products.forEach(p => {
+                    list.innerHTML += `
+                        <div class="flex items-center justify-between bg-gray-50 p-2.5 rounded-xl border">
+                            <span class="text-sm font-medium">${p.icon} ${p.name}</span>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs text-gray-500">₹</span>
+                                <input type="number" id="price-input-${p.id}" value="${p.price}" class="w-20 px-2 py-1 border rounded text-sm font-bold text-emerald-700 bg-white" onchange="changePrice(${p.id}, this.value)">
+                                <span class="text-xs text-gray-500">/કિલો</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+                renderProducts();
+            }
+        }
+
+        function changePrice(id, newPrice) {
+            let p = products.find(prod => prod.id == id);
+            if (p && newPrice > 0) {
+                p.price = Number(newPrice);
+            }
+        }
+
+        function sendWhatsAppOrder() {
+            let totalWeight = 0;
+            for (let id in cart) {
+                totalWeight += cart[id];
+            }
+
+            if (totalWeight < 1) {
+                document.getElementById('weight-error-msg').classList.remove('hidden');
+                return;
+            } else {
+                document.getElementById('weight-error-msg').classList.add('hidden');
+            }
+
+            let name = document.getElementById('customer-name').value.trim();
+            let address = document.getElementById('customer-address').value.trim();
+
+            if (!name || !address) {
+                alert("કૃપા કરીને તમારું નામ અને સરનામું લખો!");
+                return;
+            }
+
+            let msg = `*🛒 નવો ઓર્ડર - K.H Fresh*%0A%0A`;
+            msg += `👤 ગ્રાહક: ${name}%0A`;
+            msg += `📍 સરનામું: ${address}%0A%0A`;
+            msg += `*ઓર્ડરની વિગત:*%0A`;
+
+            let totalPrice = 0;
+            for (let id in cart) {
+                let p = products.find(prod => prod.id == id);
+                let qty = cart[id];
+                let itemTotal = p.price * qty;
+                totalPrice += itemTotal;
+                msg += `- ${p.name}: ${qty} કિલો = ₹${itemTotal}%0A`;
+            }
+
+            msg += `%0A*કુલ વજન:* ${totalWeight} કિલો`;
+            msg += `%0A*કુલ રકમ:* ₹${totalPrice}`;
+
+            // Replace with your WhatsApp number (e.g., 919876543210)
+            let phoneNo = "919999999999"; 
+            let url = `https://wa.me/${phoneNo}?text=${msg}`;
+            window.open(url, '_blank');
+        }
+
+        // Initial render
+        renderProducts();
+    </script>
 </body>
 </html>
