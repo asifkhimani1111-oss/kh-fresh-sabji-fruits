@@ -1,335 +1,446 @@
+
 <!DOCTYPE html>
 <html lang="gu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K.H Fresh - Sabji & Fruits</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Poppins', sans-serif; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K.H Fresh - Sabji & Fruits</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style>
+body{font-family:Arial,sans-serif}
+button{cursor:pointer}
+</style>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
-    <!-- Header / Logo -->
-    <header class="bg-emerald-700 text-white shadow-md sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-inner overflow-hidden border-2 border-emerald-400">
-                    <span class="text-2xl">🥦🍎</span>
-                </div>
-                <div>
-                    <h1 class="text-xl font-bold tracking-wide">K.H Fresh</h1>
-                    <p class="text-xs text-emerald-200">Sabji & Fruits</p>
-                </div>
-            </div>
-            <div class="flex items-center space-x-2">
-                <button onclick="toggleAdminPanel()" class="bg-emerald-800 hover:bg-emerald-900 text-xs px-3 py-2 rounded-lg font-medium border border-emerald-600 transition">
-                    ⚙️ એડમિન (ભાવ બદલો)
-                </button>
-                <div class="relative bg-emerald-800 p-2 rounded-full cursor-pointer" onclick="openCart()">
-                    🛒 <span id="cart-count" class="absolute -top-1 -right-1 bg-amber-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
-                </div>
-            </div>
-        </div>
-    </header>
+<header class="bg-emerald-700 text-white p-4 sticky top-0 z-40">
+ <div class="max-w-4xl mx-auto flex justify-between items-center gap-2">
+  <div>
+   <h1 class="text-xl font-bold">🥦 K.H Fresh</h1>
+   <p class="text-sm">Sabji & Fruits</p>
+  </div>
+  <div class="flex gap-2 items-center">
+   <button onclick="openAdmin()" class="bg-emerald-900 rounded-lg px-3 py-2 text-sm">⚙️ એડમિન</button>
+   <button onclick="openCart()" class="bg-emerald-900 rounded-lg px-3 py-2">🛒 <span id="cart-count">0</span></button>
+  </div>
+ </div>
+</header>
 
-    <!-- Main Container -->
-    <main class="max-w-4xl mx-auto px-4 py-6 pb-24">
+<main class="max-w-4xl mx-auto p-4 pb-12">
+ <section class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-5 rounded-2xl mb-5">
+  <h2 class="text-2xl font-bold">તાજા શાકભાજી અને ફળો</h2>
+  <p class="mt-2 text-sm">તમારા ઘર સુધી તાજી વસ્તુઓ. આજે જ ઓર્ડર કરો!</p>
+  <p class="mt-3 text-xs">ઓછામાં ઓછો કુલ ઓર્ડર: 1 કિલો</p>
+ </section>
 
-        <!-- Banner -->
-        <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-2xl p-6 shadow-lg mb-6 relative overflow-hidden">
-            <div class="relative z-10">
-                <h2 class="text-2xl font-bold mb-2">શુદ્ધ અને તાજા શાકભાજી તથા ફળો</h2>
-                <p class="text-emerald-100 text-sm mb-4">૧૦૦% તાજા અને શુદ્ધ ફળો અને શાકભાજી તમારા ઘર સુધી. આજે જ ઓર્ડર કરો!</p>
-                <div class="inline-block bg-amber-400 text-emerald-950 text-xs font-bold px-3 py-1.5 rounded-full shadow">
-                    ⚠️ નિયમ: મિનિમમ ઓર્ડર ૧ કિલો (એક વસ્તુ ૨૫૦ ગ્રામ લઈ શકાય)
-                </div>
-            </div>
-        </div>
+ <input id="search" oninput="renderProducts()" placeholder="શાકભાજી કે ફળ શોધો..." class="w-full p-3 rounded-xl border mb-3">
 
-        <!-- Search & Filter -->
-        <div class="mb-6 space-y-3">
-            <input type="text" id="search-box" placeholder="શાકભાજી કે ફળ શોધો..." oninput="filterProducts()" class="w-full px-4 py-3 rounded-xl border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
-            
-            <div class="flex space-x-2 overflow-x-auto pb-2">
-                <button onclick="setCategory('all')" id="cat-all" class="category-btn px-4 py-2 rounded-xl text-sm font-medium bg-emerald-700 text-white shadow-sm whitespace-nowrap">બધા (All)</button>
-                <button onclick="setCategory('sabji')" id="cat-sabji" class="category-btn px-4 py-2 rounded-xl text-sm font-medium bg-white text-gray-600 border border-gray-200 shadow-sm whitespace-nowrap">🌿 શાકભાજી (Vegetables)</button>
-                <button onclick="setCategory('fruit')" id="cat-fruit" class="category-btn px-4 py-2 rounded-xl text-sm font-medium bg-white text-gray-600 border border-gray-200 shadow-sm whitespace-nowrap">🍎 ફળો (Fruits)</button>
-            </div>
-        </div>
+ <div class="flex gap-2 overflow-x-auto mb-4">
+  <button onclick="setCategory('all')" id="cat-all" class="px-4 py-2 rounded-xl bg-emerald-700 text-white whitespace-nowrap">બધા</button>
+  <button onclick="setCategory('sabji')" id="cat-sabji" class="px-4 py-2 rounded-xl bg-white border whitespace-nowrap">🌿 શાકભાજી</button>
+  <button onclick="setCategory('fruit')" id="cat-fruit" class="px-4 py-2 rounded-xl bg-white border whitespace-nowrap">🍎 ફળો</button>
+ </div>
 
-        <!-- Product Grid -->
-        <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <!-- Products will be loaded dynamically -->
-        </div>
+ <p id="status" class="text-sm text-gray-600 mb-3">પ્રોડક્ટ લોડ થઈ રહ્યા છે...</p>
+ <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3"></div>
+</main>
 
-    </main>
+<!-- CART -->
+<div id="cart-modal" class="hidden fixed inset-0 z-50 bg-black/50 p-3 flex items-center justify-center">
+ <div class="bg-white rounded-2xl p-5 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+  <div class="flex justify-between mb-4">
+   <h2 class="font-bold text-lg">🛒 તમારો ઓર્ડર</h2>
+   <button onclick="closeCart()">✕</button>
+  </div>
+  <div id="cart-items" class="space-y-3"></div>
+  <div class="border-t mt-4 pt-3 space-y-2">
+   <p class="flex justify-between">કુલ વજન: <b id="cart-weight">0 કિલો</b></p>
+   <p class="flex justify-between text-lg">કુલ રકમ: <b id="cart-total" class="text-emerald-700">₹0</b></p>
+   <p id="weight-error" class="hidden text-red-600 text-sm">ઓછામાં ઓછો 1 કિલો ઓર્ડર જરૂરી છે.</p>
+  </div>
+  <input id="customer-name" placeholder="તમારું નામ" class="w-full border rounded-lg p-3 mt-3">
+  <textarea id="customer-address" placeholder="પૂરું સરનામું" class="w-full border rounded-lg p-3 mt-3"></textarea>
+  <button onclick="sendWhatsAppOrder()" class="w-full bg-emerald-600 text-white p-3 rounded-xl mt-3 font-bold">💬 WhatsApp પર ઓર્ડર મોકલો</button>
+  <button onclick="closeCart()" class="w-full p-2 mt-2">બંધ કરો</button>
+ </div>
+</div>
 
-    <!-- Cart Floating Bar / Modal -->
-    <div id="cart-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-end md:items-center justify-center p-0 md:p-4">
-        <div class="bg-white w-full max-w-lg rounded-t-3xl md:rounded-2xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl">
-            <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h3 class="text-lg font-bold text-gray-800">🛒 તમારું શોપિંગ કાર્ટ</h3>
-                <button onclick="closeCart()" class="text-gray-400 hover:text-gray-600 font-bold text-xl">✕</button>
-            </div>
+<!-- ADMIN -->
+<div id="admin-modal" class="hidden fixed inset-0 z-50 bg-black/50 p-3 flex items-center justify-center">
+ <div class="bg-white rounded-2xl p-5 w-full max-w-lg max-h-[92vh] overflow-y-auto">
+  <div class="flex justify-between items-center mb-4">
+   <h2 class="text-lg font-bold">⚙️ એડમિન પેનલ</h2>
+   <button onclick="closeAdmin()">✕</button>
+  </div>
 
-            <div id="cart-items" class="space-y-3 mb-4 max-h-60 overflow-y-auto pr-1">
-                <!-- Cart items list -->
-            </div>
+  <div id="login-section">
+   <p class="text-sm mb-3">ભાવ અને પ્રોડક્ટ બદલવા માટે એડમિન લૉગિન કરો.</p>
+   <form onsubmit="adminLogin(event)" class="space-y-3">
+    <input id="admin-email" type="email" autocomplete="username" required placeholder="એડમિન ઈમેલ" class="w-full border rounded-lg p-3">
+    <input id="admin-password" type="password" autocomplete="current-password" required placeholder="પાસવર્ડ" class="w-full border rounded-lg p-3">
+    <button class="w-full bg-emerald-700 text-white p-3 rounded-xl">લૉગિન</button>
+   </form>
+  </div>
 
-            <div class="border-t pt-3 mb-4 space-y-2">
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-600">કુલ વજન:</span>
-                    <span id="cart-total-weight" class="font-semibold text-gray-800">0.0 કિલો</span>
-                </div>
-                <div class="flex justify-between text-base font-bold">
-                    <span>કુલ રકમ:</span>
-                    <span id="cart-total-price" class="text-emerald-700">₹0</span>
-                </div>
-                <p id="weight-error-msg" class="text-xs text-red-500 font-medium hidden">⚠️ કુલ ઓર્ડર ઓછામાં ઓછો ૧ કિલો (1.0 kg) હોવો જરૂરી છે!</p>
-            </div>
+  <div id="admin-section" class="hidden">
+   <p class="text-sm text-emerald-700 mb-3">એડમિન લૉગિન ચાલુ છે.</p>
 
-            <div class="space-y-3 mb-4">
-                <input type="text" id="customer-name" placeholder="તમારું નામ (Name)" class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                <textarea id="customer-address" placeholder="પૂરું સરનામું (Delivery Address)" rows="2" class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
-            </div>
-
-            <button onclick="sendWhatsAppOrder()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold shadow-lg transition flex items-center justify-center space-x-2">
-                <span>💬 WhatsApp પર ઓર્ડર મોકલો</span>
-            </button>
-        </div>
+   <h3 class="font-bold mb-2">પ્રોડક્ટ ઉમેરો / સુધારો</h3>
+   <form onsubmit="saveProduct(event)" class="space-y-3 border rounded-xl p-3 mb-5">
+    <input id="edit-id" type="hidden">
+    <input id="p-name" required maxlength="80" placeholder="પ્રોડક્ટનું નામ" class="w-full border rounded-lg p-3">
+    <div class="grid grid-cols-2 gap-2">
+     <select id="p-category" class="border rounded-lg p-3">
+      <option value="sabji">શાકભાજી</option>
+      <option value="fruit">ફળો</option>
+     </select>
+     <input id="p-icon" maxlength="8" value="🥦" placeholder="ઇમોજી" class="border rounded-lg p-3">
     </div>
-
-    <!-- Admin Modal for Price Editing -->
-    <div id="admin-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-lg rounded-2xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl">
-            <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h3 class="text-lg font-bold text-gray-800">⚙️ એડમિન પેનલ (ભાવ બદલો)</h3>
-                <button onclick="toggleAdminPanel()" class="text-gray-400 hover:text-gray-600 font-bold text-xl">✕</button>
-            </div>
-            <p class="text-xs text-gray-500 mb-4">અહીંથી તમે કોઈપણ વસ્તુનો પ્રતિ કિલો ભાવ બદલી શકો છો:</p>
-            
-            <div id="admin-product-list" class="space-y-3 mb-4 max-h-72 overflow-y-auto pr-1">
-                <!-- Admin dynamic list -->
-            </div>
-
-            <button onclick="toggleAdminPanel()" class="w-full bg-gray-800 text-white py-2.5 rounded-xl font-medium text-sm">
-                બંધ કરો (Close)
-            </button>
-        </div>
+    <input id="p-price" type="number" min="0.01" step="0.01" required placeholder="ભાવ પ્રતિ કિલો" class="w-full border rounded-lg p-3">
+    <div class="flex gap-2">
+     <button class="flex-1 bg-emerald-700 text-white p-3 rounded-lg">સેવ કરો</button>
+     <button type="button" onclick="resetProductForm()" class="bg-gray-200 px-3 rounded-lg">નવું</button>
     </div>
+   </form>
 
-    <script>
-        // Initial Products Database
-        let products = [
-            { id: 1, name: "બટેટા (Potato)", category: "sabji", price: 40, icon: "🥔" },
-            { id: 2, name: "ડુંગળી (Onion)", category: "sabji", price: 50, icon: "🧅" },
-            { id: 3, name: "ટમેટા (Tomato)", category: "sabji", price: 60, icon: "🍅" },
-            { id: 4, name: "લીલા મરચાં (Green Chilli)", category: "sabji", price: 80, icon: "🌶️" },
-            { id: 5, name: "લીંબુ (Lemon)", category: "sabji", price: 100, icon: "🍋" },
-            { id: 6, name: "કેળા (Banana)", category: "fruit", price: 60, icon: "🍌" },
-            { id: 7, name: "સફરજન (Apple)", category: "fruit", price: 140, icon: "🍎" },
-            { id: 8, name: "દાડમ (Pomegranate)", category: "fruit", price: 160, icon: "🍑" }
-        ];
+   <h3 class="font-bold mb-2">હાલના પ્રોડક્ટ</h3>
+   <div id="admin-products" class="space-y-2"></div>
+   <button onclick="adminLogout()" class="w-full bg-red-600 text-white p-3 rounded-xl mt-5">લૉગઆઉટ</button>
+  </div>
+  <p id="admin-message" class="text-sm mt-3 break-words"></p>
+ </div>
+</div>
 
-        let cart = {}; 
-        let currentCategory = 'all';
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import {
+ getFirestore, collection, doc, getDoc, setDoc, addDoc,
+ updateDoc, deleteDoc, onSnapshot
+} from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+import {
+ getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 
-        function renderProducts() {
-            const grid = document.getElementById('product-grid');
-            const searchVal = document.getElementById('search-box').value.toLowerCase();
-            grid.innerHTML = '';
+/* Firebase project configuration */
+const firebaseConfig = {
+ apiKey: "AIzaSyCGSZQcASC_sUV6f7NDJrMbn0Ae-f9pR8",
+ authDomain: "kh-fresh-sabji-fruits.firebaseapp.com",
+ projectId: "kh-fresh-sabji-fruits",
+ storageBucket: "kh-fresh-sabji-fruits.firebasestorage.app",
+ messagingSenderId: "815611229461",
+ appId: "1:815611229461:web:ca713dc978e0997930251c",
+ measurementId: "G-HBL4EVF1MN"
+};
 
-            const filtered = products.filter(p => {
-                const matchesCat = currentCategory === 'all' || p.category === currentCategory;
-                const matchesSearch = p.name.toLowerCase().includes(searchVal);
-                return matchesCat && matchesSearch;
-            });
+/* Only this Firebase account may administer products */
+const ADMIN_UID = "bzMpXfz6ltVVB7GcWHWh0ok7XbO2";
+const SHOP_NUMBER = "919426852334";
 
-            if (filtered.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400">કોઈ વસ્તુ મળી નથી.</div>`;
-                return;
-            }
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-            filtered.forEach(p => {
-                let qty = cart[p.id] || 0;
-                grid.innerHTML += `
-                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col justify-between">
-                        <div>
-                            <div class="text-4xl text-center mb-2">${p.icon}</div>
-                            <h4 class="font-bold text-gray-800 text-sm mb-1 text-center">${p.name}</h4>
-                            <p class="text-emerald-700 font-bold text-center text-sm mb-3">₹${p.price} / કિલો</p>
-                        </div>
-                        <div>
-                            ${qty === 0 ? `
-                                <button onclick="updateQty(${p.id}, 0.25)" class="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold py-2 rounded-xl border border-emerald-200 transition">
-                                    + ઉમેરો (કાર્ટમાં)
-                                </button>
-                            ` : `
-                                <div class="flex items-center justify-between bg-emerald-50 rounded-xl p-1 border border-emerald-200">
-                                    <button onclick="updateQty(${p.id}, -0.25)" class="w-7 h-7 bg-white rounded-lg shadow-sm font-bold text-emerald-700 flex items-center justify-center">-</button>
-                                    <span class="text-xs font-bold text-emerald-900">${qty} કિલો</span>
-                                    <button onclick="updateQty(${p.id}, 0.25)" class="w-7 h-7 bg-emerald-600 text-white rounded-lg shadow-sm font-bold flex items-center justify-center">+</button>
-                                </div>
-                            `}
-                        </div>
-                    </div>
-                `;
-            });
-        }
+let products = [];
+let cart = {};
+let category = "all";
+let currentUser = null;
+let isAdmin = false;
+let stopProductsListener = null;
 
-        function setCategory(cat) {
-            currentCategory = cat;
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.classList.remove('bg-emerald-700', 'text-white');
-                btn.classList.add('bg-white', 'text-gray-600', 'border');
-            });
-            const activeBtn = document.getElementById(`cat-${cat}`);
-            activeBtn.classList.remove('bg-white', 'text-gray-600', 'border');
-            activeBtn.classList.add('bg-emerald-700', 'text-white');
-            renderProducts();
-        }
+const $ = id => document.getElementById(id);
 
-        function filterProducts() {
-            renderProducts();
-        }
+function esc(value) {
+ return String(value ?? "").replace(/[&<>"']/g, c => ({
+  "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+ }[c]));
+}
+function money(value) {
+ return "₹" + Number(value || 0).toLocaleString("en-IN", {maximumFractionDigits:2});
+}
+function showAdminMessage(message, error=false) {
+ $("admin-message").textContent = message;
+ $("admin-message").className = "text-sm mt-3 break-words " + (error ? "text-red-600" : "text-emerald-700");
+}
+function productName(p) {
+ return p.name || "નામ વગરનો પ્રોડક્ટ";
+}
 
-        function updateQty(productId, change) {
-            let current = cart[productId] || 0;
-            let updated = current + change;
-            if (updated <= 0) {
-                delete cart[productId];
-            } else {
-                cart[productId] = Math.round(updated * 100) / 100;
-            }
-            renderProducts();
-            updateCartCount();
-        }
+/* Add starter products without overwriting existing products.
+   This runs only after the authorized admin logs in. */
+async function seedStarterProducts() {
+ const starter = [
+  {id:"potato",name:"બટેટા (Potato)",category:"sabji",price:20,icon:"🥔"},
+  {id:"onion",name:"ડુંગળી (Onion)",category:"sabji",price:50,icon:"🧅"},
+  {id:"tomato",name:"ટમેટા (Tomato)",category:"sabji",price:60,icon:"🍅"},
+  {id:"green-chilli",name:"લીલા મરચાં (Green Chilli)",category:"sabji",price:80,icon:"🌶️"},
+  {id:"lemon",name:"લીંબુ (Lemon)",category:"sabji",price:100,icon:"🍋"},
+  {id:"banana",name:"કેળા (Banana)",category:"fruit",price:60,icon:"🍌"},
+  {id:"apple",name:"સફરજન (Apple)",category:"fruit",price:140,icon:"🍎"},
+  {id:"pomegranate",name:"દાડમ (Pomegranate)",category:"fruit",price:160,icon:"🍎"}
+ ];
+ for (const p of starter) {
+  const ref = doc(db, "products", p.id);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+   const {id, ...data} = p;
+   await setDoc(ref, data);
+  }
+ }
+}
 
-        function updateCartCount() {
-            let totalItems = Object.keys(cart).length;
-            document.getElementById('cart-count').innerText = totalItems;
-        }
+function listenProducts() {
+ if (stopProductsListener) stopProductsListener();
+ stopProductsListener = onSnapshot(collection(db,"products"), snapshot => {
+  products = snapshot.docs.map(d => ({id:d.id,...d.data()}))
+   .filter(p => typeof p.price === "number" && p.name)
+   .sort((a,b) => String(a.category).localeCompare(String(b.category)) || productName(a).localeCompare(productName(b)));
+  for (const id of Object.keys(cart)) {
+   if (!products.some(p => p.id === id)) delete cart[id];
+  }
+  $("status").textContent = products.length ? `${products.length} વસ્તુઓ ઉપલબ્ધ છે` : "હજુ કોઈ પ્રોડક્ટ ઉમેરેલ નથી.";
+  renderProducts();
+  updateCartCount();
+  renderAdminProducts();
+  if (!$("cart-modal").classList.contains("hidden")) renderCart();
+ }, error => {
+  $("status").textContent = "પ્રોડક્ટ લોડ થયા નથી. Firebase Rules અને કનેક્શન તપાસો.";
+  console.error(error);
+ });
+}
 
-        function openCart() {
-            const container = document.getElementById('cart-items');
-            container.innerHTML = '';
-            let totalPrice = 0;
-            let totalWeight = 0;
+onAuthStateChanged(auth, user => {
+ currentUser = user;
+ isAdmin = !!user && user.uid === ADMIN_UID;
+ $("login-section").classList.toggle("hidden", isAdmin);
+ $("admin-section").classList.toggle("hidden", !isAdmin);
+ if (user && !isAdmin) {
+  showAdminMessage("આ એકાઉન્ટને એડમિન પરવાનગી નથી. યોગ્ય એડમિન એકાઉન્ટથી લૉગિન કરો.", true);
+  signOut(auth).catch(console.error);
+ } else if (!user) {
+  showAdminMessage("");
+ }
+});
 
-            if (Object.keys(cart).length === 0) {
-                container.innerHTML = `<p class="text-center text-gray-400 py-6">તમારું કાર્ટ ખાલી છે.</p>`;
-            } else {
-                for (let id in cart) {
-                    let p = products.find(prod => prod.id == id);
-                    let qty = cart[id];
-                    let itemTotal = p.price * qty;
-                    totalPrice += itemTotal;
-                    totalWeight += qty;
+window.setCategory = value => {
+ category = value;
+ for (const name of ["all","sabji","fruit"]) {
+  const b = $("cat-"+name);
+  b.className = "px-4 py-2 rounded-xl whitespace-nowrap " +
+   (name === value ? "bg-emerald-700 text-white" : "bg-white border");
+ }
+ renderProducts();
+};
 
-                    container.innerHTML += `
-                        <div class="flex justify-between items-center bg-gray-50 p-2.5 rounded-xl border">
-                            <div>
-                                <h5 class="font-bold text-xs text-gray-800">${p.icon} ${p.name}</h5>
-                                <p class="text-xs text-gray-500">${qty} કિલો × ₹${p.price} = ₹${itemTotal}</p>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <button onclick="updateQty(${id}, -0.25)" class="w-6 h-6 bg-white border rounded font-bold text-xs">-</button>
-                                <span class="text-xs font-bold">${qty}</span>
-                                <button onclick="updateQty(${id}, 0.25)" class="w-6 h-6 bg-emerald-600 text-white rounded font-bold text-xs">+</button>
-                            </div>
-                        </div>
-                    `;
-                }
-            }
+window.renderProducts = () => {
+ const search = $("search").value.trim().toLowerCase();
+ const found = products.filter(p =>
+  (category === "all" || (p.category || "sabji") === category) &&
+  productName(p).toLowerCase().includes(search)
+ );
+ $("product-grid").innerHTML = found.length ? found.map(p => {
+  const qty = cart[p.id] || 0;
+  return `<article class="bg-white rounded-2xl p-3 shadow-sm border flex flex-col justify-between">
+   <div>
+    <div class="text-4xl text-center mb-2">${esc(p.icon || "🥬")}</div>
+    <h3 class="font-bold text-sm text-center">${esc(productName(p))}</h3>
+    <p class="text-emerald-700 font-bold text-center my-3">${money(p.price)} / કિલો</p>
+   </div>
+   ${qty === 0
+    ? `<button onclick="updateQty('${esc(p.id)}',0.25)" class="bg-emerald-50 text-emerald-800 border border-emerald-200 p-2 rounded-xl text-sm">+ કાર્ટમાં ઉમેરો</button>`
+    : `<div class="flex justify-between items-center gap-1">
+       <button onclick="updateQty('${esc(p.id)}',-0.25)" class="bg-gray-100 rounded-lg px-3 py-2">−</button>
+       <span class="text-xs font-bold">${qty} કિલો</span>
+       <button onclick="updateQty('${esc(p.id)}',0.25)" class="bg-emerald-600 text-white rounded-lg px-3 py-2">+</button>
+      </div>`}
+  </article>`;
+ }).join("") : `<p class="col-span-full text-center p-8 text-gray-500">કોઈ વસ્તુ મળી નથી.</p>`;
+};
 
-            document.getElementById('cart-total-weight').innerText = totalWeight + " કિલો";
-            document.getElementById('cart-total-price').innerText = "₹" + totalPrice;
-            document.getElementById('cart-modal').classList.remove('hidden');
-        }
+window.updateQty = (id, change) => {
+ const next = Math.round(((cart[id] || 0) + change) * 100) / 100;
+ if (next <= 0) delete cart[id]; else cart[id] = next;
+ renderProducts();
+ updateCartCount();
+ if (!$("cart-modal").classList.contains("hidden")) renderCart();
+};
 
-        function closeCart() {
-            document.getElementById('cart-modal').classList.add('hidden');
-        }
+function updateCartCount() {
+ $("cart-count").textContent = Object.keys(cart).length;
+}
+window.openCart = () => {
+ $("cart-modal").classList.remove("hidden");
+ renderCart();
+};
+window.closeCart = () => $("cart-modal").classList.add("hidden");
 
-        function toggleAdminPanel() {
-            const modal = document.getElementById('admin-modal');
-            if (modal.classList.contains('hidden')) {
-                const list = document.getElementById('admin-product-list');
-                list.innerHTML = '';
-                products.forEach(p => {
-                    list.innerHTML += `
-                        <div class="flex items-center justify-between bg-gray-50 p-2.5 rounded-xl border">
-                            <span class="text-sm font-medium">${p.icon} ${p.name}</span>
-                            <div class="flex items-center space-x-2">
-                                <span class="text-xs text-gray-500">₹</span>
-                                <input type="number" id="price-input-${p.id}" value="${p.price}" class="w-20 px-2 py-1 border rounded text-sm font-bold text-emerald-700 bg-white" onchange="changePrice(${p.id}, this.value)">
-                                <span class="text-xs text-gray-500">/કિલો</span>
-                            </div>
-                        </div>
-                    `;
-                });
-                modal.classList.remove('hidden');
-            } else {
-                modal.classList.add('hidden');
-                renderProducts();
-            }
-        }
+function renderCart() {
+ let weight = 0, total = 0;
+ $("cart-items").innerHTML = Object.keys(cart).map(id => {
+  const p = products.find(item => item.id === id);
+  if (!p) return "";
+  const qty = cart[id], sum = Number(p.price) * qty;
+  weight += qty; total += sum;
+  return `<div class="border rounded-xl p-3 flex justify-between items-center gap-2">
+   <div><b class="text-sm">${esc(p.icon || "🥬")} ${esc(productName(p))}</b>
+   <p class="text-xs text-gray-600">${qty} કિલો × ${money(p.price)} = ${money(sum)}</p></div>
+   <div class="flex gap-2 items-center">
+    <button onclick="updateQty('${esc(id)}',-0.25)" class="border rounded px-2 py-1">−</button>
+    <button onclick="updateQty('${esc(id)}',0.25)" class="bg-emerald-600 text-white rounded px-2 py-1">+</button>
+   </div>
+  </div>`;
+ }).join("") || `<p class="text-center text-gray-500 p-5">કાર્ટ ખાલી છે.</p>`;
+ $("cart-weight").textContent = weight.toFixed(2) + " કિલો";
+ $("cart-total").textContent = money(total);
+ $("weight-error").classList.add("hidden");
+}
 
-        function changePrice(id, newPrice) {
-            let p = products.find(prod => prod.id == id);
-            if (p && newPrice > 0) {
-                p.price = Number(newPrice);
-            }
-        }
+window.sendWhatsAppOrder = () => {
+ let weight = 0, total = 0, lines = [];
+ for (const id of Object.keys(cart)) {
+  const p = products.find(item => item.id === id);
+  if (!p) continue;
+  const qty = cart[id], sum = Number(p.price) * qty;
+  weight += qty; total += sum;
+  lines.push(`• ${productName(p)}: ${qty} કિલો × ${money(p.price)} = ${money(sum)}`);
+ }
+ if (weight < 1) {
+  $("weight-error").classList.remove("hidden");
+  return;
+ }
+ const name = $("customer-name").value.trim();
+ const address = $("customer-address").value.trim();
+ if (!name || !address) {
+  alert("કૃપા કરીને તમારું નામ અને સરનામું લખો.");
+  return;
+ }
+ const message = `🛒 K.H Fresh Sabji & Fruits - નવો ઓર્ડર
 
-        function sendWhatsAppOrder() {
-            let totalWeight = 0;
-            for (let id in cart) {
-                totalWeight += cart[id];
-            }
+નામ: ${name}
+સરનામું: ${address}
 
-            if (totalWeight < 1) {
-                document.getElementById('weight-error-msg').classList.remove('hidden');
-                return;
-            } else {
-                document.getElementById('weight-error-msg').classList.add('hidden');
-            }
+${lines.join("\n")}
 
-            let name = document.getElementById('customer-name').value.trim();
-            let address = document.getElementById('customer-address').value.trim();
+કુલ વજન: ${weight.toFixed(2)} કિલો
+કુલ રકમ: ${money(total)}
+ડિલિવરી ચાર્જ અલગ હોઈ શકે.`;
+ window.open(`https://wa.me/${SHOP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
+};
 
-            if (!name || !address) {
-                alert("કૃપા કરીને તમારું નામ અને સરનામું લખો!");
-                return;
-            }
+window.openAdmin = () => {
+ $("admin-modal").classList.remove("hidden");
+ showAdminMessage("");
+};
+window.closeAdmin = () => $("admin-modal").classList.add("hidden");
 
-            let msg = `*🛒 નવો ઓર્ડર - K.H Fresh*%0A%0A`;
-            msg += `👤 ગ્રાહક: ${name}%0A`;
-            msg += `📍 સરનામું: ${address}%0A%0A`;
-            msg += `*ઓર્ડરની વિગત:*%0A`;
+window.adminLogin = async event => {
+ event.preventDefault();
+ showAdminMessage("લૉગિન થઈ રહ્યું છે...");
+ try {
+  const email = $("admin-email").value.trim();
+  const password = $("admin-password").value;
+  const result = await signInWithEmailAndPassword(auth,email,password);
+  if (result.user.uid !== ADMIN_UID) {
+   await signOut(auth);
+   showAdminMessage("આ એડમિન એકાઉન્ટ નથી.", true);
+   return;
+  }
+  await seedStarterProducts();
+  $("admin-password").value = "";
+  showAdminMessage("લૉગિન સફળ થયું. પ્રોડક્ટ અપડેટ થઈ રહ્યા છે.");
+ } catch (error) {
+  console.error(error);
+  showAdminMessage("લૉગિન/સેવમાં ભૂલ: " + error.message, true);
+ }
+};
 
-            let totalPrice = 0;
-            for (let id in cart) {
-                let p = products.find(prod => prod.id == id);
-                let qty = cart[id];
-                let itemTotal = p.price * qty;
-                totalPrice += itemTotal;
-                msg += `- ${p.name}: ${qty} કિલો = ₹${itemTotal}%0A`;
-            }
+function renderAdminProducts() {
+ if (!isAdmin) return;
+ $("admin-products").innerHTML = products.map(p => `
+  <div class="border rounded-xl p-3 flex justify-between items-center gap-2">
+   <div class="min-w-0"><b>${esc(p.icon || "🥬")} ${esc(productName(p))}</b>
+    <p class="text-sm text-emerald-700">${money(p.price)} / કિલો · ${p.category === "fruit" ? "ફળો" : "શાકભાજી"}</p>
+   </div>
+   <div class="flex gap-1 shrink-0">
+    <button onclick="editProduct('${esc(p.id)}')" class="bg-blue-100 px-3 py-2 rounded-lg text-sm">બદલો</button>
+    <button onclick="removeProduct('${esc(p.id)}')" class="bg-red-100 px-3 py-2 rounded-lg text-sm">કાઢો</button>
+   </div>
+  </div>`).join("") || `<p>પ્રોડક્ટ ઉપલબ્ધ નથી.</p>`;
+}
 
-            msg += `%0A*કુલ વજન:* ${totalWeight} કિલો`;
-            msg += `%0A*કુલ રકમ:* ₹${totalPrice}`;
+window.editProduct = id => {
+ if (!isAdmin) return;
+ const p = products.find(item => item.id === id);
+ if (!p) return;
+ $("edit-id").value = p.id;
+ $("p-name").value = p.name || "";
+ $("p-category").value = p.category || "sabji";
+ $("p-icon").value = p.icon || "🥬";
+ $("p-price").value = p.price;
+ window.scrollTo({top:0,behavior:"smooth"});
+};
 
-            // Your WhatsApp Number
-            let phoneNo = "919426852334"; 
-            let url = `https://wa.me/${phoneNo}?text=${msg}`;
-            window.open(url, '_blank');
-        }
+window.resetProductForm = () => {
+ $("edit-id").value = "";
+ $("p-name").value = "";
+ $("p-category").value = "sabji";
+ $("p-icon").value = "🥬";
+ $("p-price").value = "";
+};
 
-        renderProducts();
-    </script>
+window.saveProduct = async event => {
+ event.preventDefault();
+ if (!isAdmin || !currentUser || currentUser.uid !== ADMIN_UID) {
+  showAdminMessage("પહેલાં એડમિન લૉગિન કરો.", true);
+  return;
+ }
+ const name = $("p-name").value.trim();
+ const category = $("p-category").value;
+ const icon = $("p-icon").value.trim() || "🥬";
+ const price = Number($("p-price").value);
+ const id = $("edit-id").value;
+ if (!name || !Number.isFinite(price) || price <= 0) {
+  showAdminMessage("નામ અને યોગ્ય ભાવ લખો.", true);
+  return;
+ }
+ try {
+  const data = {name,category,icon,price};
+  if (id) {
+   await updateDoc(doc(db,"products",id),data);
+   showAdminMessage("પ્રોડક્ટ અપડેટ થઈ ગયો.");
+  } else {
+   await addDoc(collection(db,"products"),data);
+   showAdminMessage("નવો પ્રોડક્ટ ઉમેરાયો.");
+  }
+  resetProductForm();
+ } catch (error) {
+  console.error(error);
+  showAdminMessage("સેવ કરવામાં ભૂલ: " + error.message, true);
+ }
+};
+
+window.removeProduct = async id => {
+ if (!isAdmin || !confirm("શું આ પ્રોડક્ટ કાઢી નાખવો છે?")) return;
+ try {
+  await deleteDoc(doc(db,"products",id));
+  delete cart[id];
+  showAdminMessage("પ્રોડક્ટ કાઢી નાખ્યો.");
+ } catch (error) {
+  console.error(error);
+  showAdminMessage("કાઢવામાં ભૂલ: " + error.message, true);
+ }
+};
+
+window.adminLogout = async () => {
+ try {
+  await signOut(auth);
+  resetProductForm();
+  showAdminMessage("લૉગઆઉટ થઈ ગયું.");
+ } catch (error) {
+  showAdminMessage(error.message,true);
+ }
+};
+
+listenProducts();
+</script>
 </body>
 </html>
