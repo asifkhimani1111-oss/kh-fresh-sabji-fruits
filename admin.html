@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="gu">
 <head>
@@ -7,83 +6,89 @@
 <title>K.H Fresh Sabji & Fruits - Admin</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f2f8f2;color:#203326}
-header{background:#168343;color:white;text-align:center;padding:18px}
-main{max-width:700px;margin:18px auto;padding:12px}
-.box{background:white;padding:16px;margin-bottom:16px;border-radius:12px;box-shadow:0 2px 8px #0001}
-h2{color:#168343;margin-top:0}
-input,select{width:100%;padding:12px;margin:6px 0 12px;border:1px solid #ccc;border-radius:8px;font-size:16px}
-button{padding:12px;border:0;border-radius:8px;background:#168343;color:white;font-size:16px;cursor:pointer}
-button:disabled{opacity:.5}
-.full{width:100%}
-.item{border:1px solid #ddd;border-radius:10px;padding:12px;margin:12px 0}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-.row button{flex:1}
-.del{background:#b42318}
-.muted{color:#666;font-size:14px}
-#status{white-space:pre-wrap;color:#b42318}
+body{margin:0;padding:16px;background:#f4faf4;color:#203326;font-family:Arial,sans-serif}
+main{max-width:650px;margin:auto}
+section{background:white;padding:16px;margin:14px 0;border-radius:12px;box-shadow:0 2px 8px #0001}
+h2{color:#168343}
+input,select,button{width:100%;padding:12px;margin:7px 0;border:1px solid #ccc;border-radius:8px;font-size:16px}
+button{background:#168343;color:white;border:0;font-weight:bold;cursor:pointer}
+button.danger{background:#b3261e}
+button.secondary{background:#456}
+small{color:#555}
+.product{border:1px solid #ddd;border-radius:8px;padding:12px;margin:10px 0}
+.product img{width:80px;height:80px;object-fit:cover;border-radius:8px}
+.row{display:flex;gap:10px;align-items:center}
+.row button{width:auto;flex:1}
+#app{display:none}
 </style>
 </head>
 <body>
-<header>
-<h1>🥬 K.H Fresh Sabji & Fruits</h1>
-<p>Admin Panel - ભાવ અને પ્રોડક્ટ મેનેજ કરો</p>
-</header>
-
 <main>
-<div class="box">
-<h2>🔐 Admin Login</h2>
-<p class="muted">Admin માટે નોંધાયેલ મોબાઇલ નંબરથી OTP મેળવો.</p>
-<input id="phone" type="tel" value="+919426852334" placeholder="+91XXXXXXXXXX">
-<div id="recaptcha-container"></div>
-<button class="full" id="sendOtp">OTP મોકલો</button>
-<input id="otp" type="text" inputmode="numeric" placeholder="SMS માં આવેલ OTP">
-<button class="full" id="verifyOtp">OTP ચકાસો અને Login કરો</button>
-<button class="full" id="logout" style="display:none;background:#555;margin-top:8px">Logout</button>
-<p id="status"></p>
-</div>
+<h2>K.H Fresh Sabji & Fruits</h2>
+<p>Admin Panel — ભાવ અને પ્રોડક્ટ મેનેજ કરો</p>
 
-<div id="panel" style="display:none">
-<div class="box">
-<h2>➕ નવી પ્રોડક્ટ ઉમેરો</h2>
+<section id="login">
+<h3>Admin Login</h3>
+<p>Email અને Password દાખલ કરો.</p>
+<form id="loginForm">
+<input id="email" type="email" placeholder="Admin Email" required autocomplete="username">
+<input id="password" type="password" placeholder="Password" required autocomplete="current-password">
+<button type="submit">Login કરો</button>
+</form>
+<p id="loginMsg" role="status"></p>
+</section>
+
+<div id="app">
+<section>
+<div class="row">
+<h3 style="flex:1">પ્રોડક્ટ મેનેજમેન્ટ</h3>
+<button id="logout" type="button">Logout</button>
+</div>
+<form id="productForm">
+<input id="productId" type="hidden">
 <label>પ્રોડક્ટનું નામ</label>
-<input id="name" placeholder="જેમ કે બટાકા">
+<input id="name" required placeholder="દા.ત. બટાકા">
 <label>ભાવ (₹)</label>
-<input id="price" type="number" min="0" placeholder="જેમ કે 30">
-<label>એકમ</label>
-<select id="unit">
-<option value="કિલો">કિલો</option>
-<option value="નંગ">નંગ</option>
-<option value="કિલો">500 ગ્રામ માટે પણ કિલો ભાવ દાખલ કરો</option>
-<option value="ડઝન">ડઝન</option>
-<option value="બોક્સ">બોક્સ</option>
-</select>
+<input id="price" type="number" min="0" step="0.01" required placeholder="દા.ત. 30">
 <label>કેટેગરી</label>
 <select id="category">
 <option value="શાકભાજી">શાકભાજી</option>
 <option value="ફળો">ફળો</option>
 </select>
-<label>ચિહ્ન / Emoji (વૈકલ્પિક)</label>
-<input id="icon" placeholder="🥔">
-<label>ફોટાની URL (વૈકલ્પિક)</label>
-<input id="imageUrl" type="url" placeholder="https://example.com/photo.jpg">
-<button class="full" id="add">પ્રોડક્ટ ઉમેરો</button>
-</div>
+<label>એકમ</label>
+<select id="unit">
+<option value="કિલો">કિલો</option>
+<option value="નંગ">નંગ</option>
+<option value="પેકેટ">પેકેટ</option>
+</select>
+<label>ફોટો URL (વૈકલ્પિક)</label>
+<input id="imageUrl" type="url" placeholder="https://...">
+<small>આ વર્ઝનમાં ફોટો URL મૂકવો પડે છે. Galleryમાંથી સીધો ફોટો અપલોડ કરવાનું આગળ ઉમેરશું.</small>
+<label>ગ્રાહકોને બતાવવો છે?</label>
+<select id="active">
+<option value="true">હા</option>
+<option value="false">ના</option>
+</select>
+<button type="submit">સેવ કરો</button>
+<button id="clearForm" class="secondary" type="button">નવું ફોર્મ</button>
+<p id="saveMsg" role="status"></p>
+</form>
+</section>
 
-<div class="box">
-<h2>🧺 હાલની પ્રોડક્ટ અને ભાવ</h2>
-<div id="list">પ્રોડક્ટ લોડ થઈ રહી છે...</div>
-</div>
+<section>
+<h3>હાલની પ્રોડક્ટ્સ</h3>
+<div id="products">પ્રોડક્ટ્સ લોડ થઈ રહી છે...</div>
+</section>
 </div>
 </main>
 
 <script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import {
- getAuth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged, signOut
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 import {
- getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc
+  getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -96,183 +101,160 @@ const firebaseConfig = {
   measurementId: "G-HBL4EVF1MN"
 };
 
-const ADMIN_PHONE = "+919426852334";
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let confirmation = null;
-let verifier = null;
-let products = [];
-let unsubscribe = null;
-
 const $ = id => document.getElementById(id);
-function status(message){ $("status").textContent = message; }
+let stopProducts = null;
 
-$("sendOtp").onclick = async () => {
+$("loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  $("loginMsg").textContent = "Login થઈ રહ્યું છે...";
   try {
-    const phone = $("phone").value.trim();
-    if(phone !== ADMIN_PHONE){
-      status("આ નંબર Admin માટે મંજૂર નથી.");
-      return;
-    }
-    $("sendOtp").disabled = true;
-    status("OTP મોકલાઈ રહ્યો છે...");
-    if(!verifier){
-      verifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-        size: "normal"
-      });
-    }
-    confirmation = await signInWithPhoneNumber(auth, phone, verifier);
-    status("OTP મોકલાયો છે. SMS માંથી OTP દાખલ કરો.");
-  } catch(e) {
-    status("OTP મોકલવામાં સમસ્યા: " + e.message);
-    $("sendOtp").disabled = false;
-    if(verifier){try{await verifier.clear();}catch{} verifier=null;}
-  }
-};
-
-$("verifyOtp").onclick = async () => {
-  try {
-    if(!confirmation){status("પહેલાં OTP મોકલો.");return;}
-    await confirmation.confirm($("otp").value.trim());
-    status("Login સફળ.");
-  } catch(e) {
-    status("OTP ખોટો છે અથવા Login નિષ્ફળ: " + e.message);
-  }
-};
-
-onAuthStateChanged(auth, user => {
-  const allowed = !!user && user.phoneNumber === ADMIN_PHONE;
-  $("panel").style.display = allowed ? "block" : "none";
-  $("logout").style.display = user ? "block" : "none";
-  $("sendOtp").style.display = user ? "none" : "block";
-  $("verifyOtp").style.display = user ? "none" : "block";
-  if(user && !allowed) {
-    status("આ એકાઉન્ટ Admin નથી.");
-    signOut(auth);
-    return;
-  }
-  if(allowed) {
-    status("Admin Login સફળ.");
-    listenProducts();
-  } else {
-    if(unsubscribe){unsubscribe();unsubscribe=null;}
+    await signInWithEmailAndPassword(
+      auth, $("email").value.trim(), $("password").value
+    );
+    $("loginMsg").textContent = "";
+  } catch (err) {
+    $("loginMsg").textContent = "Login ન થયું: " + err.message;
   }
 });
 
-$("logout").onclick = async () => {
-  await signOut(auth);
-  status("Logout થઈ ગયું.");
-};
+onAuthStateChanged(auth, user => {
+  if (stopProducts) {
+    stopProducts();
+    stopProducts = null;
+  }
+  $("login").style.display = user ? "none" : "block";
+  $("app").style.display = user ? "block" : "none";
+  if (user) loadProducts();
+});
 
-function listenProducts(){
-  if(unsubscribe) unsubscribe();
-  unsubscribe = onSnapshot(collection(db,"products"), snap => {
-    products = snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderList();
-  }, e => {
-    $("list").textContent = "પ્રોડક્ટ લોડ ન થઈ: " + e.message;
+$("logout").addEventListener("click", async () => {
+  await signOut(auth);
+});
+
+function loadProducts() {
+  stopProducts = onSnapshot(collection(db, "products"), snapshot => {
+    const host = $("products");
+    host.replaceChildren();
+
+    if (snapshot.empty) {
+      host.textContent = "હજી કોઈ પ્રોડક્ટ નથી.";
+      return;
+    }
+
+    snapshot.forEach(item => {
+      const p = item.data();
+      const card = document.createElement("div");
+      card.className = "product";
+
+      const title = document.createElement("strong");
+      title.textContent = p.name || "(નામ નથી)";
+      card.appendChild(title);
+
+      const detail = document.createElement("p");
+      detail.textContent =
+        "₹" + (p.price ?? 0) + " / " + (p.unit || "કિલો") +
+        " • " + (p.category || "શાકભાજી") +
+        " • " + (p.active === false ? "છુપાવેલ" : "દેખાય છે");
+      card.appendChild(detail);
+
+      if (p.imageUrl && /^https?:\/\//i.test(p.imageUrl)) {
+        const img = document.createElement("img");
+        img.src = p.imageUrl;
+        img.alt = p.name || "Product photo";
+        img.loading = "lazy";
+        card.appendChild(img);
+      }
+
+      const actions = document.createElement("div");
+      actions.className = "row";
+
+      const edit = document.createElement("button");
+      edit.type = "button";
+      edit.textContent = "Edit";
+      edit.addEventListener("click", () => {
+        $("productId").value = item.id;
+        $("name").value = p.name || "";
+        $("price").value = p.price ?? "";
+        $("category").value = p.category || "શાકભાજી";
+        $("unit").value = p.unit || "કિલો";
+        $("imageUrl").value = p.imageUrl || "";
+        $("active").value = String(p.active !== false);
+        window.scrollTo({top: 0, behavior: "smooth"});
+      });
+
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "danger";
+      del.textContent = "Delete";
+      del.addEventListener("click", async () => {
+        if (!confirm("આ પ્રોડક્ટ કાઢી નાખવી છે?")) return;
+        try {
+          await deleteDoc(doc(db, "products", item.id));
+          $("saveMsg").textContent = "પ્રોડક્ટ કાઢી નાખી.";
+        } catch (err) {
+          $("saveMsg").textContent = "ભૂલ: " + err.message;
+        }
+      });
+
+      actions.append(edit, del);
+      card.appendChild(actions);
+      host.appendChild(card);
+    });
+  }, err => {
+    $("products").textContent = "લોડ ન થયું: " + err.message;
   });
 }
 
-function renderList(){
-  const list = $("list");
-  list.innerHTML = "";
-  if(!products.length){
-    list.textContent = "હજુ કોઈ પ્રોડક્ટ નથી. ઉપરથી ઉમેરો.";
+$("productForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  $("saveMsg").textContent = "સેવ થઈ રહ્યું છે...";
+
+  const name = $("name").value.trim();
+  const price = Number($("price").value);
+  const imageUrl = $("imageUrl").value.trim();
+
+  if (!name || !Number.isFinite(price) || price < 0) {
+    $("saveMsg").textContent = "નામ અને યોગ્ય ભાવ દાખલ કરો.";
     return;
   }
-  products.forEach(p => {
-    const item = document.createElement("div");
-    item.className = "item";
-    item.innerHTML = `
-      <strong></strong>
-      <label>નામ</label><input class="pname">
-      <label>ભાવ (₹)</label><input class="pprice" type="number" min="0">
-      <label>એકમ</label>
-      <select class="punit">
-        <option value="કિલો">કિલો</option>
-        <option value="નંગ">નંગ</option>
-        <option value="ડઝન">ડઝન</option>
-        <option value="બોક્સ">બોક્સ</option>
-      </select>
-      <label>કેટેગરી</label>
-      <select class="pcategory">
-        <option value="શાકભાજી">શાકભાજી</option>
-        <option value="ફળો">ફળો</option>
-      </select>
-      <label>Emoji</label><input class="picon">
-      <label>ફોટાની URL</label><input class="pimage" type="url">
-      <label><input class="pactive" type="checkbox" style="width:auto"> વેબસાઇટ પર બતાવો</label>
-      <div class="row">
-        <button class="save">ફેરફાર સાચવો</button>
-        <button class="del">ડિલીટ</button>
-      </div>`;
-    item.querySelector("strong").textContent = p.name || p.id;
-    item.querySelector(".pname").value = p.name || "";
-    item.querySelector(".pprice").value = Number(p.price)||0;
-    item.querySelector(".punit").value = p.unit || "કિલો";
-    item.querySelector(".pcategory").value = p.category || "શાકભાજી";
-    item.querySelector(".picon").value = p.icon || "";
-    item.querySelector(".pimage").value = p.imageUrl || "";
-    item.querySelector(".pactive").checked = p.active !== false;
-
-    item.querySelector(".save").onclick = async () => {
-      try {
-        const name = item.querySelector(".pname").value.trim();
-        const price = Number(item.querySelector(".pprice").value);
-        if(!name || !Number.isFinite(price) || price<0){
-          alert("નામ અને સાચો ભાવ દાખલ કરો.");return;
-        }
-        await updateDoc(doc(db,"products",p.id), {
-          name, price,
-          unit:item.querySelector(".punit").value,
-          category:item.querySelector(".pcategory").value,
-          icon:item.querySelector(".picon").value.trim(),
-          imageUrl:item.querySelector(".pimage").value.trim(),
-          active:item.querySelector(".pactive").checked
-        });
-        alert("ભાવ અને પ્રોડક્ટ સાચવાઈ ગઈ.");
-      } catch(e) {
-        alert("સાચવી શકાઈ નથી: " + e.message);
-      }
-    };
-
-    item.querySelector(".del").onclick = async () => {
-      if(!confirm("આ પ્રોડક્ટ ડિલીટ કરવી છે?"))return;
-      try{
-        await deleteDoc(doc(db,"products",p.id));
-      }catch(e){alert("ડિલીટ ન થઈ: "+e.message);}
-    };
-    list.appendChild(item);
-  });
-}
-
-$("add").onclick = async () => {
-  try {
-    const name = $("name").value.trim();
-    const price = Number($("price").value);
-    if(!name || $("price").value==="" || !Number.isFinite(price) || price<0){
-      alert("પ્રોડક્ટનું નામ અને સાચો ભાવ દાખલ કરો.");return;
-    }
-    await addDoc(collection(db,"products"),{
-      name, price,
-      unit:$("unit").value,
-      category:$("category").value,
-      icon:$("icon").value.trim() || "🥬",
-      imageUrl:$("imageUrl").value.trim(),
-      active:true
-    });
-    $("name").value="";
-    $("price").value="";
-    $("icon").value="";
-    $("imageUrl").value="";
-    alert("નવી પ્રોડક્ટ ઉમેરાઈ ગઈ.");
-  } catch(e) {
-    alert("પ્રોડક્ટ ઉમેરી શકાઈ નથી: " + e.message);
+  if (imageUrl && !/^https?:\/\//i.test(imageUrl)) {
+    $("saveMsg").textContent = "ફોટો URL https:// અથવા http:// થી શરૂ થવો જોઈએ.";
+    return;
   }
-};
+
+  const product = {
+    name,
+    price,
+    category: $("category").value,
+    unit: $("unit").value,
+    imageUrl,
+    active: $("active").value === "true"
+  };
+
+  try {
+    const id = $("productId").value;
+    if (id) {
+      await setDoc(doc(db, "products", id), product, {merge: true});
+    } else {
+      await addDoc(collection(db, "products"), product);
+    }
+    $("saveMsg").textContent = "સફળતાપૂર્વક સેવ થયું!";
+    $("productForm").reset();
+    $("productId").value = "";
+  } catch (err) {
+    $("saveMsg").textContent = "સેવ ન થયું: " + err.message;
+  }
+});
+
+$("clearForm").addEventListener("click", () => {
+  $("productForm").reset();
+  $("productId").value = "";
+  $("saveMsg").textContent = "";
+});
 </script>
 </body>
 </html>
