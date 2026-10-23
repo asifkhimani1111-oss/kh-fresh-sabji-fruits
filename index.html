@@ -409,13 +409,15 @@ window.forgotAdminPassword = async () => {
   showAdminMessage(
    "જો આ ઈમેલ રજિસ્ટર થયેલું હશે, તો પાસવર્ડ રીસેટની લિંક ઈમેલમાં આવશે. Inbox અને Spam તપાસો."
   );
- } catch (error) {
-  console.error(error);
+ 
+} catch (error) {
+  console.error("Password reset error:", error);
   showAdminMessage(
-   "રીસેટ ઈમેલ મોકલી શકાયો નથી. ઈમેલ અને Firebase સેટિંગ તપાસો.",
-   true
+    "Firebase Error: " + error.code + " — " + error.message,
+    true
   );
- }
+}
+
 };
 
 window.adminLogin = async event => {
