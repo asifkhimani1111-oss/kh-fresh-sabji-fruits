@@ -78,8 +78,12 @@ button{cursor:pointer}
    <form onsubmit="adminLogin(event)" class="space-y-3">
     <input id="admin-email" type="email" autocomplete="username" required placeholder="એડમિન ઈમેલ" class="w-full border rounded-lg p-3">
     <input id="admin-password" type="password" autocomplete="current-password" required placeholder="પાસવર્ડ" class="w-full border rounded-lg p-3">
-    <button class="w-full bg-emerald-700 text-white p-3 rounded-xl">લૉગિન</button>
+    <button type="submit" class="w-full bg-emerald-700 text-white p-3 rounded-xl">લૉગિન</button>
    </form>
+
+   <button type="button" onclick="forgotAdminPassword()" class="w-full border border-emerald-700 text-emerald-700 p-3 rounded-xl mt-3">
+    પાસવર્ડ ભૂલી ગયા? ઈમેલ પર લિંક મોકલો
+   </button>
   </div>
 
   <div id="admin-section" class="hidden">
@@ -98,7 +102,7 @@ button{cursor:pointer}
     </div>
     <input id="p-price" type="number" min="0.01" step="0.01" required placeholder="ભાવ પ્રતિ કિલો" class="w-full border rounded-lg p-3">
     <div class="flex gap-2">
-     <button class="flex-1 bg-emerald-700 text-white p-3 rounded-lg">સેવ કરો</button>
+     <button type="submit" class="flex-1 bg-emerald-700 text-white p-3 rounded-lg">સેવ કરો</button>
      <button type="button" onclick="resetProductForm()" class="bg-gray-200 px-3 rounded-lg">નવું</button>
     </div>
    </form>
@@ -107,7 +111,7 @@ button{cursor:pointer}
    <div id="admin-products" class="space-y-2"></div>
    <button onclick="adminLogout()" class="w-full bg-red-600 text-white p-3 rounded-xl mt-5">લૉગઆઉટ</button>
   </div>
-  <p id="admin-message" class="text-sm mt-3 break-words"></p>
+  <p id="admin-message" role="status" aria-live="polite" class="text-sm mt-3 break-words"></p>
  </div>
 </div>
 
@@ -118,10 +122,11 @@ import {
  updateDoc, deleteDoc, onSnapshot
 } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 import {
- getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+ getAuth, signInWithEmailAndPassword, onAuthStateChanged,
+ signOut, sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 
-/* Firebase project configuration */
+/* Firebase configuration */
 const firebaseConfig = {
  apiKey: "AIzaSyCGSZQcASC_sUV6f7NDJrMbn0Ae-f9pR8",
  authDomain: "kh-fresh-sabji-fruits.firebaseapp.com",
@@ -132,7 +137,6 @@ const firebaseConfig = {
  measurementId: "G-HBL4EVF1MN"
 };
 
-/* Only this Firebase account may administer products */
 const ADMIN_UID = "bzMpXfz6ltVVB7GcWHWh0ok7XbO2";
 const SHOP_NUMBER = "919426852334";
 
@@ -154,19 +158,26 @@ function esc(value) {
   "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
  }[c]));
 }
+
 function money(value) {
- return "₹" + Number(value || 0).toLocaleString("en-IN", {maximumFractionDigits:2});
+ return "₹" + Number(value || 0).toLocaleString("en-IN", {
+  maximumFractionDigits: 2
+ });
 }
+
 function showAdminMessage(message, error=false) {
  $("admin-message").textContent = message;
- $("admin-message").className = "text-sm mt-3 break-words " + (error ? "text-red-600" : "text-emerald-700");
+ $("admin-message").className =
+  "text-sm mt-3 break-words " +
+  (error ? "text-red-600" : "text-emerald-700");
 }
+
 function productName(p) {
  return p.name || "નામ વગરનો પ્રોડક્ટ";
 }
 
-/* Add starter products without overwriting existing products.
-   This runs only after the authorized admin logs in. */
+/* Add starter products only when admin logs in.
+   Existing product data will not be overwritten. */
 async function seedStarterProducts() {
  const starter = [
   {id:"potato",name:"બટેટા (Potato)",category:"sabji",price:20,icon:"🥔"},
@@ -178,6 +189,7 @@ async function seedStarterProducts() {
   {id:"apple",name:"સફરજન (Apple)",category:"fruit",price:140,icon:"🍎"},
   {id:"pomegranate",name:"દાડમ (Pomegranate)",category:"fruit",price:160,icon:"🍎"}
  ];
+
  for (const p of starter) {
   const ref = doc(db, "products", p.id);
   const snap = await getDoc(ref);
@@ -190,31 +202,47 @@ async function seedStarterProducts() {
 
 function listenProducts() {
  if (stopProductsListener) stopProductsListener();
+
  stopProductsListener = onSnapshot(collection(db,"products"), snapshot => {
   products = snapshot.docs.map(d => ({id:d.id,...d.data()}))
    .filter(p => typeof p.price === "number" && p.name)
-   .sort((a,b) => String(a.category).localeCompare(String(b.category)) || productName(a).localeCompare(productName(b)));
+   .sort((a,b) =>
+    String(a.category).localeCompare(String(b.category)) ||
+    productName(a).localeCompare(productName(b))
+   );
+
   for (const id of Object.keys(cart)) {
    if (!products.some(p => p.id === id)) delete cart[id];
   }
-  $("status").textContent = products.length ? `${products.length} વસ્તુઓ ઉપલબ્ધ છે` : "હજુ કોઈ પ્રોડક્ટ ઉમેરેલ નથી.";
+
+  $("status").textContent = products.length
+   ? `${products.length} વસ્તુઓ ઉપલબ્ધ છે`
+   : "હજુ કોઈ પ્રોડક્ટ ઉમેરેલ નથી.";
+
   renderProducts();
   updateCartCount();
   renderAdminProducts();
+
   if (!$("cart-modal").classList.contains("hidden")) renderCart();
  }, error => {
-  $("status").textContent = "પ્રોડક્ટ લોડ થયા નથી. Firebase Rules અને કનેક્શન તપાસો.";
   console.error(error);
+  $("status").textContent =
+   "પ્રોડક્ટ લોડ થયા નથી. Firebase Rules અને કનેક્શન તપાસો.";
  });
 }
 
 onAuthStateChanged(auth, user => {
  currentUser = user;
  isAdmin = !!user && user.uid === ADMIN_UID;
+
  $("login-section").classList.toggle("hidden", isAdmin);
  $("admin-section").classList.toggle("hidden", !isAdmin);
+
  if (user && !isAdmin) {
-  showAdminMessage("આ એકાઉન્ટને એડમિન પરવાનગી નથી. યોગ્ય એડમિન એકાઉન્ટથી લૉગિન કરો.", true);
+  showAdminMessage(
+   "આ એકાઉન્ટને એડમિન પરવાનગી નથી. યોગ્ય એડમિન એકાઉન્ટથી લૉગિન કરો.",
+   true
+  );
   signOut(auth).catch(console.error);
  } else if (!user) {
   showAdminMessage("");
@@ -223,22 +251,29 @@ onAuthStateChanged(auth, user => {
 
 window.setCategory = value => {
  category = value;
+
  for (const name of ["all","sabji","fruit"]) {
   const b = $("cat-"+name);
   b.className = "px-4 py-2 rounded-xl whitespace-nowrap " +
-   (name === value ? "bg-emerald-700 text-white" : "bg-white border");
+   (name === value
+    ? "bg-emerald-700 text-white"
+    : "bg-white border");
  }
+
  renderProducts();
 };
 
 window.renderProducts = () => {
  const search = $("search").value.trim().toLowerCase();
+
  const found = products.filter(p =>
   (category === "all" || (p.category || "sabji") === category) &&
   productName(p).toLowerCase().includes(search)
  );
+
  $("product-grid").innerHTML = found.length ? found.map(p => {
   const qty = cart[p.id] || 0;
+
   return `<article class="bg-white rounded-2xl p-3 shadow-sm border flex flex-col justify-between">
    <div>
     <div class="text-4xl text-center mb-2">${esc(p.icon || "🥬")}</div>
@@ -253,33 +288,45 @@ window.renderProducts = () => {
        <button onclick="updateQty('${esc(p.id)}',0.25)" class="bg-emerald-600 text-white rounded-lg px-3 py-2">+</button>
       </div>`}
   </article>`;
- }).join("") : `<p class="col-span-full text-center p-8 text-gray-500">કોઈ વસ્તુ મળી નથી.</p>`;
+ }).join("") :
+ `<p class="col-span-full text-center p-8 text-gray-500">કોઈ વસ્તુ મળી નથી.</p>`;
 };
 
 window.updateQty = (id, change) => {
  const next = Math.round(((cart[id] || 0) + change) * 100) / 100;
- if (next <= 0) delete cart[id]; else cart[id] = next;
+
+ if (next <= 0) delete cart[id];
+ else cart[id] = next;
+
  renderProducts();
  updateCartCount();
+
  if (!$("cart-modal").classList.contains("hidden")) renderCart();
 };
 
 function updateCartCount() {
  $("cart-count").textContent = Object.keys(cart).length;
 }
+
 window.openCart = () => {
  $("cart-modal").classList.remove("hidden");
  renderCart();
 };
+
 window.closeCart = () => $("cart-modal").classList.add("hidden");
 
 function renderCart() {
  let weight = 0, total = 0;
+
  $("cart-items").innerHTML = Object.keys(cart).map(id => {
   const p = products.find(item => item.id === id);
   if (!p) return "";
-  const qty = cart[id], sum = Number(p.price) * qty;
-  weight += qty; total += sum;
+
+  const qty = cart[id];
+  const sum = Number(p.price) * qty;
+  weight += qty;
+  total += sum;
+
   return `<div class="border rounded-xl p-3 flex justify-between items-center gap-2">
    <div><b class="text-sm">${esc(p.icon || "🥬")} ${esc(productName(p))}</b>
    <p class="text-xs text-gray-600">${qty} કિલો × ${money(p.price)} = ${money(sum)}</p></div>
@@ -289,6 +336,7 @@ function renderCart() {
    </div>
   </div>`;
  }).join("") || `<p class="text-center text-gray-500 p-5">કાર્ટ ખાલી છે.</p>`;
+
  $("cart-weight").textContent = weight.toFixed(2) + " કિલો";
  $("cart-total").textContent = money(total);
  $("weight-error").classList.add("hidden");
@@ -296,23 +344,32 @@ function renderCart() {
 
 window.sendWhatsAppOrder = () => {
  let weight = 0, total = 0, lines = [];
+
  for (const id of Object.keys(cart)) {
   const p = products.find(item => item.id === id);
   if (!p) continue;
-  const qty = cart[id], sum = Number(p.price) * qty;
-  weight += qty; total += sum;
+
+  const qty = cart[id];
+  const sum = Number(p.price) * qty;
+  weight += qty;
+  total += sum;
+
   lines.push(`• ${productName(p)}: ${qty} કિલો × ${money(p.price)} = ${money(sum)}`);
  }
+
  if (weight < 1) {
   $("weight-error").classList.remove("hidden");
   return;
  }
+
  const name = $("customer-name").value.trim();
  const address = $("customer-address").value.trim();
+
  if (!name || !address) {
   alert("કૃપા કરીને તમારું નામ અને સરનામું લખો.");
   return;
  }
+
  const message = `🛒 K.H Fresh Sabji & Fruits - નવો ઓર્ડર
 
 નામ: ${name}
@@ -323,41 +380,79 @@ ${lines.join("\n")}
 કુલ વજન: ${weight.toFixed(2)} કિલો
 કુલ રકમ: ${money(total)}
 ડિલિવરી ચાર્જ અલગ હોઈ શકે.`;
- window.open(`https://wa.me/${SHOP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
+
+ window.open(
+  `https://wa.me/${SHOP_NUMBER}?text=${encodeURIComponent(message)}`,
+  "_blank"
+ );
 };
 
 window.openAdmin = () => {
  $("admin-modal").classList.remove("hidden");
  showAdminMessage("");
 };
+
 window.closeAdmin = () => $("admin-modal").classList.add("hidden");
+
+/* PASSWORD RESET */
+window.forgotAdminPassword = async () => {
+ const email = $("admin-email").value.trim();
+
+ if (!email) {
+  showAdminMessage("પહેલાં એડમિન ઈમેલ લખો.", true);
+  $("admin-email").focus();
+  return;
+ }
+
+ try {
+  await sendPasswordResetEmail(auth, email);
+  showAdminMessage(
+   "જો આ ઈમેલ રજિસ્ટર થયેલું હશે, તો પાસવર્ડ રીસેટની લિંક ઈમેલમાં આવશે. Inbox અને Spam તપાસો."
+  );
+ } catch (error) {
+  console.error(error);
+  showAdminMessage(
+   "રીસેટ ઈમેલ મોકલી શકાયો નથી. ઈમેલ અને Firebase સેટિંગ તપાસો.",
+   true
+  );
+ }
+};
 
 window.adminLogin = async event => {
  event.preventDefault();
  showAdminMessage("લૉગિન થઈ રહ્યું છે...");
+
  try {
   const email = $("admin-email").value.trim();
   const password = $("admin-password").value;
+
   const result = await signInWithEmailAndPassword(auth,email,password);
+
   if (result.user.uid !== ADMIN_UID) {
    await signOut(auth);
    showAdminMessage("આ એડમિન એકાઉન્ટ નથી.", true);
    return;
   }
+
   await seedStarterProducts();
   $("admin-password").value = "";
   showAdminMessage("લૉગિન સફળ થયું. પ્રોડક્ટ અપડેટ થઈ રહ્યા છે.");
  } catch (error) {
   console.error(error);
-  showAdminMessage("લૉગિન/સેવમાં ભૂલ: " + error.message, true);
+  showAdminMessage(
+   "લૉગિન અથવા સેવમાં ભૂલ આવી. ઈમેલ, પાસવર્ડ અને Firebase સેટિંગ તપાસો.",
+   true
+  );
  }
 };
 
 function renderAdminProducts() {
  if (!isAdmin) return;
+
  $("admin-products").innerHTML = products.map(p => `
   <div class="border rounded-xl p-3 flex justify-between items-center gap-2">
-   <div class="min-w-0"><b>${esc(p.icon || "🥬")} ${esc(productName(p))}</b>
+   <div class="min-w-0">
+    <b>${esc(p.icon || "🥬")} ${esc(productName(p))}</b>
     <p class="text-sm text-emerald-700">${money(p.price)} / કિલો · ${p.category === "fruit" ? "ફળો" : "શાકભાજી"}</p>
    </div>
    <div class="flex gap-1 shrink-0">
@@ -369,14 +464,17 @@ function renderAdminProducts() {
 
 window.editProduct = id => {
  if (!isAdmin) return;
+
  const p = products.find(item => item.id === id);
  if (!p) return;
+
  $("edit-id").value = p.id;
  $("p-name").value = p.name || "";
  $("p-category").value = p.category || "sabji";
  $("p-icon").value = p.icon || "🥬";
  $("p-price").value = p.price;
- window.scrollTo({top:0,behavior:"smooth"});
+
+ $("admin-modal").querySelector("#admin-section").scrollTop = 0;
 };
 
 window.resetProductForm = () => {
@@ -389,21 +487,31 @@ window.resetProductForm = () => {
 
 window.saveProduct = async event => {
  event.preventDefault();
+
  if (!isAdmin || !currentUser || currentUser.uid !== ADMIN_UID) {
   showAdminMessage("પહેલાં એડમિન લૉગિન કરો.", true);
   return;
  }
+
  const name = $("p-name").value.trim();
- const category = $("p-category").value;
- const icon = $("p-icon").value.trim() || "🥬";
+ const categoryValue = $("p-category").value;
+ const iconValue = $("p-icon").value.trim() || "🥬";
  const price = Number($("p-price").value);
  const id = $("edit-id").value;
+
  if (!name || !Number.isFinite(price) || price <= 0) {
   showAdminMessage("નામ અને યોગ્ય ભાવ લખો.", true);
   return;
  }
+
  try {
-  const data = {name,category,icon,price};
+  const data = {
+   name,
+   category: categoryValue,
+   icon: iconValue,
+   price
+  };
+
   if (id) {
    await updateDoc(doc(db,"products",id),data);
    showAdminMessage("પ્રોડક્ટ અપડેટ થઈ ગયો.");
@@ -411,22 +519,24 @@ window.saveProduct = async event => {
    await addDoc(collection(db,"products"),data);
    showAdminMessage("નવો પ્રોડક્ટ ઉમેરાયો.");
   }
+
   resetProductForm();
  } catch (error) {
   console.error(error);
-  showAdminMessage("સેવ કરવામાં ભૂલ: " + error.message, true);
+  showAdminMessage("સેવ કરવામાં ભૂલ આવી. Firebase Rules તપાસો.", true);
  }
 };
 
 window.removeProduct = async id => {
  if (!isAdmin || !confirm("શું આ પ્રોડક્ટ કાઢી નાખવો છે?")) return;
+
  try {
   await deleteDoc(doc(db,"products",id));
   delete cart[id];
   showAdminMessage("પ્રોડક્ટ કાઢી નાખ્યો.");
  } catch (error) {
   console.error(error);
-  showAdminMessage("કાઢવામાં ભૂલ: " + error.message, true);
+  showAdminMessage("કાઢવામાં ભૂલ આવી. Firebase Rules તપાસો.", true);
  }
 };
 
@@ -436,7 +546,7 @@ window.adminLogout = async () => {
   resetProductForm();
   showAdminMessage("લૉગઆઉટ થઈ ગયું.");
  } catch (error) {
-  showAdminMessage(error.message,true);
+  showAdminMessage("લૉગઆઉટ કરવામાં ભૂલ આવી.",true);
  }
 };
 
