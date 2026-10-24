@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#168343">
 <title>K.H Fresh Sabji & Fruits</title>
 
 <style>
@@ -34,7 +35,11 @@ textarea{min-height:75px}
 .total{font-size:21px;font-weight:bold;color:#168343;margin:15px 0}
 #status{font-size:14px;color:#555}
 .btn{width:100%;font-weight:bold;padding:14px;font-size:17px}
+.btn:disabled{opacity:.6;cursor:not-allowed}
 .footer{text-align:center;padding:20px;color:#666;font-size:13px}
+#orderMessage{font-size:14px;overflow-wrap:anywhere}
+.success{color:#168343}
+.error{color:#b3261e}
 </style>
 </head>
 
@@ -45,16 +50,16 @@ textarea{min-height:75px}
 </header>
 
 <div class="notice">
-  🚚 ડિલિવરી માટે ઓછામાં ઓછું 1 કિલો વજનનો ઓર્ડર જરૂરી છે.
+  🚚 ડિલિવરી માટે ઓછામાં ઓછું 1 કિલો ગણતરીમાં લેવાયેલું વજન જરૂરી છે.
 </div>
 
 <div class="container">
-  <p id="status">પ્રોડક્ટ લોડ થઈ રહી છે...</p>
+  <p id="status" role="status">પ્રોડક્ટ લોડ થઈ રહી છે...</p>
 
   <div class="filters" id="filters">
-    <button class="selected" data-cat="બધા">બધી વસ્તુઓ</button>
-    <button data-cat="શાકભાજી">શાકભાજી</button>
-    <button data-cat="ફળો">ફળો</button>
+    <button type="button" class="selected" data-cat="બધા">બધી વસ્તુઓ</button>
+    <button type="button" data-cat="શાકભાજી">શાકભાજી</button>
+    <button type="button" data-cat="ફળો">ફળો</button>
   </div>
 
   <div id="products"></div>
@@ -64,25 +69,35 @@ textarea{min-height:75px}
     <div id="cartItems">હજી કોઈ વસ્તુ પસંદ કરી નથી.</div>
     <div class="total">કુલ: ₹<span id="total">0</span></div>
     <div id="weightInfo">ઓર્ડરનું વજન: 0 ગ્રામ</div>
-    <p id="deliveryInfo" class="small">ડિલિવરી માટે ઓછામાં ઓછું 1 કિલો વજન જરૂરી છે.</p>
+    <p id="deliveryInfo" class="small">
+      ડિલિવરી માટે ઓછામાં ઓછું 1 કિલો વજન જરૂરી છે.
+    </p>
   </section>
 
   <section>
     <h2>📋 ગ્રાહકની માહિતી</h2>
 
-    <label>તમારું નામ</label>
-    <input id="customerName" placeholder="તમારું નામ લખો">
+    <form id="orderForm">
+      <label for="customerName">તમારું નામ</label>
+      <input id="customerName" maxlength="100"
+             autocomplete="name" required placeholder="તમારું નામ લખો">
 
-    <label>મોબાઇલ નંબર</label>
-    <input id="customerMobile" type="tel" inputmode="numeric"
-           placeholder="મોબાઇલ નંબર લખો">
+      <label for="customerMobile">મોબાઇલ નંબર</label>
+      <input id="customerMobile" type="tel" inputmode="tel"
+             autocomplete="tel" maxlength="15"
+             required placeholder="મોબાઇલ નંબર લખો">
 
-    <label>ઘરનું સરનામું</label>
-    <textarea id="customerAddress" placeholder="પૂરું સરનામું લખો"></textarea>
+      <label for="customerAddress">ઘરનું સરનામું</label>
+      <textarea id="customerAddress" maxlength="500"
+                autocomplete="street-address"
+                required placeholder="પૂરું સરનામું લખો"></textarea>
 
-    <button class="btn" onclick="sendOrder()">
-      WhatsApp પર ઓર્ડર મોકલો
-    </button>
+      <button class="btn" id="orderButton" type="submit">
+        🛒 ઓર્ડર કન્ફર્મ કરો
+      </button>
+
+      <p id="orderMessage" role="status" aria-live="polite"></p>
+    </form>
   </section>
 
   <div class="footer">K.H Fresh Sabji & Fruits ❤️</div>
@@ -91,8 +106,13 @@ textarea{min-height:75px}
 <script type="module">
 import { initializeApp } from
   "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 import {
-  getFirestore, collection, onSnapshot
+  getFirestore,
+  collection,
+  onSnapshot,
+  addDoc,
+  serverTimestamp
 } from
   "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -108,11 +128,13 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const SHOP_NUMBER = "919426852334";
 
 let products = [];
 let cart = {};
 let category = "બધા";
+let submitting = false;
+
+const $ = id => document.getElementById(id);
 
 function money(value) {
   return Number(value || 0).toLocaleString("en-IN", {
@@ -134,14 +156,15 @@ function isBanana(p) {
 
 function isVegetable(p) {
   const cat = safeText(p.category).toLowerCase();
+
   return cat.includes("શાક") ||
          cat.includes("vegetable") ||
-         cat.includes("sabji") ||
-         cat.includes("શાકભાજી");
+         cat.includes("sabji");
 }
 
 function isKgProduct(p) {
   const unit = safeText(p.unit).toLowerCase();
+
   return unit.includes("કિલો") ||
          unit.includes("kg") ||
          unit.includes("કિગ્રા");
@@ -169,8 +192,9 @@ function unitLabel(p, qty) {
   if (isGramProduct(p)) {
     if (qty >= 1000) {
       const kg = qty / 1000;
-      return Number.isInteger(kg) ? kg + " કિલો" : kg + " કિલો";
+      return money(kg) + " કિલો";
     }
+
     return qty + " ગ્રામ";
   }
 
@@ -186,7 +210,7 @@ function linePrice(p, qty) {
   }
 
   if (isGramProduct(p)) {
-    // Firebase માં ભાવ પ્રતિ કિલો છે
+    // Firebaseમાં ભાવ પ્રતિ કિલો છે
     return (qty / 1000) * price;
   }
 
@@ -195,7 +219,11 @@ function linePrice(p, qty) {
 
 function displayPrice(p) {
   if (isBanana(p)) return "₹60 / 12 નંગ";
-  if (isGramProduct(p)) return "₹" + money(p.price) + " / કિલો";
+
+  if (isGramProduct(p)) {
+    return "₹" + money(p.price) + " / કિલો";
+  }
+
   return "₹" + money(p.price) + " / " + (p.unit || "નંગ");
 }
 
@@ -209,14 +237,30 @@ function productWeight(p, qty) {
     return qty;
   }
 
-  // નંગ/પેકેટ જેવી વસ્તુનું વજન જાણીતું ન હોવાથી
-  // તેને કુલ વજનમાં ગણવામાં આવતું નથી.
+  // નંગ/પેકેટનું વજન અહીં ગણાતું નથી
   return 0;
 }
 
+function isCategoryMatch(p, selected) {
+  const cat = safeText(p.category).toLowerCase();
+
+  if (selected === "શાકભાજી") {
+    return isVegetable(p);
+  }
+
+  if (selected === "ફળો") {
+    return !isVegetable(p) &&
+      (cat.includes("ફળ") ||
+       cat.includes("fruit") ||
+       cat.includes("ફ્રૂટ"));
+  }
+
+  return true;
+}
+
 function renderProducts() {
-  const box = document.getElementById("products");
-  box.innerHTML = "";
+  const box = $("products");
+  box.replaceChildren();
 
   const shown = products.filter(p =>
     p.active !== false &&
@@ -233,14 +277,16 @@ function renderProducts() {
     const card = document.createElement("div");
     card.className = "card";
 
-    if (p.imageUrl) {
+    if (p.imageUrl && /^https?:\/\//i.test(p.imageUrl)) {
       const img = document.createElement("img");
       img.src = p.imageUrl;
       img.alt = p.name || "પ્રોડક્ટ";
       img.loading = "lazy";
+
       img.onerror = () => {
         img.style.display = "none";
       };
+
       card.appendChild(img);
     } else {
       const emoji = document.createElement("div");
@@ -275,6 +321,7 @@ function renderProducts() {
     qtyBox.className = "qty";
 
     const minus = document.createElement("button");
+    minus.type = "button";
     minus.textContent = "−";
     minus.setAttribute("aria-label", "ઓછું કરો");
     minus.onclick = () => changeQty(p.id, -stepFor(p));
@@ -283,6 +330,7 @@ function renderProducts() {
     amount.textContent = qty ? unitLabel(p, qty) : "0";
 
     const plus = document.createElement("button");
+    plus.type = "button";
     plus.textContent = "+";
     plus.setAttribute("aria-label", "વધારો");
     plus.onclick = () => changeQty(p.id, stepFor(p));
@@ -291,19 +339,6 @@ function renderProducts() {
     card.appendChild(qtyBox);
     box.appendChild(card);
   });
-}
-
-function isCategoryMatch(p, selected) {
-  if (selected === "શાકભાજી") return isVegetable(p);
-
-  if (selected === "ફળો") {
-    const cat = safeText(p.category).toLowerCase();
-    return !isVegetable(p) &&
-      (cat.includes("ફળ") || cat.includes("fruit") ||
-       cat.includes("ફ્રૂટ"));
-  }
-
-  return true;
 }
 
 function changeQty(id, change) {
@@ -320,9 +355,6 @@ function changeQty(id, change) {
 
     cart[id] = {
       qty,
-      name: p.name,
-      price: Number(p.price || 0),
-      unit: p.unit || "નંગ",
       product: p
     };
   }
@@ -344,8 +376,8 @@ function getTotals() {
 }
 
 function renderCart() {
-  const box = document.getElementById("cartItems");
-  box.innerHTML = "";
+  const box = $("cartItems");
+  box.replaceChildren();
 
   const items = Object.values(cart);
 
@@ -355,92 +387,145 @@ function renderCart() {
     items.forEach(item => {
       const row = document.createElement("div");
       row.className = "cartline";
+
       row.textContent =
-        item.name + " — " + unitLabel(item.product, item.qty) +
+        item.product.name + " — " +
+        unitLabel(item.product, item.qty) +
         " = ₹" + money(linePrice(item.product, item.qty));
+
       box.appendChild(row);
     });
   }
 
   const { total, weight } = getTotals();
 
-  document.getElementById("total").textContent = money(total);
+  $("total").textContent = money(total);
 
-  let weightText;
-  if (weight >= 1000) {
-    weightText = (weight / 1000) + " કિલો";
-  } else {
-    weightText = Math.round(weight) + " ગ્રામ";
-  }
+  const weightText = weight >= 1000
+    ? money(weight / 1000) + " કિલો"
+    : Math.round(weight) + " ગ્રામ";
 
-  document.getElementById("weightInfo").textContent =
+  $("weightInfo").textContent =
     "ઓર્ડરનું ગણતરીમાં લેવાયેલું વજન: " + weightText;
 
-  const delivery = document.getElementById("deliveryInfo");
+  const delivery = $("deliveryInfo");
 
   if (weight >= 1000) {
-    delivery.textContent = "✅ ઓર્ડરનું વજન 1 કિલો અથવા વધુ છે.";
+    delivery.textContent =
+      "✅ ઓર્ડરનું ગણતરીમાં લેવાયેલું વજન 1 કિલો અથવા વધુ છે.";
     delivery.style.color = "#168343";
   } else {
     delivery.textContent =
       "⚠️ ડિલિવરી માટે હજી " +
       Math.ceil(1000 - weight) +
       " ગ્રામ જેટલું વજન ઉમેરો. કેળાંના 12 નંગને 1 કિલો ગણવામાં આવે છે.";
+
     delivery.style.color = "#b45309";
   }
 }
 
-window.sendOrder = function() {
-  const name = document.getElementById("customerName").value.trim();
-  const mobile = document.getElementById("customerMobile").value.trim();
-  const address = document.getElementById("customerAddress").value.trim();
+function showOrderMessage(message, type) {
+  $("orderMessage").textContent = message;
+  $("orderMessage").className = type || "";
+}
+
+$("orderForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  if (submitting) return;
+
+  const name = $("customerName").value.trim();
+  const mobile = $("customerMobile").value.trim();
+  const address = $("customerAddress").value.trim();
   const items = Object.values(cart);
   const { total, weight } = getTotals();
 
   if (!name || !mobile || !address) {
-    alert("કૃપા કરીને નામ, મોબાઇલ નંબર અને સરનામું ભરો.");
+    showOrderMessage(
+      "કૃપા કરીને નામ, મોબાઇલ નંબર અને સરનામું ભરો.",
+      "error"
+    );
     return;
   }
 
   if (!/^[0-9+\-\s]{10,15}$/.test(mobile)) {
-    alert("કૃપા કરીને સાચો મોબાઇલ નંબર લખો.");
+    showOrderMessage(
+      "કૃપા કરીને સાચો મોબાઇલ નંબર લખો.",
+      "error"
+    );
     return;
   }
 
   if (!items.length) {
-    alert("પહેલાં કોઈ વસ્તુ પસંદ કરો.");
+    showOrderMessage("પહેલાં કોઈ વસ્તુ પસંદ કરો.", "error");
     return;
   }
 
   if (weight < 1000) {
-    alert("ડિલિવરી માટે ઓછામાં ઓછું 1 કિલો વજન જરૂરી છે. કૃપા કરીને વધુ વસ્તુ ઉમેરો.");
+    showOrderMessage(
+      "ડિલિવરી માટે ઓછામાં ઓછું 1 કિલો વજન જરૂરી છે.",
+      "error"
+    );
     return;
   }
 
-  let message = "K.H Fresh Sabji & Fruits - નવો ઓર્ડર\n";
-  message += "નામ: " + name + "\n";
-  message += "મોબાઇલ: " + mobile + "\n";
-  message += "સરનામું: " + address + "\n\n";
-  message += "ઓર્ડરની વિગતો:\n";
+  if (!Number.isFinite(total) || total <= 0) {
+    showOrderMessage("ઓર્ડરની કુલ રકમ યોગ્ય નથી.", "error");
+    return;
+  }
 
-  items.forEach(item => {
-    message += item.name + ": " +
-      unitLabel(item.product, item.qty) +
-      " - ₹" + money(linePrice(item.product, item.qty)) + "\n";
-  });
+  const orderItems = items.map(item => ({
+    productName: String(item.product.name || "પ્રોડક્ટ"),
+    quantity: unitLabel(item.product, item.qty),
+    price: Number(linePrice(item.product, item.qty).toFixed(2))
+  }));
 
-  message += "\nકુલ: ₹" + money(total) + "\n";
-  message += "ગણતરીમાં લેવાયેલું વજન: " +
-    (weight / 1000) + " કિલો\n";
-  message += "ડિલિવરી ચાર્જ અલગ હોઈ શકે.";
+  submitting = true;
+  $("orderButton").disabled = true;
+  $("orderButton").textContent = "ઓર્ડર સેવ થઈ રહ્યો છે...";
+  showOrderMessage("કૃપા કરીને થોડી રાહ જુઓ...", "");
 
-  const url = "https://wa.me/" + SHOP_NUMBER +
-    "?text=" + encodeURIComponent(message);
+  try {
+    const result = await addDoc(collection(db, "orders"), {
+      customerName: name,
+      customerMobile: mobile,
+      customerAddress: address,
+      items: orderItems,
+      total: Number(total.toFixed(2)),
+      weightGrams: Math.round(weight),
+      status: "નવો ઓર્ડર",
+      createdAt: serverTimestamp()
+    });
 
-  window.open(url, "_blank");
-};
+    showOrderMessage(
+      "✅ તમારો ઓર્ડર સફળતાપૂર્વક નોંધાયો છે. ઓર્ડર નંબર: " +
+      result.id,
+      "success"
+    );
 
-document.getElementById("filters").addEventListener("click", event => {
+    cart = {};
+    renderProducts();
+    renderCart();
+
+    $("customerName").value = "";
+    $("customerMobile").value = "";
+    $("customerAddress").value = "";
+
+  } catch (error) {
+    console.error("Order save failed:", error);
+
+    showOrderMessage(
+      "❌ ઓર્ડર સેવ થયો નથી. ઇન્ટરનેટ અને Firebase Rules તપાસો. ફરી પ્રયાસ કરતા પહેલાં Adminમાં ઓર્ડર બન્યો છે કે નહીં તે તપાસજો.",
+      "error"
+    );
+  } finally {
+    submitting = false;
+    $("orderButton").disabled = false;
+    $("orderButton").textContent = "🛒 ઓર્ડર કન્ફર્મ કરો";
+  }
+});
+
+$("filters").addEventListener("click", event => {
   const button = event.target.closest("button[data-cat]");
   if (!button) return;
 
@@ -454,22 +539,23 @@ document.getElementById("filters").addEventListener("click", event => {
 });
 
 onSnapshot(collection(db, "products"), snapshot => {
-  products = snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
+  products = snapshot.docs.map(item => ({
+    id: item.id,
+    ...item.data()
   }));
 
-  document.getElementById("status").textContent =
-    products.length
-      ? "નીચે ઉપલબ્ધ વસ્તુઓમાંથી પસંદ કરો."
-      : "હાલમાં કોઈ પ્રોડક્ટ ઉમેરેલી નથી.";
+  $("status").textContent = products.length
+    ? "નીચે ઉપલબ્ધ વસ્તુઓમાંથી પસંદ કરો."
+    : "હાલમાં કોઈ પ્રોડક્ટ ઉમેરેલી નથી.";
 
   renderProducts();
   renderCart();
+
 }, error => {
-  console.error(error);
-  document.getElementById("status").textContent =
-    "પ્રોડક્ટ લોડ કરવામાં સમસ્યા છે. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.";
+  console.error("Product loading failed:", error);
+
+  $("status").textContent =
+    "પ્રોડક્ટ લોડ કરવામાં સમસ્યા છે. Firebase Rules અને ઇન્ટરનેટ તપાસો.";
 });
 </script>
 </body>
