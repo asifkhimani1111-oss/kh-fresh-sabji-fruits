@@ -1,72 +1,100 @@
-
 <!DOCTYPE html>
 <html lang="gu">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>K.H Fresh Sabji & Fruits</title>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f4faf4;color:#203326}
-header{background:#168343;color:white;padding:20px 12px;text-align:center}
-header h1{margin:0 0 8px;font-size:25px}
+header{background:#168343;color:white;text-align:center;padding:18px 10px}
+header h1{font-size:24px;margin:0 0 8px}
 header p{margin:0}
-.notice{text-align:center;padding:12px;color:#168343}
-.filters{text-align:center;padding:10px}
-button{border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font-size:15px}
-.filters button{background:#dcefe0;margin:3px}
-.filters button.active{background:#168343;color:white}
-#products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:12px;max-width:900px;margin:auto}
-.product{background:white;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 7px #0001}
-.product img{width:100%;height:105px;object-fit:contain}
-.pic{font-size:55px;height:105px;display:flex;align-items:center;justify-content:center}
-.product h3{margin:8px 0}
-.price{color:#168343;font-size:19px;font-weight:bold}
-.qty{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:10px}
-.qty button{background:#168343;color:white;font-size:18px;min-width:36px}
-#order{max-width:600px;margin:15px auto;background:white;padding:16px;border-radius:12px;box-shadow:0 2px 7px #0001}
-#order h2{text-align:center;color:#168343}
-input,textarea{width:100%;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:8px;font-size:16px}
-.total{font-size:22px;text-align:center;font-weight:bold;margin:15px}
-.send{width:100%;background:#168343;color:white;font-size:18px;padding:14px}
-footer{text-align:center;padding:20px;color:#666}
-.error{padding:16px;text-align:center;color:#b42318}
-@media(min-width:650px){#products{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.notice{background:#e4f5df;color:#17652e;padding:12px;text-align:center;font-weight:bold}
+.container{max-width:1100px;margin:auto;padding:12px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.filters button,.btn{border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font-size:15px}
+.filters button{background:#d8ead8;color:#174b25}
+.filters button.selected,.btn{background:#168343;color:white}
+#products{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px}
+.card{background:white;border-radius:12px;padding:10px;box-shadow:0 2px 8px #0001;text-align:center}
+.card img{width:100%;height:125px;object-fit:cover;border-radius:8px}
+.emoji{height:125px;display:flex;align-items:center;justify-content:center;font-size:60px}
+.card h3{margin:9px 0 5px;font-size:17px}
+.price{font-weight:bold;color:#168343;margin:6px}
+.small{font-size:12px;color:#666}
+.qty{display:flex;align-items:center;justify-content:center;gap:15px;margin-top:10px}
+.qty button{border:0;border-radius:7px;background:#168343;color:white;font-size:20px;width:35px;height:35px}
+section{background:white;margin-top:16px;padding:15px;border-radius:12px;box-shadow:0 2px 8px #0001}
+h2{font-size:20px;margin-top:0}
+input,textarea{width:100%;padding:12px;margin:6px 0 12px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+textarea{min-height:75px}
+.cartline{border-bottom:1px solid #eee;padding:9px 0;font-size:14px}
+.total{font-size:21px;font-weight:bold;color:#168343;margin:15px 0}
+#status{font-size:14px;color:#555}
+.btn{width:100%;font-weight:bold;padding:14px;font-size:17px}
+.footer{text-align:center;padding:20px;color:#666;font-size:13px}
 </style>
 </head>
+
 <body>
 <header>
   <h1>🥬 K.H Fresh Sabji & Fruits 🍉</h1>
-  <p>તાજા શાકભાજી અને ફળો તમારા ઘરે</p>
+  <p>તાજાં શાકભાજી અને ફળો હવે ઘરે મંગાવો</p>
 </header>
 
-<div class="notice">તમારી પસંદગીની વસ્તુ પસંદ કરો અને WhatsApp પર ઓર્ડર આપો.</div>
-
-<div class="filters">
-  <button class="active" onclick="setCategory('બધા',this)">બધા</button>
-  <button onclick="setCategory('શાકભાજી',this)">🥬 શાકભાજી</button>
-  <button onclick="setCategory('ફળો',this)">🍎 ફળો</button>
+<div class="notice">
+  🚚 ડિલિવરી માટે ઓછામાં ઓછું 1 કિલો વજનનો ઓર્ડર જરૂરી છે.
 </div>
 
-<div id="status" class="notice">પ્રોડક્ટ લોડ થઈ રહી છે...</div>
-<div id="products"></div>
+<div class="container">
+  <p id="status">પ્રોડક્ટ લોડ થઈ રહી છે...</p>
 
-<section id="order">
-  <h2>🛒 તમારો ઓર્ડર</h2>
-  <input id="customer" placeholder="તમારું નામ" required>
-  <input id="mobile" type="tel" placeholder="મોબાઇલ નંબર" required>
-  <textarea id="address" placeholder="તમારું પૂરું સરનામું" rows="3" required></textarea>
-  <div id="cartItems">હજુ કોઈ વસ્તુ પસંદ કરી નથી.</div>
-  <div class="total">કુલ: ₹<span id="total">0</span></div>
-  <button class="send" onclick="sendOrder()">WhatsApp પર ઓર્ડર આપો</button>
-</section>
+  <div class="filters" id="filters">
+    <button class="selected" data-cat="બધા">બધી વસ્તુઓ</button>
+    <button data-cat="શાકભાજી">શાકભાજી</button>
+    <button data-cat="ફળો">ફળો</button>
+  </div>
 
-<footer>K.H Fresh Sabji & Fruits | આભાર 🙏</footer>
+  <div id="products"></div>
+
+  <section>
+    <h2>🛒 તમારો ઓર્ડર</h2>
+    <div id="cartItems">હજી કોઈ વસ્તુ પસંદ કરી નથી.</div>
+    <div class="total">કુલ: ₹<span id="total">0</span></div>
+    <div id="weightInfo">ઓર્ડરનું વજન: 0 ગ્રામ</div>
+    <p id="deliveryInfo" class="small">ડિલિવરી માટે ઓછામાં ઓછું 1 કિલો વજન જરૂરી છે.</p>
+  </section>
+
+  <section>
+    <h2>📋 ગ્રાહકની માહિતી</h2>
+
+    <label>તમારું નામ</label>
+    <input id="customerName" placeholder="તમારું નામ લખો">
+
+    <label>મોબાઇલ નંબર</label>
+    <input id="customerMobile" type="tel" inputmode="numeric"
+           placeholder="મોબાઇલ નંબર લખો">
+
+    <label>ઘરનું સરનામું</label>
+    <textarea id="customerAddress" placeholder="પૂરું સરનામું લખો"></textarea>
+
+    <button class="btn" onclick="sendOrder()">
+      WhatsApp પર ઓર્ડર મોકલો
+    </button>
+  </section>
+
+  <div class="footer">K.H Fresh Sabji & Fruits ❤️</div>
+</div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot }
-from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+import { initializeApp } from
+  "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, collection, onSnapshot
+} from
+  "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCGSZ7QcASC_sUV6f7NDJrMbn0Ae-f9pR8",
@@ -78,114 +106,370 @@ const firebaseConfig = {
   measurementId: "G-HBL4EVF1MN"
 };
 
-const SHOP_NUMBER = "919426852334";
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const SHOP_NUMBER = "919426852334";
 
 let products = [];
 let cart = {};
 let category = "બધા";
 
-window.setCategory = (cat, btn) => {
-  category = cat;
-  document.querySelectorAll(".filters button").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  renderProducts();
-};
+function money(value) {
+  return Number(value || 0).toLocaleString("en-IN", {
+    maximumFractionDigits: 2
+  });
+}
 
-function money(n){return Number(n||0).toLocaleString("en-IN");}
+function safeText(value) {
+  return String(value ?? "");
+}
 
-function renderProducts(){
+function isBanana(p) {
+  const name = safeText(p.name).toLowerCase().replace(/\s/g, "");
+  return name.includes("kela") ||
+         name.includes("કેળા") ||
+         name.includes("કેળું") ||
+         name.includes("banana");
+}
+
+function isVegetable(p) {
+  const cat = safeText(p.category).toLowerCase();
+  return cat.includes("શાક") ||
+         cat.includes("vegetable") ||
+         cat.includes("sabji") ||
+         cat.includes("શાકભાજી");
+}
+
+function isKgProduct(p) {
+  const unit = safeText(p.unit).toLowerCase();
+  return unit.includes("કિલો") ||
+         unit.includes("kg") ||
+         unit.includes("કિગ્રા");
+}
+
+function isGramProduct(p) {
+  return !isBanana(p) && isKgProduct(p);
+}
+
+function stepFor(p) {
+  if (isBanana(p)) return 12;
+  if (isGramProduct(p)) return isVegetable(p) ? 100 : 250;
+  return 1;
+}
+
+function minimumFor(p) {
+  return stepFor(p);
+}
+
+function unitLabel(p, qty) {
+  if (isBanana(p)) {
+    return qty + " નંગ";
+  }
+
+  if (isGramProduct(p)) {
+    if (qty >= 1000) {
+      const kg = qty / 1000;
+      return Number.isInteger(kg) ? kg + " કિલો" : kg + " કિલો";
+    }
+    return qty + " ગ્રામ";
+  }
+
+  return qty + " " + (p.unit || "નંગ");
+}
+
+function linePrice(p, qty) {
+  const price = Number(p.price || 0);
+
+  if (isBanana(p)) {
+    // 12 કેળાં = ₹60
+    return (qty / 12) * 60;
+  }
+
+  if (isGramProduct(p)) {
+    // Firebase માં ભાવ પ્રતિ કિલો છે
+    return (qty / 1000) * price;
+  }
+
+  return qty * price;
+}
+
+function displayPrice(p) {
+  if (isBanana(p)) return "₹60 / 12 નંગ";
+  if (isGramProduct(p)) return "₹" + money(p.price) + " / કિલો";
+  return "₹" + money(p.price) + " / " + (p.unit || "નંગ");
+}
+
+function productWeight(p, qty) {
+  if (isBanana(p)) {
+    // 12 કેળાં = અંદાજે 1 કિલો
+    return (qty / 12) * 1000;
+  }
+
+  if (isGramProduct(p)) {
+    return qty;
+  }
+
+  // નંગ/પેકેટ જેવી વસ્તુનું વજન જાણીતું ન હોવાથી
+  // તેને કુલ વજનમાં ગણવામાં આવતું નથી.
+  return 0;
+}
+
+function renderProducts() {
   const box = document.getElementById("products");
-  const list = products.filter(p =>
-    p.active !== false && (category==="બધા" || p.category===category)
+  box.innerHTML = "";
+
+  const shown = products.filter(p =>
+    p.active !== false &&
+    (category === "બધા" || isCategoryMatch(p, category))
   );
 
-  box.innerHTML = "";
-  if(!list.length){
-    box.innerHTML = '<p style="grid-column:1/-1;text-align:center">આ કેટેગરીમાં હમણાં પ્રોડક્ટ નથી.</p>';
+  if (!shown.length) {
+    box.textContent = "હાલમાં કોઈ પ્રોડક્ટ મળી નથી.";
     return;
   }
 
-  list.forEach(p=>{
-    const id = p.id;
-    const qty = cart[id]?.qty || 0;
-    const image = p.imageUrl
-      ? `<img src="${p.imageUrl}" alt="${p.name}" onerror="this.style.display='none'">`
-      : `<div class="pic">${p.icon || "🥬"}</div>`;
-
+  shown.forEach(p => {
+    const qty = cart[p.id]?.qty || 0;
     const card = document.createElement("div");
-    card.className = "product";
-    card.innerHTML = `
-      ${image}
-      <h3></h3>
-      <div class="price">₹${money(p.price)} / ${p.unit || "કિલો"}</div>
-      <div class="qty">
-        <button class="minus">−</button>
-        <strong>${qty}</strong>
-        <button class="plus">+</button>
-      </div>`;
-    card.querySelector("h3").textContent = p.name || "પ્રોડક્ટ";
-    card.querySelector(".minus").onclick = ()=>changeQty(id,-1);
-    card.querySelector(".plus").onclick = ()=>changeQty(id,1);
+    card.className = "card";
+
+    if (p.imageUrl) {
+      const img = document.createElement("img");
+      img.src = p.imageUrl;
+      img.alt = p.name || "પ્રોડક્ટ";
+      img.loading = "lazy";
+      img.onerror = () => {
+        img.style.display = "none";
+      };
+      card.appendChild(img);
+    } else {
+      const emoji = document.createElement("div");
+      emoji.className = "emoji";
+      emoji.textContent = isVegetable(p) ? "🥦" : "🍎";
+      card.appendChild(emoji);
+    }
+
+    const title = document.createElement("h3");
+    title.textContent = p.name || "પ્રોડક્ટ";
+    card.appendChild(title);
+
+    const price = document.createElement("div");
+    price.className = "price";
+    price.textContent = displayPrice(p);
+    card.appendChild(price);
+
+    const min = document.createElement("div");
+    min.className = "small";
+
+    if (isBanana(p)) {
+      min.textContent = "ઓછામાં ઓછાં 12 કેળાં";
+    } else if (isGramProduct(p)) {
+      min.textContent = "ઓછામાં ઓછું " + minimumFor(p) + " ગ્રામ";
+    } else {
+      min.textContent = "ઓછામાં ઓછું 1 " + (p.unit || "નંગ");
+    }
+
+    card.appendChild(min);
+
+    const qtyBox = document.createElement("div");
+    qtyBox.className = "qty";
+
+    const minus = document.createElement("button");
+    minus.textContent = "−";
+    minus.setAttribute("aria-label", "ઓછું કરો");
+    minus.onclick = () => changeQty(p.id, -stepFor(p));
+
+    const amount = document.createElement("span");
+    amount.textContent = qty ? unitLabel(p, qty) : "0";
+
+    const plus = document.createElement("button");
+    plus.textContent = "+";
+    plus.setAttribute("aria-label", "વધારો");
+    plus.onclick = () => changeQty(p.id, stepFor(p));
+
+    qtyBox.append(minus, amount, plus);
+    card.appendChild(qtyBox);
     box.appendChild(card);
   });
+}
+
+function isCategoryMatch(p, selected) {
+  if (selected === "શાકભાજી") return isVegetable(p);
+
+  if (selected === "ફળો") {
+    const cat = safeText(p.category).toLowerCase();
+    return !isVegetable(p) &&
+      (cat.includes("ફળ") || cat.includes("fruit") ||
+       cat.includes("ફ્રૂટ"));
+  }
+
+  return true;
+}
+
+function changeQty(id, change) {
+  const p = products.find(item => item.id === id);
+  if (!p) return;
+
+  let qty = cart[id]?.qty || 0;
+  qty += change;
+
+  if (qty <= 0) {
+    delete cart[id];
+  } else {
+    qty = Math.max(minimumFor(p), qty);
+
+    cart[id] = {
+      qty,
+      name: p.name,
+      price: Number(p.price || 0),
+      unit: p.unit || "નંગ",
+      product: p
+    };
+  }
+
+  renderProducts();
   renderCart();
 }
 
-function changeQty(id, change){
-  const p = products.find(x=>x.id===id);
-  if(!p) return;
-  const next = (cart[id]?.qty || 0) + change;
-  if(next<=0) delete cart[id];
-  else cart[id] = {qty:next, name:p.name, price:Number(p.price)||0, unit:p.unit||"કિલો"};
-  renderProducts();
-}
+function getTotals() {
+  let total = 0;
+  let weight = 0;
 
-function renderCart(){
-  const chosen = Object.entries(cart);
-  document.getElementById("cartItems").innerHTML = chosen.length
-    ? chosen.map(([id,x])=>`<div>${x.name} — ${x.qty} ${x.unit} = ₹${money(x.qty*x.price)}</div>`).join("")
-    : "હજુ કોઈ વસ્તુ પસંદ કરી નથી.";
-  document.getElementById("total").textContent =
-    money(chosen.reduce((sum,[id,x])=>sum+x.qty*x.price,0));
-}
-
-window.sendOrder = ()=>{
-  const name = document.getElementById("customer").value.trim();
-  const mobile = document.getElementById("mobile").value.trim();
-  const address = document.getElementById("address").value.trim();
-  const chosen = Object.values(cart);
-
-  if(!name || !mobile || !address){
-    alert("ભાઈ, નામ, મોબાઇલ નંબર અને સરનામું ભરો.");
-    return;
-  }
-  if(!chosen.length){
-    alert("પહેલાં ઓછામાં ઓછી એક વસ્તુ પસંદ કરો.");
-    return;
-  }
-
-  const total = chosen.reduce((sum,x)=>sum+x.qty*x.price,0);
-  let msg = "K.H Fresh Sabji & Fruits - નવો ઓર્ડર\n";
-  msg += "નામ: "+name+"\nમોબાઇલ: "+mobile+"\nસરનામું: "+address+"\n\n";
-  chosen.forEach(x=>{
-    msg += x.name+": "+x.qty+" "+x.unit+" - ₹"+(x.qty*x.price)+"\n";
+  Object.values(cart).forEach(item => {
+    total += linePrice(item.product, item.qty);
+    weight += productWeight(item.product, item.qty);
   });
-  msg += "\nકુલ: ₹"+total+"\nડિલિવરી ચાર્જ અલગ હોઈ શકે.";
-  window.open("https://wa.me/"+SHOP_NUMBER+"?text="+encodeURIComponent(msg),"_blank");
+
+  return { total, weight };
+}
+
+function renderCart() {
+  const box = document.getElementById("cartItems");
+  box.innerHTML = "";
+
+  const items = Object.values(cart);
+
+  if (!items.length) {
+    box.textContent = "હજી કોઈ વસ્તુ પસંદ કરી નથી.";
+  } else {
+    items.forEach(item => {
+      const row = document.createElement("div");
+      row.className = "cartline";
+      row.textContent =
+        item.name + " — " + unitLabel(item.product, item.qty) +
+        " = ₹" + money(linePrice(item.product, item.qty));
+      box.appendChild(row);
+    });
+  }
+
+  const { total, weight } = getTotals();
+
+  document.getElementById("total").textContent = money(total);
+
+  let weightText;
+  if (weight >= 1000) {
+    weightText = (weight / 1000) + " કિલો";
+  } else {
+    weightText = Math.round(weight) + " ગ્રામ";
+  }
+
+  document.getElementById("weightInfo").textContent =
+    "ઓર્ડરનું ગણતરીમાં લેવાયેલું વજન: " + weightText;
+
+  const delivery = document.getElementById("deliveryInfo");
+
+  if (weight >= 1000) {
+    delivery.textContent = "✅ ઓર્ડરનું વજન 1 કિલો અથવા વધુ છે.";
+    delivery.style.color = "#168343";
+  } else {
+    delivery.textContent =
+      "⚠️ ડિલિવરી માટે હજી " +
+      Math.ceil(1000 - weight) +
+      " ગ્રામ જેટલું વજન ઉમેરો. કેળાંના 12 નંગને 1 કિલો ગણવામાં આવે છે.";
+    delivery.style.color = "#b45309";
+  }
+}
+
+window.sendOrder = function() {
+  const name = document.getElementById("customerName").value.trim();
+  const mobile = document.getElementById("customerMobile").value.trim();
+  const address = document.getElementById("customerAddress").value.trim();
+  const items = Object.values(cart);
+  const { total, weight } = getTotals();
+
+  if (!name || !mobile || !address) {
+    alert("કૃપા કરીને નામ, મોબાઇલ નંબર અને સરનામું ભરો.");
+    return;
+  }
+
+  if (!/^[0-9+\-\s]{10,15}$/.test(mobile)) {
+    alert("કૃપા કરીને સાચો મોબાઇલ નંબર લખો.");
+    return;
+  }
+
+  if (!items.length) {
+    alert("પહેલાં કોઈ વસ્તુ પસંદ કરો.");
+    return;
+  }
+
+  if (weight < 1000) {
+    alert("ડિલિવરી માટે ઓછામાં ઓછું 1 કિલો વજન જરૂરી છે. કૃપા કરીને વધુ વસ્તુ ઉમેરો.");
+    return;
+  }
+
+  let message = "K.H Fresh Sabji & Fruits - નવો ઓર્ડર\n";
+  message += "નામ: " + name + "\n";
+  message += "મોબાઇલ: " + mobile + "\n";
+  message += "સરનામું: " + address + "\n\n";
+  message += "ઓર્ડરની વિગતો:\n";
+
+  items.forEach(item => {
+    message += item.name + ": " +
+      unitLabel(item.product, item.qty) +
+      " - ₹" + money(linePrice(item.product, item.qty)) + "\n";
+  });
+
+  message += "\nકુલ: ₹" + money(total) + "\n";
+  message += "ગણતરીમાં લેવાયેલું વજન: " +
+    (weight / 1000) + " કિલો\n";
+  message += "ડિલિવરી ચાર્જ અલગ હોઈ શકે.";
+
+  const url = "https://wa.me/" + SHOP_NUMBER +
+    "?text=" + encodeURIComponent(message);
+
+  window.open(url, "_blank");
 };
 
-onSnapshot(collection(db,"products"), snapshot=>{
-  products = snapshot.docs.map(d=>({id:d.id,...d.data()}));
-  document.getElementById("status").textContent =
-    products.length ? "તાજા ભાવ સાથે પ્રોડક્ટ ઉપલબ્ધ છે." :
-    "હજુ પ્રોડક્ટ ઉમેરવામાં આવી નથી.";
+document.getElementById("filters").addEventListener("click", event => {
+  const button = event.target.closest("button[data-cat]");
+  if (!button) return;
+
+  category = button.dataset.cat;
+
+  document.querySelectorAll("#filters button").forEach(b => {
+    b.classList.toggle("selected", b === button);
+  });
+
   renderProducts();
-}, error=>{
+});
+
+onSnapshot(collection(db, "products"), snapshot => {
+  products = snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+
   document.getElementById("status").textContent =
-    "Firebase માંથી પ્રોડક્ટ લોડ થઈ શકી નથી. Firestore Rules તપાસો.";
+    products.length
+      ? "નીચે ઉપલબ્ધ વસ્તુઓમાંથી પસંદ કરો."
+      : "હાલમાં કોઈ પ્રોડક્ટ ઉમેરેલી નથી.";
+
+  renderProducts();
+  renderCart();
+}, error => {
   console.error(error);
+  document.getElementById("status").textContent =
+    "પ્રોડક્ટ લોડ કરવામાં સમસ્યા છે. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.";
 });
 </script>
 </body>
