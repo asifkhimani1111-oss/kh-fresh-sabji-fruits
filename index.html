@@ -13,7 +13,6 @@ h2,h3{color:#168343;margin-top:0}
 input,select,button{width:100%;padding:12px;margin:7px 0;border:1px solid #ccc;border-radius:8px;font-size:16px}
 button{background:#168343;color:white;border:0;font-weight:bold;cursor:pointer}
 button:disabled{opacity:.6}
-button.danger{background:#b3261e}
 .product-card{border:1px solid #ddd;border-radius:8px;padding:12px;margin:10px 0;background:#fafafa;display:flex;align-items:center;gap:12px}
 .product-card img{width:80px;height:80px;object-fit:cover;border-radius:8px}
 .product-info{flex:1}
@@ -152,7 +151,7 @@ async function init() {
 
 function updateShopMeta() {
  if(!selectedShop) {
-  $("shopMeta.textContent") = "";
+  $("shopMeta").textContent = "";
   return;
  }
  $("shopMeta").textContent = `દુકાન: ${selectedShop.name} • વસ્તુઓ પસંદ કરો.`;
@@ -190,13 +189,12 @@ function renderProducts() {
   const info = document.createElement("div");
   info.className = "product-info";
 
-  const isGrocery = selectedShop.type === "કરિયાણું" || selectedShop.type === "જનરલ સ્ટોર" || p.category === "કરિયાણું" || p.category === "જનરલ સ્ટોર";
-  const unitText = p.unit || (isGrocery ? "પેકેટ" : "કિલો");
+  const unitType = p.unit || "કિલો";
   
   info.innerHTML = `
    <span class="badge">${p.category || 'સામાન્ય'}</span>
    <strong style="display:block;font-size:16px;">${p.name}</strong>
-   <span style="color:#168343;font-weight:bold;">₹${p.price} / ${unitText}</span>
+   <span style="color:#168343;font-weight:bold;">₹${p.price} / ${unitType}</span>
   `;
 
   const qtyRow = document.createElement("div");
@@ -207,7 +205,7 @@ function renderProducts() {
   
   const countSpan = document.createElement("span");
   countSpan.style.fontWeight = "bold";
-  countSpan.style.minWidth = "24px";
+  countSpan.style.minWidth = "30px";
   countSpan.style.textAlign = "center";
   
   const currentQty = cart[p.id] ? cart[p.id].qty : 0;
@@ -216,22 +214,23 @@ function renderProducts() {
   const plusBtn = document.createElement("button");
   plusBtn.textContent = "+";
 
-  const stepVal = (unitText === "કિલો") ? 0.250 : 1;
+  // જો એકમ નંગ હોય તો 12 (ડઝન) વધે, કિલો હોય તો 0.250 વધે
+  const stepVal = (unitType === "નંગ") ? 12 : 0.250;
 
   minusBtn.onclick = () => {
    if(!cart[p.id]) return;
    cart[p.id].qty -= stepVal;
    if(cart[p.id].qty <= 0) delete cart[p.id];
-   countSpan.textContent = cart[p.id] ? cart[p.id].qty.toFixed(unitText === "કિલો" ? 3 : 0) : 0;
+   countSpan.textContent = cart[p.id] ? cart[p.id].qty : 0;
    updateCart();
   };
 
   plusBtn.onclick = () => {
    if(!cart[p.id]) {
-    cart[p.id] = {name: p.name, price: p.price, unit: unitText, qty: 0, category: p.category};
+    cart[p.id] = {name: p.name, price: p.price, unit: unitType, qty: 0, category: p.category};
    }
    cart[p.id].qty += stepVal;
-   countSpan.textContent = cart[p.id].qty.toFixed(unitText === "કિલો" ? 3 : 0);
+   countSpan.textContent = cart[p.id].qty;
    updateCart();
   };
 
@@ -261,7 +260,7 @@ function updateCart() {
 
  keys.forEach(k => {
   const item = cart[k];
-  const itemTotal = item.price * item.qty;
+  const itemTotal = item.price * (item.unit === "નંગ" ? (item.qty / 12) : item.qty);
   total += itemTotal;
 
   const row = document.createElement("div");
@@ -311,7 +310,7 @@ function sendWhatsAppOrder() {
  
  let total = 0;
  Object.values(cart).forEach(i => {
-  const t = i.price * i.qty;
+  const t = i.price * (i.unit === "નંગ" ? (i.qty / 12) : i.qty);
   total += t;
   msg += `\n- ${i.name}: ${i.qty} ${i.unit} = ₹${t.toFixed(2)}`;
  });
