@@ -179,7 +179,6 @@ onAuthStateChanged(auth, async user => {
 
 $("logout").addEventListener("click", () => signOut(auth));
 
-// મોટો ફોટો કેમેરાથી આવે કે ગેલેરીથી, તેને ઓટોમેટિક નાનો અને પરફેક્ટ બનાવવાનું ફંક્શન
 $("imageFile").addEventListener("change", function(e) {
  const file = e.target.files[0];
  if(!file) return;
@@ -191,7 +190,7 @@ $("imageFile").addEventListener("change", function(e) {
   const img = new Image();
   img.onload = function() {
    const canvas = document.createElement("canvas");
-   const MAX_WIDTH = 500; // ફોટોની સાઈઝ વ્યવસ્થિત રાખવા માટે
+   const MAX_WIDTH = 500;
    const MAX_HEIGHT = 500;
    let width = img.width;
    let height = img.height;
@@ -213,7 +212,6 @@ $("imageFile").addEventListener("change", function(e) {
    const ctx = canvas.getContext("2d");
    ctx.drawImage(img, 0, 0, width, height);
 
-   // ફોટાને કમ્પ્રેસ કરીને સાઈઝ નાની કરી દેશે
    base64Image = canvas.toDataURL("image/jpeg", 0.7);
    $("imageUrl").value = base64Image;
    $("preview").src = base64Image;
@@ -317,6 +315,7 @@ function initAdminData() {
     $("category").value = p.category || "શાકભાજી";
     $("unit").value = p.unit || "કિલો";
     $("imageUrl").value = p.imageUrl || "";
+    base64Image = p.imageUrl || "";
     $("active").value = String(p.active !== false);
     if(p.imageUrl) {
      $("preview").src = p.imageUrl;
@@ -362,7 +361,7 @@ $("prodCancelBtn").onclick = () => {
  $("prodCancelBtn").style.display = "none";
  base64Image = "";
  $("preview").style.display = "none";
- $("saveMsg").textContent = "";
+ $("uploadMsg").textContent = "";
 };
 
 $("shopForm").addEventListener("submit", async e => {
@@ -375,7 +374,7 @@ $("shopForm").addEventListener("submit", async e => {
    active: true
   };
 
-  const id = $("shopId.value") || $("shopId").value;
+  const id = $("shopId").value;
   if(id) {
    await setDoc(doc(db, "shops", id), shopData, {merge: true});
    $("shopMsg").textContent = "દુકાન સફળતાપૂર્વક અપડેટ થઈ ગઈ!";
@@ -397,7 +396,7 @@ $("shopForm").addEventListener("submit", async e => {
 $("productForm").addEventListener("submit", async e => {
  e.preventDefault();
  try {
-  const finalImageUrl = $("imageUrl").value.trim() || base64Image;
+  const finalImageUrl = base64Image || $("imageUrl").value.trim();
 
   const productData = {
    shopId: $("productShopSelect").value,
@@ -426,6 +425,7 @@ $("productForm").addEventListener("submit", async e => {
   base64Image = "";
   $("preview").style.display = "none";
   $("uploadMsg").textContent = "";
+  $("imageUrl").value = "";
  } catch(err) {
   $("saveMsg").textContent = "ભૂલ: " + err.message;
  }
