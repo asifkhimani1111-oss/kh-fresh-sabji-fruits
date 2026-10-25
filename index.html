@@ -22,7 +22,6 @@ button:disabled{opacity:.6}
 .cat-chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
 .cat-chip{padding:8px 14px;background:#e2f0e6;border:0;border-radius:20px;font-weight:bold;cursor:pointer;color:#168343;font-size:14px;width:auto}
 .cat-chip.active{background:#168343;color:white}
-/* લોગો અને બૅનર માટેની સ્ટાઇલ */
 .brand-banner{text-align:center;background:linear-gradient(135deg, #e8f5e9, #c8e6c9);padding:20px;border-radius:12px;margin-bottom:14px;border:1px solid #a5d6a7;box-shadow:0 2px 6px rgba(0,0,0,0.05)}
 .brand-logo{width:90px;height:90px;object-fit:cover;border-radius:50%;border:3px solid #168343;box-shadow:0 4px 10px rgba(0,0,0,0.15);margin-bottom:8px}
 .brand-title{color:#168343;font-size:24px;margin:5px 0 2px 0;font-weight:bold}
@@ -31,19 +30,16 @@ button:disabled{opacity:.6}
 </head>
 <body>
 <main>
-<!-- બૅનર અને લોગો સેક્શન -->
 <div class="brand-banner">
   <img src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=300&auto=format&fit=crop&q=80" alt="K.H Fresh Logo" class="brand-logo" id="logoImg">
   <h2 class="brand-title">K.H Fresh Sabji & Fruits</h2>
   <p class="brand-sub">તાજા ફળો અને શાકભાજી સીધા ખેતરેથી તમારા ઘરે!</p>
 </div>
 
-<!-- ડિલિવરી સમયનું નોટિસ બૅનર -->
 <div style="background: #e8f5e9; color: #1b5e20; padding: 10px 14px; margin: 10px 0; border-radius: 8px; text-align: center; font-weight: bold; border: 1px solid #c8e6c9;">
   🕒 ડિલિવરીનો સમય: સવારના ૯:૦૦ થી સાંજના ૬:૦૦ સુધી
 </div>
 
-<!-- દુકાન પસંદગી -->
 <section>
 <label style="font-weight:bold;">દુકાન પસંદ કરો</label>
 <select id="shopSelect"><option value="">દુકાન લોડ થઈ રહી છે...</option></select>
@@ -58,13 +54,11 @@ button:disabled{opacity:.6}
 </div>
 </section>
 
-<!-- પ્રોડક્ટ લિસ્ટ -->
 <section>
 <h3>🛍️ વસ્તુઓ પસંદ કરો</h3>
 <div id="productsList">દુકાન પસંદ કરો...</div>
 </section>
 
-<!-- ઓર્ડર સમરી -->
 <section>
 <h3>🛒 તમારો ઓર્ડર</h3>
 <div id="cartList">હજી કોઈ વસ્તુ પસંદ કરી નથી.</div>
@@ -73,7 +67,6 @@ button:disabled{opacity:.6}
 <button id="whatsappBtn" style="background:#25d366; margin-top:10px;" disabled>WhatsApp પર ઓર્ડર મોકલો</button>
 </section>
 
-<!-- ગ્રાહકની માહિતી -->
 <section>
 <h3>📋 ગ્રાહકની માહિતી</h3>
 <label>તમારું નામ</label>
@@ -218,18 +211,23 @@ function renderProducts() {
   countSpan.style.textAlign = "center";
   
   const currentQty = cart[p.id] ? cart[p.id].qty : 0;
-  countSpan.textContent = currentQty;
+  countSpan.textContent = unitType === "કિલો" ? currentQty.toFixed(3) : currentQty;
 
   const plusBtn = document.createElement("button");
   plusBtn.textContent = "+";
 
-  const stepVal = (unitType === "નંગ") ? 12 : 0.250;
+  // Step values: Fruit -> 250gm (0.250), Sabji -> 100gm (0.100), Nag/Packet -> 12 or 1
+  let stepVal = 0.250;
+  if(p.category === "શાકભાજી") stepVal = 0.100;
+  else if(p.category === "ફળો") stepVal = 0.250;
+  else if(unitType === "નંગ") stepVal = 12;
+  else if(unitType === "પેકેટ") stepVal = 1;
 
   minusBtn.onclick = () => {
    if(!cart[p.id]) return;
    cart[p.id].qty -= stepVal;
    if(cart[p.id].qty <= 0) delete cart[p.id];
-   countSpan.textContent = cart[p.id] ? cart[p.id].qty : 0;
+   countSpan.textContent = cart[p.id] ? (unitType === "કિલો" ? cart[p.id].qty.toFixed(3) : cart[p.id].qty) : (unitType === "કિલો" ? "0.000" : "0");
    updateCart();
   };
 
@@ -238,7 +236,7 @@ function renderProducts() {
     cart[p.id] = {name: p.name, price: p.price, unit: unitType, qty: 0, category: p.category};
    }
    cart[p.id].qty += stepVal;
-   countSpan.textContent = cart[p.id].qty;
+   countSpan.textContent = unitType === "કિલો" ? cart[p.id].qty.toFixed(3) : cart[p.id].qty;
    updateCart();
   };
 
@@ -263,23 +261,33 @@ function updateCart() {
  }
 
  let total = 0;
- let totalWeightGrams = 0;
- let isGroceryStore = selectedShop && (selectedShop.type === "કરિયાણું" || selectedShop.type === "જનરલ સ્ટોર");
+ let totalFruitVegGrams = 0;
+ let hasFruitVeg = false;
+ let hasGeneralOrGrocery = false;
 
  keys.forEach(k => {
   const item = cart[k];
-  const itemTotal = item.price * (item.unit === "નંગ" ? (item.qty / 12) : item.qty);
+  let itemTotal = 0;
+
+  if(item.unit === "નંગ") {
+   itemTotal = item.price * (item.qty / 12);
+  } else {
+   itemTotal = item.price * item.qty;
+  }
   total += itemTotal;
 
   const row = document.createElement("div");
   row.style.display = "flex";
   row.style.justifyContent = "space-between";
   row.style.margin = "4px 0";
-  row.innerHTML = `<span>${item.name} (${item.qty} ${item.unit})</span> <strong>₹${itemTotal.toFixed(2)}</strong>`;
+  row.innerHTML = `<span>${item.name} (${item.unit === "કિલો" ? item.qty.toFixed(3) : item.qty} ${item.unit})</span> <strong>₹${itemTotal.toFixed(2)}</strong>`;
   host.append(row);
 
-  if(item.unit === "કિલો") {
-   totalWeightGrams += item.qty * 1000;
+  if(item.category === "ફળો" || item.category === "શાકભાજી" || item.unit === "કિલો") {
+   totalFruitVegGrams += item.qty * 1000;
+   hasFruitVeg = true;
+  } else {
+   hasGeneralOrGrocery = true;
   }
  });
 
@@ -288,16 +296,14 @@ function updateCart() {
  let errorMsg = "";
  let canOrder = true;
 
- if(isGroceryStore) {
-  if(total < 500) {
-   errorMsg = "⚠️ કરિયાણા/જનરલ સ્ટોર માટે ઓર્ડર ઓછામાં ઓછો ₹500 નો હોવો જરૂરી છે.";
-   canOrder = false;
-  }
- } else {
-  if(totalWeightGrams > 0 && totalWeightGrams < 1000) {
-   errorMsg = "⚠️ ફળ/શાકની ડિલિવરી માટે કુલ વજન ઓછામાં ઓછું 1000 ગ્રામ (1 કિલો) હોવું જોઈએ.";
-   canOrder = false;
-  }
+ if(hasFruitVeg && totalFruitVegGrams < 2000) {
+  errorMsg = "⚠️ ફ્રૂટ અને શાકભાજીનો કુલ ઓર્ડર ઓછામાં ઓછો 2000 ગ્રામ (2 કિલો) હોવો જરૂરી છે.";
+  canOrder = false;
+ }
+
+ if(hasGeneralOrGrocery && total < 500) {
+  errorMsg = "⚠️ કરિયાણું અને જનરલ સ્ટોર માટે ઓર્ડર ઓછામાં ઓછો ₹500 નો હોવો જરૂરી છે.";
+  canOrder = false;
  }
 
  $("weightMsg").textContent = errorMsg;
@@ -318,9 +324,9 @@ function sendWhatsAppOrder() {
  
  let total = 0;
  Object.values(cart).forEach(i => {
-  const t = i.price * (i.unit === "નંગ" ? (i.qty / 12) : i.qty);
+  const t = i.unit === "નંગ" ? (i.price * (i.qty / 12)) : (i.price * i.qty);
   total += t;
-  msg += `\n- ${i.name}: ${i.qty} ${i.unit} = ₹${t.toFixed(2)}`;
+  msg += `\n- ${i.name}: ${i.unit === "કિલો" ? i.qty.toFixed(3) : i.qty} ${i.unit} = ₹${t.toFixed(2)}`;
  });
 
  msg += `\n\n*કુલ રકમ: ₹${total.toFixed(2)}*`;
