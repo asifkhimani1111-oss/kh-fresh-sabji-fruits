@@ -100,8 +100,8 @@ small{color:#555}
 <option value="પેકેટ">પેકેટ</option>
 </select>
 
-<label for="imageFile">મોબાઇલ Gallery માંથી ફોટો પસંદ કરો</label>
-<input id="imageFile" type="file" accept="image/jpeg,image/png,image/webp">
+<label for="imageFile">મોબાઇલ કેમેરા અથવા Gallery માંથી ફોટો પસંદ કરો</label>
+<input id="imageFile" type="file" accept="image/*">
 <img id="preview" alt="ફોટો પ્રિવ્યુ">
 <p id="uploadMsg"></p>
 
@@ -179,22 +179,48 @@ onAuthStateChanged(auth, async user => {
 
 $("logout").addEventListener("click", () => signOut(auth));
 
+// મોટો ફોટો કેમેરાથી આવે કે ગેલેરીથી, તેને ઓટોમેટિક નાનો અને પરફેક્ટ બનાવવાનું ફંક્શન
 $("imageFile").addEventListener("change", function(e) {
  const file = e.target.files[0];
  if(!file) return;
 
- if(file.size > 1024 * 1024) {
-  $("uploadMsg").textContent = "ફોટો 1 MB કરતા નાનો હોવો જોઈએ.";
-  return;
- }
+ $("uploadMsg").textContent = "ફોટો પ્રોસેસ થઈ રહ્યો છે...";
 
  const reader = new FileReader();
- reader.onload = function(uploadEvent) {
-  base64Image = uploadEvent.target.result;
-  $("imageUrl").value = base64Image;
-  $("preview").src = base64Image;
-  $("preview").style.display = "block";
-  $("uploadMsg").textContent = "ફોટો સફળતાપૂર્વક લોડ થઈ ગયો છે!";
+ reader.onload = function(event) {
+  const img = new Image();
+  img.onload = function() {
+   const canvas = document.createElement("canvas");
+   const MAX_WIDTH = 500; // ફોટોની સાઈઝ વ્યવસ્થિત રાખવા માટે
+   const MAX_HEIGHT = 500;
+   let width = img.width;
+   let height = img.height;
+
+   if (width > height) {
+    if (width > MAX_WIDTH) {
+     height *= MAX_WIDTH / width;
+     width = MAX_WIDTH;
+    }
+   } else {
+    if (height > MAX_HEIGHT) {
+     width *= MAX_HEIGHT / height;
+     height = MAX_HEIGHT;
+    }
+   }
+
+   canvas.width = width;
+   canvas.height = height;
+   const ctx = canvas.getContext("2d");
+   ctx.drawImage(img, 0, 0, width, height);
+
+   // ફોટાને કમ્પ્રેસ કરીને સાઈઝ નાની કરી દેશે
+   base64Image = canvas.toDataURL("image/jpeg", 0.7);
+   $("imageUrl").value = base64Image;
+   $("preview").src = base64Image;
+   $("preview").style.display = "block";
+   $("uploadMsg").textContent = "ફોટો સફળતાપૂર્વક તૈયાર થઈ ગયો છે!";
+  };
+  img.src = event.target.result;
  };
  reader.readAsDataURL(file);
 });
@@ -349,7 +375,7 @@ $("shopForm").addEventListener("submit", async e => {
    active: true
   };
 
-  const id = $("shopId").value;
+  const id = $("shopId.value") || $("shopId").value;
   if(id) {
    await setDoc(doc(db, "shops", id), shopData, {merge: true});
    $("shopMsg").textContent = "દુકાન સફળતાપૂર્વક અપડેટ થઈ ગઈ!";
