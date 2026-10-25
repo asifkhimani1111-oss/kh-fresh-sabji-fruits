@@ -1,18 +1,17 @@
-
 <!DOCTYPE html>
 <html lang="gu">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>K.H Fresh Sabji & Fruits - Admin</title>
+<title>K.H Fresh Sabji & Fruits - Admin Panel</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;padding:16px;background:#f4faf4;color:#203326;font-family:Arial,sans-serif}
 main{max-width:650px;margin:auto}
 section{background:white;padding:16px;margin:14px 0;border-radius:12px;box-shadow:0 2px 8px #0001}
-h2{color:#168343}
+h2,h3{color:#168343}
 input,select,button{width:100%;padding:12px;margin:7px 0;border:1px solid #ccc;border-radius:8px;font-size:16px}
-button{background:#168343;color:white;border:0;font-weight:bold}
+button{background:#168343;color:white;border:0;font-weight:bold;cursor:pointer}
 button:disabled{opacity:.6}
 button.danger{background:#b3261e}
 button.secondary{background:#456}
@@ -32,7 +31,7 @@ small{color:#555}
 
 <section id="login">
 <h3>Admin Login</h3>
-<p>Email અને Password દાખલ કરો.</p>
+<p>તમારું એડમિન Email અને Password દાખલ કરો.</p>
 <form id="loginForm">
 <input id="email" type="email" placeholder="Admin Email" required autocomplete="username">
 <input id="password" type="password" placeholder="Password" required autocomplete="current-password">
@@ -45,7 +44,7 @@ small{color:#555}
 <section>
 <div class="row">
 <h3 style="flex:1">પ્રોડક્ટ મેનેજમેન્ટ</h3>
-<button id="logout" type="button">Logout</button>
+<button id="logout" type="button" class="secondary">Logout</button>
 </div>
 
 <form id="productForm">
@@ -54,16 +53,10 @@ small{color:#555}
 <label>પ્રોડક્ટનું નામ</label>
 <input id="name" required placeholder="દા.ત. બટાકા" list="productSuggestions">
 <datalist id="productSuggestions">
-<option value="બટાકા"><option value="ડુંગળી">
-<option value="ટામેટા"><option value="રીંગણ">
-<option value="ભીંડા"><option value="કોબી">
-<option value="ફ્લાવર"><option value="કાકડી">
-<option value="ગાજર"><option value="લીંબુ">
-<option value="મરચાં"><option value="આદુ">
-<option value="લસણ"><option value="કેળા">
-<option value="સફરજન"><option value="તરબૂચ">
-<option value="પપૈયું"><option value="નારંગી">
-<option value="દ્રાક્ષ"><option value="કેરી">
+<option value="બટાકા"><option value="ડુંગળી"><option value="ટામેટા"><option value="રીંગણ">
+<option value="ભીંડા"><option value="કોબી"><option value="ફ્લાવર"><option value="કાકડી">
+<option value="ગાજર"><option value="લીંબુ"><option value="મરચાં"><option value="આદુ">
+<option value="લસણ"><option value="કેળા"><option value="સફરજન"><option value="તરબૂચ">
 </datalist>
 
 <label>ભાવ (₹)</label>
@@ -73,6 +66,8 @@ small{color:#555}
 <select id="category">
 <option value="શાકભાજી">શાકભાજી</option>
 <option value="ફળો">ફળો</option>
+<option value="કરિયાણું">કરિયાણું</option>
+<option value="જનરલ સ્ટોર">જનરલ સ્ટોર</option>
 </select>
 
 <label>એકમ</label>
@@ -114,13 +109,9 @@ small{color:#555}
 </main>
 
 <script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import {
- getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut
-} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-import {
- getFirestore,collection,onSnapshot,addDoc,doc,setDoc,deleteDoc
-} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
  apiKey:"AIzaSyCGSZ7QcASC_sUV6f7NDJrMbn0Ae-f9pR8",
@@ -132,264 +123,265 @@ const firebaseConfig={
  measurementId:"G-HBL4EVF1MN"
 };
 
-const CLOUD_NAME="irdsjwvm";
-const UPLOAD_PRESET="kh_products_upload";
-const MAX_FILE_SIZE=5*1024*1024;
+// તમારી એડમિન UID અહીં ફિક્સ કરેલી છે
+const ADMIN_UID = "bzMpXfz6ltVVB7GcWHWh0ok7XbO2";
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-const $=id=>document.getElementById(id);
+const CLOUD_NAME = "irdsjwvm";
+const UPLOAD_PRESET = "kh_products_upload";
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-let stopProducts=null;
-let selectedFile=null;
-let previewObjectUrl=null;
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const $ = id => document.getElementById(id);
 
-$("loginForm").addEventListener("submit",async e=>{
+let stopProducts = null;
+let selectedFile = null;
+let previewObjectUrl = null;
+
+$("loginForm").addEventListener("submit", async e => {
  e.preventDefault();
- $("loginMsg").textContent="Login થઈ રહ્યું છે...";
- try{
-  await signInWithEmailAndPassword(
-   auth,$("email").value.trim(),$("password").value
-  );
-  $("loginMsg").textContent="";
- }catch(err){
-  $("loginMsg").textContent="Login ન થયું: "+err.message;
+ $("loginMsg").textContent = "Login થઈ રહ્યું છે...";
+ try {
+  await signInWithEmailAndPassword(auth, $("email").value.trim(), $("password").value);
+  $("loginMsg").textContent = "";
+ } catch(err) {
+  $("loginMsg").textContent = "Login ન થયું: " + err.message;
  }
 });
 
-onAuthStateChanged(auth,user=>{
- if(stopProducts){
+onAuthStateChanged(auth, async user => {
+ if(stopProducts) {
   stopProducts();
-  stopProducts=null;
+  stopProducts = null;
  }
- $("login").style.display=user?"none":"block";
- $("app").style.display=user?"block":"none";
- if(user) loadProducts();
+
+ if(user) {
+  if(user.uid !== ADMIN_UID) {
+   alert("તમને એડમિન એક્સેસ નથી!");
+   await signOut(auth);
+   return;
+  }
+  $("login").style.display = "none";
+  $("app").style.display = "block";
+  loadProducts();
+ } else {
+  $("login").style.display = "block";
+  $("app").style.display = "none";
+ }
 });
 
-$("logout").addEventListener("click",async()=>{
- try{
+$("logout").addEventListener("click", async () => {
+ try {
   await signOut(auth);
- }catch(err){
-  $("saveMsg").textContent=err.message;
+ } catch(err) {
+  console.error(err);
  }
 });
 
-$("imageFile").addEventListener("change",()=>{
- selectedFile=$("imageFile").files[0]||null;
- $("uploadMsg").textContent="";
+$("imageFile").addEventListener("change", () => {
+ selectedFile = $("imageFile").files[0] || null;
+ $("uploadMsg").textContent = "";
 
- if(previewObjectUrl){
+ if(previewObjectUrl) {
   URL.revokeObjectURL(previewObjectUrl);
-  previewObjectUrl=null;
+  previewObjectUrl = null;
  }
 
- if(!selectedFile){
-  $("preview").style.display="none";
+ if(!selectedFile) {
+  $("preview").style.display = "none";
   $("preview").removeAttribute("src");
   return;
  }
 
- if(!["image/jpeg","image/png","image/webp"].includes(selectedFile.type)){
-  selectedFile=null;
-  $("imageFile").value="";
-  $("preview").style.display="none";
-  $("uploadMsg").textContent="JPG, PNG અથવા WebP ફોટો પસંદ કરો.";
+ if(!["image/jpeg", "image/png", "image/webp"].includes(selectedFile.type)) {
+  selectedFile = null;
+  $("imageFile").value = "";
+  $("preview").style.display = "none";
+  $("uploadMsg").textContent = "JPG, PNG અથવા WebP ફોટો પસંદ કરો.";
   return;
  }
 
- if(selectedFile.size>MAX_FILE_SIZE){
-  selectedFile=null;
-  $("imageFile").value="";
-  $("preview").style.display="none";
-  $("uploadMsg").textContent="ફોટો 5 MB કરતાં નાનો હોવો જોઈએ.";
+ if(selectedFile.size > MAX_FILE_SIZE) {
+  selectedFile = null;
+  $("imageFile").value = "";
+  $("preview").style.display = "none";
+  $("uploadMsg").textContent = "ફોટો 5 MB કરતાં નાનો હોવો જોઈએ.";
   return;
  }
 
- previewObjectUrl=URL.createObjectURL(selectedFile);
- $("preview").src=previewObjectUrl;
- $("preview").style.display="block";
- $("uploadMsg").textContent="ફોટો પસંદ થયો છે. હવે પ્રોડક્ટ સેવ કરો.";
+ previewObjectUrl = URL.createObjectURL(selectedFile);
+ $("preview").src = previewObjectUrl;
+ $("preview").style.display = "block";
+ $("uploadMsg").textContent = "ફોટો પસંદ થયો છે. હવે પ્રોડક્ટ સેવ કરો.";
 });
 
-async function uploadPhoto(file){
- const data=new FormData();
- data.append("file",file);
- data.append("upload_preset",UPLOAD_PRESET);
+async function uploadPhoto(file) {
+ const data = new FormData();
+ data.append("file", file);
+ data.append("upload_preset", UPLOAD_PRESET);
 
- const response=await fetch(
-  `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-  {method:"POST",body:data}
- );
+ const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+  method: "POST",
+  body: data
+ });
 
- const result=await response.json().catch(()=>({}));
+ const result = await response.json().catch(() => ({}));
 
- if(!response.ok){
-  throw new Error(
-   result?.error?.message||"ફોટો અપલોડ ન થયો. Cloudinary preset તપાસો."
-  );
+ if(!response.ok) {
+  throw new Error(result?.error?.message || "ફોટો અપલોડ ન થયો.");
  }
 
- if(!result.secure_url){
+ if(!result.secure_url) {
   throw new Error("ફોટાનો URL મળ્યો નથી.");
  }
 
  return result.secure_url;
 }
 
-function loadProducts(){
- stopProducts=onSnapshot(collection(db,"products"),snapshot=>{
-  const host=$("products");
+function loadProducts() {
+ stopProducts = onSnapshot(collection(db, "products"), snapshot => {
+  const host = $("products");
   host.replaceChildren();
 
-  if(snapshot.empty){
-   host.textContent="હજી કોઈ પ્રોડક્ટ નથી.";
+  if(snapshot.empty) {
+   host.textContent = "હજી કોઈ પ્રોડક્ટ નથી.";
    return;
   }
 
-  snapshot.forEach(item=>{
-   const p=item.data();
-   const card=document.createElement("div");
-   card.className="product";
+  snapshot.forEach(item => {
+   const p = item.data();
+   const card = document.createElement("div");
+   card.className = "product";
 
-   const title=document.createElement("strong");
-   title.textContent=p.name||"(નામ નથી)";
+   const title = document.createElement("strong");
+   title.textContent = p.name || "(નામ નથી)";
    card.appendChild(title);
 
-   const detail=document.createElement("p");
-   detail.textContent=
-    "₹"+(p.price??0)+" / "+(p.unit||"કિલો")+
-    " • "+(p.category||"શાકભાજી")+
-    " • "+(p.active===false?"છુપાવેલ":"દેખાય છે");
+   const detail = document.createElement("p");
+   detail.textContent = "₹" + (p.price ?? 0) + " / " + (p.unit || "કિલો") + " • " + (p.category || "શાકભાજી") + " • " + (p.active === false ? "છુપાવેલ" : "દેખાય છે");
    card.appendChild(detail);
 
-   if(p.imageUrl&&/^https?:\/\//i.test(p.imageUrl)){
-    const img=document.createElement("img");
-    img.src=p.imageUrl;
-    img.alt=p.name||"Product photo";
-    img.loading="lazy";
+   if(p.imageUrl && /^https?:\/\//i.test(p.imageUrl)) {
+    const img = document.createElement("img");
+    img.src = p.imageUrl;
+    img.alt = p.name || "Product photo";
+    img.loading = "lazy";
     card.appendChild(img);
    }
 
-   const actions=document.createElement("div");
-   actions.className="row";
+   const actions = document.createElement("div");
+   actions.className = "row";
 
-   const edit=document.createElement("button");
-   edit.type="button";
-   edit.textContent="Edit";
-
-   edit.addEventListener("click",()=>{
+   const edit = document.createElement("button");
+   edit.type = "button";
+   edit.textContent = "Edit";
+   edit.addEventListener("click", () => {
     resetSelectedPhoto();
-    $("productId").value=item.id;
-    $("name").value=p.name||"";
-    $("price").value=p.price??"";
-    $("category").value=p.category||"શાકભાજી";
-    $("unit").value=p.unit||"કિલો";
-    $("imageUrl").value=p.imageUrl||"";
-    $("active").value=String(p.active!==false);
-    $("saveMsg").textContent="";
-    window.scrollTo({top:0,behavior:"smooth"});
+    $("productId").value = item.id;
+    $("name").value = p.name || "";
+    $("price").value = p.price ?? "";
+    $("category").value = p.category || "શાકભાજી";
+    $("unit").value = p.unit || "કિલો";
+    $("imageUrl").value = p.imageUrl || "";
+    $("active").value = String(p.active !== false);
+    $("saveMsg").textContent = "";
+    window.scrollTo({top: 0, behavior: "smooth"});
    });
 
-   const del=document.createElement("button");
-   del.type="button";
-   del.className="danger";
-   del.textContent="Delete";
-
-   del.addEventListener("click",async()=>{
-    if(!confirm("આ પ્રોડક્ટ કાઢી નાખવી છે?"))return;
-    try{
-     await deleteDoc(doc(db,"products",item.id));
-     $("saveMsg").textContent="પ્રોડક્ટ કાઢી નાખી.";
-    }catch(err){
-     $("saveMsg").textContent="ભૂલ: "+err.message;
+   const del = document.createElement("button");
+   del.type = "button";
+   del.className = "danger";
+   del.textContent = "Delete";
+   del.addEventListener("click", async () => {
+    if(!confirm("આ પ્રોડક્ટ કાઢી નાખવી છે?")) return;
+    try {
+     await deleteDoc(doc(db, "products", item.id));
+     $("saveMsg").textContent = "પ્રોડક્ટ કાઢી નાખી.";
+    } catch(err) {
+     $("saveMsg").textContent = "ભૂલ: " + err.message;
     }
    });
 
-   actions.append(edit,del);
+   actions.append(edit, del);
    card.appendChild(actions);
    host.appendChild(card);
   });
- },err=>{
-  $("products").textContent="લોડ ન થયું: "+err.message;
+ }, err => {
+  $("products").textContent = "લોડ ન થયું: " + err.message;
  });
 }
 
-$("productForm").addEventListener("submit",async e=>{
+$("productForm").addEventListener("submit", async e => {
  e.preventDefault();
 
- const button=$("saveButton");
- button.disabled=true;
- $("saveMsg").textContent="સેવ થઈ રહ્યું છે...";
+ const button = $("saveButton");
+ button.disabled = true;
+ $("saveMsg").textContent = "સેવ થઈ રહ્યું છે...";
 
- try{
-  const name=$("name").value.trim();
-  const price=Number($("price").value);
-  let imageUrl=$("imageUrl").value.trim();
+ try {
+  const name = $("name").value.trim();
+  const price = Number($("price").value);
+  let imageUrl = $("imageUrl").value.trim();
 
-  if(!name||!Number.isFinite(price)||price<0){
+  if(!name || !Number.isFinite(price) || price < 0) {
    throw new Error("નામ અને યોગ્ય ભાવ દાખલ કરો.");
   }
 
-  if(selectedFile){
-   $("uploadMsg").textContent="ફોટો Cloudinary પર અપલોડ થઈ રહ્યો છે...";
-   imageUrl=await uploadPhoto(selectedFile);
-   $("imageUrl").value=imageUrl;
-   $("uploadMsg").textContent="ફોટો અપલોડ થયો.";
+  if(selectedFile) {
+   $("uploadMsg").textContent = "ફોટો Cloudinary પર અપલોડ થઈ રહ્યો છે...";
+   imageUrl = await uploadPhoto(selectedFile);
+   $("imageUrl").value = imageUrl;
+   $("uploadMsg").textContent = "ફોટો અપલોડ થયો.";
   }
 
-  if(imageUrl&&!/^https?:\/\//i.test(imageUrl)){
-   throw new Error("ફોટો URL https:// અથવા http:// થી શરૂ થવો જોઈએ.");
-  }
-
-  const product={
+  const product = {
    name,
    price,
-   category:$("category").value,
-   unit:$("unit").value,
+   category: $("category").value,
+   unit: $("unit").value,
    imageUrl,
-   active:$("active").value==="true"
+   active: $("active").value === "true"
   };
 
-  const id=$("productId").value;
+  const id = $("productId").value;
 
-  if(id){
-   await setDoc(doc(db,"products",id),product,{merge:true});
-  }else{
-   await addDoc(collection(db,"products"),product);
+  if(id) {
+   await setDoc(doc(db, "products", id), product, {merge: true});
+  } else {
+   await addDoc(collection(db, "products"), product);
   }
 
-  $("saveMsg").textContent="સફળતાપૂર્વક સેવ થયું!";
+  $("saveMsg").textContent = "સફળતાપૂર્વક સેવ થયું!";
   $("productForm").reset();
-  $("productId").value="";
+  $("productId").value = "";
   resetSelectedPhoto();
 
- }catch(err){
-  $("saveMsg").textContent="સેવ ન થયું: "+(err.message||"અજાણી ભૂલ");
- }finally{
-  button.disabled=false;
+ } catch(err) {
+  $("saveMsg").textContent = "સેવ ન થયું: " + (err.message || "અજાણી ભૂલ");
+ } finally {
+  button.disabled = false;
  }
 });
 
-function resetSelectedPhoto(){
- selectedFile=null;
- $("imageFile").value="";
+function resetSelectedPhoto() {
+ selectedFile = null;
+ $("imageFile").value = "";
  $("preview").removeAttribute("src");
- $("preview").style.display="none";
- $("uploadMsg").textContent="";
+ $("preview").style.display = "none";
+ $("uploadMsg").textContent = "";
 
- if(previewObjectUrl){
+ if(previewObjectUrl) {
   URL.revokeObjectURL(previewObjectUrl);
-  previewObjectUrl=null;
+  previewObjectUrl = null;
  }
 }
 
-$("clearForm").addEventListener("click",()=>{
+$("clearForm").addEventListener("click", () => {
  $("productForm").reset();
- $("productId").value="";
+ $("productId").value = "";
  resetSelectedPhoto();
- $("saveMsg").textContent="";
+ $("saveMsg").textContent = "";
 });
 </script>
 </body>
