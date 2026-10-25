@@ -22,12 +22,21 @@ button:disabled{opacity:.6}
 .cat-chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
 .cat-chip{padding:8px 14px;background:#e2f0e6;border:0;border-radius:20px;font-weight:bold;cursor:pointer;color:#168343;font-size:14px;width:auto}
 .cat-chip.active{background:#168343;color:white}
+/* લોગો અને બૅનર માટેની સ્ટાઇલ */
+.brand-banner{text-align:center;background:linear-gradient(135deg, #e8f5e9, #c8e6c9);padding:20px;border-radius:12px;margin-bottom:14px;border:1px solid #a5d6a7;box-shadow:0 2px 6px rgba(0,0,0,0.05)}
+.brand-logo{width:90px;height:90px;object-fit:cover;border-radius:50%;border:3px solid #168343;box-shadow:0 4px 10px rgba(0,0,0,0.15);margin-bottom:8px}
+.brand-title{color:#168343;font-size:24px;margin:5px 0 2px 0;font-weight:bold}
+.brand-sub{color:#2e7d32;font-size:14px;margin:0}
 </style>
 </head>
 <body>
 <main>
-<h2>🥬 K.H Fresh Sabji & Fruits — ઓર્ડર કરો 🍉</h2>
-<p>તમારી પસંદગીની દુકાનમાંથી ઘરે ઓર્ડર કરો</p>
+<!-- બૅનર અને લોગો સેક્શન -->
+<div class="brand-banner">
+  <img src="https://i.ibb.co/3mR4K6P/fruit-logo.png" alt="K.H Fresh Logo" class="brand-logo" id="logoImg">
+  <h2 class="brand-title">K.H Fresh Sabji & Fruits</h2>
+  <p class="brand-sub">તાજા ફળો અને શાકભાજી સીધા ખેતરેથી તમારા ઘરે!</p>
+</div>
 
 <!-- ડિલિવરી સમયનું નોટિસ બૅનર -->
 <div style="background: #e8f5e9; color: #1b5e20; padding: 10px 14px; margin: 10px 0; border-radius: 8px; text-align: center; font-weight: bold; border: 1px solid #c8e6c9;">
@@ -214,7 +223,6 @@ function renderProducts() {
   const plusBtn = document.createElement("button");
   plusBtn.textContent = "+";
 
-  // જો એકમ નંગ હોય તો 12 (ડઝન) વધે, કિલો હોય તો 0.250 વધે
   const stepVal = (unitType === "નંગ") ? 12 : 0.250;
 
   minusBtn.onclick = () => {
