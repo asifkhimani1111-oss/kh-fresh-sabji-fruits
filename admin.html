@@ -21,7 +21,7 @@ small{color:#555}
 .row{display:flex;gap:10px;align-items:center}
 .row button{width:auto;flex:1}
 #app{display:none}
-#preview{display:none;max-width:150px;max-height:150px;object-fit:cover;border-radius:8px}
+#preview{display:none;max-width:150px;max-height:150px;object-fit:cover;border-radius:8px;margin-top:8px}
 </style>
 </head>
 <body>
@@ -75,7 +75,7 @@ small{color:#555}
 <form id="productForm">
 <input id="productId" type="hidden">
 
-<label>ਕ્યાં દુકાન માટે પ્રોડક્ટ છે?</label>
+<label>કઈ દુકાન માટે પ્રોડક્ટ છે?</label>
 <select id="productShopSelect" required><option value="">દુકાન પસંદ કરો</option></select>
 
 <label>પ્રોડક્ટનું નામ</label>
@@ -99,7 +99,12 @@ small{color:#555}
 <option value="પેકેટ">પેકેટ</option>
 </select>
 
-<label>ફોટો URL (અથવા ઓટો અપલોડ)</label>
+<label for="imageFile">મોબાઇલ Gallery માંથી ફોટો પસંદ કરો</label>
+<input id="imageFile" type="file" accept="image/jpeg,image/png,image/webp">
+<img id="preview" alt="ફોટો ప్రిવ્યુ">
+<p id="uploadMsg"></p>
+
+<label>અથવા ફોટો URL નાખો</label>
 <input id="imageUrl" type="url" placeholder="https://...">
 
 <label>ગ્રાહકોને બતાવવી છે?</label>
@@ -108,7 +113,7 @@ small{color:#555}
 <option value="false">ના (છુપાવો)</option>
 </select>
 
-<button type="submit">પ્રોડક્ટ સેવ કરો</button>
+<button type="submit" id="saveButton">પ્રોડક્ટ સેવ કરો</button>
 <p id="saveMsg"></p>
 </form>
 
@@ -133,7 +138,7 @@ const firebaseConfig={
  measurementId:"G-HBL4EVF1MN"
 };
 
-const ADMIN_UID = "bzMpXfz6ltVVB7GcWHWh0ok7XbO2"; // તમારી ફિક્સ એડમિન આઈડી
+const ADMIN_UID = "bzMpXfz6ltVVB7GcWHWh0ok7XbO2";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -141,6 +146,7 @@ const db = getFirestore(app);
 const $ = id => document.getElementById(id);
 
 let loadedShops = [];
+let base64Image = "";
 
 $("loginForm").addEventListener("submit", async e => {
  e.preventDefault();
@@ -171,8 +177,28 @@ onAuthStateChanged(auth, async user => {
 
 $("logout").addEventListener("click", () => signOut(auth));
 
+// ગેલેરીમાંથી ફોટો સિલેક્ટ કરીને તેને Base64 માં કન્વર્ટ કરવા માટે
+$("imageFile").addEventListener("change", function(e) {
+ const file = e.target.files[0];
+ if(!file) return;
+
+ if(file.size > 1024 * 1024) { // 1MB કરતા નાનો ફોટો સારો રહે
+  $("uploadMsg").textContent = "ફોટો 1 MB કરતા નાનો હોવો જોઈએ.";
+  return;
+ }
+
+ const reader = new FileReader();
+ reader.onload = function(uploadEvent) {
+  base64Image = uploadEvent.target.result;
+  $("imageUrl").value = base64Image; // URL ફીલ્ડમાં આપમેળે ભરાઈ જશે
+  $("preview").src = base64Image;
+  $("preview").style.display = "block";
+  $("uploadMsg").textContent = "ફોટો સફળતાપૂર્વક લોડ થઈ ગયો છે!";
+ };
+ reader.readAsDataURL(file);
+});
+
 function initAdminData() {
- // દુકાનો લોડ કરો
  onSnapshot(collection(db, "shops"), snap => {
   loadedShops = snap.docs.map(d => ({id: d.id, ...d.data()}));
   const shopSel = $("productShopSelect");
@@ -188,13 +214,11 @@ function initAdminData() {
   }
 
   loadedShops.forEach(s => {
-   // ડ્રોપડાઉન માટે ઓપ્શન ઉમેરો
    const opt = document.createElement("option");
    opt.value = s.id;
    opt.textContent = s.name;
    shopSel.append(opt);
 
-   // દુકાનનું કાર્ડ બનાવો
    const card = document.createElement("div");
    card.className = "item-card";
    card.innerHTML = `<strong>${s.name}</strong><br><small>પ્રકાર: ${s.type || ''} | WhatsApp: ${s.whatsapp || ''}</small>`;
@@ -213,7 +237,6 @@ function initAdminData() {
   });
  });
 
- // પ્રોડક્ટ્સ લોડ કરો
  onSnapshot(collection(db, "products"), snap => {
   const host = $("productsList");
   host.replaceChildren();
@@ -249,7 +272,6 @@ function initAdminData() {
  });
 }
 
-// દુકાન સેવ કરવાનું ફોર્મ
 $("shopForm").addEventListener("submit", async e => {
  e.preventDefault();
  try {
@@ -267,17 +289,18 @@ $("shopForm").addEventListener("submit", async e => {
  }
 });
 
-// પ્રોડક્ટ સેવ કરવાનું ફોર્મ
 $("productForm").addEventListener("submit", async e => {
  e.preventDefault();
  try {
+  const finalImageUrl = $("imageUrl").value.trim() || base64Image;
+
   const productData = {
    shopId: $("productShopSelect").value,
    name: $("name").value.trim(),
    price: Number($("price").value),
    category: $("category").value,
    unit: $("unit").value,
-   imageUrl: $("imageUrl").value.trim(),
+   imageUrl: finalImageUrl,
    active: $("active").value === "true"
   };
 
@@ -291,6 +314,9 @@ $("productForm").addEventListener("submit", async e => {
   $("saveMsg").textContent = "પ્રોડક્ટ સફળતાપૂર્વક સેવ થઈ ગઈ!";
   $("productForm").reset();
   $("productId").value = "";
+  base64Image = "";
+  $("preview").style.display = "none";
+  $("uploadMsg").textContent = "";
  } catch(err) {
   $("saveMsg").textContent = "ભૂલ: " + err.message;
  }
