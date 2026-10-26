@@ -26,6 +26,7 @@ button:disabled{opacity:.6}
 .brand-logo{width:90px;height:90px;object-fit:cover;border-radius:50%;border:3px solid #168343;box-shadow:0 4px 10px rgba(0,0,0,0.15);margin-bottom:8px}
 .brand-title{color:#168343;font-size:24px;margin:5px 0 2px 0;font-weight:bold}
 .brand-sub{color:#2e7d32;font-size:14px;margin:0}
+.red-alert{background:#ffebee;color:#b3261e;padding:12px;border-radius:8px;border:1px solid #ef9a9a;margin:10px 0;font-weight:bold;text-align:center}
 </style>
 </head>
 <body>
@@ -37,7 +38,7 @@ button:disabled{opacity:.6}
 </div>
 
 <div style="background: #e8f5e9; color: #1b5e20; padding: 10px 14px; margin: 10px 0; border-radius: 8px; text-align: center; font-weight: bold; border: 1px solid #c8e6c9;">
-  🕒 ડિલિવરીનો સમય: સવારના ૯:૦૦ થી સાંજના ૬:૦૦ સુધી
+  🕒 સમય: સવારના ૯:૦૦ થી સાંજના ૬:૦૦ | 🚴 ૨ કિમી પછી ડિલિવરી ચાર્જ | ❌ ઓર્ડર કેન્સલ નહીં થાય
 </div>
 
 <section>
@@ -58,7 +59,7 @@ button:disabled{opacity:.6}
 </section>
 
 <section>
-<h3>🛍️ વસ્તુઓ પસંદ કરો</h3>
+<h3>🛍️ વસ્તુઓ પસંદ કરો (Meesho Style)</h3>
 <div id="productsList">દુકાન પસંદ કરો...</div>
 </section>
 
@@ -66,7 +67,7 @@ button:disabled{opacity:.6}
 <h3>🛒 તમારો ઓર્ડર</h3>
 <div id="cartList">હજી કોઈ વસ્તુ પસંદ કરી નથી.</div>
 <h3 id="cartTotal" style="margin:10px 0;">કુલ: ₹0</h3>
-<p id="weightMsg" style="font-size:14px; color:#b3261e; font-weight:bold;"></p>
+<div id="alertBox"></div>
 <button id="whatsappBtn" style="background:#25d366; margin-top:10px;" disabled>WhatsApp પર ઓર્ડર મોકલો</button>
 </section>
 
@@ -196,10 +197,26 @@ function renderProducts() {
 
   const unitType = p.unit || "કિલો (Kg)";
   
+  let optionsHtml = "";
+  if(p.colors) {
+   const colorsArr = p.colors.split(",").map(c => c.trim());
+   optionsHtml += `<br><label style="font-size:13px;">કલર પસંદ કરો:</label><select class="sel-color" data-id="${p.id}">`;
+   colorsArr.forEach(c => optionsHtml += `<option value="${c}">${c}</option>`);
+   optionsHtml += `</select>`;
+  }
+
+  if(p.sizes) {
+   const sizesArr = p.sizes.split(",").map(s => s.trim());
+   optionsHtml += `<br><label style="font-size:13px;">સાઈઝ પસંદ કરો:</label><select class="sel-size" data-id="${p.id}">`;
+   sizesArr.forEach(s => optionsHtml += `<option value="${s}">${s}</option>`);
+   optionsHtml += `</select>`;
+  }
+
   info.innerHTML = `
    <span class="badge">${p.category || 'સામાન્ય'}</span>
    <strong style="display:block;font-size:16px;">${p.name}</strong>
    <span style="color:#168343;font-weight:bold;">₹${p.price} / ${unitType}</span>
+   ${optionsHtml}
   `;
 
   const qtyRow = document.createElement("div");
@@ -213,35 +230,52 @@ function renderProducts() {
   countSpan.style.minWidth = "30px";
   countSpan.style.textAlign = "center";
   
-  const currentQty = cart[p.id] ? cart[p.id].qty : 0;
+  const cartKey = p.id;
+  const currentQty = cart[cartKey] ? cart[cartKey].qty : 0;
   countSpan.textContent = unitType.includes("કિલો") ? currentQty.toFixed(3) : currentQty;
 
   const plusBtn = document.createElement("button");
   plusBtn.textContent = "+";
 
-  // Step values based on unit types
   let stepVal = 1;
   if(unitType.includes("કિલો")) stepVal = 0.250;
-  else if(unitType.includes("ગ્રામ") && !unitType.includes("મિલીગ્રામ")) stepVal = 100;
-  else if(unitType.includes("મિલીગ્રામ")) stepVal = 100;
+  else if(unitType.includes("ગ્રામ")) stepVal = 100;
   else if(unitType.includes("ડઝન")) stepVal = 1;
   else if(unitType.includes("મીટર")) stepVal = 1;
-  else if(unitType.includes("સાઈઝ") || unitType.includes("નંગ")) stepVal = 1;
+  else stepVal = 1;
 
   minusBtn.onclick = () => {
-   if(!cart[p.id]) return;
-   cart[p.id].qty -= stepVal;
-   if(cart[p.id].qty <= 0) delete cart[p.id];
-   countSpan.textContent = cart[p.id] ? (unitType.includes("કિલો") ? cart[p.id].qty.toFixed(3) : cart[p.id].qty) : (unitType.includes("કિલો") ? "0.000" : "0");
+   if(!cart[cartKey]) return;
+   cart[cartKey].qty -= stepVal;
+   if(cart[cartKey].qty <= 0) delete cart[cartKey];
+   countSpan.textContent = cart[cartKey] ? (unitType.includes("કિલો") ? cart[cartKey].qty.toFixed(3) : cart[cartKey].qty) : (unitType.includes("કિલો") ? "0.000" : "0");
    updateCart();
   };
 
   plusBtn.onclick = () => {
-   if(!cart[p.id]) {
-    cart[p.id] = {name: p.name, price: p.price, unit: unitType, qty: 0, category: p.category};
+   let selectedColor = "";
+   let selectedSize = "";
+   const colorSel = card.querySelector(".sel-color");
+   const sizeSel = card.querySelector(".sel-size");
+   if(colorSel) selectedColor = colorSel.value;
+   if(sizeSel) selectedSize = sizeSel.value;
+
+   if(!cart[cartKey]) {
+    cart[cartKey] = {
+     name: p.name, 
+     price: p.price, 
+     unit: unitType, 
+     qty: 0, 
+     category: p.category,
+     color: selectedColor,
+     size: selectedSize
+    };
    }
-   cart[p.id].qty += stepVal;
-   countSpan.textContent = unitType.includes("કિલો") ? cart[p.id].qty.toFixed(3) : cart[p.id].qty;
+   cart[cartKey].qty += stepVal;
+   cart[cartKey].color = selectedColor;
+   cart[cartKey].size = selectedSize;
+
+   countSpan.textContent = unitType.includes("કિલો") ? cart[cartKey].qty.toFixed(3) : cart[cartKey].qty;
    updateCart();
   };
 
@@ -255,34 +289,83 @@ function renderProducts() {
 function updateCart() {
  const host = $("cartList");
  host.replaceChildren();
+ const alertBox = $("alertBox");
+ alertBox.replaceChildren();
 
  const keys = Object.keys(cart);
  if(keys.length === 0) {
   host.textContent = "હજી કોઈ વસ્તુ પસંદ કરી નથી.";
   $("cartTotal").textContent = "કુલ: ₹0";
-  $("weightMsg").textContent = "";
   $("whatsappBtn").disabled = true;
   return;
- }
+}
 
  let total = 0;
+ let totalProduceWeightKg = 0;
+ let hasProduceOrVeg = false;
+ let hasGeneralItems = false;
 
  keys.forEach(k => {
   const item = cart[k];
   let itemTotal = item.price * item.qty;
   total += itemTotal;
 
+  if(item.category === "શાકભાજી" || item.category === "ફળો") {
+   hasProduceOrVeg = true;
+   if(item.unit.includes("કિલો")) {
+    totalProduceWeightKg += item.qty;
+   } else if(item.unit.includes("ગ્રામ")) {
+    totalProduceWeightKg += (item.qty / 1000);
+   } else if(item.unit.includes("ડઝન")) {
+    totalProduceWeightKg += item.qty; // ડઝનને વજન ગણીને
+   }
+  } else {
+   hasGeneralItems = true;
+  }
+
   const row = document.createElement("div");
   row.style.display = "flex";
   row.style.justifyContent = "space-between";
   row.style.margin = "4px 0";
-  row.innerHTML = `<span>${item.name} (${item.unit.includes("કિલો") ? item.qty.toFixed(3) : item.qty} ${item.unit})</span> <strong>₹${itemTotal.toFixed(2)}</strong>`;
+  let details = `${item.unit.includes("કિલો") ? item.qty.toFixed(3) : item.qty} ${item.unit}`;
+  if(item.color) details += ` | કલર: ${item.color}`;
+  if(item.size) details += ` | સાઈઝ: ${item.size}`;
+
+  row.innerHTML = `<span>${item.name} (${details})</span> <strong>₹${itemTotal.toFixed(2)}</strong>`;
   host.append(row);
  });
 
  $("cartTotal").textContent = `કુલ: ₹${total.toFixed(2)}`;
- $("weightMsg").textContent = "";
- $("whatsappBtn").disabled = false;
+
+ // નિયમો અને લાલ લાઈટ ચેકિંગ (Red Alert)
+ let errorMessage = "";
+ 
+ // નિયમ ૧: ફળ/શાકભાજી માટે કુલ વજન ૧ કિલો થવું જરૂરી
+ if(hasProduceOrVeg && totalProduceWeightKg < 1.0) {
+  errorMessage = `⚠️ રેડ એલર્ટ: ફળ અને શાકભાજીનું કુલ વજન ઓછામાં ઓછું ૧ કિલો હોવું જરૂરી છે! (હાલનું વજન: ${(totalProduceWeightKg*1000).toFixed(0)} ગ્રામ)`;
+ }
+
+ // નિયમ ૨: જનરલ વસ્તુઓ માટે મિનિમમ ૫૦૦ રૂપિયા
+ if(!hasProduceOrVeg && hasGeneralItems && total < 500) {
+  errorMessage = `⚠️ રેડ એલર્ટ: અન્ય વસ્તુઓ માટે ઓછામાં ઓછો ₹૫૦૦ નો ઓર્ડર હોવો જરૂરી છે! (હાલની રકમ: ₹${total.toFixed(2)})`;
+ }
+
+ // જો મિક્સ હોય તો બંને ચકાસવું
+ if(hasProduceOrVeg && hasGeneralItems) {
+  if(totalProduceWeightKg < 1.0) {
+   errorMessage = `⚠️ રેડ એલર્ટ: ફળ/શાકભાજીનું કુલ વજન ૧ કિલોથી ઓછું છે!`;
+  }
+ }
+
+ if(errorMessage) {
+  const alertDiv = document.createElement("div");
+  alertDiv.className = "red-alert";
+  alertDiv.textContent = errorMessage;
+  alertBox.append(alertDiv);
+  $("whatsappBtn").disabled = true;
+ } else {
+  $("whatsappBtn").disabled = false;
+ }
 }
 
 function sendWhatsAppOrder() {
@@ -301,10 +384,13 @@ function sendWhatsAppOrder() {
  Object.values(cart).forEach(i => {
   const t = i.price * i.qty;
   total += t;
-  msg += `\n- ${i.name}: ${i.unit.includes("કિલો") ? i.qty.toFixed(3) : i.qty} ${i.unit} = ₹${t.toFixed(2)}`;
+  let d = `${i.unit.includes("કિલો") ? i.qty.toFixed(3) : i.qty} ${i.unit}`;
+  if(i.color) d += ` (કલર: ${i.color})`;
+  if(i.size) d += ` (સાઈઝ: ${i.size})`;
+  msg += `\n- ${i.name}: ${d} = ₹${t.toFixed(2)}`;
  });
 
- msg += `\n\n*કુલ રકમ: ₹${total.toFixed(2)}*`;
+ msg += `\n\n*કુલ રકમ: ₹${total.toFixed(2)}*\n*(નોંધ: ઓર્ડર કેન્સલ થઈ શકશે નહીં)*`;
 
  const waNumber = selectedShop.whatsapp || "919876543210";
  const url = `https://wa.me/${waNumber}?text=` + encodeURIComponent(msg);
