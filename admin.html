@@ -58,6 +58,10 @@ small{color:#555}
 <option value="શાકભાજી અને ફળો">શાકભાજી અને ફળો</option>
 <option value="કરિયાણું">કરિયાણું</option>
 <option value="જનરલ સ્ટોર">જનરલ સ્ટોર</option>
+<option value="કાપડની દુકાન">કાપડની દુકાન</option>
+<option value="જ્વેલરી (સોના-ચાંદી)">જ્વેલરી (સોના-ચાંદી)</option>
+<option value="સાયકલ સ્ટોર">સાયકલ સ્ટોર</option>
+<option value="અન્ય સ્ટોર">અન્ય સ્ટોર</option>
 </select>
 <label>દુકાનદારનો WhatsApp નંબર (ઓર્ડર મેળવવા માટે)</label>
 <input id="shopWhatsapp" type="tel" required placeholder="દા.ત. 919876543210">
@@ -80,7 +84,7 @@ small{color:#555}
 <select id="productShopSelect" required><option value="">દુકાન પસંદ કરો</option></select>
 
 <label>પ્રોડક્ટનું નામ</label>
-<input id="name" required placeholder="દા.ત. બટાકા, ડુંગળી">
+<input id="name" required placeholder="દા.ત. બટાકા, કેળા, સાયકલ, શર્ટ">
 
 <label>ભાવ (₹)</label>
 <input id="price" type="number" min="0" step="0.01" required placeholder="દા.ત. 40">
@@ -91,13 +95,27 @@ small{color:#555}
 <option value="ફળો">ફળો</option>
 <option value="કરિયાણું">કરિયાણું</option>
 <option value="જનરલ સ્ટોર">જનરલ સ્ટોર</option>
+<option value="કાપડ">કાપડ</option>
+<option value="સોના-ચાંદી">સોના-ચાંદી</option>
+<option value="સાયકલ">સાયકલ</option>
+<option value="અન્ય">અન્ય</option>
 </select>
 
-<label>એકમ</label>
+<label>એકમ / સાઈઝ (Unit)</label>
 <select id="unit">
-<option value="કિલો">કિલો</option>
-<option value="નંગ">નંગ</option>
-<option value="પેકેટ">પેકેટ</option>
+<option value="કિલો (Kg)">કિલો (Kg)</option>
+<option value="ગ્રામ (Gram)">ગ્રામ (Gram)</option>
+<option value="મિલીગ્રામ (mg)">મિલીગ્રામ (mg)</option>
+<option value="ડઝન (Dozen)">ડઝન (Dozen) - કેળા વગેરે માટે</option>
+<option value="નંગ (Piece)">નંગ (Piece)</option>
+<option value="પેકેટ (Packet)">પેકેટ (Packet)</option>
+<option value="બોક્સ (Box)">બોક્સ (Box)</option>
+<option value="મીટર (Meter)">મીટર (Meter) - કાપડ માટે</option>
+<option value="ફૂટ (Foot)">ફૂટ (Foot)</option>
+<option value="૧૨ ની સાઈઝ (12 Inch)">૧૨ ની સાઈઝ (12 Inch) - સાયકલ</option>
+<option value="૧૪ ની સાઈઝ (14 Inch)">૧૪ ની સાઈઝ (14 Inch) - સાયકલ</option>
+<option value="૨૦ ની સાઈઝ (20 Inch)">૨૦ ની સાઈઝ (20 Inch) - સાયકલ</option>
+<option value="૨૪ ની સાઈઝ (24 Inch)">૨૪ ની સાઈઝ (24 Inch) - સાયકલ</option>
 </select>
 
 <label for="imageFile">મોબાઇલ કેમેરા અથવા Gallery માંથી ફોટો પસંદ કરો</label>
@@ -313,7 +331,7 @@ function initAdminData() {
     $("name").value = p.name || "";
     $("price").value = p.price || "";
     $("category").value = p.category || "શાકભાજી";
-    $("unit").value = p.unit || "કિલો";
+    $("unit").value = p.unit || "કિલો (Kg)";
     $("imageUrl").value = p.imageUrl || "";
     base64Image = p.imageUrl || "";
     $("active").value = String(p.active !== false);
@@ -418,7 +436,6 @@ $("productForm").addEventListener("submit", async e => {
   }
 
   $("productForm").reset();
-  $("productId").value = "",
   $("productId").value = "";
   $("productFormTitle").textContent = "📦 પ્રોડક્ટ અને ભાવ મેનેજ કરો";
   $("saveButton").textContent = "પ્રોડક્ટ સેવ કરો";
