@@ -51,6 +51,9 @@ button:disabled{opacity:.6}
   <button class="cat-chip" data-cat="ફળો">ફળો</button>
   <button class="cat-chip" data-cat="કરિયાણું">કરિયાણું</button>
   <button class="cat-chip" data-cat="જનરલ સ્ટોર">જનરલ સ્ટોર</button>
+  <button class="cat-chip" data-cat="કાપડ">કાપડ</button>
+  <button class="cat-chip" data-cat="સોના-ચાંદી">સોના-ચાંદી</button>
+  <button class="cat-chip" data-cat="સાયકલ">સાયકલ</button>
 </div>
 </section>
 
@@ -191,7 +194,7 @@ function renderProducts() {
   const info = document.createElement("div");
   info.className = "product-info";
 
-  const unitType = p.unit || "કિલો";
+  const unitType = p.unit || "કિલો (Kg)";
   
   info.innerHTML = `
    <span class="badge">${p.category || 'સામાન્ય'}</span>
@@ -211,23 +214,25 @@ function renderProducts() {
   countSpan.style.textAlign = "center";
   
   const currentQty = cart[p.id] ? cart[p.id].qty : 0;
-  countSpan.textContent = unitType === "કિલો" ? currentQty.toFixed(3) : currentQty;
+  countSpan.textContent = unitType.includes("કિલો") ? currentQty.toFixed(3) : currentQty;
 
   const plusBtn = document.createElement("button");
   plusBtn.textContent = "+";
 
-  // Step values: Fruit -> 250gm (0.250), Sabji -> 100gm (0.100), Nag/Packet -> 12 or 1
-  let stepVal = 0.250;
-  if(p.category === "શાકભાજી") stepVal = 0.100;
-  else if(p.category === "ફળો") stepVal = 0.250;
-  else if(unitType === "નંગ") stepVal = 12;
-  else if(unitType === "પેકેટ") stepVal = 1;
+  // Step values based on unit types
+  let stepVal = 1;
+  if(unitType.includes("કિલો")) stepVal = 0.250;
+  else if(unitType.includes("ગ્રામ") && !unitType.includes("મિલીગ્રામ")) stepVal = 100;
+  else if(unitType.includes("મિલીગ્રામ")) stepVal = 100;
+  else if(unitType.includes("ડઝન")) stepVal = 1;
+  else if(unitType.includes("મીટર")) stepVal = 1;
+  else if(unitType.includes("સાઈઝ") || unitType.includes("નંગ")) stepVal = 1;
 
   minusBtn.onclick = () => {
    if(!cart[p.id]) return;
    cart[p.id].qty -= stepVal;
    if(cart[p.id].qty <= 0) delete cart[p.id];
-   countSpan.textContent = cart[p.id] ? (unitType === "કિલો" ? cart[p.id].qty.toFixed(3) : cart[p.id].qty) : (unitType === "કિલો" ? "0.000" : "0");
+   countSpan.textContent = cart[p.id] ? (unitType.includes("કિલો") ? cart[p.id].qty.toFixed(3) : cart[p.id].qty) : (unitType.includes("કિલો") ? "0.000" : "0");
    updateCart();
   };
 
@@ -236,7 +241,7 @@ function renderProducts() {
     cart[p.id] = {name: p.name, price: p.price, unit: unitType, qty: 0, category: p.category};
    }
    cart[p.id].qty += stepVal;
-   countSpan.textContent = unitType === "કિલો" ? cart[p.id].qty.toFixed(3) : cart[p.id].qty;
+   countSpan.textContent = unitType.includes("કિલો") ? cart[p.id].qty.toFixed(3) : cart[p.id].qty;
    updateCart();
   };
 
@@ -261,53 +266,23 @@ function updateCart() {
  }
 
  let total = 0;
- let totalFruitVegGrams = 0;
- let hasFruitVeg = false;
- let hasGeneralOrGrocery = false;
 
  keys.forEach(k => {
   const item = cart[k];
-  let itemTotal = 0;
-
-  if(item.unit === "નંગ") {
-   itemTotal = item.price * (item.qty / 12);
-  } else {
-   itemTotal = item.price * item.qty;
-  }
+  let itemTotal = item.price * item.qty;
   total += itemTotal;
 
   const row = document.createElement("div");
   row.style.display = "flex";
   row.style.justifyContent = "space-between";
   row.style.margin = "4px 0";
-  row.innerHTML = `<span>${item.name} (${item.unit === "કિલો" ? item.qty.toFixed(3) : item.qty} ${item.unit})</span> <strong>₹${itemTotal.toFixed(2)}</strong>`;
+  row.innerHTML = `<span>${item.name} (${item.unit.includes("કિલો") ? item.qty.toFixed(3) : item.qty} ${item.unit})</span> <strong>₹${itemTotal.toFixed(2)}</strong>`;
   host.append(row);
-
-  if(item.category === "ફળો" || item.category === "શાકભાજી" || item.unit === "કિલો") {
-   totalFruitVegGrams += item.qty * 1000;
-   hasFruitVeg = true;
-  } else {
-   hasGeneralOrGrocery = true;
-  }
  });
 
  $("cartTotal").textContent = `કુલ: ₹${total.toFixed(2)}`;
-
- let errorMsg = "";
- let canOrder = true;
-
- if(hasFruitVeg && totalFruitVegGrams < 2000) {
-  errorMsg = "⚠️ ફ્રૂટ અને શાકભાજીનો કુલ ઓર્ડર ઓછામાં ઓછો 2000 ગ્રામ (2 કિલો) હોવો જરૂરી છે.";
-  canOrder = false;
- }
-
- if(hasGeneralOrGrocery && total < 500) {
-  errorMsg = "⚠️ કરિયાણું અને જનરલ સ્ટોર માટે ઓર્ડર ઓછામાં ઓછો ₹500 નો હોવો જરૂરી છે.";
-  canOrder = false;
- }
-
- $("weightMsg").textContent = errorMsg;
- $("whatsappBtn").disabled = !canOrder;
+ $("weightMsg").textContent = "";
+ $("whatsappBtn").disabled = false;
 }
 
 function sendWhatsAppOrder() {
@@ -324,9 +299,9 @@ function sendWhatsAppOrder() {
  
  let total = 0;
  Object.values(cart).forEach(i => {
-  const t = i.unit === "નંગ" ? (i.price * (i.qty / 12)) : (i.price * i.qty);
+  const t = i.price * i.qty;
   total += t;
-  msg += `\n- ${i.name}: ${i.unit === "કિલો" ? i.qty.toFixed(3) : i.qty} ${i.unit} = ₹${t.toFixed(2)}`;
+  msg += `\n- ${i.name}: ${i.unit.includes("કિલો") ? i.qty.toFixed(3) : i.qty} ${i.unit} = ₹${t.toFixed(2)}`;
  });
 
  msg += `\n\n*કુલ રકમ: ₹${total.toFixed(2)}*`;
