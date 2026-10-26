@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Admin Dashboard - K.H Fresh</title>
+<title>Admin Dashboard - K.H Fresh & Store</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;padding:12px;background:#f4faf4;color:#203326;font-family:Arial,sans-serif}
@@ -26,8 +26,8 @@ small{color:#555}
 </head>
 <body>
 <main>
-<h2>🥬 K.H Fresh - Admin Dashboard 🍉</h2>
-<p>દુકાનો અને પ્રોડક્ટ્સ મેનેજ કરો</p>
+<h2>🥬 K.H Fresh & Store - Admin Dashboard 🍉</h2>
+<p>દુકાનો અને Meesho જેવી પ્રોડક્ટ્સ (કલર, સાઈઝ, ડઝન સાથે) મેનેજ કરો</p>
 
 <!-- લૉગિન સેક્શન -->
 <section id="login">
@@ -76,7 +76,7 @@ small{color:#555}
 
 <!-- ૨. પ્રોડક્ટ ઉમેરવા કે સુધારવાનું ફોર્મ -->
 <section>
-<h3 id="productFormTitle">📦 પ્રોડક્ટ અને ભાવ મેનેજ કરો</h3>
+<h3 id="productFormTitle">📦 પ્રોડક્ટ અને ભાવ મેનેજ કરો (Meesho Style)</h3>
 <form id="productForm">
 <input id="productId" type="hidden">
 
@@ -84,7 +84,7 @@ small{color:#555}
 <select id="productShopSelect" required><option value="">દુકાન પસંદ કરો</option></select>
 
 <label>પ્રોડક્ટનું નામ</label>
-<input id="name" required placeholder="દા.ત. બટાકા, કેળા, સાયકલ, શર્ટ">
+<input id="name" required placeholder="દા.ત. બટાકા, કેળા, શર્ટ, સાડી">
 
 <label>ભાવ (₹)</label>
 <input id="price" type="number" min="0" step="0.01" required placeholder="દા.ત. 40">
@@ -101,22 +101,23 @@ small{color:#555}
 <option value="અન્ય">અન્ય</option>
 </select>
 
-<label>એકમ / સાઈઝ (Unit)</label>
+<label>એકમ / તોલ (Unit)</label>
 <select id="unit">
-<option value="કિલો (Kg)">કિલો (Kg)</option>
-<option value="ગ્રામ (Gram)">ગ્રામ (Gram)</option>
-<option value="મિલીગ્રામ (mg)">મિલીગ્રામ (mg)</option>
-<option value="ડઝન (Dozen)">ડઝન (Dozen) - કેળા વગેરે માટે</option>
+<option value="કિલો (Kg)">કિલો (Kg) - (શાકભાજી/ફળો)</option>
+<option value="ગ્રામ (Gram)">ગ્રામ (Gram) - (૧૦૦ ગ્રામથી શરૂ)</option>
+<option value="ડઝન (Dozen)">ડઝન (Dozen) - (કેળા વગેરે માટે)</option>
+<option value="મિલીલીટર (ml)">મિલીલીટર (ml) / લીટર</option>
 <option value="નંગ (Piece)">નંગ (Piece)</option>
 <option value="પેકેટ (Packet)">પેકેટ (Packet)</option>
 <option value="બોક્સ (Box)">બોક્સ (Box)</option>
-<option value="મીટર (Meter)">મીટર (Meter) - કાપડ માટે</option>
-<option value="ફૂટ (Foot)">ફૂટ (Foot)</option>
-<option value="૧૨ ની સાઈઝ (12 Inch)">૧૨ ની સાઈઝ (12 Inch) - સાયકલ</option>
-<option value="૧૪ ની સાઈઝ (14 Inch)">૧૪ ની સાઈઝ (14 Inch) - સાયકલ</option>
-<option value="૨૦ ની સાઈઝ (20 Inch)">૨૦ ની સાઈઝ (20 Inch) - સાયકલ</option>
-<option value="૨૪ ની સાઈઝ (24 Inch)">૨૪ ની સાઈઝ (24 Inch) - સાયકલ</option>
+<option value="મીટર (Meter)">મીટર (Meter) - કાપડ</option>
 </select>
+
+<label>કપડાં/વસ્તુ માટે કલર્સ (અલ્પવિરામ કરીને લખો, જેમ કે: Red, Blue, Green)</label>
+<input id="productColors" placeholder="દા.ત. Red, Blue, Black (ખાલી પણ રાખી શકો)">
+
+<label>કપડાં/વસ્તુ માટે સાઈઝ (અલ્પવિરામ કરીને લખો, જેમ કે: S, M, L, XL)</label>
+<input id="productSizes" placeholder="દા.ત. S, M, L, XL, XXL (ખાલી પણ રાખી શકો)">
 
 <label for="imageFile">મોબાઇલ કેમેરા અથવા Gallery માંથી ફોટો પસંદ કરો</label>
 <input id="imageFile" type="file" accept="image/*">
@@ -317,6 +318,8 @@ function initAdminData() {
    card.innerHTML = `
     <strong>${p.name}</strong> — ₹${p.price} / ${p.unit}
     <br><small>દુકાન: ${shopObj ? shopObj.name : 'મુખ્ય દુકાન'} | કેટેગરી: ${p.category}</small>
+    ${p.colors ? `<br><small>🎨 કલર: ${p.colors}</small>` : ''}
+    ${p.sizes ? `<br><small>📏 સાઈઝ: ${p.sizes}</small>` : ''}
    `;
 
    const btnRow = document.createElement("div");
@@ -332,6 +335,8 @@ function initAdminData() {
     $("price").value = p.price || "";
     $("category").value = p.category || "શાકભાજી";
     $("unit").value = p.unit || "કિલો (Kg)";
+    $("productColors").value = p.colors || "";
+    $("productSizes").value = p.sizes || "";
     $("imageUrl").value = p.imageUrl || "";
     base64Image = p.imageUrl || "";
     $("active").value = String(p.active !== false);
@@ -422,6 +427,8 @@ $("productForm").addEventListener("submit", async e => {
    price: Number($("price").value),
    category: $("category").value,
    unit: $("unit").value,
+   colors: $("productColors").value.trim(),
+   sizes: $("productSizes").value.trim(),
    imageUrl: finalImageUrl,
    active: $("active").value === "true"
   };
@@ -444,6 +451,8 @@ $("productForm").addEventListener("submit", async e => {
   $("preview").style.display = "none";
   $("uploadMsg").textContent = "";
   $("imageUrl").value = "";
+  $("productColors").value = "";
+  $("productSizes").value = "";
  } catch(err) {
   $("saveMsg").textContent = "ભૂલ: " + err.message;
  }
