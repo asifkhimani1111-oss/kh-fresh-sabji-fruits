@@ -41,9 +41,9 @@ button:hover{opacity:.9}
 <button id="cancelShopEditBtn" style="background:#6c757d;display:none;margin-top:5px;">દુકાન એડિટ કેન્સલ કરો</button>
 </section>
 
-<!-- Shops List (Edit / Delete) -->
+<!-- Shops List -->
 <section>
-<h3>📋 દુકાનોની યાદી (Edit / Delete)</h3>
+<h3>📋 દુકાનોની યાદી</h3>
 <div id="adminShopsList">દુકાનો લોડ થઈ રહી છે...</div>
 </section>
 
@@ -56,7 +56,7 @@ button:hover{opacity:.9}
 <select id="prodShopSelect"><option value="">દુકાન લોડ થઈ રહી છે...</option></select>
 
 <label>પ્રોડક્ટનું નામ</label>
-<input id="prodName" placeholder="દા.ત. કાજુ કતરી / કોટન કાપડ / એપલ">
+<input id="prodName" placeholder="દા.ત. કાજુ કતરી / સિંગ ચિક્કી / એપલ">
 
 <label>કેટેગરી પસંદ કરો</label>
 <select id="prodCategory">
@@ -89,6 +89,9 @@ button:hover{opacity:.9}
 <label>ભાવ (₹ માં)</label>
 <input id="prodPrice" type="number" placeholder="દા.ત. 100">
 
+<label>⚖️ પેકેટ કે નંગ દીઠ વજન (ગ્રામમાં લખો, દા.ત. 250 કે 500 ગ્રામ)</label>
+<input id="prodWeightGrams" type="number" placeholder="દા.ત. 250 (જો પેકેટ 250 ગ્રામનું હોય તો)">
+
 <label>📸 મોબાઈલ ગેલેરીમાંથી ફોટો પસંદ કરો</label>
 <input type="file" id="prodImageFile" accept="image/*">
 <input type="hidden" id="prodImageBase64">
@@ -104,9 +107,9 @@ button:hover{opacity:.9}
 <button id="cancelProdEditBtn" style="background:#6c757d;display:none;margin-top:5px;">પ્રોડક્ટ એડિટ કેન્સલ કરો</button>
 </section>
 
-<!-- Products List (Edit / Delete) -->
+<!-- Products List -->
 <section>
-<h3>📋 પ્રોડક્ટ્સની યાદી (Edit / Delete)</h3>
+<h3>📋 પ્રોડક્ટ્સની યાદી</h3>
 <div id="adminProductsList">પ્રોડક્ટ્સ લોડ થઈ રહી છે...</div>
 </section>
 </main>
@@ -133,7 +136,6 @@ let allShops = [];
 let allProducts = [];
 
 async function initAdmin() {
- // Gallery image compression & base64 converter
  $("prodImageFile").onchange = (e) => {
   const file = e.target.files[0];
   if(file) {
@@ -165,20 +167,17 @@ async function initAdmin() {
   }
  };
 
- // Listen Shops
  onSnapshot(collection(db, "shops"), snap => {
   allShops = snap.docs.map(d => ({id: d.id, ...d.data()}));
   updateShopDropdown();
   renderAdminShops();
  });
 
- // Listen Products
  onSnapshot(collection(db, "products"), snap => {
   allProducts = snap.docs.map(d => ({id: d.id, ...d.data()}));
   renderAdminProducts();
  });
 
- // Add / Update Shop
  $("addShopBtn").onclick = async () => {
   const editId = $("editShopId").value;
   const name = $("shopName").value.trim();
@@ -205,7 +204,6 @@ async function initAdmin() {
 
  $("cancelShopEditBtn").onclick = () => { resetShopForm(); };
 
- // Add / Update Product
  $("addProdBtn").onclick = async () => {
   const editId = $("editProdId").value;
   const shopId = $("prodShopSelect").value;
@@ -213,6 +211,7 @@ async function initAdmin() {
   const category = $("prodCategory").value;
   const unit = $("prodUnit").value;
   const price = parseFloat($("prodPrice").value);
+  const weightGrams = parseFloat($("prodWeightGrams").value) || 0;
   const imageUrl = $("prodImageBase64").value.trim();
   const colors = $("prodColors").value.trim();
   const sizes = $("prodSizes").value.trim();
@@ -222,7 +221,7 @@ async function initAdmin() {
    return;
   }
 
-  const productData = { shopId, name, category, unit, price, colors, sizes, active: true };
+  const productData = { shopId, name, category, unit, price, weightGrams, colors, sizes, active: true };
   if(imageUrl) productData.imageUrl = imageUrl;
 
   try {
@@ -260,6 +259,7 @@ function resetProdForm() {
  $("editProdId").value = "";
  $("prodName").value = "";
  $("prodPrice").value = "";
+ $("prodWeightGrams").value = "";
  $("prodColors").value = "";
  $("prodSizes").value = "";
  $("prodImageFile").value = "";
@@ -355,7 +355,7 @@ function renderAdminProducts() {
     <img src="${p.imageUrl || 'https://via.placeholder.com/60'}" alt="">
     <div>
      <strong style="font-size:15px;">${p.name}</strong><br>
-     <span style="font-size:13px; color:#168343;">₹${p.price} / ${p.unit}</span><br>
+     <span style="font-size:13px; color:#168343;">₹${p.price} / ${p.unit} ${p.weightGrams ? '('+p.weightGrams+' ગ્રામ)' : ''}</span><br>
      <span style="font-size:11px; color:#666;">કેટેગરી: ${p.category} | દુકાન: ${shopObj ? shopObj.name : 'N/A'}</span>
     </div>
    </div>
@@ -374,6 +374,7 @@ function renderAdminProducts() {
    $("prodCategory").value = p.category || "શાકભાજી";
    $("prodUnit").value = p.unit || "કિલો (Kg)";
    $("prodPrice").value = p.price || "";
+   $("prodWeightGrams").value = p.weightGrams || "";
    $("prodColors").value = p.colors || "";
    $("prodSizes").value = p.sizes || "";
    if(p.imageUrl) {
