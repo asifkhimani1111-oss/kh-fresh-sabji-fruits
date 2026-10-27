@@ -116,7 +116,6 @@ let allShops = [];
 let allProducts = [];
 
 async function initAdmin() {
- // દુકાનો લોડ કરવા માટે onSnapshot વાપર્યું જેથી નવી દુકાન ઉમેરાતાની સાથે જ ડ્રોપડાઉન અપડેટ થઈ જાય
  onSnapshot(collection(db, "shops"), snap => {
   allShops = snap.docs.map(d => ({id: d.id, ...d.data()}));
   updateShopDropdown();
@@ -140,7 +139,7 @@ async function initAdmin() {
    $("shopName").value = "";
    $("shopWhatsapp").value = "";
   } catch(err) {
-   alert("ભૂલ આવી: " + err.message);
+   alert("દુકાન સેવ કરતી વખતે ભૂલ આવી (તમારા ફાયરબેઝ રૂલ્સ ચકાસો): " + err.message);
   }
  };
 
@@ -170,7 +169,7 @@ async function initAdmin() {
    $("prodColors").value = "";
    $("prodSizes").value = "";
   } catch(err) {
-   alert("ભૂલ આવી: " + err.message);
+   alert("પ્રોડક્ટ સેવ કરતી વખતે ભૂલ આવી: " + err.message);
   }
  };
 }
@@ -225,7 +224,11 @@ function renderAdminProducts() {
   delBtn.style.cssText = "background:#d32f2f; width:auto; padding:8px 12px; font-size:13px;";
   delBtn.onclick = async () => {
    if(confirm(`શું તમે "${p.name}" ડિલીટ કરવા માંગો છો?`)) {
-    await deleteDoc(doc(db, "products", p.id));
+    try {
+     await deleteDoc(doc(db, "products", p.id));
+    } catch(err) {
+     alert("ડિલીટ કરવામાં પરમિશનની ભૂલ: " + err.message);
+    }
    }
   };
 
