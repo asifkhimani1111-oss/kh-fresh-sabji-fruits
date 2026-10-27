@@ -7,7 +7,7 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;padding:12px;background:#eef4ee;color:#203326;font-family:Arial,sans-serif}
-main{max-width:650px;margin:auto}
+main{max-width:700px;margin:auto}
 section{background:white;padding:16px;margin:14px 0;border-radius:12px;box-shadow:0 2px 8px #0001}
 h2,h3{color:#168343;margin-top:0}
 input,select,button{width:100%;padding:12px;margin:7px 0;border:1px solid #ccc;border-radius:8px;font-size:16px}
@@ -17,13 +17,36 @@ button:hover{background:#126633}
 .item-card img{width:70px;height:70px;object-fit:cover;border-radius:6px}
 .item-info{flex:1}
 .del-btn{background:#d32f2f;width:auto;padding:6px 12px;font-size:13px;margin-top:4px}
-.del-btn:hover{background:#b71c1c}
+.shop-box{border:1px solid #c8e6c9;background:#f9fbf9;padding:12px;margin:10px 0;border-radius:8px}
 </style>
 </head>
 <body>
 <main>
 <h2>🛠️ K.H Fresh & Fashion - Admin Panel</h2>
 
+<!-- નવી દુકાન અને માસિક ચાર્જ ઉમેરવા માટેનું સેશન -->
+<section>
+<h3>🏪 દુકાન અને માસિક પ્લાન (₹300 / 30 Prods) ઉમેરો</h3>
+<form id="shopForm">
+<label>દુકાનનું નામ</label>
+<input id="sName" placeholder="દા.ત. K.H Fresh Sabji" required>
+<label>દુકાનનો WhatsApp નંબર (દા.ત. 919876543210)</label>
+<input id="sWhatsapp" placeholder="919876543210" required>
+<label>માસિક મિનિમમ ચાર્જ (₹)</label>
+<input id="sMinCharge" type="number" value="300" required>
+<label>પ્લાન ચાલુ થયાની તારીખ</label>
+<input id="sStartDate" type="date" required>
+<button type="submit" style="background:#0288d1;">💾 દુકાન સેવ કરો</button>
+</form>
+</section>
+
+<!-- દુકાનો અને એમના હિસાબની યાદી -->
+<section>
+<h3>📊 દુકાનવાર માસિક હિસાબ (₹300 + એક્સ્ટ્રા પ્રોડક્ટ ₹10)</h3>
+<div id="shopsAccountList">લોડ થઈ રહ્યું છે...</div>
+</section>
+
+<!-- વસ્તુ ઉમેરવા માટેનું સેશન -->
 <section>
 <h3>➕ નવી વસ્તુ ઉમેરો / અપડેટ કરો</h3>
 <form id="productForm">
@@ -34,7 +57,7 @@ button:hover{background:#126633}
 </select>
 
 <label>વસ્તુનું નામ</label>
-<input id="pName" placeholder="દા.ત. Apple, Mawa Chikki, Ice Cream" required>
+<input id="pName" placeholder="દા.ત. Apple, Mawa Chikki" required>
 
 <label>કેટેગરી</label>
 <select id="pCategory" required>
@@ -69,10 +92,10 @@ button:hover{background:#126633}
 <label>ફોટો લિંક (Image URL)</label>
 <input id="pImageUrl" placeholder="ફોટોની લિંક અહીં પેસ્ટ કરો">
 
-<label>કલર્સ (અલ્પવિરામ કરીને લખો, જેમ કે: Red, Blue, Green - વૈકલ્પિક)</label>
+<label>કલર્સ (વૈકલ્પિક)</label>
 <input id="pColors" placeholder="Red, Blue, White">
 
-<label>સાઇઝ (અલ્પવિરામ કરીને લખો, જેમ કે: S, M, L, XL - વૈકલ્પિક)</label>
+<label>સાઇઝ (વૈકલ્પિક)</label>
 <input id="pSizes" placeholder="S, M, L, XL">
 
 <button type="submit">💾 વસ્તુ સેવ કરો</button>
@@ -104,35 +127,45 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const $ = id => document.getElementById(id);
 
-let allShops = [];
+let allShopsCache = [];
+let allProductsCache = [];
 
 async function initAdmin() {
- const shopSnap = await getDocs(collection(db, "shops"));
- allShops = shopSnap.docs.map(d => ({id: d.id, ...d.data()}));
- const shopSel = $("pShopId");
- shopSel.replaceChildren();
- const defaultOpt = document.createElement("option");
- defaultOpt.value = "";
- defaultOpt.textContent = "દુકાન પસંદ કરો...";
- shopSel.append(defaultOpt);
+ // આજની તારીખ ડિફોલ્ટ સેટ કરો
+ const today = new Date().toISOString().split('T')[0];
+ if($("sStartDate")) $("sStartDate").value = today;
 
- allShops.forEach(s => {
-  const opt = document.createElement("option");
-  opt.value = s.id;
-  opt.textContent = s.name;
-  shopSel.append(opt);
- });
+ loadShopsAndProducts();
 
- onSnapshot(collection(db, "products"), snap => {
-  const products = snap.docs.map(d => ({id: d.id, ...d.data()}));
-  renderAdminProducts(products);
- });
+ $("shopForm").onsubmit = async (e) => {
+  e.preventDefault();
+  const name = $("sName").value.trim();
+  const whatsapp = $("sWhatsapp").value.trim();
+  const minCharge = parseFloat($("sMinCharge").value) || 300;
+  const startDate = $("sStartDate").value;
+
+  try {
+   await addDoc(collection(db, "shops"), { name, whatsapp, minCharge, startDate });
+   alert("દુકાન સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
+   $("shopForm").reset();
+   $("sStartDate").value = today;
+   loadShopsAndProducts();
+  } catch(err) {
+   alert("ભૂલ આવી: " + err.message);
+  }
+ };
 
  $("productForm").onsubmit = async (e) => {
   e.preventDefault();
   const id = $("pId").value;
+  const shopId = $("pShopId").value;
+  if(!shopId) {
+   alert("કૃપા કરીને દુકાન સિલેક્ટ કરો!");
+   return;
+  }
+
   const data = {
-   shopId: $("pShopId").value,
+   shopId: shopId,
    name: $("pName").value.trim(),
    category: $("pCategory").value,
    price: parseFloat($("pPrice").value),
@@ -160,6 +193,78 @@ async function initAdmin() {
  $("resetBtn").onclick = resetForm;
 }
 
+async function loadShopsAndProducts() {
+ const shopSnap = await getDocs(collection(db, "shops"));
+ allShopsCache = shopSnap.docs.map(d => ({id: d.id, ...d.data()}));
+
+ // Dropdown update
+ const shopSel = $("pShopId");
+ shopSel.replaceChildren();
+ const defaultOpt = document.createElement("option");
+ defaultOpt.value = "";
+ defaultOpt.textContent = "દુકાન પસંદ કરો...";
+ shopSel.append(defaultOpt);
+
+ allShopsCache.forEach(s => {
+  const opt = document.createElement("option");
+  opt.value = s.id;
+  opt.textContent = s.name;
+  shopSel.append(opt);
+ });
+
+ onSnapshot(collection(db, "products"), snap => {
+  allProductsCache = snap.docs.map(d => ({id: d.id, ...d.data()}));
+  renderAdminProducts(allProductsCache);
+  renderShopsAccount();
+ });
+}
+
+function renderShopsAccount() {
+ const host = $("shopsAccountList");
+ host.replaceChildren();
+
+ if(allShopsCache.length === 0) {
+  host.textContent = "હજી કોઈ દુકાન ઉમેરેલી નથી.";
+  return;
+ }
+
+ allShopsCache.forEach(shop => {
+  const shopProducts = allProductsCache.filter(p => p.shopId === shop.id);
+  const totalProds = shopProducts.length;
+  
+  let baseCharge = shop.minCharge || 300;
+  let calculatedBill = baseCharge;
+  let extraCount = 0;
+
+  if(totalProds > 30) {
+   extraCount = totalProds - 30;
+   calculatedBill = baseCharge + (extraCount * 10);
+  }
+
+  const box = document.createElement("div");
+  box.className = "shop-box";
+  box.innerHTML = `
+   <h4 style="margin:0 0 6px 0; color:#168343;">🏪 ${shop.name}</h4>
+   <p style="margin:4px 0; font-size:14px;">📞 WhatsApp: ${shop.whatsapp}</p>
+   <p style="margin:4px 0; font-size:14px;">📅 શરૂ તારીખ: ${shop.startDate || 'નક્કી નથી'}</p>
+   <p style="margin:4px 0; font-size:14px; font-weight:bold;">📦 કુલ પ્રોડક્ટ્સ: ${totalProds} (30 સુધી ₹${baseCharge}, ઉપરની ${extraCount} ના ₹10 લેખે)</p>
+   <p style="margin:6px 0; font-size:16px; color:#d32f2f; font-weight:bold;">💰 આ મહિનાનું કુલ બિલ: ₹${calculatedBill}</p>
+  `;
+
+  // WhatsApp reminder button
+  const callBtn = document.createElement("button");
+  callBtn.textContent = "💬 WhatsApp પર રીમાઇન્ડર મોકલો / કોલ કરો";
+  callBtn.style.cssText = "background:#25d366; margin-top:6px; font-size:13px; padding:8px;";
+  callBtn.onclick = () => {
+   let msg = `नमस्कार ${shop.name}, તમારો માસિક સબ્સ્ક્રિપ્શન પ્લાન પૂરો થવા આવ્યો છે. તમારી કુલ ${totalProds} પ્રોડક્ટ્સ છે અને આ મહિનાનું કુલ બિલ ₹${calculatedBill} થયું છે. શું તમે પ્લાન ચાલુ રાખવા માગો છો?`;
+   window.open(`https://wa.me/${shop.whatsapp}?text=` + encodeURIComponent(msg), "_blank");
+  };
+
+  box.append(callBtn);
+  host.append(box);
+ });
+}
+
 function renderAdminProducts(products) {
  const host = $("adminProductsList");
  host.replaceChildren();
@@ -173,7 +278,7 @@ function renderAdminProducts(products) {
   const card = document.createElement("div");
   card.className = "item-card";
 
-  const shopObj = allShops.find(s => s.id === p.shopId);
+  const shopObj = allShopsCache.find(s => s.id === p.shopId);
 
   const img = document.createElement("img");
   img.src = p.imageUrl || "https://via.placeholder.com/70";
@@ -182,7 +287,7 @@ function renderAdminProducts(products) {
   const info = document.createElement("div");
   info.className = "item-info";
   info.innerHTML = `
-   <span style="font-size:11px; color:#168343; font-weight:bold;">[${p.category}] - ${shopObj ? shopObj.name : 'મૂળ દુકાન'}</span>
+   <span style="font-size:11px; color:#168343; font-weight:bold;">[${p.category}] - ${shopObj ? shopObj.name : 'દુકાન નક્કી નથી'}</span>
    <strong style="display:block; font-size:15px;">${p.name}</strong>
    <span style="color:#333;">₹${p.price} / ${p.unit}</span>
   `;
@@ -190,7 +295,7 @@ function renderAdminProducts(products) {
   const btnRow = document.createElement("div");
   
   const editBtn = document.createElement("button");
-  editBtn.textContent = "સમારકામ (Edit)";
+  editBtn.textContent = "Edit";
   editBtn.style.cssText = "background:#ff9800; width:auto; padding:6px 12px; font-size:13px; margin-right:6px;";
   editBtn.onclick = () => {
    $("pId").value = p.id;
@@ -208,7 +313,7 @@ function renderAdminProducts(products) {
 
   const delBtn = document.createElement("button");
   delBtn.className = "del-btn";
-  delBtn.textContent = "કાઢી નાખો (Delete)";
+  delBtn.textContent = "Delete";
   delBtn.onclick = async () => {
    if(confirm(`શું તમે ખરેખર "${p.name}" હટાવવા માગો છો?`)) {
     await deleteDoc(doc(db, "products", p.id));
