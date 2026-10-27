@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>K.H Fresh & Fashion — Meesho Style</title>
+<title>K.H Fresh & Fashion — Meesho Style App</title>
 
 <link rel="icon" type="image/jpeg" href="logo-fresh.jpg">
 <link rel="apple-touch-icon" href="logo-fresh.jpg">
@@ -60,15 +60,15 @@ button:disabled{opacity:.6}
 <div class="brand-banner">
   <img src="logo-fresh.jpg" alt="K.H Fresh Logo" class="brand-logo">
   <h2 class="brand-title">K.H Fresh & Fashion</h2>
-  <p class="brand-sub">Taja falo, shakbhaji, Ice Cream, Mithai ane Fashion!</p>
+  <p class="brand-sub">તજા ફળ, શાકભાજી, આઈસ્ક્રીમ, મીઠાઈ, ફરસાણ અને ફેશન કાપડ!</p>
 </div>
 
 <div style="background: #e8f5e9; color: #1b5e20; padding: 10px 14px; margin: 10px 0; border-radius: 8px; text-align: center; font-weight: bold; border: 1px solid #c8e6c9;">
-  🕒 Samay: Savarna 9:00 thi sanjna 6:00 | 🚴 Delivery suvidha uplabdh
+  🕒 સમય: સવારે 9:00 થી સાંજના 6:00 | 🚴 હોમ ડિલિવરી ઉપલબ્ધ
 </div>
 
 <section>
-<h3>📂 Category Pasand Karo</h3>
+<h3>📂 કેટેગરી પસંદ કરો</h3>
 <div class="cat-grid" id="catGrid">
   <div class="cat-card active" data-cat="બધી વસ્તુઓ">
     <img src="logo-fresh.jpg" alt="All">
@@ -131,25 +131,25 @@ button:disabled{opacity:.6}
 </section>
 
 <section>
-<h3>🛍️ Vastuwo (Vigat jova click karo)</h3>
+<h3>🛍️ વસ્તુઓ (વિગત જોવા ક્લિક કરો)</h3>
 <!-- આડી ગ્રીડ કન્ટેનર -->
-<div id="productsList" class="products-grid">Category pasand karo...</div>
+<div id="productsList" class="products-grid">કેટેગરી પસંદ કરો...</div>
 </section>
 
 <section>
-<h3>🛒 Tamaro Order (Dukanvar alag)</h3>
-<div id="cartList">Haji koi vastu pasand kari nathi.</div>
+<h3>🛒 તમારો ઓર્ડર (દુકાનવાર અલગ)</h3>
+<div id="cartList">હજી કોઈ વસ્તુ પસંદ કરી નથી.</div>
 <div id="cartActions"></div>
 </section>
 
 <section>
-<h3>📋 Grahakni Mahiti</h3>
-<label>Tamaru Naam</label>
-<input id="custName" placeholder="Tamaru naam lakho" required>
-<label>Mobile Number</label>
-<input id="custPhone" type="tel" placeholder="10 ankhno mobile number" required>
-<label>Puro Patto (Sarnamu)</label>
-<input id="custAddress" placeholder="Society nu naam, makaan number, vistar" required>
+<h3>📋 ગ્રાહકની માહિતી</h3>
+<label>તમારું નામ</label>
+<input id="custName" placeholder="તમારું નામ લખો" required>
+<label>મોબાઈલ નંબર</label>
+<input id="custPhone" type="tel" placeholder="10 અંકનો મોબાઈલ નંબર" required>
+<label>પૂરું સરનામું</label>
+<input id="custAddress" placeholder="સોસાયટીનું નામ, મકાન નંબર, વિસ્તાર" required>
 </section>
 </main>
 
@@ -160,7 +160,7 @@ button:disabled{opacity:.6}
     <h3 id="modalTitle" style="margin:5px 0;"></h3>
     <p id="modalPrice" style="color:#168343; font-weight:bold;"></p>
     <p id="modalDesc" style="font-size:13px; color:#555;"></p>
-    <button id="closeModal" style="background:#d32f2f; margin-top:10px;">Bandh Karo</button>
+    <button id="closeModal" style="background:#d32f2f; margin-top:10px;">બંધ કરો</button>
   </div>
 </div>
 
@@ -211,9 +211,9 @@ async function init() {
 
 function updateMetaText() {
  if(activeCategory === "બધી વસ્તુઓ") {
-  $("shopMeta").textContent = "Badhi dukano ane fashion items aahe uplabdh chhe.";
+  $("shopMeta").textContent = "બધી દુકાનો અને ફેશન આઇટમ્સ ઉપલબ્ધ છે.";
  } else {
-  $("shopMeta").textContent = `Select kareli category: ${activeCategory}`;
+  $("shopMeta").textContent = `પસંદ કરેલી કેટેગરી: ${activeCategory}`;
  }
 }
 
@@ -229,7 +229,7 @@ function renderProducts() {
  });
 
  if(filtered.length === 0) {
-  host.textContent = "Aa category ma haji koi vastu uplabdh nathi.";
+  host.textContent = "આ કેટેગરીમાં હજી કોઈ વસ્તુ ઉપલબ્ધ નથી.";
   return;
  }
 
@@ -243,8 +243,8 @@ function renderProducts() {
    if(e.target.tagName === 'BUTTON' || e.target.tagName === 'SELECT') return;
    $("modalImg").src = p.imageUrl || "https://via.placeholder.com/120";
    $("modalTitle").textContent = p.name;
-   $("modalPrice").textContent = `₹${p.price} / ${p.unit || 'Nang'}`;
-   $("modalDesc").textContent = `Category: ${p.category || 'Samanya'} | Dukan: ${shopObj ? shopObj.name : 'Mool Dukan'}`;
+   $("modalPrice").textContent = `₹${p.price} / ${p.unit || 'નંગ'}`;
+   $("modalDesc").textContent = `કેટેગરી: ${p.category || 'સામાન્ય'} | દુકાન: ${shopObj ? shopObj.name : 'મૂળ દુકાન'}`;
    $("productModal").style.display = "flex";
   };
 
@@ -269,12 +269,12 @@ function renderProducts() {
    const sizesArr = p.sizes.split(",").map(s => s.trim());
    optionsHtml += `<br><select class="sel-size" data-id="${p.id}" style="font-size:11px; padding:3px; margin-top:2px;">`;
    sizesArr.forEach(s => optionsHtml += `<option value="${s}">${s}</option>`);
-   optionsHtml += `</select>`;
+   sizesArr += `</select>`;
   }
 
   info.innerHTML = `
-   <span class="badge">${p.category || 'Samanya'}</span>
-   <span style="font-size:10px; color:#666; display:block; margin-bottom:2px;">🏪 Dukan: ${shopObj ? shopObj.name : 'Mool Dukan'}</span>
+   <span class="badge">${p.category || 'સામાન્ય'}</span>
+   <span style="font-size:10px; color:#666; display:block; margin-bottom:2px;">🏪 દુકાન: ${shopObj ? shopObj.name : 'મૂળ દુકાન'}</span>
    <strong style="display:block;font-size:14px;">${p.name}</strong>
    <span style="color:#168343;font-weight:bold;font-size:13px;">₹${p.price} / ${unitType}</span>
    ${optionsHtml}
@@ -294,15 +294,15 @@ function renderProducts() {
   
   const cartKey = p.id;
   const currentQty = cart[cartKey] ? cart[cartKey].qty : 0;
-  countSpan.textContent = unitType.includes("કિલો") ? currentQty.toFixed(3) : currentQty;
+  countSpan.textContent = (unitType.includes("કિલો") || unitType.includes("મીટર")) ? currentQty.toFixed(2) : currentQty;
 
   const plusBtn = document.createElement("button");
   plusBtn.textContent = "+";
 
   let stepVal = 1;
   if(unitType.includes("કિલો")) stepVal = 0.250;
+  else if(unitType.includes("મીટર")) stepVal = 0.50; // મીટર માટે અડધો કે એક મીટર વધારવા
   else if(unitType.includes("ગ્રામ")) stepVal = 100;
-  else if(unitType.includes("મીટર")) stepVal = 1;
   else stepVal = 1;
 
   minusBtn.onclick = (e) => {
@@ -310,7 +310,7 @@ function renderProducts() {
    if(!cart[cartKey]) return;
    cart[cartKey].qty -= stepVal;
    if(cart[cartKey].qty <= 0) delete cart[cartKey];
-   countSpan.textContent = cart[cartKey] ? (unitType.includes("કિલો") ? cart[cartKey].qty.toFixed(3) : cart[cartKey].qty) : (unitType.includes("કિલો") ? "0.000" : "0");
+   countSpan.textContent = cart[cartKey] ? ((unitType.includes("કિલો") || unitType.includes("મીટર")) ? cart[cartKey].qty.toFixed(2) : cart[cartKey].qty) : ((unitType.includes("કિલો") || unitType.includes("મીટર")) ? "0.00" : "0");
    updateCart();
   };
 
@@ -340,7 +340,7 @@ function renderProducts() {
    cart[cartKey].color = selectedColor;
    cart[cartKey].size = selectedSize;
 
-   countSpan.textContent = unitType.includes("કિલો") ? cart[cartKey].qty.toFixed(3) : cart[cartKey].qty;
+   countSpan.textContent = (unitType.includes("કિલો") || unitType.includes("મીટર")) ? cart[cartKey].qty.toFixed(2) : cart[cartKey].qty;
    updateCart();
   };
 
@@ -359,7 +359,7 @@ function updateCart() {
 
  const keys = Object.keys(cart);
  if(keys.length === 0) {
-  host.textContent = "Haji koi vastu pasand kari nathi.";
+  host.textContent = "હજી કોઈ વસ્તુ પસંદ કરી નથી.";
   return;
  }
 
@@ -372,7 +372,7 @@ function updateCart() {
  });
 
  Object.keys(shopsMap).forEach(sId => {
-  const shopObj = allShops.find(s => s.id === sId) || { name: "Mukhya Dukan", whatsapp: "919876543210" };
+  const shopObj = allShops.find(s => s.id === sId) || { name: "મુખ્ય દુકાન", whatsapp: "919876543210" };
   const items = shopsMap[sId];
 
   const shopBox = document.createElement("div");
@@ -380,59 +380,32 @@ function updateCart() {
 
   const shopTitle = document.createElement("h4");
   shopTitle.style.cssText = "margin:0 0 6px 0; color:#168343;";
-  shopTitle.textContent = `🏪 Dukan: ${shopObj.name}`;
+  shopTitle.textContent = `🏪 દુકાન: ${shopObj.name}`;
   shopBox.append(shopTitle);
 
   let shopTotal = 0;
-  let shopProduceWeightKg = 0;
-  let hasProduceOrVeg = false;
-  let hasGeneralItems = false;
 
   items.forEach(item => {
    let itemTotal = item.price * item.qty;
    shopTotal += itemTotal;
 
-   if(item.category === "શાકભાજી" || item.category === "ફળો") {
-    hasProduceOrVeg = true;
-    if(item.unit.includes("કિલો")) shopProduceWeightKg += item.qty;
-    else if(item.unit.includes("ગ્રામ")) shopProduceWeightKg += (item.qty / 1000);
-   } else {
-    hasGeneralItems = true;
-   }
-
    const row = document.createElement("div");
    row.style.cssText = "display:flex; justify-content:space-between; font-size:14px; margin:3px 0;";
-   let details = `${item.unit.includes("કિલો") ? item.qty.toFixed(3) : item.qty} ${item.unit}`;
-   if(item.color) details += ` | ${item.color}`;
-   if(item.size) details += ` | ${item.size}`;
+   let details = `${(item.unit.includes("કિલો") || item.unit.includes("મીટર")) ? item.qty.toFixed(2) : item.qty} ${item.unit}`;
+   if(item.color) details += ` | કલર: ${item.color}`;
+   if(item.size) details += ` | સાઈઝ: ${item.size}`;
    row.innerHTML = `<span>${item.name} (${details})</span> <strong>₹${itemTotal.toFixed(2)}</strong>`;
    shopBox.append(row);
   });
 
   const totalRow = document.createElement("div");
   totalRow.style.cssText = "margin-top:6px; font-weight:bold; font-size:15px;";
-  totalRow.textContent = `Dukan nu kul bill: ₹${shopTotal.toFixed(2)}`;
+  totalRow.textContent = `દુકાનનું કુલ બિલ: ₹${shopTotal.toFixed(2)}`;
   shopBox.append(totalRow);
-
-  let shopError = "";
-  if(hasProduceOrVeg && shopProduceWeightKg < 1.0) {
-   shopError = `⚠️ Niyam alert (${shopObj.name}): Phal/Shakbhaji nu kul vajan 1 kilo thi ochhu chhe!`;
-  }
-  if(!hasProduceOrVeg && hasGeneralItems && shopTotal < 500) {
-   shopError = `⚠️ Niyam alert (${shopObj.name}): Ochha ma ochhu ₹500 no order jaruri chhe!`;
-  }
-
-  if(shopError) {
-   const errDiv = document.createElement("div");
-   errDiv.className = "red-alert";
-   errDiv.textContent = shopError;
-   shopBox.append(errDiv);
-  }
 
   const waBtn = document.createElement("button");
   waBtn.style.cssText = "background:#25d366; margin-top:8px;";
-  waBtn.textContent = `${shopObj.name} na WhatsApp par order moklo`;
-  if(shopError) waBtn.disabled = true;
+  waBtn.textContent = `${shopObj.name} ના WhatsApp પર ઓર્ડર મોકલો`;
 
   waBtn.onclick = () => {
    sendShopWhatsAppOrder(shopObj, items, shopTotal);
@@ -449,21 +422,21 @@ function sendShopWhatsAppOrder(shopObj, items, total) {
  const address = $("custAddress").value.trim();
 
  if(!name || !phone || !address) {
-  alert("Kripa karine tamaru naam, mobile number ane sarnamu bharo!");
+  alert("કૃપા કરીને તમારું નામ, મોબાઈલ નંબર અને સરનામું ભરો!");
   return;
- }
+}
 
- let msg = `🛒 *Navo Order - ${shopObj.name}*\n\n👤 Naam: ${name}\n📞 Number: ${phone}\n📍 Sarnamu: ${address}\n\n*Vastuwo:*`;
+ let msg = `🛒 *નવો ઓર્ડર - ${shopObj.name}*\n\n👤 નામ: ${name}\n📞 નંબર: ${phone}\n📍 સરનામું: ${address}\n\n*વસ્તુઓ:*`;
  
  items.forEach(i => {
   const t = i.price * i.qty;
-  let d = `${i.unit.includes("કિલો") ? i.qty.toFixed(3) : i.qty} ${i.unit}`;
-  if(i.color) d += ` (${i.color})`;
-  if(i.size) d += ` (${i.size})`;
+  let d = `${(i.unit.includes("કિલો") || i.unit.includes("મીટર")) ? i.qty.toFixed(2) : i.qty} ${i.unit}`;
+  if(i.color) d += ` (કલર: ${i.color})`;
+  if(i.size) d += ` (સાઈઝ: ${i.size})`;
   msg += `\n- ${i.name}: ${d} = ₹${t.toFixed(2)}`;
  });
 
- msg += `\n\n*Dukan nu kul bill: ₹${total.toFixed(2)}*\n*(Nondh: Order cancel thai shakse nahi)*`;
+ msg += `\n\n*દુકાનનું કુલ બિલ: ₹${total.toFixed(2)}*\n*(નોંધ: ઓર્ડર કન્ફર્મ થયેલ છે)*`;
 
  const waNumber = shopObj.whatsapp || "919876543210";
  const url = `https://wa.me/${waNumber}?text=` + encodeURIComponent(msg);
