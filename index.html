@@ -187,7 +187,7 @@ async function init() {
 }
 
 function updateMetaText() {
- $("shopMetatextContent") = activeCategory === "બધી વસ્તુઓ" ? "બધી દુકાનો અને કેટેગરીઝ ઉપલબ્ધ છે." : `પસંદ કરેલી કેટેગરી: ${activeCategory}`;
+ $("shopMeta").textContent = activeCategory === "બધી વસ્તુઓ" ? "બધી દુકાનો અને કેટેગરીઝ ઉપલબ્ધ છે." : `પસંદ કરેલી કેટેગરી: ${activeCategory}`;
 }
 
 function renderProducts() {
@@ -257,7 +257,9 @@ function renderProducts() {
   
   const cartKey = p.id;
   const currentQty = cart[cartKey] ? cart[cartKey].qty : 0;
-  countSpan.textContent = (unitType.includes("કિલો") || unitType.includes("મીટર")) ? currentQty.toFixed(2) : currentQty;
+  
+  const isDecimalUnit = unitType.includes("કિલો") || unitType.includes("મીટર");
+  countSpan.textContent = isDecimalUnit ? currentQty.toFixed(2) : currentQty;
 
   const plusBtn = document.createElement("button");
   plusBtn.textContent = "+";
@@ -266,13 +268,16 @@ function renderProducts() {
   if(unitType.includes("કિલો")) stepVal = 0.250;
   else if(unitType.includes("મીટર")) stepVal = 0.50;
   else if(unitType.includes("ગ્રામ")) stepVal = 100;
+  else stepVal = 1;
 
   minusBtn.onclick = (e) => {
    e.stopPropagation();
    if(!cart[cartKey]) return;
    cart[cartKey].qty -= stepVal;
    if(cart[cartKey].qty <= 0) delete cart[cartKey];
-   countSpan.textContent = cart[cartKey] ? ((unitType.includes("કિલો") || unitType.includes("મીટર")) ? cart[cartKey].qty.toFixed(2) : cart[cartKey].qty) : ((unitType.includes("કિલો") || unitType.includes("મીટર")) ? "0.00" : "0");
+   
+   const q = cart[cartKey] ? cart[cartKey].qty : 0;
+   countSpan.textContent = isDecimalUnit ? q.toFixed(2) : q;
    updateCart();
   };
 
@@ -282,13 +287,25 @@ function renderProducts() {
    let selectedSize = card.querySelector(".sel-size") ? card.querySelector(".sel-size").value : "";
 
    if(!cart[cartKey]) {
-    cart[cartKey] = { id: p.id, name: p.name, price: p.price, unit: unitType, qty: 0, category: p.category, color: selectedColor, size: selectedSize, shopId: p.shopId || "default" };
+    cart[cartKey] = { 
+     id: p.id, 
+     name: p.name, 
+     price: p.price, 
+     unit: unitType, 
+     weightGrams: p.weightGrams || 0,
+     qty: 0, 
+     category: p.category, 
+     color: selectedColor, 
+     size: selectedSize, 
+     shopId: p.shopId || "default" 
+    };
    }
    cart[cartKey].qty += stepVal;
    cart[cartKey].color = selectedColor;
    cart[cartKey].size = selectedSize;
 
-   countSpan.textContent = (unitType.includes("કિલો") || unitType.includes("મીટર")) ? cart[cartKey].qty.toFixed(2) : cart[cartKey].qty;
+   const q = cart[cartKey].qty;
+   countSpan.textContent = isDecimalUnit ? q.toFixed(2) : q;
    updateCart();
   };
 
@@ -339,15 +356,21 @@ function updateCart() {
 
    if(item.category === "શાકભાજી" || item.category === "ફળો") {
     hasProduceOrVeg = true;
-    if(item.unit.includes("કિલો")) shopProduceWeightKg += item.qty;
-    else if(item.unit.includes("ગ્રામ")) shopProduceWeightKg += (item.qty / 1000);
+    if(item.unit.includes("કિલો")) {
+     shopProduceWeightKg += item.qty;
+    } else if(item.unit.includes("ગ્રામ")) {
+     shopProduceWeightKg += (item.qty / 1000);
+    } else if(item.weightGrams) {
+     shopProduceWeightKg += (item.weightGrams * item.qty) / 1000;
+    }
    } else {
     hasGeneralItems = true;
    }
 
    const row = document.createElement("div");
    row.style.cssText = "display:flex; justify-content:space-between; font-size:14px; margin:3px 0;";
-   let details = `${(item.unit.includes("કિલો") || item.unit.includes("મીટર")) ? item.qty.toFixed(2) : item.qty} ${item.unit}`;
+   const isDec = item.unit.includes("કિલો") || item.unit.includes("મીટર");
+   let details = `${isDec ? item.qty.toFixed(2) : item.qty} ${item.unit}`;
    if(item.color) details += ` | કલર: ${item.color}`;
    if(item.size) details += ` | સાઈઝ: ${item.size}`;
    row.innerHTML = `<span>${item.name} (${details})</span> <strong>₹${itemTotal.toFixed(2)}</strong>`;
@@ -364,7 +387,7 @@ function updateCart() {
    shopError = `⚠️ નિયમ ચેતવણી: ફળ/શાકભાજીનું કુલ વજન 1 કિલોથી ઓછું છે!`;
   }
   if(!hasProduceOrVeg && hasGeneralItems && shopTotal < 500) {
-   shopError = `⚠️ નિયમ ચેતવણી: ઓછામાં ઓછો ₹500 નો ઓર્ડર જરૂરી છે!`;
+   shopError = `⚠️ નિયમ ચેતવણી: ઓછામાં ઓછું ₹500 નો ઓર્ડર જરૂરી છે!`;
   }
 
   if(shopError) {
@@ -391,7 +414,8 @@ function updateCart() {
 
    let msg = `🛒 *નવો ઓર્ડર - ${shopObj.name}*\n\n👤 નામ: ${name}\n📞 નંબર: ${phone}\n📍 સરનામું: ${address}\n\n*વસ્તુઓ:*`;
    items.forEach(i => {
-    let d = `${(i.unit.includes("કિલો") || i.unit.includes("મીટર")) ? i.qty.toFixed(2) : i.qty} ${i.unit}`;
+    const isDec = i.unit.includes("કિલો") || i.unit.includes("મીટર");
+    let d = `${isDec ? i.qty.toFixed(2) : i.qty} ${i.unit}`;
     if(i.color) d += ` (${i.color})`;
     if(i.size) d += ` (${i.size})`;
     msg += `\n- ${i.name}: ${d} = ₹${(i.price * i.qty).toFixed(2)}`;
