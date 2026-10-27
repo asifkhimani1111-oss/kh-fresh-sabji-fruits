@@ -79,7 +79,7 @@ button:hover{opacity:.9}
 <label>ભાવ (₹ માં)</label>
 <input id="prodPrice" type="number" placeholder="દા.ત. 100">
 
-<label>📸 ફોટો પસંદ કરો (મોબાઈલ ગેલેરીમાંથી)</label>
+<label>📸 મોબાઈલ ગેલેરીમાંથી ફોટો પસંદ કરો</label>
 <input type="file" id="prodImageFile" accept="image/*">
 <input type="hidden" id="prodImageBase64">
 <div id="imagePreview" style="margin:5px 0;"></div>
@@ -122,14 +122,33 @@ let allShops = [];
 let allProducts = [];
 
 async function initAdmin() {
- // Gallery image to base64 converter
+ // Gallery image to base64 converter with size compression check
  $("prodImageFile").onchange = (e) => {
   const file = e.target.files[0];
   if(file) {
    const reader = new FileReader();
    reader.onload = (uploadEvent) => {
-    $("prodImageBase64").value = uploadEvent.target.result;
-    $("imagePreview").innerHTML = `<img src="${uploadEvent.target.result}" style="width:80px;height:80px;object-fit:cover;border-radius:6px;">`;
+    const img = new Image();
+    img.src = uploadEvent.target.result;
+    img.onload = () => {
+     const canvas = document.createElement('canvas');
+     const ctx = canvas.getContext('2d');
+     let width = img.width;
+     let height = img.height;
+     const maxDim = 400; // Optimize size for quick firebase storage
+     if (width > height) {
+      if (width > maxDim) { height *= maxDim / width; width = maxDim; }
+     } else {
+      if (height > maxDim) { width *= maxDim / height; height = maxDim; }
+     }
+     canvas.width = width;
+     canvas.height = height;
+     ctx.drawImage(img, 0, 0, width, height);
+     const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+     
+     $("prodImageBase64").value = compressedDataUrl;
+     $("imagePreview").innerHTML = `<img src="${compressedDataUrl}" style="width:80px;height:80px;object-fit:cover;border-radius:6px;">`;
+    };
    };
    reader.readAsDataURL(file);
   }
@@ -179,20 +198,21 @@ async function initAdmin() {
   };
   if(imageUrl) productData.imageUrl = imageUrl;
 
-  if(editId) {
-   // Update existing product
-   await updateDoc(doc(db, "products", editId), productData);
-   alert("પ્રોડક્ટ સફળતાપૂર્વક અપડેટ થઈ ગઈ!");
-   resetForm();
-  } else {
-   // Add new product
-   if(!imageUrl) {
-    alert("કૃપા કરીને ફોટો પસંદ કરો!");
-    return;
+  try {
+   if(editId) {
+    await updateDoc(doc(db, "products", editId), productData);
+    alert("પ્રોડક્ટ સફળતાપૂર્વક અપડેટ થઈ ગઈ!");
+   } else {
+    if(!imageUrl) {
+     alert("કૃપા કરીને ગેલેરીમાંથી ફોટો પસંદ કરો!");
+     return;
+    }
+    await addDoc(collection(db, "products"), productData);
+    alert("પ્રોડક્ટ સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
    }
-   await addDoc(collection(db, "products"), productData);
-   alert("પ્રોડક્ટ સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
    resetForm();
+  } catch(err) {
+   alert("પ્રોડક્ટ સેવ કરવામાં ભૂલ: " + err.message);
   }
  };
 
@@ -241,7 +261,7 @@ function renderAdminProducts() {
   return;
  }
 
- allProducts.forEach(p => {
+ allProducts.files = allProducts.forEach(p => {
   const item = document.createElement("div");
   item.className = "product-item";
   const shopObj = allShops.find(s => s.id === p.shopId);
