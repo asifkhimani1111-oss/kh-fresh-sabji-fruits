@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>K.H Fresh Sabji & Fruits — Detail Order</title>
+<title>K.H Fresh & MultiShop — Category Wise</title>
 
 <link rel="icon" type="image/png" href="https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=300&auto=format&fit=crop&q=80">
 <link rel="apple-touch-icon" href="https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=300&auto=format&fit=crop&q=80">
@@ -31,7 +31,7 @@ button:disabled{opacity:.6}
 .brand-title{color:#168343;font-size:24px;margin:5px 0 2px 0;font-weight:bold}
 .brand-sub{color:#2e7d32;font-size:14px;margin:0}
 .red-alert{background:#ffebee;color:#b3261e;padding:12px;border-radius:8px;border:1px solid #ef9a9a;margin:10px 0;font-weight:bold;text-align:center}
-/* Modal Popup for Product Details */
+/* Modal Popup */
 .modal{display:none;position:fixed;z-index:100;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.5);align-items:center;justify-content:center}
 .modal-content{background:white;padding:20px;border-radius:12px;max-width:400px;width:90%;text-align:center}
 .modal-content img{width:120px;height:120px;object-fit:cover;border-radius:8px;margin-bottom:10px}
@@ -42,7 +42,7 @@ button:disabled{opacity:.6}
 <div class="brand-banner">
   <img src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=300&auto=format&fit=crop&q=80" alt="Logo" class="brand-logo">
   <h2 class="brand-title">K.H Fresh & MultiShop</h2>
-  <p class="brand-sub">તાજા ફળો, શાકભાજી અને અન્ય દુકાનોની વસ્તુઓ!</p>
+  <p class="brand-sub">કેટેગરી મુજબ સીધી દુકાન અને વસ્તુઓ પસંદ કરો!</p>
 </div>
 
 <div style="background: #e8f5e9; color: #1b5e20; padding: 10px 14px; margin: 10px 0; border-radius: 8px; text-align: center; font-weight: bold; border: 1px solid #c8e6c9;">
@@ -50,10 +50,7 @@ button:disabled{opacity:.6}
 </div>
 
 <section>
-<label style="font-weight:bold;">દુકાન પસંદ કરો</label>
-<select id="shopSelect"><option value="">દુકાન લોડ થઈ રહી છે...</option></select>
-<p id="shopMeta" style="margin-top:6px; color:#555; font-size:14px;"></p>
-
+<h3>📂 કેટેગરી પસંદ કરો (જે દુકાનની હશે તે ઓટોમેટિક ખુલશે)</h3>
 <div class="cat-chips" id="catChips">
   <button class="cat-chip active" data-cat="બધી વસ્તુઓ">બધી વસ્તુઓ</button>
   <button class="cat-chip" data-cat="શાકભાજી">શાકભાજી</button>
@@ -62,11 +59,12 @@ button:disabled{opacity:.6}
   <button class="cat-chip" data-cat="જનરલ સ્ટોર">જનરલ સ્ટોર</button>
   <button class="cat-chip" data-cat="કાપડ">કાપડ</button>
 </div>
+<p id="shopMeta" style="margin-top:8px; color:#168343; font-weight:bold; font-size:14px;"></p>
 </section>
 
 <section>
-<h3>🛍️ વસ્તુઓ (પ્રોડક્ટ પર ક્લિક કરી વિગત જુઓ)</h3>
-<div id="productsList">દુકાન પસંદ કરો...</div>
+<h3>🛍️ વસ્તુઓ (વિગત જોવા ક્લિક કરો)</h3>
+<div id="productsList">કેટેગરી પસંદ કરો...</div>
 </section>
 
 <section>
@@ -119,41 +117,12 @@ const $ = id => document.getElementById(id);
 
 let allShops = [];
 let allProducts = [];
-let selectedShop = null;
 let cart = {};
 let activeCategory = "બધી વસ્તુઓ";
 
 async function init() {
  const shopSnap = await getDocs(collection(db, "shops"));
  allShops = shopSnap.docs.map(d => ({id: d.id, ...d.data()}));
- 
- const shopSel = $("shopSelect");
- shopSel.replaceChildren();
- const defaultOpt = document.createElement("option");
- defaultOpt.value = "";
- defaultOpt.textContent = "દુકાન પસંદ કરો";
- shopSel.append(defaultOpt);
-
- allShops.forEach(s => {
-  const opt = document.createElement("option");
-  opt.value = s.id;
-  opt.textContent = s.name;
-  shopSel.append(opt);
- });
-
- if(allShops.length > 0) {
-  shopSel.value = allShops[0].id;
-  selectedShop = allShops[0];
-  updateShopMeta();
- }
-
- shopSel.onchange = e => {
-  selectedShop = allShops.find(s => s.id === e.target.value);
-  cart = {};
-  updateShopMeta();
-  renderProducts();
-  updateCart();
- };
 
  onSnapshot(collection(db, "products"), snap => {
   allProducts = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -171,34 +140,30 @@ async function init() {
 
  $("whatsappBtn").onclick = sendWhatsAppOrder;
  $("closeModal").onclick = () => { $("productModal").style.display = "none"; };
+ updateMetaText();
 }
 
-function updateShopMeta() {
- if(!selectedShop) {
-  $("shopMeta").textContent = "";
-  return;
+function updateMetaText() {
+ if(activeCategory === "બધી વસ્તુઓ") {
+  $("shopMeta.textContent" || "shopMeta").textContent = "બધી દુકાનોની વસ્તુઓ અહીં ઉપલબ્ધ છે.";
+ } else {
+  $("shopMeta").textContent = `સિલેક્ટ કરેલી કેટેગરી: ${activeCategory} (સંબંધિત દુકાનની વસ્તુઓ)`;
  }
- $("shopMeta").textContent = `દુકાન: ${selectedShop.name} • નિયમ મુજબ ઓર્ડર તે જ દુકાને જશે.`;
 }
 
 function renderProducts() {
+ updateMetaText();
  const host = $("productsList");
  host.replaceChildren();
 
- if(!selectedShop) {
-  host.textContent = "કૃપા કરીને પહેલા દુકાન પસંદ કરો.";
-  return;
- }
-
  const filtered = allProducts.filter(p => {
-  if(p.shopId && p.shopId !== selectedShop.id) return false;
   if(p.active === false) return false;
   if(activeCategory !== "બધી વસ્તુઓ" && p.category !== activeCategory) return false;
   return true;
  });
 
  if(filtered.length === 0) {
-  host.textContent = "આ કેટેગરીમાં હજી કોઈ વસ્તુ નથી.";
+  host.textContent = "આ કેટેગરીમાં હજી કોઈ વસ્તુ ઉપલબ્ધ નથી.";
   return;
  }
 
@@ -206,13 +171,15 @@ function renderProducts() {
   const card = document.createElement("div");
   card.className = "product-card";
 
+  const shopObj = allShops.find(s => s.id === p.shopId);
+
   // Card click karta detail modal khulse
   card.onclick = (e) => {
    if(e.target.tagName === 'BUTTON' || e.target.tagName === 'SELECT') return;
    $("modalImg").src = p.imageUrl || "https://via.placeholder.com/120";
    $("modalTitle").textContent = p.name;
    $("modalPrice").textContent = `₹${p.price} / ${p.unit || 'નંગ'}`;
-   $("modalDesc").textContent = `કેટેગરી: ${p.category || 'સામાન્ય'} | એકમ: ${p.unit || 'નંગ'} | દુકાન: ${selectedShop.name}`;
+   $("modalDesc").textContent = `કેટેગરી: ${p.category || 'સામાન્ય'} | દુકાન: ${shopObj ? shopObj.name : 'મુખ્ય દુકાન'}`;
    $("productModal").style.display = "flex";
   };
 
@@ -242,6 +209,7 @@ function renderProducts() {
 
   info.innerHTML = `
    <span class="badge">${p.category || 'સામાન્ય'}</span>
+   <span style="font-size:11px; color:#666; display:block; margin-bottom:2px;">🏪 દુકાન: ${shopObj ? shopObj.name : 'મૂળ દુકાન'}</span>
    <strong style="display:block;font-size:16px;">${p.name}</strong>
    <span style="color:#168343;font-weight:bold;">₹${p.price} / ${unitType}</span>
    ${optionsHtml}
@@ -298,7 +266,7 @@ function renderProducts() {
      category: p.category,
      color: selectedColor,
      size: selectedSize,
-     shopId: p.shopId || selectedShop.id
+     shopId: p.shopId
     };
    }
    cart[cartKey].qty += stepVal;
@@ -394,15 +362,15 @@ function sendWhatsAppOrder() {
   return;
  }
 
- // Je dukan ni product hase aej dukan na WhatsApp number par order jashe
- let targetShop = selectedShop;
+ // Je dukan ni vastu hase aej dukan na WhatsApp number par order jashe
+ let targetShopId = null;
  const firstKey = Object.keys(cart)[0];
  if(firstKey && cart[firstKey].shopId) {
-  const found = allShops.find(s => s.id === cart[firstKey].shopId);
-  if(found) targetShop = found;
+  targetShopId = cart[firstKey].shopId;
  }
+ const targetShop = allShops.find(s => s.id === targetShopId) || allShops[0];
 
- let msg = `🛒 *નવો ઓર્ડਰ - ${targetShop ? targetShop.name : 'K.H Fresh'}*\n\n👤 નામ: ${name}\n📞 નંબર: ${phone}\n📍 સરનામું: ${address}\n🏪 દુકાન: ${targetShop ? targetShop.name : ''}\n\n*વસ્તુઓ:*`;
+ let msg = `🛒 *નવો ઓર્ડર - ${targetShop ? targetShop.name : 'K.H Fresh'}*\n\n👤 નામ: ${name}\n📞 નંબર: ${phone}\n📍 સરનામું: ${address}\n🏪 દુકાન: ${targetShop ? targetShop.name : ''}\n\n*વસ્તુઓ:*`;
  
  let total = 0;
  Object.values(cart).forEach(i => {
