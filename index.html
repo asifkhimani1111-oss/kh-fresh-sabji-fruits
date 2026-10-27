@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>K.H Fresh & Fashion — Meesho Style App</title>
+<title>K.H Fresh & Fashion — Smart Multi-Vendor App</title>
 
 <link rel="icon" type="image/jpeg" href="logo-fresh.jpg">
 <link rel="apple-touch-icon" href="logo-fresh.jpg">
@@ -18,7 +18,6 @@ input,select,button{width:100%;padding:12px;margin:7px 0;border:1px solid #ccc;b
 button{background:#168343;color:white;border:0;font-weight:bold;cursor:pointer}
 button:disabled{opacity:.6}
 
-/* પ્રોડક્ટ્સ માટે આડી ગ્રીડ સ્ટાઇલ (Grid Layout) */
 .products-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -49,7 +48,6 @@ button:disabled{opacity:.6}
 .brand-sub{color:#2e7d32;font-size:15px;margin:0}
 .red-alert{background:#ffebee;color:#b3261e;padding:12px;border-radius:8px;border:1px solid #ef9a9a;margin:10px 0;font-weight:bold;text-align:center}
 
-/* Modal Popup */
 .modal{display:none;position:fixed;z-index:100;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.5);align-items:center;justify-content:center}
 .modal-content{background:white;padding:20px;border-radius:12px;max-width:400px;width:90%;text-align:center}
 .modal-content img{width:120px;height:120px;object-fit:cover;border-radius:8px;margin-bottom:10px}
@@ -60,7 +58,7 @@ button:disabled{opacity:.6}
 <div class="brand-banner">
   <img src="logo-fresh.jpg" alt="K.H Fresh Logo" class="brand-logo">
   <h2 class="brand-title">K.H Fresh & Fashion</h2>
-  <p class="brand-sub">તજા ફળ, શાકભાજી, આઈસ્ક્રીમ, મીઠાઈ, ફરસાણ અને ફેશન કાપડ!</p>
+  <p class="brand-sub">તાજા ફળ, શાકભાજી, આઈસ્ક્રીમ, મીઠાઈ, ફરસાણ અને ફેશન!</p>
 </div>
 
 <div style="background: #e8f5e9; color: #1b5e20; padding: 10px 14px; margin: 10px 0; border-radius: 8px; text-align: center; font-weight: bold; border: 1px solid #c8e6c9;">
@@ -132,7 +130,6 @@ button:disabled{opacity:.6}
 
 <section>
 <h3>🛍️ વસ્તુઓ (વિગત જોવા ક્લિક કરો)</h3>
-<!-- આડી ગ્રીડ કન્ટેનર -->
 <div id="productsList" class="products-grid">કેટેગરી પસંદ કરો...</div>
 </section>
 
@@ -153,7 +150,6 @@ button:disabled{opacity:.6}
 </section>
 </main>
 
-<!-- Product Detail Modal -->
 <div id="productModal" class="modal">
   <div class="modal-content">
     <img id="modalImg" src="" alt="">
@@ -211,7 +207,7 @@ async function init() {
 
 function updateMetaText() {
  if(activeCategory === "બધી વસ્તુઓ") {
-  $("shopMeta").textContent = "બધી દુકાનો અને ફેશન આઇટમ્સ ઉપલબ્ધ છે.";
+  $("shopMeta").textContent = "બધી દુકાનો અને કેટેગરીઝ ઉપલબ્ધ છે.";
  } else {
   $("shopMeta").textContent = `પસંદ કરેલી કેટેગરી: ${activeCategory}`;
  }
@@ -269,7 +265,7 @@ function renderProducts() {
    const sizesArr = p.sizes.split(",").map(s => s.trim());
    optionsHtml += `<br><select class="sel-size" data-id="${p.id}" style="font-size:11px; padding:3px; margin-top:2px;">`;
    sizesArr.forEach(s => optionsHtml += `<option value="${s}">${s}</option>`);
-   sizesArr += `</select>`;
+   optionsHtml += `</select>`;
   }
 
   info.innerHTML = `
@@ -301,8 +297,9 @@ function renderProducts() {
 
   let stepVal = 1;
   if(unitType.includes("કિલો")) stepVal = 0.250;
-  else if(unitType.includes("મીટર")) stepVal = 0.50; // મીટર માટે અડધો કે એક મીટર વધારવા
+  else if(unitType.includes("મીટર")) stepVal = 0.50;
   else if(unitType.includes("ગ્રામ")) stepVal = 100;
+  else if(unitType.includes("ડઝન")) stepVal = 1;
   else stepVal = 1;
 
   minusBtn.onclick = (e) => {
@@ -354,8 +351,6 @@ function renderProducts() {
 function updateCart() {
  const host = $("cartList");
  host.replaceChildren();
- const actionsHost = $("cartActions");
- actionsHost.replaceChildren();
 
  const keys = Object.keys(cart);
  if(keys.length === 0) {
@@ -384,10 +379,21 @@ function updateCart() {
   shopBox.append(shopTitle);
 
   let shopTotal = 0;
+  let shopProduceWeightKg = 0;
+  let hasProduceOrVeg = false;
+  let hasGeneralItems = false;
 
   items.forEach(item => {
    let itemTotal = item.price * item.qty;
    shopTotal += itemTotal;
+
+   if(item.category === "શાકભાજી" || item.category === "ફળો") {
+    hasProduceOrVeg = true;
+    if(item.unit.includes("કિલો")) shopProduceWeightKg += item.qty;
+    else if(item.unit.includes("ગ્રામ")) shopProduceWeightKg += (item.qty / 1000);
+   } else {
+    hasGeneralItems = true;
+   }
 
    const row = document.createElement("div");
    row.style.cssText = "display:flex; justify-content:space-between; font-size:14px; margin:3px 0;";
@@ -403,9 +409,25 @@ function updateCart() {
   totalRow.textContent = `દુકાનનું કુલ બિલ: ₹${shopTotal.toFixed(2)}`;
   shopBox.append(totalRow);
 
+  let shopError = "";
+  if(hasProduceOrVeg && shopProduceWeightKg < 1.0) {
+   shopError = `⚠️ નિયમ ચેતવણી (${shopObj.name}): ફળ/શાકભાજીનું કુલ વજન 1 કિલોથી ઓછું છે!`;
+  }
+  if(!hasProduceOrVeg && hasGeneralItems && shopTotal < 500) {
+   shopError = `⚠️ નિયમ ચેતવણી (${shopObj.name}): ઓછામાં ઓછો ₹500 નો ઓર્ડર જરૂરી છે!`;
+  }
+
+  if(shopError) {
+   const errDiv = document.createElement("div");
+   errDiv.className = "red-alert";
+   errDiv.textContent = shopError;
+   shopBox.append(errDiv);
+  }
+
   const waBtn = document.createElement("button");
   waBtn.style.cssText = "background:#25d366; margin-top:8px;";
   waBtn.textContent = `${shopObj.name} ના WhatsApp પર ઓર્ડર મોકલો`;
+  if(shopError) waBtn.disabled = true;
 
   waBtn.onclick = () => {
    sendShopWhatsAppOrder(shopObj, items, shopTotal);
@@ -424,7 +446,7 @@ function sendShopWhatsAppOrder(shopObj, items, total) {
  if(!name || !phone || !address) {
   alert("કૃપા કરીને તમારું નામ, મોબાઈલ નંબર અને સરનામું ભરો!");
   return;
-}
+ }
 
  let msg = `🛒 *નવો ઓર્ડર - ${shopObj.name}*\n\n👤 નામ: ${name}\n📞 નંબર: ${phone}\n📍 સરનામું: ${address}\n\n*વસ્તુઓ:*`;
  
