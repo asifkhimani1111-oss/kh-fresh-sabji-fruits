@@ -5,10 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>K.H Fresh & Fashion — Meesho Style</title>
 
-<!-- Grahak app mate logo setting -->
 <link rel="icon" type="image/jpeg" href="logo-fresh.jpg">
 <link rel="apple-touch-icon" href="logo-fresh.jpg">
-<link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22K.H%20Fresh%20%26%20Fashion%22%2C%22short_name%22%3A%22K.H%20Fresh%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f4faf4%22%2C%22theme_color%22%3A%22%23168343%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22logo-fresh.jpg%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fjpeg%22%7D%5D%7D">
 
 <style>
 *{box-sizing:border-box}
@@ -19,12 +17,24 @@ h2,h3{color:#168343;margin-top:0}
 input,select,button{width:100%;padding:12px;margin:7px 0;border:1px solid #ccc;border-radius:8px;font-size:16px}
 button{background:#168343;color:white;border:0;font-weight:bold;cursor:pointer}
 button:disabled{opacity:.6}
-.product-card{border:1px solid #ddd;border-radius:8px;padding:12px;margin:10px 0;background:#fafafa;display:flex;align-items:center;gap:12px;cursor:pointer}
-.product-card img{width:80px;height:80px;object-fit:cover;border-radius:8px}
-.product-info{flex:1}
-.qty-row{display:flex;align-items:center;gap:8px;margin-top:6px}
-.qty-row button{width:36px;height:36px;padding:0;font-size:18px;background:#168343;border-radius:6px}
-.badge{display:inline-block;padding:4px 8px;background:#e8f5e9;color:#168343;border-radius:6px;font-size:12px;font-weight:bold;margin-bottom:6px}
+
+/* પ્રોડક્ટ્સ માટે આડી ગ્રીડ સ્ટાઇલ (Grid Layout) */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+@media(max-width:480px){
+  .products-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+}
+
+.product-card{border:1px solid #ddd;border-radius:8px;padding:10px;background:#fafafa;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer}
+.product-card img{width:100%;height:110px;object-fit:cover;border-radius:6px;margin-bottom:8px}
+.product-info{flex:1;display:flex;flex-direction:column}
+.qty-row{display:flex;align-items:center;gap:4px;margin-top:8px}
+.qty-row button{width:32px;height:32px;padding:0;font-size:16px;background:#168343;border-radius:6px}
+.badge{display:inline-block;padding:3px 6px;background:#e8f5e9;color:#168343;border-radius:6px;font-size:11px;font-weight:bold;margin-bottom:4px;align-self:flex-start}
+
 .cat-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;margin:10px 0}
 @media(max-width:500px){.cat-grid{grid-template-columns:repeat(2, 1fr);}}
 .cat-card{background:#e2f0e6;border:2px solid transparent;border-radius:10px;padding:8px;text-align:center;cursor:pointer;transition:0.2s}
@@ -32,11 +42,13 @@ button:disabled{opacity:.6}
 .cat-card img{width:50px;height:50px;object-fit:cover;border-radius:50%;margin-bottom:4px;border:2px solid #fff}
 .cat-card span{display:block;font-size:13px;font-weight:bold;color:#168343;}
 .cat-card.active span{color:white;}
+
 .brand-banner{text-align:center;background:linear-gradient(135deg, #e8f5e9, #c8e6c9);padding:24px 16px;border-radius:12px;margin-bottom:14px;border:1px solid #a5d6a7;box-shadow:0 2px 6px rgba(0,0,0,0.05)}
 .brand-logo{width:110px;height:110px;object-fit:cover;border-radius:50%;border:3px solid #168343;box-shadow:0 4px 10px rgba(0,0,0,0.15);margin-bottom:10px}
 .brand-title{color:#168343;font-size:26px;margin:5px 0 2px 0;font-weight:bold}
 .brand-sub{color:#2e7d32;font-size:15px;margin:0}
 .red-alert{background:#ffebee;color:#b3261e;padding:12px;border-radius:8px;border:1px solid #ef9a9a;margin:10px 0;font-weight:bold;text-align:center}
+
 /* Modal Popup */
 .modal{display:none;position:fixed;z-index:100;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.5);align-items:center;justify-content:center}
 .modal-content{background:white;padding:20px;border-radius:12px;max-width:400px;width:90%;text-align:center}
@@ -120,7 +132,8 @@ button:disabled{opacity:.6}
 
 <section>
 <h3>🛍️ Vastuwo (Vigat jova click karo)</h3>
-<div id="productsList">Category pasand karo...</div>
+<!-- આડી ગ્રીડ કન્ટેનર -->
+<div id="productsList" class="products-grid">Category pasand karo...</div>
 </section>
 
 <section>
@@ -247,23 +260,23 @@ function renderProducts() {
   let optionsHtml = "";
   if(p.colors) {
    const colorsArr = p.colors.split(",").map(c => c.trim());
-   optionsHtml += `<br><select class="sel-color" data-id="${p.id}" style="font-size:12px; padding:4px;">`;
+   optionsHtml += `<br><select class="sel-color" data-id="${p.id}" style="font-size:11px; padding:3px;">`;
    colorsArr.forEach(c => optionsHtml += `<option value="${c}">${c}</option>`);
    optionsHtml += `</select>`;
   }
 
   if(p.sizes) {
    const sizesArr = p.sizes.split(",").map(s => s.trim());
-   optionsHtml += `<br><select class="sel-size" data-id="${p.id}" style="font-size:12px; padding:4px; margin-top:2px;">`;
+   optionsHtml += `<br><select class="sel-size" data-id="${p.id}" style="font-size:11px; padding:3px; margin-top:2px;">`;
    sizesArr.forEach(s => optionsHtml += `<option value="${s}">${s}</option>`);
    optionsHtml += `</select>`;
   }
 
   info.innerHTML = `
    <span class="badge">${p.category || 'Samanya'}</span>
-   <span style="font-size:11px; color:#666; display:block; margin-bottom:2px;">🏪 Dukan: ${shopObj ? shopObj.name : 'Mool Dukan'}</span>
-   <strong style="display:block;font-size:16px;">${p.name}</strong>
-   <span style="color:#168343;font-weight:bold;">₹${p.price} / ${unitType}</span>
+   <span style="font-size:10px; color:#666; display:block; margin-bottom:2px;">🏪 Dukan: ${shopObj ? shopObj.name : 'Mool Dukan'}</span>
+   <strong style="display:block;font-size:14px;">${p.name}</strong>
+   <span style="color:#168343;font-weight:bold;font-size:13px;">₹${p.price} / ${unitType}</span>
    ${optionsHtml}
   `;
 
@@ -275,7 +288,8 @@ function renderProducts() {
   
   const countSpan = document.createElement("span");
   countSpan.style.fontWeight = "bold";
-  countSpan.style.minWidth = "30px";
+  countSpan.style.fontSize = "14px";
+  countSpan.style.minWidth = "24px";
   countSpan.style.textAlign = "center";
   
   const cartKey = p.id;
