@@ -43,7 +43,7 @@ button:disabled{opacity:.6}
 <body>
 <main>
 <div class="brand-banner">
-  <!-- ગ્રાહક માટેનો ખુશખુશાલ ફેમિલી શોપિંગ વિડીયો -->
+  <!-- ફેમિલી શોપિંગ વિડીયો (મૂંગો / અવાજ વગર ઓટો-પ્લે) -->
   <video autoplay muted loop playsinline class="brand-video">
     <source src="http://googleusercontent.com/generated_video_content/7024002624783015127" type="video/mp4">
     તમારું બ્રાઉઝર વિડીયો સપોર્ટ કરતું નથી.
@@ -401,6 +401,7 @@ function sendShopWhatsAppOrder(shopObj, items, total) {
 
  let msg = `🛒 *નવો ઓર્ડર - ${shopObj.name}*\n\n👤 નામ: ${name}\n📞 નંબર: ${phone}\n📍 સરનામું: ${address}\n\n*વસ્તુઓ:*`;
  
+ items.items?.forEach?.(i => {}); // safety
  items.forEach(i => {
   const t = i.price * i.qty;
   let d = `${i.unit.includes("કિલો") ? i.qty.toFixed(3) : i.qty} ${i.unit}`;
