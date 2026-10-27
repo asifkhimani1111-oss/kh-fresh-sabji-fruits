@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>K.H Fresh & Fashion — Complete Admin Dashboard</title>
+<title>K.H Fresh & Fashion — Smart Admin Dashboard</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;padding:12px;background:#f4faf4;color:#203326;font-family:Arial,sans-serif}
@@ -23,27 +23,25 @@ button:hover{opacity:.9}
 <div style="text-align:center;background:linear-gradient(135deg, #e8f5e9, #c8e6c9);padding:20px;border-radius:12px;margin-bottom:14px;border:1px solid #a5d6a7;">
   <img src="logo-admin.jpg" alt="Admin Logo" class="admin-logo">
   <h2 style="color:#168343;margin:0;">🛠️ K.H Fresh એડમિન પેનલ</h2>
-  <p style="color:#2e7d32;margin:5px 0 0 0;">બધી જ કેટેગરી અને દુકાનો મેનેજ કરો</p>
+  <p style="color:#2e7d32;margin:5px 0 0 0;">દુકાનો અને તમામ કેટેગરીની પ્રોડક્ટ્સ મેનેજ કરો</p>
 </div>
 
-<!-- Shop Add Section -->
 <section>
 <h3>🏪 નવી દુકાન ઉમેરો</h3>
 <label>દુકાનનું નામ</label>
 <input id="shopName" placeholder="દા.ત. K.H ફ્રેશ & સ્વીટ્સ">
-<label>દુકાનદારનો WhatsApp નંબર (Country Code સાથે, દા.ત. 919876543210)</label>
+<label>દુકાનદારનો WhatsApp નંબર (91 સાથે)</label>
 <input id="shopWhatsapp" placeholder="91xxxxxxxxxx">
 <button id="addShopBtn" style="background:#1b5e20;">દુકાન સેવ કરો</button>
 </section>
 
-<!-- Product Add Section -->
 <section>
-<h3>➕ નવી પ્રોડક્ટ ઉમેરો (તમામ કેટેગરી)</h3>
+<h3>➕ નવી પ્રોડક્ટ ઉમેરો</h3>
 <label>દુકાન પસંદ કરો</label>
 <select id="prodShopSelect"><option value="">દુકાન લોડ થઈ રહી છે...</option></select>
 
 <label>પ્રોડક્ટનું નામ</label>
-<input id="prodName" placeholder="દા.ત. વેનિલા આઈસ્ક્રીમ / કાજુ કતરી / કોટન કાપડ">
+<input id="prodName" placeholder="દા.ત. કાજુ કતરી / કોટન કાપડ / એપલ">
 
 <label>કેટેગરી પસંદ કરો</label>
 <select id="prodCategory">
@@ -62,7 +60,7 @@ button:hover{opacity:.9}
   <option value="જનરલ સ્ટોર">જનરલ સ્ટોર</option>
 </select>
 
-<label>એકમ (Unit) પસંદ કરો</label>
+<label>એકમ (Unit)</label>
 <select id="prodUnit">
   <option value="કિલો (Kg)">કિલો (Kg)</option>
   <option value="ગ્રામ (Gram)">ગ્રામ (Gram)</option>
@@ -79,24 +77,24 @@ button:hover{opacity:.9}
 <label>ફોટો લિંક (Image URL)</label>
 <input id="prodImage" placeholder="ફોટોની લિંક અહીં નાખો">
 
-<label>ઉપલબ્ધ કલર (જો હોય તો, જેમ કે Red, Blue)</label>
+<label>ઉપલબ્ધ કલર (જો હોય તો)</label>
 <input id="prodColors" placeholder="લાલ, લીલો, કાળો">
 
-<label>ઉપલબ્ધ સાઈઝ (જો હોય તો, જેમ કે S, M, L, XL)</label>
+<label>ઉપલબ્ધ સાઈઝ (જો હોય તો)</label>
 <input id="prodSizes" placeholder="S, M, L, XL">
 
 <button id="addProdBtn">પ્રોડક્ટ લાઇવ કરો</button>
 </section>
 
 <section>
-<h3>📋 બધી જ પ્રોડક્ટ્સની યાદી</h3>
+<h3>📋 પ્રોડક્ટ્સની યાદી</h3>
 <div id="adminProductsList">પ્રોડક્ટ્સ લોડ થઈ રહી છે...</div>
 </section>
 </main>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
  apiKey:"AIzaSyCGSZ7QcASC_sUV6f7NDJrMbn0Ae-f9pR8",
@@ -133,14 +131,10 @@ async function initAdmin() {
    alert("દુકાનનું નામ અને WhatsApp નંબર ભરો!");
    return;
   }
-  try {
-   await addDoc(collection(db, "shops"), { name, whatsapp });
-   alert("દુકાન સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
-   $("shopName").value = "";
-   $("shopWhatsapp").value = "";
-  } catch(err) {
-   alert("દુકાન સેવ કરતી વખતે ભૂલ આવી (તમારા ફાયરબેઝ રૂલ્સ ચકાસો): " + err.message);
-  }
+  await addDoc(collection(db, "shops"), { name, whatsapp });
+  alert("દુકાન સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
+  $("shopName").value = "";
+  $("shopWhatsapp").value = "";
  };
 
  $("addProdBtn").onclick = async () => {
@@ -154,23 +148,20 @@ async function initAdmin() {
   const sizes = $("prodSizes").value.trim();
 
   if(!shopId || !name || isNaN(price)) {
-   alert("કૃપા કરીને દુકાનનું નામ, પ્રોડક્ટનું નામ અને સાચો ભાવ ભરો!");
+   alert("કૃપા કરીને દુકાન, પ્રોડક્ટનું નામ અને ભાવ સાચા ભરો!");
    return;
   }
 
-  try {
-   await addDoc(collection(db, "products"), {
-    shopId, name, category, unit, price, imageUrl, colors, sizes, active: true
-   });
-   alert("પ્રોડક્ટ સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
-   $("prodName").value = "";
-   $("prodPrice").value = "";
-   $("prodImage").value = "";
-   $("prodColors").value = "";
-   $("prodSizes").value = "";
-  } catch(err) {
-   alert("પ્રોડક્ટ સેવ કરતી વખતે ભૂલ આવી: " + err.message);
-  }
+  await addDoc(collection(db, "products"), {
+   shopId, name, category, unit, price, imageUrl, colors, sizes, active: true
+  });
+
+  alert("પ્રોડક્ટ સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
+  $("prodName").value = "";
+  $("prodPrice").value = "";
+  $("prodImage").value = "";
+  $("prodColors").value = "";
+  $("prodSizes").value = "";
  };
 }
 
@@ -178,7 +169,6 @@ function updateShopDropdown() {
  const shopSel = $("prodShopSelect");
  const currentSelected = shopSel.value;
  shopSel.replaceChildren();
- 
  const defaultOpt = document.createElement("option");
  defaultOpt.value = "";
  defaultOpt.textContent = "દુકાન પસંદ કરો...";
@@ -190,24 +180,20 @@ function updateShopDropdown() {
   opt.textContent = s.name;
   shopSel.append(opt);
  });
-
  if(currentSelected) shopSel.value = currentSelected;
 }
 
 function renderAdminProducts() {
  const host = $("adminProductsList");
  host.replaceChildren();
-
  if(allProducts.length === 0) {
   host.textContent = "કોઈ પ્રોડક્ટ મળી નથી.";
   return;
  }
-
  allProducts.forEach(p => {
   const item = document.createElement("div");
   item.className = "product-item";
   const shopObj = allShops.find(s => s.id === p.shopId);
-
   item.innerHTML = `
    <div style="display:flex; gap:10px; align-items:center;">
     <img src="${p.imageUrl || 'https://via.placeholder.com/60'}" alt="">
@@ -218,20 +204,14 @@ function renderAdminProducts() {
     </div>
    </div>
   `;
-
   const delBtn = document.createElement("button");
   delBtn.textContent = "ડિલીટ";
   delBtn.style.cssText = "background:#d32f2f; width:auto; padding:8px 12px; font-size:13px;";
   delBtn.onclick = async () => {
    if(confirm(`શું તમે "${p.name}" ડિલીટ કરવા માંગો છો?`)) {
-    try {
-     await deleteDoc(doc(db, "products", p.id));
-    } catch(err) {
-     alert("ડિલીટ કરવામાં પરમિશનની ભૂલ: " + err.message);
-    }
+    await deleteDoc(doc(db, "products", p.id));
    }
   };
-
   item.append(delBtn);
   host.append(item);
  });
