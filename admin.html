@@ -116,16 +116,15 @@ let allShops = [];
 let allProducts = [];
 
 async function initAdmin() {
- const shopSnap = await getDocs(collection(db, "shops"));
- allShops = shopSnap.docs.map(d => ({id: d.id, ...d.data()}));
- 
- const shopSel = $("prodShopSelect");
- shopSel.replaceChildren();
- allShops.forEach(s => {
-  const opt = document.createElement("option");
-  opt.value = s.id;
-  opt.textContent = s.name;
-  shopSel.append(opt);
+ // દુકાનો લોડ કરવા માટે onSnapshot વાપર્યું જેથી નવી દુકાન ઉમેરાતાની સાથે જ ડ્રોપડાઉન અપડેટ થઈ જાય
+ onSnapshot(collection(db, "shops"), snap => {
+  allShops = snap.docs.map(d => ({id: d.id, ...d.data()}));
+  updateShopDropdown();
+ });
+
+ onSnapshot(collection(db, "products"), snap => {
+  allProducts = snap.docs.map(d => ({id: d.id, ...d.data()}));
+  renderAdminProducts();
  });
 
  $("addShopBtn").onclick = async () => {
@@ -135,11 +134,14 @@ async function initAdmin() {
    alert("દુકાનનું નામ અને WhatsApp નંબર ભરો!");
    return;
   }
-  await addDoc(collection(db, "shops"), { name, whatsapp });
-  alert("દુકાન સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
-  $("shopName").value = "";
-  $("shopWhatsapp").value = "";
-  location.reload();
+  try {
+   await addDoc(collection(db, "shops"), { name, whatsapp });
+   alert("દુકાન સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
+   $("shopName").value = "";
+   $("shopWhatsapp").value = "";
+  } catch(err) {
+   alert("ભૂલ આવી: " + err.message);
+  }
  };
 
  $("addProdBtn").onclick = async () => {
@@ -157,22 +159,40 @@ async function initAdmin() {
    return;
   }
 
-  await addDoc(collection(db, "products"), {
-   shopId, name, category, unit, price, imageUrl, colors, sizes, active: true
-  });
-
-  alert("પ્રોડક્ટ સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
-  $("prodName").value = "";
-  $("prodPrice").value = "";
-  $("prodImage").value = "";
-  $("prodColors").value = "";
-  $("prodSizes").value = "";
+  try {
+   await addDoc(collection(db, "products"), {
+    shopId, name, category, unit, price, imageUrl, colors, sizes, active: true
+   });
+   alert("પ્રોડક્ટ સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
+   $("prodName").value = "";
+   $("prodPrice").value = "";
+   $("prodImage").value = "";
+   $("prodColors").value = "";
+   $("prodSizes").value = "";
+  } catch(err) {
+   alert("ભૂલ આવી: " + err.message);
+  }
  };
+}
 
- onSnapshot(collection(db, "products"), snap => {
-  allProducts = snap.docs.map(d => ({id: d.id, ...d.data()}));
-  renderAdminProducts();
+function updateShopDropdown() {
+ const shopSel = $("prodShopSelect");
+ const currentSelected = shopSel.value;
+ shopSel.replaceChildren();
+ 
+ const defaultOpt = document.createElement("option");
+ defaultOpt.value = "";
+ defaultOpt.textContent = "દુકાન પસંદ કરો...";
+ shopSel.append(defaultOpt);
+
+ allShops.forEach(s => {
+  const opt = document.createElement("option");
+  opt.value = s.id;
+  opt.textContent = s.name;
+  shopSel.append(opt);
  });
+
+ if(currentSelected) shopSel.value = currentSelected;
 }
 
 function renderAdminProducts() {
