@@ -16,6 +16,7 @@ button:hover{opacity:.9}
 .product-item{border:1px solid #ddd;padding:10px;margin:8px 0;border-radius:8px;display:flex;justify-content:space-between;align-items:center;background:#fafafa}
 .product-item img{width:60px;height:60px;object-fit:cover;border-radius:6px}
 .admin-logo{width:90px;height:90px;object-fit:cover;border-radius:50%;border:3px solid #168343;box-shadow:0 4px 10px rgba(0,0,0,0.15);margin-bottom:8px}
+.btn-group{display:flex;gap:5px;margin-top:5px}
 </style>
 </head>
 <body>
@@ -23,9 +24,10 @@ button:hover{opacity:.9}
 <div style="text-align:center;background:linear-gradient(135deg, #e8f5e9, #c8e6c9);padding:20px;border-radius:12px;margin-bottom:14px;border:1px solid #a5d6a7;">
   <img src="logo-admin.jpg" alt="Admin Logo" class="admin-logo">
   <h2 style="color:#168343;margin:0;">🛠️ K.H Fresh એડમિન પેનલ</h2>
-  <p style="color:#2e7d32;margin:5px 0 0 0;">દુકાનો અને તમામ કેટેગરીની પ્રોડક્ટ્સ મેનેજ કરો</p>
+  <p style="color:#2e7d32;margin:5px 0 0 0;">દુકાનો અને પ્રોડક્ટ્સ મેનેજ કરો</p>
 </div>
 
+<!-- Shop Add Section -->
 <section>
 <h3>🏪 નવી દુકાન ઉમેરો</h3>
 <label>દુકાનનું નામ</label>
@@ -35,8 +37,11 @@ button:hover{opacity:.9}
 <button id="addShopBtn" style="background:#1b5e20;">દુકાન સેવ કરો</button>
 </section>
 
+<!-- Product Add / Edit Section -->
 <section>
-<h3>➕ નવી પ્રોડક્ટ ઉમેરો</h3>
+<h3 id="formTitle">➕ નવી પ્રોડક્ટ ઉમેરો</h3>
+<input type="hidden" id="editProdId" value="">
+
 <label>દુકાન પસંદ કરો</label>
 <select id="prodShopSelect"><option value="">દુકાન લોડ થઈ રહી છે...</option></select>
 
@@ -74,8 +79,10 @@ button:hover{opacity:.9}
 <label>ભાવ (₹ માં)</label>
 <input id="prodPrice" type="number" placeholder="દા.ત. 100">
 
-<label>ફોટો લિંક (Image URL)</label>
-<input id="prodImage" placeholder="ફોટોની લિંક અહીં નાખો">
+<label>📸 ફોટો પસંદ કરો (મોબાઈલ ગેલેરીમાંથી)</label>
+<input type="file" id="prodImageFile" accept="image/*">
+<input type="hidden" id="prodImageBase64">
+<div id="imagePreview" style="margin:5px 0;"></div>
 
 <label>ઉપલબ્ધ કલર (જો હોય તો)</label>
 <input id="prodColors" placeholder="લાલ, લીલો, કાળો">
@@ -84,17 +91,18 @@ button:hover{opacity:.9}
 <input id="prodSizes" placeholder="S, M, L, XL">
 
 <button id="addProdBtn">પ્રોડક્ટ લાઇવ કરો</button>
+<button id="cancelEditBtn" style="background:#6c757d;display:none;margin-top:5px;">એડિટ કેન્સલ કરો</button>
 </section>
 
 <section>
-<h3>📋 પ્રોડક્ટ્સની યાદી</h3>
+<h3>📋 પ્રોડક્ટ્સની યાદી (Edit / Delete)</h3>
 <div id="adminProductsList">પ્રોડક્ટ્સ લોડ થઈ રહી છે...</div>
 </section>
 </main>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore, collection, addDoc, updateDoc, onSnapshot, deleteDoc, doc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
  apiKey:"AIzaSyCGSZ7QcASC_sUV6f7NDJrMbn0Ae-f9pR8",
@@ -114,6 +122,19 @@ let allShops = [];
 let allProducts = [];
 
 async function initAdmin() {
+ // Gallery image to base64 converter
+ $("prodImageFile").onchange = (e) => {
+  const file = e.target.files[0];
+  if(file) {
+   const reader = new FileReader();
+   reader.onload = (uploadEvent) => {
+    $("prodImageBase64").value = uploadEvent.target.result;
+    $("imagePreview").innerHTML = `<img src="${uploadEvent.target.result}" style="width:80px;height:80px;object-fit:cover;border-radius:6px;">`;
+   };
+   reader.readAsDataURL(file);
+  }
+ };
+
  onSnapshot(collection(db, "shops"), snap => {
   allShops = snap.docs.map(d => ({id: d.id, ...d.data()}));
   updateShopDropdown();
@@ -138,12 +159,13 @@ async function initAdmin() {
  };
 
  $("addProdBtn").onclick = async () => {
+  const editId = $("editProdId").value;
   const shopId = $("prodShopSelect").value;
   const name = $("prodName").value.trim();
   const category = $("prodCategory").value;
   const unit = $("prodUnit").value;
   const price = parseFloat($("prodPrice").value);
-  const imageUrl = $("prodImage").value.trim();
+  const imageUrl = $("prodImageBase64").value.trim();
   const colors = $("prodColors").value.trim();
   const sizes = $("prodSizes").value.trim();
 
@@ -152,17 +174,45 @@ async function initAdmin() {
    return;
   }
 
-  await addDoc(collection(db, "products"), {
-   shopId, name, category, unit, price, imageUrl, colors, sizes, active: true
-  });
+  const productData = {
+   shopId, name, category, unit, price, colors, sizes, active: true
+  };
+  if(imageUrl) productData.imageUrl = imageUrl;
 
-  alert("પ્રોડક્ટ સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
-  $("prodName").value = "";
-  $("prodPrice").value = "";
-  $("prodImage").value = "";
-  $("prodColors").value = "";
-  $("prodSizes").value = "";
+  if(editId) {
+   // Update existing product
+   await updateDoc(doc(db, "products", editId), productData);
+   alert("પ્રોડક્ટ સફળતાપૂર્વક અપડેટ થઈ ગઈ!");
+   resetForm();
+  } else {
+   // Add new product
+   if(!imageUrl) {
+    alert("કૃપા કરીને ફોટો પસંદ કરો!");
+    return;
+   }
+   await addDoc(collection(db, "products"), productData);
+   alert("પ્રોડક્ટ સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
+   resetForm();
+  }
  };
+
+ $("cancelEditBtn").onclick = () => {
+  resetForm();
+ };
+}
+
+function resetForm() {
+ $("editProdId").value = "";
+ $("prodName").value = "";
+ $("prodPrice").value = "";
+ $("prodColors").value = "";
+ $("prodSizes").value = "";
+ $("prodImageFile").value = "";
+ $("prodImageBase64").value = "";
+ $("imagePreview").innerHTML = "";
+ $("formTitle").textContent = "➕ નવી પ્રોડક્ટ ઉમેરો";
+ $("addProdBtn").textContent = "પ્રોડક્ટ લાઇવ કરો";
+ $("cancelEditBtn").style.display = "none";
 }
 
 function updateShopDropdown() {
@@ -190,10 +240,12 @@ function renderAdminProducts() {
   host.textContent = "કોઈ પ્રોડક્ટ મળી નથી.";
   return;
  }
+
  allProducts.forEach(p => {
   const item = document.createElement("div");
   item.className = "product-item";
   const shopObj = allShops.find(s => s.id === p.shopId);
+  
   item.innerHTML = `
    <div style="display:flex; gap:10px; align-items:center;">
     <img src="${p.imageUrl || 'https://via.placeholder.com/60'}" alt="">
@@ -204,15 +256,43 @@ function renderAdminProducts() {
     </div>
    </div>
   `;
+
+  const btnGroup = document.createElement("div");
+  btnGroup.className = "btn-group";
+
+  const editBtn = document.createElement("button");
+  editBtn.textContent = "એડિટ";
+  editBtn.style.cssText = "background:#ff9800; width:auto; padding:6px 10px; font-size:12px;";
+  editBtn.onclick = () => {
+   $("editProdId").value = p.id;
+   $("prodShopSelect").value = p.shopId || "";
+   $("prodName").value = p.name || "";
+   $("prodCategory").value = p.category || "શાકભાજી";
+   $("prodUnit").value = p.unit || "કિલો (Kg)";
+   $("prodPrice").value = p.price || "";
+   $("prodColors").value = p.colors || "";
+   $("prodSizes").value = p.sizes || "";
+   if(p.imageUrl) {
+    $("prodImageBase64").value = p.imageUrl;
+    $("imagePreview").innerHTML = `<img src="${p.imageUrl}" style="width:80px;height:80px;object-fit:cover;border-radius:6px;">`;
+   }
+   $("formTitle").textContent = "✏️ પ્રોડક્ટ એડિટ કરો";
+   $("addProdBtn").textContent = "સુધારા સેવ કરો";
+   $("cancelEditBtn").style.display = "block";
+   window.scrollTo({top: 300, behavior: 'smooth'});
+  };
+
   const delBtn = document.createElement("button");
   delBtn.textContent = "ડિલીટ";
-  delBtn.style.cssText = "background:#d32f2f; width:auto; padding:8px 12px; font-size:13px;";
+  delBtn.style.cssText = "background:#d32f2f; width:auto; padding:6px 10px; font-size:12px;";
   delBtn.onclick = async () => {
    if(confirm(`શું તમે "${p.name}" ડિલીટ કરવા માંગો છો?`)) {
     await deleteDoc(doc(db, "products", p.id));
    }
   };
-  item.append(delBtn);
+
+  btnGroup.append(editBtn, delBtn);
+  item.append(btnGroup);
   host.append(item);
  });
 }
