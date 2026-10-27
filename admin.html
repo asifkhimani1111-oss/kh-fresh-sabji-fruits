@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Admin Dashboard - K.H Fresh & Store</title>
+<title>K.H Fresh & MultiShop — Admin Dashboard</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;padding:12px;background:#f4faf4;color:#203326;font-family:Arial,sans-serif}
@@ -12,142 +12,88 @@ section{background:white;padding:16px;margin:14px 0;border-radius:12px;box-shado
 h2,h3{color:#168343;margin-top:0}
 input,select,button{width:100%;padding:12px;margin:7px 0;border:1px solid #ccc;border-radius:8px;font-size:16px}
 button{background:#168343;color:white;border:0;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.6}
-button.danger{background:#b3261e}
-button.secondary{background:#456;margin-top:5px}
-small{color:#555}
-.item-card{border:1px solid #ddd;border-radius:8px;padding:10px;margin:10px 0;background:#fafafa}
-.item-card img{width:80px;height:80px;object-fit:cover;border-radius:8px;display:block;margin:6px 0}
-.btn-row{display:flex;gap:8px;margin-top:6px}
-.btn-row button{flex:1;padding:8px}
-#app{display:none}
-#preview{display:none;max-width:150px;max-height:150px;object-fit:cover;border-radius:8px;margin-top:8px}
+button:hover{opacity:.9}
+.product-item{border:1px solid #ddd;padding:10px;margin:8px 0;border-radius:8px;display:flex;justify-content:space-between;align-items:center;background:#fafafa}
+.product-item img{width:60px;height:60px;object-fit:cover;border-radius:6px}
 </style>
 </head>
 <body>
 <main>
-<h2>🥬 K.H Fresh & Store - Admin Dashboard 🍉</h2>
-<p>દુકાનો અને Meesho જેવી પ્રોડક્ટ્સ (કલર, સાઈઝ, ડઝન સાથે) મેનેજ કરો</p>
-
-<!-- લૉગિન સેક્શન -->
-<section id="login">
-<h3>Admin Login</h3>
-<form id="loginForm">
-<input id="email" type="email" placeholder="Admin Email" required autocomplete="username">
-<input id="password" type="password" placeholder="Password" required autocomplete="current-password">
-<button type="submit">Login કરો</button>
-</form>
-<p id="loginMsg" role="status"></p>
-</section>
-
-<!-- એડમિન એપ્લિકેશન પૅનલ -->
-<div id="app">
-<div style="text-align:right; margin-bottom:10px;">
-<button id="logout" class="secondary" style="width:auto; padding:8px 16px;">Logout</button>
+<div style="text-align:center;background:linear-gradient(135deg, #e8f5e9, #c8e6c9);padding:20px;border-radius:12px;margin-bottom:14px;border:1px solid #a5d6a7;">
+  <h2 style="color:#168343;margin:0;">🛠️ K.H Fresh એડમિન ડેશબોર્ડ</h2>
+  <p style="color:#2e7d32;margin:5px 0 0 0;">દુકાનો અને નવી પ્રોડક્ટ્સ મેનેજ કરો</p>
 </div>
 
-<!-- ૧. દુકાન ઉમેરવા કે સુધારવાનું ફોર્મ -->
+<!-- Shop Add Section -->
 <section>
-<h3 id="shopFormTitle">🏪 નવી દુકાન ઉમેરો</h3>
-<form id="shopForm">
-<input id="shopId" type="hidden">
+<h3>🏪 નવી દુકાન ઉમેરો</h3>
 <label>દુકાનનું નામ</label>
-<input id="shopName" required placeholder="દા.ત. K.H Fresh Sabji">
-<label>દુકાનનો પ્રકાર</label>
-<select id="shopType">
-<option value="શાકભાજી અને ફળો">શાકભાજી અને ફળો</option>
-<option value="કરિયાણું">કરિયાણું</option>
-<option value="જનરલ સ્ટોર">જનરલ સ્ટોર</option>
-<option value="કાપડની દુકાન">કાપડની દુકાન</option>
-<option value="જ્વેલરી (સોના-ચાંદી)">જ્વેલરી (સોના-ચાંદી)</option>
-<option value="સાયકલ સ્ટોર">સાયકલ સ્ટોર</option>
-<option value="અન્ય સ્ટોર">અન્ય સ્ટોર</option>
-</select>
-<label>દુકાનદારનો WhatsApp નંબર (ઓર્ડર મેળવવા માટે)</label>
-<input id="shopWhatsapp" type="tel" required placeholder="દા.ત. 919876543210">
-<button type="submit" id="shopSaveBtn">દુકાન સેવ કરો</button>
-<button type="button" id="shopCancelBtn" class="secondary" style="display:none;">કેન્સલ કરો</button>
-<p id="shopMsg"></p>
-</form>
-
-<h4 style="margin-top:20px;">હાલની દુકાનો:</h4>
-<div id="shopsList">દુકાનો લોડ થઈ રહી છે...</div>
+<input id="shopName" placeholder="દા.ત. K.H કરિયાણા સ્ટોર">
+<label>દુકાનદારનો WhatsApp નંબર (Country Code સાથે, દા.ત. 919876543210)</label>
+<input id="shopWhatsapp" placeholder="91xxxxxxxxxx">
+<button id="addShopBtn" style="background:#1b5e20;">દુકાન સેવ કરો</button>
 </section>
 
-<!-- ૨. પ્રોડક્ટ ઉમેરવા કે સુધારવાનું ફોર્મ -->
+<!-- Product Add Section -->
 <section>
-<h3 id="productFormTitle">📦 પ્રોડક્ટ અને ભાવ મેનેજ કરો (Meesho Style)</h3>
-<form id="productForm">
-<input id="productId" type="hidden">
-
-<label>કઈ દુકાન માટે પ્રોડક્ટ છે?</label>
-<select id="productShopSelect" required><option value="">દુકાન પસંદ કરો</option></select>
+<h3>➕ નવી પ્રોડક્ટ ઉમેરો</h3>
+<label>દુકાન પસંદ કરો</label>
+<select id="prodShopSelect"><option value="">દુકાન લોડ થઈ રહી છે...</option></select>
 
 <label>પ્રોડક્ટનું નામ</label>
-<input id="name" required placeholder="દા.ત. બટાકા, કેળા, શર્ટ, સાડી">
+<input id="prodName" placeholder="દા.ત. બાસમતી ચોખા / ટામેટા / શર્ટ">
 
-<label>ભાવ (₹)</label>
-<input id="price" type="number" min="0" step="0.01" required placeholder="દા.ત. 40">
-
-<label>કેટેગરી</label>
-<select id="category">
-<option value="શાકભાજી">શાકભાજી</option>
-<option value="ફળો">ફળો</option>
-<option value="કરિયાણું">કરિયાણું</option>
-<option value="જનરલ સ્ટોર">જનરલ સ્ટોર</option>
-<option value="કાપડ">કાપડ</option>
-<option value="સોના-ચાંદી">સોના-ચાંદી</option>
-<option value="સાયકલ">સાયકલ</option>
-<option value="અન્ય">અન્ય</option>
+<label>કેટેગરી પસંદ કરો</label>
+<select id="prodCategory">
+  <option value="શાકભાજી">શાકભાજી</option>
+  <option value="ફળો">ફળો</option>
+  <option value="કરિયાણું">કરિયાણું</option>
+  <option value="જનરલ સ્ટોર">જનરલ સ્ટોર</option>
+  <option value="કાપડ">કાપડ</option>
+  <option value="Women">Women / Ladies</option>
+  <option value="Men">Men / Gents</option>
+  <option value="Boys">Boys</option>
+  <option value="Girls">Girls</option>
+  <option value="Children">Children</option>
+  <option value="Baby">Baby Boy / Girl</option>
+  <option value="સોના-ચાંદી">સોના-ચાંદી</option>
+  <option value="સાયકલ">સાયકલ</option>
 </select>
 
-<label>એકમ / તોલ (Unit)</label>
-<select id="unit">
-<option value="કિલો (Kg)">કિલો (Kg) - (શાકભાજી/ફળો)</option>
-<option value="ગ્રામ (Gram)">ગ્રામ (Gram) - (૧૦૦ ગ્રામથી શરૂ)</option>
-<option value="ડઝન (Dozen)">ડઝન (Dozen) - (કેળા વગેરે માટે)</option>
-<option value="મિલીલીટર (ml)">મિલીલીટર (ml) / લીટર</option>
-<option value="નંગ (Piece)">નંગ (Piece)</option>
-<option value="પેકેટ (Packet)">પેકેટ (Packet)</option>
-<option value="બોક્સ (Box)">બોક્સ (Box)</option>
-<option value="મીટર (Meter)">મીટર (Meter) - કાપડ</option>
+<label>એકમ (Unit) પસંદ કરો</label>
+<select id="prodUnit">
+  <option value="કિલો (Kg)">કિલો (Kg)</option>
+  <option value="ગ્રામ (Gram)">ગ્રામ (Gram)</option>
+  <option value="પેકેટ">પેકેટ</option>
+  <option value="નંગ (Piece)">નંગ (Piece)</option>
+  <option value="ડઝન">ડઝન</option>
+  <option value="મીટર">મીટર</option>
 </select>
 
-<label>કપડાં/વસ્તુ માટે કલર્સ (અલ્પવિરામ કરીને લખો, જેમ કે: Red, Blue, Green)</label>
-<input id="productColors" placeholder="દા.ત. Red, Blue, Black (ખાલી પણ રાખી શકો)">
+<label>ભાવ (₹ માં)</label>
+<input id="prodPrice" type="number" placeholder="દા.ત. 70">
 
-<label>કપડાં/વસ્તુ માટે સાઈઝ (અલ્પવિરામ કરીને લખો, જેમ કે: S, M, L, XL)</label>
-<input id="productSizes" placeholder="દા.ત. S, M, L, XL, XXL (ખાલી પણ રાખી શકો)">
+<label>ફોટો લિંક (Image URL)</label>
+<input id="prodImage" placeholder="ਫੋટોની લિંક અહીં નાખો">
 
-<label for="imageFile">મોબાઇલ કેમેરા અથવા Gallery માંથી ફોટો પસંદ કરો</label>
-<input id="imageFile" type="file" accept="image/*">
-<img id="preview" alt="ફોટો પ્રિવ્યુ">
-<p id="uploadMsg"></p>
+<label>ઉપલબ્ધ કલર (જો હોય તો, અલ્પવિરામ કરીને લખો જેમ કે Red, Blue)</label>
+<input id="prodColors" placeholder="લાલ, લીલો, કાળો">
 
-<label>અથવા ફોટો URL નાખો</label>
-<input id="imageUrl" type="url" placeholder="https://...">
+<label>ઉપલબ્ધ સાઈઝ (જો હોય તો, જેમ કે S, M, L, XL)</label>
+<input id="prodSizes" placeholder="S, M, L, XL">
 
-<label>ગ્રાહકોને બતાવવી છે?</label>
-<select id="active">
-<option value="true">હા</option>
-<option value="false">ના (છુપાવો)</option>
-</select>
-
-<button type="submit" id="saveButton">પ્રોડક્ટ સેવ કરો</button>
-<button type="button" id="prodCancelBtn" class="secondary" style="display:none;">કેન્સલ કરો</button>
-<p id="saveMsg"></p>
-</form>
-
-<h4 style="margin-top:20px;">હાલની પ્રોડક્ટ્સ:</h4>
-<div id="productsList">પ્રોડક્ટ્સ લોડ થઈ રહી છે...</div>
+<button id="addProdBtn">પ્રોડક્ટ લાઇવ કરો</button>
 </section>
-</div>
+
+<section>
+<h3>📋 બધી જ પ્રોડક્ટ્સની યાદી</h3>
+<div id="adminProductsList">પ્રોડક્ટ્સ લોડ થઈ રહી છે...</div>
+</section>
 </main>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
  apiKey:"AIzaSyCGSZ7QcASC_sUV6f7NDJrMbn0Ae-f9pR8",
@@ -159,304 +105,108 @@ const firebaseConfig={
  measurementId:"G-HBL4EVF1MN"
 };
 
-const ADMIN_UID = "bzMpXfz6ltVVB7GcWHWh0ok7XbO2";
-
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
 const $ = id => document.getElementById(id);
 
-let loadedShops = [];
-let base64Image = "";
+let allShops = [];
 
-$("loginForm").addEventListener("submit", async e => {
- e.preventDefault();
- $("loginMsg").textContent = "Login થઈ રહ્યું છે...";
- try {
-  await signInWithEmailAndPassword(auth, $("email").value.trim(), $("password").value);
-  $("loginMsg").textContent = "";
- } catch(err) {
-  $("loginMsg").textContent = "Login ન થયું: " + err.message;
- }
-});
-
-onAuthStateChanged(auth, async user => {
- if(user) {
-  if(user.uid !== ADMIN_UID) {
-   alert("તમને એડમિન એક્સેસ નથી!");
-   await signOut(auth);
-   return;
-  }
-  $("login").style.display = "none";
-  $("app").style.display = "block";
-  initAdminData();
- } else {
-  $("login").style.display = "block";
-  $("app").style.display = "none";
- }
-});
-
-$("logout").addEventListener("click", () => signOut(auth));
-
-$("imageFile").addEventListener("change", function(e) {
- const file = e.target.files[0];
- if(!file) return;
-
- $("uploadMsg").textContent = "ફોટો પ્રોસેસ થઈ રહ્યો છે...";
-
- const reader = new FileReader();
- reader.onload = function(event) {
-  const img = new Image();
-  img.onload = function() {
-   const canvas = document.createElement("canvas");
-   const MAX_WIDTH = 500;
-   const MAX_HEIGHT = 500;
-   let width = img.width;
-   let height = img.height;
-
-   if (width > height) {
-    if (width > MAX_WIDTH) {
-     height *= MAX_WIDTH / width;
-     width = MAX_WIDTH;
-    }
-   } else {
-    if (height > MAX_HEIGHT) {
-     width *= MAX_HEIGHT / height;
-     height = MAX_HEIGHT;
-    }
-   }
-
-   canvas.width = width;
-   canvas.height = height;
-   const ctx = canvas.getContext("2d");
-   ctx.drawImage(img, 0, 0, width, height);
-
-   base64Image = canvas.toDataURL("image/jpeg", 0.7);
-   $("imageUrl").value = base64Image;
-   $("preview").src = base64Image;
-   $("preview").style.display = "block";
-   $("uploadMsg").textContent = "ફોટો સફળતાપૂર્વક તૈયાર થઈ ગયો છે!";
-  };
-  img.src = event.target.result;
- };
- reader.readAsDataURL(file);
-});
-
-function initAdminData() {
- onSnapshot(collection(db, "shops"), snap => {
-  loadedShops = snap.docs.map(d => ({id: d.id, ...d.data()}));
-  const shopSel = $("productShopSelect");
-  shopSel.replaceChildren(document.createElement("option"));
-  shopSel.children[0].value = "";
-  shopSel.children[0].textContent = "દુકાન પસંદ કરો";
-
-  const host = $("shopsList");
-  host.replaceChildren();
-
-  if(loadedShops.length === 0) {
-   host.textContent = "હજી કોઈ દુકાન નથી.";
-  }
-
-  loadedShops.forEach(s => {
-   const opt = document.createElement("option");
-   opt.value = s.id;
-   opt.textContent = s.name;
-   shopSel.append(opt);
-
-   const card = document.createElement("div");
-   card.className = "item-card";
-   card.innerHTML = `<strong>${s.name}</strong><br><small>પ્રકાર: ${s.type || ''} | WhatsApp: ${s.whatsapp || ''}</small>`;
-   
-   const btnRow = document.createElement("div");
-   btnRow.className = "btn-row";
-
-   const editBtn = document.createElement("button");
-   editBtn.type = "button";
-   editBtn.textContent = "Edit (સુધારો)";
-   editBtn.onclick = () => {
-    $("shopId").value = s.id;
-    $("shopName").value = s.name || "";
-    $("shopType").value = s.type || "શાકભાજી અને ફળો";
-    $("shopWhatsapp").value = s.whatsapp || "";
-    $("shopFormTitle").textContent = "🏪 દુકાન સુધારો (Edit)";
-    $("shopSaveBtn").textContent = "ફેરફાર સેવ કરો";
-    $("shopCancelBtn").style.display = "block";
-    window.scrollTo({top: 0, behavior: "smooth"});
-   };
-
-   const delBtn = document.createElement("button");
-   delBtn.type = "button";
-   delBtn.className = "danger";
-   delBtn.textContent = "ડિલીટ";
-   delBtn.onclick = async () => {
-    if(confirm("આ દુકાન ડિલીટ કરવી છે?")) {
-     await deleteDoc(doc(db, "shops", s.id));
-    }
-   };
-
-   btnRow.append(editBtn, delBtn);
-   card.append(btnRow);
-   host.append(card);
-  });
+async function initAdmin() {
+ const shopSnap = await getDocs(collection(db, "shops"));
+ allShops = shopSnap.docs.map(d => ({id: d.id, ...d.data()}));
+ 
+ const shopSel = $("prodShopSelect");
+ shopSel.replaceChildren();
+ allShops.forEach(s => {
+  const opt = document.createElement("option");
+  opt.value = s.id;
+  opt.textContent = s.name;
+  shopSel.append(opt);
  });
 
- onSnapshot(collection(db, "products"), snap => {
-  const host = $("productsList");
-  host.replaceChildren();
+ $("addShopBtn").onclick = async () => {
+  const name = $("shopName").value.trim();
+  const whatsapp = $("shopWhatsapp").value.trim();
+  if(!name || !whatsapp) {
+   alert("દુકાનનું નામ અને WhatsApp નંબર ભરો!");
+   return;
+  }
+  await addDoc(collection(db, "shops"), { name, whatsapp });
+  alert("દુકાન સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
+  $("shopName").value = "";
+  $("shopWhatsapp").value = "";
+  location.reload();
+ };
 
-  if(snap.empty) {
-   host.textContent = "હજી કોઈ પ્રોડક્ટ નથી.";
+ $("addProdBtn").onclick = async () => {
+  const shopId = $("prodShopSelect").value;
+  const name = $("prodName").value.trim();
+  const category = $("prodCategory").value;
+  const unit = $("prodUnit").value;
+  const price = parseFloat($("prodPrice").value);
+  const imageUrl = $("prodImage").value.trim();
+  const colors = $("prodColors").value.trim();
+  const sizes = $("prodSizes").value.trim();
+
+  if(!shopId || !name || isNaN(price)) {
+   alert("કૃપા કરીને દુકાનનું નામ, પ્રોડક્ટનું નામ અને સાચો ભાવ ભરો!");
    return;
   }
 
-  snap.forEach(item => {
-   const p = item.data();
-   const shopObj = loadedShops.find(s => s.id === p.shopId);
-   const card = document.createElement("div");
-   card.className = "item-card";
-   
-   card.innerHTML = `
-    <strong>${p.name}</strong> — ₹${p.price} / ${p.unit}
-    <br><small>દુકાન: ${shopObj ? shopObj.name : 'મુખ્ય દુકાન'} | કેટેગરી: ${p.category}</small>
-    ${p.colors ? `<br><small>🎨 કલર: ${p.colors}</small>` : ''}
-    ${p.sizes ? `<br><small>📏 સાઈઝ: ${p.sizes}</small>` : ''}
+  await addDoc(collection(db, "products"), {
+   shopId, name, category, unit, price, imageUrl, colors, sizes, active: true
+  });
+
+  alert("પ્રોડક્ટ સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
+  $("prodName").value = "";
+  $("prodPrice").value = "";
+  $("prodImage").value = "";
+  $("prodColors").value = "";
+  $("prodSizes").value = "";
+ };
+
+ onSnapshot(collection(db, "products"), snap => {
+  const host = $("adminProductsList");
+  host.replaceChildren();
+  const products = snap.docs.map(d => ({id: d.id, ...d.data()}));
+
+  if(products.length === 0) {
+   host.textContent = "કોઈ પ્રોડક્ટ મળી નથી.";
+   return;
+  }
+
+  products.forEach(p => {
+   const item = document.createElement("div");
+   item.className = "product-item";
+   const shopObj = allShops.find(s => s.id === p.shopId);
+
+   item.innerHTML = `
+    <div style="display:flex; gap:10px; align-items:center;">
+     <img src="${p.imageUrl || 'https://via.placeholder.com/60'}" alt="">
+     <div>
+      <strong style="font-size:15px;">${p.name}</strong><br>
+      <span style="font-size:13px; color:#168343;">₹${p.price} / ${p.unit}</span><br>
+      <span style="font-size:11px; color:#666;">કેટેગરી: ${p.category} | દુકાન: ${shopObj ? shopObj.name : 'N/A'}</span>
+     </div>
+    </div>
    `;
 
-   const btnRow = document.createElement("div");
-   btnRow.className = "btn-row";
-
-   const editBtn = document.createElement("button");
-   editBtn.type = "button";
-   editBtn.textContent = "Edit (સુધારો)";
-   editBtn.onclick = () => {
-    $("productId").value = item.id;
-    $("productShopSelect").value = p.shopId || "";
-    $("name").value = p.name || "";
-    $("price").value = p.price || "";
-    $("category").value = p.category || "શાકભાજી";
-    $("unit").value = p.unit || "કિલો (Kg)";
-    $("productColors").value = p.colors || "";
-    $("productSizes").value = p.sizes || "";
-    $("imageUrl").value = p.imageUrl || "";
-    base64Image = p.imageUrl || "";
-    $("active").value = String(p.active !== false);
-    if(p.imageUrl) {
-     $("preview").src = p.imageUrl;
-     $("preview").style.display = "block";
-    }
-    $("productFormTitle").textContent = "📦 પ્રોડક્ટ સુધારો (Edit)";
-    $("saveButton").textContent = "પ્રોડક્ટ અપડેટ કરો";
-    $("prodCancelBtn").style.display = "block";
-    window.scrollTo({top: 300, behavior: "smooth"});
-   };
-
-   const del = document.createElement("button");
-   del.type = "button";
-   del.className = "danger";
-   del.textContent = "Delete";
-   del.onclick = async () => {
-    if(confirm("આ પ્રોડક્ટ ડિલીટ કરવી છે?")) {
-     await deleteDoc(doc(db, "products", item.id));
+   const delBtn = document.createElement("button");
+   delBtn.textContent = "ડિલીટ";
+   delBtn.style.cssText = "background:#d32f2f; width:auto; padding:8px 12px; font-size:13px;";
+   delBtn.onclick = async () => {
+    if(confirm(`શું તમે "${p.name}" ડિલીટ કરવા માંગો છો?`)) {
+     await deleteDoc(doc(db, "products", p.id));
     }
    };
 
-   btnRow.append(editBtn, del);
-   card.append(btnRow);
-   host.append(card);
+   item.append(delBtn);
+   host.append(item);
   });
  });
 }
 
-$("shopCancelBtn").onclick = () => {
- $("shopForm").reset();
- $("shopId").value = "";
- $("shopFormTitle").textContent = "🏪 નવી દુકાન ઉમેરો";
- $("shopSaveBtn").textContent = "દુકાન સેવ કરો";
- $("shopCancelBtn").style.display = "none";
- $("shopMsg").textContent = "";
-};
-
-$("prodCancelBtn").onclick = () => {
- $("productForm").reset();
- $("productId").value = "";
- $("productFormTitle").textContent = "📦 પ્રોડક્ટ અને ભાવ મેનેજ કરો";
- $("saveButton").textContent = "પ્રોડક્ટ સેવ કરો";
- $("prodCancelBtn").style.display = "none";
- base64Image = "";
- $("preview").style.display = "none";
- $("uploadMsg").textContent = "";
-};
-
-$("shopForm").addEventListener("submit", async e => {
- e.preventDefault();
- try {
-  const shopData = {
-   name: $("shopName").value.trim(),
-   type: $("shopType").value,
-   whatsapp: $("shopWhatsapp").value.trim(),
-   active: true
-  };
-
-  const id = $("shopId").value;
-  if(id) {
-   await setDoc(doc(db, "shops", id), shopData, {merge: true});
-   $("shopMsg").textContent = "દુકાન સફળતાપૂર્વક અપડેટ થઈ ગઈ!";
-  } else {
-   await addDoc(collection(db, "shops"), shopData);
-   $("shopMsg").textContent = "દુકાન સફળતાપૂર્વક ઉમેરાઈ ગઈ!";
-  }
-
-  $("shopForm").reset();
-  $("shopId").value = "";
-  $("shopFormTitle").textContent = "🏪 નવી દુકાન ઉમેરો";
-  $("shopSaveBtn").textContent = "દુકાન સેવ કરો";
-  $("shopCancelBtn").style.display = "none";
- } catch(err) {
-  $("shopMsg").textContent = "ભૂલ: " + err.message;
- }
-});
-
-$("productForm").addEventListener("submit", async e => {
- e.preventDefault();
- try {
-  const finalImageUrl = base64Image || $("imageUrl").value.trim();
-
-  const productData = {
-   shopId: $("productShopSelect").value,
-   name: $("name").value.trim(),
-   price: Number($("price").value),
-   category: $("category").value,
-   unit: $("unit").value,
-   colors: $("productColors").value.trim(),
-   sizes: $("productSizes").value.trim(),
-   imageUrl: finalImageUrl,
-   active: $("active").value === "true"
-  };
-
-  const id = $("productId").value;
-  if(id) {
-   await setDoc(doc(db, "products", id), productData, {merge: true});
-   $("saveMsg").textContent = "પ્રોડક્ટ સફળતાપૂર્વક અપડેટ થઈ ગઈ!";
-  } else {
-   await addDoc(collection(db, "products"), productData);
-   $("saveMsg").textContent = "પ્રોડક્ટ સફળતાપૂર્વક સેવ થઈ ગઈ!";
-  }
-
-  $("productForm").reset();
-  $("productId").value = "";
-  $("productFormTitle").textContent = "📦 પ્રોડક્ટ અને ભાવ મેનેજ કરો";
-  $("saveButton").textContent = "પ્રોડક્ટ સેવ કરો";
-  $("prodCancelBtn").style.display = "none";
-  base64Image = "";
-  $("preview").style.display = "none";
-  $("uploadMsg").textContent = "";
-  $("imageUrl").value = "";
-  $("productColors").value = "";
-  $("productSizes").value = "";
- } catch(err) {
-  $("saveMsg").textContent = "ભૂલ: " + err.message;
- }
-});
+initAdmin();
 </script>
 </body>
 </html>
