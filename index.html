@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>K.H Fresh & Fashion — Meesho Style</title>
 
-<!-- ગ્રાહક એપ માટે લોગો સેટિંગ -->
+<!-- Grahak app mate logo setting -->
 <link rel="icon" type="image/jpeg" href="logo-fresh.jpg">
 <link rel="apple-touch-icon" href="logo-fresh.jpg">
 <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22K.H%20Fresh%20%26%20Fashion%22%2C%22short_name%22%3A%22K.H%20Fresh%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f4faf4%22%2C%22theme_color%22%3A%22%23168343%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22logo-fresh.jpg%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fjpeg%22%7D%5D%7D">
@@ -25,14 +25,17 @@ button:disabled{opacity:.6}
 .qty-row{display:flex;align-items:center;gap:8px;margin-top:6px}
 .qty-row button{width:36px;height:36px;padding:0;font-size:18px;background:#168343;border-radius:6px}
 .badge{display:inline-block;padding:4px 8px;background:#e8f5e9;color:#168343;border-radius:6px;font-size:12px;font-weight:bold;margin-bottom:6px}
-.cat-chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
-.cat-chip{padding:8px 14px;background:#e2f0e6;border:0;border-radius:20px;font-weight:bold;cursor:pointer;color:#168343;font-size:14px;width:auto}
-.cat-chip.active{background:#168343;color:white}
-.brand-banner{text-align:center;background:linear-gradient(135deg, #e8f5e9, #c8e6c9);padding:20px;border-radius:12px;margin-bottom:14px;border:1px solid #a5d6a7;box-shadow:0 2px 6px rgba(0,0,0,0.05)}
-.brand-logo{width:90px;height:90px;object-fit:cover;border-radius:50%;border:3px solid #168343;box-shadow:0 4px 10px rgba(0,0,0,0.15);margin:10px 0 8px 0}
-.brand-video{width:100%;max-height:200px;object-fit:cover;border-radius:8px;border:2px solid #168343;}
-.brand-title{color:#168343;font-size:24px;margin:5px 0 2px 0;font-weight:bold}
-.brand-sub{color:#2e7d32;font-size:14px;margin:0}
+.cat-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;margin:10px 0}
+@media(max-width:500px){.cat-grid{grid-template-columns:repeat(2, 1fr);}}
+.cat-card{background:#e2f0e6;border:2px solid transparent;border-radius:10px;padding:8px;text-align:center;cursor:pointer;transition:0.2s}
+.cat-card.active{background:#168343;color:white;border-color:#0d4d25}
+.cat-card img{width:50px;height:50px;object-fit:cover;border-radius:50%;margin-bottom:4px;border:2px solid #fff}
+.cat-card span{display:block;font-size:13px;font-weight:bold;color:#168343;}
+.cat-card.active span{color:white;}
+.brand-banner{text-align:center;background:linear-gradient(135deg, #e8f5e9, #c8e6c9);padding:24px 16px;border-radius:12px;margin-bottom:14px;border:1px solid #a5d6a7;box-shadow:0 2px 6px rgba(0,0,0,0.05)}
+.brand-logo{width:110px;height:110px;object-fit:cover;border-radius:50%;border:3px solid #168343;box-shadow:0 4px 10px rgba(0,0,0,0.15);margin-bottom:10px}
+.brand-title{color:#168343;font-size:26px;margin:5px 0 2px 0;font-weight:bold}
+.brand-sub{color:#2e7d32;font-size:15px;margin:0}
 .red-alert{background:#ffebee;color:#b3261e;padding:12px;border-radius:8px;border:1px solid #ef9a9a;margin:10px 0;font-weight:bold;text-align:center}
 /* Modal Popup */
 .modal{display:none;position:fixed;z-index:100;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.5);align-items:center;justify-content:center}
@@ -43,60 +46,97 @@ button:disabled{opacity:.6}
 <body>
 <main>
 <div class="brand-banner">
-  <!-- ફેમિલી શોપિંગ વિડીયો (મૂંગો / અવાજ વગર ઓટો-પ્લે) -->
-  <video autoplay muted loop playsinline class="brand-video">
-    <source src="http://googleusercontent.com/generated_video_content/7024002624783015127" type="video/mp4">
-    તમારું બ્રાઉઝર વિડીયો સપોર્ટ કરતું નથી.
-  </video>
-
-  <!-- ગોળ લોગો -->
   <img src="logo-fresh.jpg" alt="K.H Fresh Logo" class="brand-logo">
   <h2 class="brand-title">K.H Fresh & Fashion</h2>
-  <p class="brand-sub">તાજા ફળો, શાકભાજી અને ફેશન વેર (Women, Men, Kids)!</p>
+  <p class="brand-sub">Taja falo, shakbhaji, Ice Cream, Mithai ane Fashion!</p>
 </div>
 
 <div style="background: #e8f5e9; color: #1b5e20; padding: 10px 14px; margin: 10px 0; border-radius: 8px; text-align: center; font-weight: bold; border: 1px solid #c8e6c9;">
-  🕒 સમય: સવારના ૯:૦૦ થી સાંજના ૬:૦૦ | 🚴 ડિલિવરી સુવિધા ઉપલબ્ધ
+  🕒 Samay: Savarna 9:00 thi sanjna 6:00 | 🚴 Delivery suvidha uplabdh
 </div>
 
 <section>
-<h3>📂 કેટેગરી પસંદ કરો</h3>
-<div class="cat-chips" id="catChips">
-  <button class="cat-chip active" data-cat="બધી વસ્તુઓ">બધી વસ્તુઓ</button>
-  <button class="cat-chip" data-cat="શાકભાજી">શાકભાજી</button>
-  <button class="cat-chip" data-cat="ફળો">ફળો</button>
-  <button class="cat-chip" data-cat="Women / Ladies">Women / Ladies</button>
-  <button class="cat-chip" data-cat="Men / Gents">Men / Gents</button>
-  <button class="cat-chip" data-cat="Big Boy">Big Boy</button>
-  <button class="cat-chip" data-cat="Big Girl">Big Girl</button>
-  <button class="cat-chip" data-cat="Children">Children</button>
-  <button class="cat-chip" data-cat="Baby Boy">Baby Boy</button>
-  <button class="cat-chip" data-cat="Baby Girl">Baby Girl</button>
-  <button class="cat-chip" data-cat="કરિયાણું">કરિયાણું</button>
-  <button class="cat-chip" data-cat="જનરલ સ્ટોર">જનરલ સ્ટોર</button>
+<h3>📂 Category Pasand Karo</h3>
+<div class="cat-grid" id="catGrid">
+  <div class="cat-card active" data-cat="બધી વસ્તુઓ">
+    <img src="logo-fresh.jpg" alt="All">
+    <span>બધી વસ્તુઓ</span>
+  </div>
+  <div class="cat-card" data-cat="શાકભાજી">
+    <img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?w=150" alt="Shakbhaji">
+    <span>શાકભાજી</span>
+  </div>
+  <div class="cat-card" data-cat="ફળો">
+    <img src="https://images.unsplash.com/photo-1619566636858-adf3ef9640b7?w=150" alt="Falo">
+    <span>ફળો</span>
+  </div>
+  <div class="cat-card" data-cat="Ice Cream & Cold Drink">
+    <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=150" alt="Ice Cream">
+    <span>Ice Cream & Cold Drink</span>
+  </div>
+  <div class="cat-card" data-cat="Mithai & Namkeen">
+    <img src="https://images.unsplash.com/photo-1599785209707-a456fc1337bb?w=150" alt="Mithai">
+    <span>Mithai & Namkeen</span>
+  </div>
+  <div class="cat-card" data-cat="Women / Ladies">
+    <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=150" alt="Women">
+    <span>Women / Ladies</span>
+  </div>
+  <div class="cat-card" data-cat="Men / Gents">
+    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=150" alt="Men">
+    <span>Men / Gents</span>
+  </div>
+  <div class="cat-card" data-cat="Big Boy">
+    <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150" alt="Big Boy">
+    <span>Big Boy</span>
+  </div>
+  <div class="cat-card" data-cat="Big Girl">
+    <img src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=150" alt="Big Girl">
+    <span>Big Girl</span>
+  </div>
+  <div class="cat-card" data-cat="Children">
+    <img src="https://images.unsplash.com/photo-1471286174890-9c112ffca5b4?w=150" alt="Children">
+    <span>Children</span>
+  </div>
+  <div class="cat-card" data-cat="Baby Boy">
+    <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=150" alt="Baby Boy">
+    <span>Baby Boy</span>
+  </div>
+  <div class="cat-card" data-cat="Baby Girl">
+    <img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?w=150" alt="Baby Girl">
+    <span>Baby Girl</span>
+  </div>
+  <div class="cat-card" data-cat="કરિયાણું">
+    <img src="https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=150" alt="Kariyanu">
+    <span>કરિયાણું</span>
+  </div>
+  <div class="cat-card" data-cat="જનરલ સ્ટોર">
+    <img src="https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?w=150" alt="General Store">
+    <span>જનરલ સ્ટોર</span>
+  </div>
 </div>
 <p id="shopMeta" style="margin-top:8px; color:#168343; font-weight:bold; font-size:14px;"></p>
 </section>
 
 <section>
-<h3>🛍️ વસ્તુઓ (વિગત જોવા ક્લિક કરો)</h3>
-<div id="productsList">કેટેગરી પસંદ કરો...</div>
+<h3>🛍️ Vastuwo (Vigat jova click karo)</h3>
+<div id="productsList">Category pasand karo...</div>
 </section>
 
 <section>
-<h3>🛒 તમારો ઓર્ડર (દુકાનવાર અલગ)</h3>
-<div id="cartList">હજી કોઈ વસ્તુ પસંદ કરી નથી.</div>
+<h3>🛒 Tamaro Order (Dukanvar alag)</h3>
+<div id="cartList">Haji koi vastu pasand kari nathi.</div>
 <div id="cartActions"></div>
 </section>
 
 <section>
-<h3>📋 ગ્રાહકની માહિતી</h3>
-<label>તમારું નામ</label>
-<input id="custName" placeholder="તમારું નામ લખો" required>
-<label>મોબાઈલ નંબર</label>
-<input id="custPhone" type="tel" placeholder="૧૦ અંકનો મોબાઈલ નંબર" required>
-<label>પૂરો પત્તો (સરનામું)</label>
-<input id="custAddress" placeholder="સોસાયટીનું નામ, મકાન નંબર, વિસ્તાર" required>
+<h3>📋 Grahakni Mahiti</h3>
+<label>Tamaru Naam</label>
+<input id="custName" placeholder="Tamaru naam lakho" required>
+<label>Mobile Number</label>
+<input id="custPhone" type="tel" placeholder="10 ankhno mobile number" required>
+<label>Puro Patto (Sarnamu)</label>
+<input id="custAddress" placeholder="Society nu naam, makaan number, vistar" required>
 </section>
 </main>
 
@@ -107,7 +147,7 @@ button:disabled{opacity:.6}
     <h3 id="modalTitle" style="margin:5px 0;"></h3>
     <p id="modalPrice" style="color:#168343; font-weight:bold;"></p>
     <p id="modalDesc" style="font-size:13px; color:#555;"></p>
-    <button id="closeModal" style="background:#d32f2f; margin-top:10px;">બંધ કરો</button>
+    <button id="closeModal" style="background:#d32f2f; margin-top:10px;">Bandh Karo</button>
   </div>
 </div>
 
@@ -143,11 +183,11 @@ async function init() {
   renderProducts();
  });
 
- document.querySelectorAll(".cat-chip").forEach(btn => {
-  btn.onclick = () => {
-   document.querySelectorAll(".cat-chip").forEach(b => b.classList.remove("active"));
-   btn.classList.add("active");
-   activeCategory = btn.dataset.cat;
+ document.querySelectorAll(".cat-card").forEach(card => {
+  card.onclick = () => {
+   document.querySelectorAll(".cat-card").forEach(c => c.classList.remove("active"));
+   card.classList.add("active");
+   activeCategory = card.dataset.cat;
    renderProducts();
   };
  });
@@ -158,9 +198,9 @@ async function init() {
 
 function updateMetaText() {
  if(activeCategory === "બધી વસ્તુઓ") {
-  $("shopMeta").textContent = "બધી દુકાનો અને ફેશન આઇટમ્સ અહીં ઉપલબ્ધ છે.";
+  $("shopMeta").textContent = "Badhi dukano ane fashion items aahe uplabdh chhe.";
  } else {
-  $("shopMeta").textContent = `સિલેક્ટ કરેલી કેટેગરી: ${activeCategory}`;
+  $("shopMeta").textContent = `Select kareli category: ${activeCategory}`;
  }
 }
 
@@ -176,7 +216,7 @@ function renderProducts() {
  });
 
  if(filtered.length === 0) {
-  host.textContent = "આ કેટેગરીમાં હજી કોઈ વસ્તુ ઉપલબ્ધ નથી.";
+  host.textContent = "Aa category ma haji koi vastu uplabdh nathi.";
   return;
  }
 
@@ -190,8 +230,8 @@ function renderProducts() {
    if(e.target.tagName === 'BUTTON' || e.target.tagName === 'SELECT') return;
    $("modalImg").src = p.imageUrl || "https://via.placeholder.com/120";
    $("modalTitle").textContent = p.name;
-   $("modalPrice").textContent = `₹${p.price} / ${p.unit || 'નંગ'}`;
-   $("modalDesc").textContent = `કેટેગરી: ${p.category || 'સામાન્ય'} | દુકાન: ${shopObj ? shopObj.name : 'મૂળ દુકાન'}`;
+   $("modalPrice").textContent = `₹${p.price} / ${p.unit || 'Nang'}`;
+   $("modalDesc").textContent = `Category: ${p.category || 'Samanya'} | Dukan: ${shopObj ? shopObj.name : 'Mool Dukan'}`;
    $("productModal").style.display = "flex";
   };
 
@@ -220,8 +260,8 @@ function renderProducts() {
   }
 
   info.innerHTML = `
-   <span class="badge">${p.category || 'સામાન્ય'}</span>
-   <span style="font-size:11px; color:#666; display:block; margin-bottom:2px;">🏪 દુકાન: ${shopObj ? shopObj.name : 'મૂળ દુકાન'}</span>
+   <span class="badge">${p.category || 'Samanya'}</span>
+   <span style="font-size:11px; color:#666; display:block; margin-bottom:2px;">🏪 Dukan: ${shopObj ? shopObj.name : 'Mool Dukan'}</span>
    <strong style="display:block;font-size:16px;">${p.name}</strong>
    <span style="color:#168343;font-weight:bold;">₹${p.price} / ${unitType}</span>
    ${optionsHtml}
@@ -305,7 +345,7 @@ function updateCart() {
 
  const keys = Object.keys(cart);
  if(keys.length === 0) {
-  host.textContent = "હજી કોઈ વસ્તુ પસંદ કરી નથી.";
+  host.textContent = "Haji koi vastu pasand kari nathi.";
   return;
  }
 
@@ -318,7 +358,7 @@ function updateCart() {
  });
 
  Object.keys(shopsMap).forEach(sId => {
-  const shopObj = allShops.find(s => s.id === sId) || { name: "મુખ્ય દુકાન", whatsapp: "919876543210" };
+  const shopObj = allShops.find(s => s.id === sId) || { name: "Mukhya Dukan", whatsapp: "919876543210" };
   const items = shopsMap[sId];
 
   const shopBox = document.createElement("div");
@@ -326,7 +366,7 @@ function updateCart() {
 
   const shopTitle = document.createElement("h4");
   shopTitle.style.cssText = "margin:0 0 6px 0; color:#168343;";
-  shopTitle.textContent = `🏪 દુકાન: ${shopObj.name}`;
+  shopTitle.textContent = `🏪 Dukan: ${shopObj.name}`;
   shopBox.append(shopTitle);
 
   let shopTotal = 0;
@@ -357,15 +397,15 @@ function updateCart() {
 
   const totalRow = document.createElement("div");
   totalRow.style.cssText = "margin-top:6px; font-weight:bold; font-size:15px;";
-  totalRow.textContent = `દુકાનનું કુલ બિલ: ₹${shopTotal.toFixed(2)}`;
+  totalRow.textContent = `Dukan nu kul bill: ₹${shopTotal.toFixed(2)}`;
   shopBox.append(totalRow);
 
   let shopError = "";
   if(hasProduceOrVeg && shopProduceWeightKg < 1.0) {
-   shopError = `⚠️ નિયમ એરર્ટ (${shopObj.name}): ફળ/શાકભાજીનું કુલ વજન ૧ કિલોથી ઓછું છે!`;
+   shopError = `⚠️ Niyam alert (${shopObj.name}): Phal/Shakbhaji nu kul vajan 1 kilo thi ochhu chhe!`;
   }
   if(!hasProduceOrVeg && hasGeneralItems && shopTotal < 500) {
-   shopError = `⚠️ નિયમ એરર્ટ (${shopObj.name}): ઓછામાં ઓછો ₹૫૦૦ નો ઓર્ડર જરૂરી છે!`;
+   shopError = `⚠️ Niyam alert (${shopObj.name}): Ochha ma ochhu ₹500 no order jaruri chhe!`;
   }
 
   if(shopError) {
@@ -377,7 +417,7 @@ function updateCart() {
 
   const waBtn = document.createElement("button");
   waBtn.style.cssText = "background:#25d366; margin-top:8px;";
-  waBtn.textContent = `${shopObj.name} ના WhatsApp પર ઓર્ડર મોકલો`;
+  waBtn.textContent = `${shopObj.name} na WhatsApp par order moklo`;
   if(shopError) waBtn.disabled = true;
 
   waBtn.onclick = () => {
@@ -395,13 +435,12 @@ function sendShopWhatsAppOrder(shopObj, items, total) {
  const address = $("custAddress").value.trim();
 
  if(!name || !phone || !address) {
-  alert("કૃપા કરીને તમારું નામ, મોબાઈલ નંબર અને સરનામું ભરો!");
+  alert("Kripa karine tamaru naam, mobile number ane sarnamu bharo!");
   return;
  }
 
- let msg = `🛒 *નવો ઓર્ડર - ${shopObj.name}*\n\n👤 નામ: ${name}\n📞 નંબર: ${phone}\n📍 સરનામું: ${address}\n\n*વસ્તુઓ:*`;
+ let msg = `🛒 *Navo Order - ${shopObj.name}*\n\n👤 Naam: ${name}\n📞 Number: ${phone}\n📍 Sarnamu: ${address}\n\n*Vastuwo:*`;
  
- items.items?.forEach?.(i => {}); // safety
  items.forEach(i => {
   const t = i.price * i.qty;
   let d = `${i.unit.includes("કિલો") ? i.qty.toFixed(3) : i.qty} ${i.unit}`;
@@ -410,7 +449,7 @@ function sendShopWhatsAppOrder(shopObj, items, total) {
   msg += `\n- ${i.name}: ${d} = ₹${t.toFixed(2)}`;
  });
 
- msg += `\n\n*દુકાનનું કુલ બિલ: ₹${total.toFixed(2)}*\n*(નોંધ: ઓર્ડર કેન્સલ થઈ શકશે નહીં)*`;
+ msg += `\n\n*Dukan nu kul bill: ₹${total.toFixed(2)}*\n*(Nondh: Order cancel thai shakse nahi)*`;
 
  const waNumber = shopObj.whatsapp || "919876543210";
  const url = `https://wa.me/${waNumber}?text=` + encodeURIComponent(msg);
