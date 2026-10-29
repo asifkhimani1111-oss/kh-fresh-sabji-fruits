@@ -12,8 +12,11 @@ h2,h3{color:#168343}
 input,select,button{width:100%;padding:12px;margin:7px 0;box-sizing:border-box;border:1px solid #ccc;border-radius:8px;font-size:16px}
 button{background:#168343;color:white;border:0;font-weight:bold;cursor:pointer}
 .secondary{background:#555}
+.danger{background:#d32f2f !important}
 #appPanel{display:none}
 .note{font-size:14px;color:#555}
+.product-item{border:1px solid #ddd; padding:10px; border-radius:8px; margin:8px 0; background:#fafafa; display:flex; justify-content:space-between; align-items:center;}
+.bill-box{background:#e8f5e9; border:1px solid #a5d6a7; padding:12px; border-radius:8px; margin:10px 0; font-weight:bold; color:#1b5e20;}
 </style>
 </head>
 <body>
@@ -33,19 +36,25 @@ button{background:#168343;color:white;border:0;font-weight:bold;cursor:pointer}
 
 <div id="appPanel">
 <section>
-<h3>🏪 મારી દુકાન</h3>
+<h3>🏪 મારી દુકાન (Edit / Update)</h3>
 <input id="shopName" placeholder="દુકાનનું નામ">
 <input id="shopWhatsApp" placeholder="WhatsApp નંબર (દા.ત. 919876543210)">
-<button id="saveShopBtn">દુકાન બનાવો / સાચવો</button>
+<button id="saveShopBtn">દુકાન સેવ / અપડેટ કરો</button>
 <p id="shopStatus" class="note"></p>
+</section>
+
+<!-- Hisab / Subscription Box -->
+<section id="billingSection" style="display:none">
+<h3>📊 માસિક સબ્સ્ક્રિપ્શન અને હિસાબ</h3>
+<div id="billDetails" class="bill-box">હિસાબ ગણાઈ રહ્યો છે...</div>
 </section>
 
 <section>
 <h3>📦 નવી વસ્તુ ઉમેરો</h3>
 <input id="productName" placeholder="વસ્તુનું નામ">
 <select id="category">
-<option value="શાકભાજી">શાકભાજી</option>
-<option value="ફળો">ફળો</option>
+<option value="શાકભાજી">શાકભાજી (મિનિમમ 1 કિલો નિયમ)</option>
+<option value="ફળો">ફળો (મિનિમમ 1 કિલો નિયમ)</option>
 <option value="Ice Cream & Cold Drink">Ice Cream & Cold Drink</option>
 <option value="Mithai & Namkeen">Mithai & Namkeen</option>
 <option value="Women / Ladies">Women / Ladies</option>
@@ -59,8 +68,11 @@ button{background:#168343;color:white;border:0;font-weight:bold;cursor:pointer}
 <option value="Cosmetics">Cosmetics</option>
 </select>
 <input id="price" type="number" min="0" step="0.01" placeholder="ભાવ ₹">
-<input id="unit" placeholder="એકમ: નંગ, કિલો, ગ્રામ, મીટર વગેરે">
-<input id="imageUrl" type="url" placeholder="ફોટાની Image URL (ફોટો લિંક)">
+<input id="unit" placeholder="એકમ: નંગ, કિલો, ગ્રામ વગેરે">
+
+<label style="font-size:14px; font-weight:bold; color:#555; display:block; margin-top:5px;">ફોટો પસંદ કરો:</label>
+<input id="imageFile" type="file" accept="image/*" style="background:#f9f9f9;">
+
 <input id="sizes" placeholder="સાઇઝ (વૈકલ્પિક): S, M, L, XL">
 <input id="colors" placeholder="કલર (વૈકલ્પિક): Red, Blue, Black">
 <button id="addProductBtn">પ્રોડક્ટ ઉમેરો</button>
@@ -68,8 +80,8 @@ button{background:#168343;color:white;border:0;font-weight:bold;cursor:pointer}
 </section>
 
 <section>
-<h3>મારી દુકાનની વસ્તુઓની યાદી</h3>
-<div id="myProducts">Login કર્યા પછી વસ્તુઓ અહીં દેખાશે.</div>
+<h3>મારી દુકાનની વસ્તુઓની યાદી (Edit / Delete)</h3>
+<div id="myProducts">લોડ થઈ રહ્યું છે...</div>
 </section>
 </div>
 </main>
@@ -77,7 +89,8 @@ button{background:#168343;color:white;border:0;font-weight:bold;cursor:pointer}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, query, where, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, where, doc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const firebaseConfig = {
  apiKey: "AIzaSyCGSZ7QcASC_sUV6f7NDJrMbn0Ae-f9pR8",
@@ -92,12 +105,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 const $ = id => document.getElementById(id);
 
 let currentUser = null;
 let currentShop = null;
 
-function status(id, message) { $(id).textContent = message; }
+function status(id, msg) { $(id).textContent = msg; }
 async function runSafely(action) { try { await action(); } catch (e) { alert("Error: " + e.message); } }
 
 $("registerBtn").onclick = () => runSafely(async () => {
@@ -132,11 +146,12 @@ async function loadMyShop() {
   currentShop = {id: s.id, ...s.data()};
   $("shopName").value = currentShop.name || "";
   $("shopWhatsApp").value = currentShop.whatsapp || "";
-  status("shopStatus", "દુકાન મળી ગઈ.");
+  status("shopStatus", "દુકાનની માહિતી મળી ગઈ.");
   await loadMyProducts();
  } else {
-  status("shopStatus", "હજુ દુકાન નથી. નામ અને વોટ્સએપ નંબર નાખીને સેવ કરો.");
+  status("shopStatus", "હજુ દુકાન નથી. નામ અને WhatsApp નંબર નાખીને સેવ કરો.");
   $("myProducts").textContent = "દુકાન બનાવ્યા પછી વસ્તુઓ ઉમેરી શકશો.";
+  $("billingSection").style.display = "none";
  }
 }
 
@@ -144,12 +159,14 @@ $("saveShopBtn").onclick = () => runSafely(async () => {
  if (!currentUser) throw new Error("પહેલાં Login કરો.");
  const name = $("shopName").value.trim();
  const whatsapp = $("shopWhatsApp").value.trim();
- if (!name || !whatsapp) { alert("નામ અને WhatsApp નંબર ભરો."); return; }
+ if (!name || !whatsapp) { alert("દુકાનનું નામ અને WhatsApp નંબર ભરો."); return; }
 
  if (currentShop) {
   await setDoc(doc(db, "shops", currentShop.id), {
    name, whatsapp, ownerUid: currentUser.uid, updatedAt: serverTimestamp()
   }, {merge:true});
+  currentShop.name = name;
+  currentShop.whatsapp = whatsapp;
  } else {
   const ref = doc(collection(db, "shops"));
   await setDoc(ref, {
@@ -157,21 +174,32 @@ $("saveShopBtn").onclick = () => runSafely(async () => {
   });
   currentShop = {id: ref.id, name, whatsapp};
  }
- status("shopStatus", "દુકાન સેવ થઈ ગઈ.");
+ status("shopStatus", "દુકાન સફળતાપૂર્વક સેવ/અપડેટ થઈ ગઈ!");
  await loadMyProducts();
 });
 
 $("addProductBtn").onclick = () => runSafely(async () => {
  if (!currentUser) throw new Error("પહેલાં Login કરો.");
- if (!currentShop) throw new Error("પહેલાં દુકાન બનાવો.");
+ if (!currentShop) throw new Error("પહેલાં તમારી દુકાન બનાવો.");
 
  const name = $("productName").value.trim();
  const price = Number($("price").value);
  const unit = $("unit").value.trim();
+ const fileInput = $("imageFile");
 
  if (!name || !unit || $("price").value === "" || price < 0) {
   alert("માહિતી અધૂરી છે.");
   return;
+ }
+
+ status("productStatus", "ફોટો અપલોડ થઈ રહ્યો છે, રાહ જુઓ...");
+
+ let imageUrl = "";
+ if (fileInput.files && fileInput.files[0]) {
+  const file = fileInput.files[0];
+  const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
+  const snapshot = await uploadBytes(storageRef, file);
+  imageUrl = await getDownloadURL(snapshot.ref);
  }
 
  await addDoc(collection(db, "products"), {
@@ -179,7 +207,7 @@ $("addProductBtn").onclick = () => runSafely(async () => {
   price,
   unit,
   category: $("category").value,
-  imageUrl: $("imageUrl").value.trim(),
+  imageUrl: imageUrl,
   sizes: $("sizes").value.trim(),
   colors: $("colors").value.trim(),
   shopId: currentShop.id,
@@ -188,11 +216,11 @@ $("addProductBtn").onclick = () => runSafely(async () => {
   createdAt: serverTimestamp()
  });
 
- status("productStatus", "પ્રોડક્ટ ઉમેરાઈ ગઈ!");
+ status("productStatus", "પ્રોડક્ટ સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
  $("productName").value = "";
  $("price").value = "";
  $("unit").value = "";
- $("imageUrl").value = "";
+ $("imageFile").value = "";
  $("sizes").value = "";
  $("colors").value = "";
  await loadMyProducts();
@@ -205,16 +233,77 @@ async function loadMyProducts() {
  const host = $("myProducts");
  host.replaceChildren();
 
- if (snap.empty) {
-  host.textContent = "કોઈ વસ્તુ નથી.";
+ let totalProducts = snap.size;
+ 
+ // Hisab Calculation (30 products = ₹300, above 30 = ₹10 per product)
+ let monthlyCharge = 300;
+ if (totalProducts > 30) {
+  monthlyCharge += (totalProducts - 30) * 10;
+ }
+
+ $("billingSection").style.display = "block";
+ $("billDetails").innerHTML = `
+  📦 કુલ પ્રોડક્ટ્સ: <b>${totalProducts}</b><br>
+  💰 માસિક સબ્સ્ક્રિપ્શન ચાર્જ: <b>₹${monthlyCharge}</b> <span style="font-size:12px; font-weight:normal;">(પ્રથમ 30 ના ₹300 + વધારાની પ્રતિ પ્રોડક્ટ ₹10)</span>
+ `;
+
+ if (totalProducts === 0) {
+  host.textContent = "હજી કોઈ વસ્તુ ઉમેરાઈ નથી.";
   return;
  }
 
  snap.forEach(d => {
   const p = d.data();
-  const row = document.createElement("p");
-  row.textContent = `${p.name} — ₹${p.price} / ${p.unit} (${p.category})`;
-  host.append(row);
+  const pId = d.id;
+
+  const itemDiv = document.createElement("div");
+  itemDiv.className = "product-item";
+
+  const infoSpan = document.createElement("span");
+  infoSpan.style.fontSize = "14px";
+  infoSpan.innerHTML = `<b>${p.name}</b> — ₹${p.price} / ${p.unit} <br><small style="color:#666;">(${p.category})</small>`;
+
+  const btnDiv = document.createElement("div");
+  btnDiv.style.display = "flex";
+  btnDiv.style.gap = "5px";
+
+  // Edit Button
+  const editBtn = document.createElement("button");
+  editBtn.textContent = "Edit";
+  editBtn.style.padding = "6px 10px";
+  editBtn.style.fontSize = "13px";
+  editBtn.onclick = async () => {
+   const newName = prompt("નવું નામ લખੋ:", p.name);
+   if(newName === null) return;
+   const newPrice = prompt("નવો ભાવ લખੋ:", p.price);
+   if(newPrice === null) return;
+
+   await setDoc(doc(db, "products", pId), {
+    name: newName.trim(),
+    price: Number(newPrice)
+   }, {merge: true});
+   
+   alert("પ્રોડક્ટ અપડેટ થઈ ગઈ!");
+   loadMyProducts();
+  };
+
+  // Delete Button
+  const delBtn = document.createElement("button");
+  delBtn.textContent = "Delete";
+  delBtn.className = "danger";
+  delBtn.style.padding = "6px 10px";
+  delBtn.style.fontSize = "13px";
+  delBtn.onclick = async () => {
+   if(confirm(`શું તમે "${p.name}" ડિલીટ કરવા માંગો છો?`)) {
+    await deleteDoc(doc(db, "products", pId));
+    alert("પ્રોડક્ટ ડિલીટ થઈ ગઈ!");
+    loadMyProducts();
+   }
+  };
+
+  btnDiv.append(editBtn, delBtn);
+  itemDiv.append(infoSpan, btnDiv);
+  host.append(itemDiv);
  });
 }
 </script>
