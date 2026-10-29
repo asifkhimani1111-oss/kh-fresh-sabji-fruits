@@ -17,6 +17,7 @@ button{background:#168343;color:white;border:0;font-weight:bold;cursor:pointer}
 .note{font-size:14px;color:#555}
 .product-item{border:1px solid #ddd; padding:10px; border-radius:8px; margin:8px 0; background:#fafafa; display:flex; justify-content:space-between; align-items:center;}
 .bill-box{background:#e8f5e9; border:1px solid #a5d6a7; padding:12px; border-radius:8px; margin:10px 0; font-weight:bold; color:#1b5e20;}
+#imgPreview{width:80px; height:80px; object-fit:cover; border-radius:8px; display:none; margin:5px 0; border:1px solid #ccc;}
 </style>
 </head>
 <body>
@@ -72,6 +73,7 @@ button{background:#168343;color:white;border:0;font-weight:bold;cursor:pointer}
 
 <label style="font-size:14px; font-weight:bold; color:#555; display:block; margin-top:5px;">ફોટો પસંદ કરો (ગેલેરીમાંથી):</label>
 <input id="imageFile" type="file" accept="image/*" style="background:#f9f9f9;">
+<img id="imgPreview" src="" alt="Preview">
 
 <input id="sizes" placeholder="સાઇઝ (વૈકલ્પિક): S, M, L, XL">
 <input id="colors" placeholder="કલર (વૈકલ્પિક): Red, Blue, Black">
@@ -113,6 +115,19 @@ let currentShop = null;
 
 function status(id, msg) { $(id).textContent = msg; }
 async function runSafely(action) { try { await action(); } catch (e) { alert("Error: " + e.message); } }
+
+// Image Preview Trigger
+$("imageFile").onchange = (e) => {
+ const file = e.target.files[0];
+ if (file) {
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+   $("imgPreview").src = evt.target.result;
+   $("imgPreview").style.display = "block";
+  };
+  reader.readAsDataURL(file);
+ }
+};
 
 $("registerBtn").onclick = () => runSafely(async () => {
  const email = $("email").value.trim();
@@ -225,6 +240,7 @@ $("addProductBtn").onclick = () => runSafely(async () => {
  $("price").value = "";
  $("unit").value = "";
  $("imageFile").value = "";
+ $("imgPreview").style.display = "none";
  $("sizes").value = "";
  $("colors").value = "";
  await loadMyProducts();
