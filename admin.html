@@ -70,7 +70,7 @@ button{background:#168343;color:white;border:0;font-weight:bold;cursor:pointer}
 <input id="price" type="number" min="0" step="0.01" placeholder="ભાવ ₹">
 <input id="unit" placeholder="એકમ: નંગ, કિલો, ગ્રામ વગેરે">
 
-<label style="font-size:14px; font-weight:bold; color:#555; display:block; margin-top:5px;">ફોટો પસંદ કરો:</label>
+<label style="font-size:14px; font-weight:bold; color:#555; display:block; margin-top:5px;">ફોટો પસંદ કરો (ગેલેરીમાંથી):</label>
 <input id="imageFile" type="file" accept="image/*" style="background:#f9f9f9;">
 
 <input id="sizes" placeholder="સાઇઝ (વૈકલ્પિક): S, M, L, XL">
@@ -194,12 +194,16 @@ $("addProductBtn").onclick = () => runSafely(async () => {
 
  status("productStatus", "ફોટો અપલોડ થઈ રહ્યો છે, રાહ જુઓ...");
 
- let imageUrl = "";
- if (fileInput.files && fileInput.files[0]) {
-  const file = fileInput.files[0];
-  const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
-  const snapshot = await uploadBytes(storageRef, file);
-  imageUrl = await getDownloadURL(snapshot.ref);
+ let imageUrl = "https://via.placeholder.com/120";
+ try {
+  if (fileInput.files && fileInput.files[0]) {
+   const file = fileInput.files[0];
+   const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
+   const snapshot = await uploadBytes(storageRef, file);
+   imageUrl = await getDownloadURL(snapshot.ref);
+  }
+ } catch (err) {
+  console.log("Image upload failed, proceeding without image:", err);
  }
 
  await addDoc(collection(db, "products"), {
@@ -235,7 +239,6 @@ async function loadMyProducts() {
 
  let totalProducts = snap.size;
  
- // Hisab Calculation (30 products = ₹300, above 30 = ₹10 per product)
  let monthlyCharge = 300;
  if (totalProducts > 30) {
   monthlyCharge += (totalProducts - 30) * 10;
@@ -267,15 +270,14 @@ async function loadMyProducts() {
   btnDiv.style.display = "flex";
   btnDiv.style.gap = "5px";
 
-  // Edit Button
   const editBtn = document.createElement("button");
   editBtn.textContent = "Edit";
   editBtn.style.padding = "6px 10px";
   editBtn.style.fontSize = "13px";
   editBtn.onclick = async () => {
-   const newName = prompt("નવું નામ લખੋ:", p.name);
+   const newName = prompt("નવું નામ લખો:", p.name);
    if(newName === null) return;
-   const newPrice = prompt("નવો ભાવ લખੋ:", p.price);
+   const newPrice = prompt("નવો ભાવ લખો:", p.price);
    if(newPrice === null) return;
 
    await setDoc(doc(db, "products", pId), {
@@ -287,7 +289,6 @@ async function loadMyProducts() {
    loadMyProducts();
   };
 
-  // Delete Button
   const delBtn = document.createElement("button");
   delBtn.textContent = "Delete";
   delBtn.className = "danger";
