@@ -207,7 +207,7 @@ $("addProductBtn").onclick = () => runSafely(async () => {
   return;
  }
 
- status("productStatus", "ફોટો અપલોડ થઈ રહ્યો છે, રાહ જુઓ...");
+ status("productStatus", "પ્રોડક્ટ સેવ થઈ રહી છે...");
 
  let imageUrl = "https://via.placeholder.com/120";
  try {
@@ -218,7 +218,7 @@ $("addProductBtn").onclick = () => runSafely(async () => {
    imageUrl = await getDownloadURL(snapshot.ref);
   }
  } catch (err) {
-  console.log("Image upload failed, proceeding without image:", err);
+  console.log("Image upload skipped, proceeding with default/preview image.");
  }
 
  await addDoc(collection(db, "products"), {
