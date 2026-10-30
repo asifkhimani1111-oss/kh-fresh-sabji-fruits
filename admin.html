@@ -1,21 +1,21 @@
-
 <!DOCTYPE html>
 <html lang="gu">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>K.H Fresh Admin</title>
+<title>K.H Fresh Admin - 100% Free</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f2f6f2;font-family:Arial;color:#233}
 header{background:#087b43;color:white;padding:18px;text-align:center}
 main{max-width:700px;margin:auto;padding:12px}
-section{background:white;padding:16px;margin:12px 0;border-radius:12px}
+section{background:white;padding:16px;margin:12px 0;border-radius:12px;box-shadow:0 2px 5px rgba(0,0,0,0.05)}
 h3{color:#087b43}
 input,select,button{width:100%;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:8px;font-size:15px}
-button{background:#087b43;color:white;border:0;font-weight:bold}
+button{background:#087b43;color:white;border:0;font-weight:bold;cursor:pointer}
 .red{background:#c62828}
 .gray{background:#555}
+.blue{background:#1976d2}
 .card{border:1px solid #ddd;padding:12px;border-radius:9px;margin:9px 0}
 .note{font-size:13px;color:#666}
 img.preview{width:100px;height:100px;object-fit:cover;display:none}
@@ -25,8 +25,8 @@ img.preview{width:100px;height:100px;object-fit:cover;display:none}
 </head>
 <body>
 <header>
-<h2>K.H Fresh – Admin</h2>
-<p>ફક્ત અધિકૃત Admin માટે</p>
+<h2>K.H Fresh – Admin Panel (Free)</h2>
+<p>સમય: સવારે 9 થી સાંજે 6 | શાકભાજી/ફળો: 2 કિલો મિનિમમ</p>
 </header>
 <main>
 <section id="loginBox">
@@ -59,32 +59,29 @@ img.preview{width:100px;height:100px;object-fit:cover;display:none}
 </section>
 
 <section>
-<h3>નવી પ્રોડક્ટ ઉમેરો</h3>
-<input id="productName" placeholder="પ્રોડક્ટનું નામ">
+<h3>નવી પ્રોડક્ટ ઉમેરો (મેસો સ્ટાઇલ)</h3>
+<input id="productName" placeholder="પ્રોડક્ટનું નામ (દા.ત. કેળા, ટમેટા, સાડી, ચપ્પલ)">
 <input id="price" type="number" min="0" step="0.01" placeholder="ભાવ ₹">
 <select id="unit">
-<option>નંગ</option><option>કિલો</option><option>ગ્રામ</option>
-<option>ડઝન (Dozen)</option><option>લિટર</option><option>મિલીલીટર</option>
+<option>કિલો (Kg - 2 કિલો મિનિમમ)</option><option>ગ્રામ (Gram)</option><option>નંગ (Pcs)</option>
+<option>ડઝન (Dozen - કેળા માટે 12=1kg)</option><option>લિટર</option><option>મિલીલીટર</option>
 <option>મીટર</option><option>સેન્ટીમીટર</option><option>પેકેટ</option>
-<option>બોક્સ</option><option>જોડી</option><option>સાઇઝ</option>
+<option>બોક્સ</option><option>જોડી</option><option>સાઇઝ મુજબ</option>
 </select>
-<input id="category" list="categoryList" placeholder="કેટેગરી">
+<input id="category" list="categoryList" placeholder="કેટેગરી પસંદ કરો">
 <datalist id="categoryList">
-<option value="શાકભાજી"><option value="ફળો"><option value="શાકફળ">
-<option value="કપડાં"><option value="ફૂટવેર"><option value="મોબાઇલ">
-<option value="ઇલેક્ટ્રોનિક્સ"><option value="કરિયાણું">
-<option value="જનરલ સ્ટોર"><option value="ઘરવખરી">
-<option value="ફર્નિચર"><option value="બ્યુટી">
-<option value="રમકડાં"><option value="જ્વેલરી">
-<option value="હાર્ડવેર"><option value="સ્ટેશનરી">
-<option value="Ice Cream & Cold Drink"><option value="Mithai & Namkeen">
-<option value="Women / Ladies"><option value="Men / Gents">
-<option value="Children"><option value="Baby Boy"><option value="Baby Girl">
+<option value="શાકભાજી"><option value="ફળો"><option value="કેળા (Banana)"><option value="શાકફળ">
+<option value="કપડાં - લેડીઝ (Women)"><option value="કપડાં - જેન્ટ્સ (Men)">
+<option value="બાળકોના કપડાં (Children)"><option value="ફૂટવેર - નાના બાળકો"><option value="ફૂટવેર - મોટાઓ">
+<option value="મોબાઇલ"><option value="ઇલેક્ટ્રોનિક્સ"><option value="કરિયાણું">
+<option value="જનરલ સ્ટોર"><option value="ઘરવખરી"><option value="ફર્નિચર">
+<option value="બ્યુટી"><option value="રમકડાં"><option value="જ્વેલરી"><option value="હાર્ડવેਰ">
+<option value="સ્ટેશનરી"><option value="Ice Cream & Cold Drink"><option value="Mithai & Namkeen">
 </datalist>
-<input id="sizes" placeholder="સાઇઝ: S, M, L, XL">
-<input id="colors" placeholder="કલર">
+<input id="sizes" placeholder="સાઇઝ (દા.ત. S, M, L, XL, 6, 7, 8)">
+<input id="colors" placeholder="કલર (Colors)">
 <input id="design" placeholder="ડિઝાઇન / મોડેલ નંબર">
-<label>ફોનની ગેલેરીમાંથી ફોટો પસંદ કરો</label>
+<label>ફોનની ગેલેરીમાંથી ફોટો પસંદ કરો (ઓટો રિસાઈઝ)</label>
 <input id="photo" type="file" accept="image/*">
 <img id="preview" class="preview" alt="ફોટો">
 <button id="addProduct">પ્રોડક્ટ ઉમેરો</button>
@@ -97,14 +94,16 @@ img.preview{width:100px;height:100px;object-fit:cover;display:none}
 </section>
 
 <section>
-<h3>માસિક પ્લાન અને રોકડ પેમેન્ટ</h3>
+<h3>માસિક પ્લાન અને રોકડ પેમેન્ટ (ઓટો-મેનેજમેન્ટ)</h3>
 <div id="billing" class="green">દુકાન પસંદ કરો.</div>
+<br>
 <label>
 <input id="cashReceived" type="checkbox" style="width:auto">
-રોકડ પેમેન્ટ મળી ગયું છે તેની ખાતરી કરું છું.
+રોકડ પેમેન્ટ (₹300 રજિસ્ટ્રેશન + માસિક ચાર્જ) મળી ગયું છે.
 </label>
-<button id="activatePlan">OK – પ્લાન 30 દિવસ ચાલુ કરો</button>
-<p class="note">₹300 એક વખત રજિસ્ટ્રેશન ફી. દર મહિને દરેક પ્રોડક્ટના ₹2. ઓછામાં ઓછા 30 પ્રોડક્ટ જરૂરી.</p>
+<button id="activatePlan" class="blue">OK – પ્લાન 30 દિવસ માટે ON કરો</button>
+<button id="deactivatePlan" class="red">દુકાન મેન્યુઅલ OFF કરો</button>
+<p class="note">નિયમ: ₹300 એક વખત રજિસ્ટ્રેશન ફી. દર મહિને દરેક પ્રોડક્ટના ₹2. ઓછામાં ઓછા 30 પ્રોડક્ટ જરૂરી. સમય પૂરો થતાં દુકાન ઓટોમેટિક બંધ થઈ જશે.</p>
 <p id="planMsg" class="note"></p>
 </section>
 </div>
@@ -112,12 +111,9 @@ img.preview{width:100px;height:100px;object-fit:cover;display:none}
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore,collection,addDoc,getDocs,query,where,doc,updateDoc,deleteDoc,serverTimestamp,Timestamp}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {getStorage,ref,uploadBytes,getDownloadURL}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,collection,addDoc,getDocs,query,where,doc,updateDoc,deleteDoc,serverTimestamp,Timestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getStorage,ref,uploadBytes,getDownloadURL} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const firebaseConfig={
  apiKey:"AIzaSyCGSZ7QcASC_sUV6f7NDJrMbn0Ae-f9pR8",
@@ -133,7 +129,7 @@ const ADMIN_UID="bzMpXfz6ltVVB7GcWHWh0ok7XbO2";
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app),db=getFirestore(app),storage=getStorage(app);
 const $=id=>document.getElementById(id);
-let shops=[],selectedShop=null;
+let shops=[],selectedShop=null,resizedImageBlob=null;
 
 function msg(id,s){$(id).textContent=s;}
 function safe(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
@@ -165,7 +161,7 @@ onAuthStateChanged(auth,async user=>{
 async function loadShops(){
  const snap=await getDocs(collection(db,"shops"));
  shops=snap.docs.map(d=>({id:d.id,...d.data()}));
- $("shopSelect").innerHTML=shops.map(s=>`<option value="${safe(s.id)}">${safe(s.name)}</option>`).join("");
+ $("shopSelect").innerHTML=shops.map(s=>`<option value="${safe(s.id)}">${safe(s.name)} (${s.planActive ? 'ON' : 'OFF'})</option>`).join("");
  if(!shops.length){$("shopInfo").textContent="હજી દુકાન નથી.";return;}
  $("shopSelect").value=shops[0].id;
  await selectShop();
@@ -187,10 +183,8 @@ $("saveShop").onclick=async()=>{
   if(!name||!whatsapp)throw new Error("દુકાનનું નામ અને WhatsApp નંબર ભરો.");
   const shopRef=await addDoc(collection(db,"shops"),{
    name,whatsapp,ownerUid:ADMIN_UID,
+   planActive:false,registrationFeePaid:false,
    createdAt:serverTimestamp(),updatedAt:serverTimestamp()
-  });
-  await updateDoc(doc(db,"shops",shopRef.id),{
-   planRequired:true,planActive:false,registrationFeePaid:false
   });
   msg("shopMsg","દુકાન ઉમેરાઈ ગઈ.");
   $("shopName").value="";$("shopWhatsApp").value="";
@@ -200,16 +194,33 @@ $("saveShop").onclick=async()=>{
  }catch(e){msg("shopMsg",e.message);}
 };
 
-$("photo").onchange=()=>{
- const file=$("photo").files[0];
+// ફોટો ઓટોમેટિક રિસાઈઝ અને કમ્પ્રેસ લોજિક
+$("photo").onchange=(e)=>{
+ const file=e.target.files[0];
  if(!file)return;
- $("preview").src=URL.createObjectURL(file);
- $("preview").style.display="block";
+ const reader=new FileReader();
+ reader.onload=function(event){
+  const img=new Image();
+  img.onload=function(){
+   const canvas=document.createElement('canvas');
+   const MAX=800;
+   let w=img.width,h=img.height;
+   if(w>h){if(w>MAX){h*=MAX/w;w=MAX;}}else{if(h>MAX){w*=MAX/h;h=MAX;}}
+   canvas.width=w;canvas.height=h;
+   const ctx=canvas.getContext('2d');
+   ctx.drawImage(img,0,0,w,h);
+   $("preview").src=canvas.toDataURL('image/jpeg',0.7);
+   $("preview").style.display="block";
+   canvas.toBlob(blob=>{resizedImageBlob=blob;},'image/jpeg',0.7);
+  };
+  img.src=event.target.result;
+ };
+ reader.readAsDataURL(file);
 };
 
 $("addProduct").onclick=async()=>{
  try{
-  if(!selectedShop)throw new Error("પહેલાં દુકાન ઉમેરો અથવા પસંદ કરો.");
+  if(!selectedShop)throw new Error("પહેલાં દુકાન પસંદ કરો.");
   const name=$("productName").value.trim();
   const price=Number($("price").value);
   const category=$("category").value.trim();
@@ -218,12 +229,10 @@ $("addProduct").onclick=async()=>{
    throw new Error("પ્રોડક્ટનું નામ, કેટેગરી અને યોગ્ય ભાવ ભરો.");
   msg("productMsg","પ્રોડક્ટ સેવ થઈ રહી છે...");
   let imageUrl="";
-  const file=$("photo").files[0];
-  if(file){
-   if(!file.type.startsWith("image/"))throw new Error("ફક્ત ફોટો પસંદ કરો.");
-   const fileName=Date.now()+"_"+file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+  if(resizedImageBlob){
+   const fileName=Date.now()+"_img.jpg";
    const imageRef=ref(storage,"products/"+fileName);
-   const uploaded=await uploadBytes(imageRef,file);
+   const uploaded=await uploadBytes(imageRef,resizedImageBlob);
    imageUrl=await getDownloadURL(uploaded.ref);
   }
   await addDoc(collection(db,"products"),{
@@ -236,6 +245,7 @@ $("addProduct").onclick=async()=>{
   });
   ["productName","price","category","sizes","colors","design","photo"].forEach(id=>$(id).value="");
   $("preview").style.display="none";
+  resizedImageBlob=null;
   msg("productMsg","પ્રોડક્ટ ઉમેરાઈ ગઈ.");
   await loadProducts();
  }catch(e){msg("productMsg",e.message);}
@@ -247,15 +257,22 @@ async function loadProducts(){
  const count=snap.size;
  const plan=selectedShop;
  const end=plan.planEndAt?.toDate?plan.planEndAt.toDate():null;
- const active=!!plan.planActive&&!!end&&end>Date.now();
+ 
+ let isActive=!!plan.planActive;
+ if(isActive&&end&&end<=new Date()){
+  isActive=false;
+  await updateDoc(doc(db,"shops",selectedShop.id),{planActive:false});
+ }
+
  const amount=count*2;
  $("shopInfo").innerHTML="<p><b>"+safe(selectedShop.name)+"</b></p><p>WhatsApp: "+safe(selectedShop.whatsapp)+"</p>";
  $("billing").innerHTML=
  "કુલ પ્રોડક્ટ: <b>"+count+"</b><br>"+
  "એક વખતની રજિસ્ટ્રેશન ફી: ₹300<br>"+
  "માસિક ચાર્જ: ₹"+amount+" ("+count+" × ₹2)<br>"+
- "પ્લાન: <b>"+(active?"ચાલુ":"બંધ / સમય પૂરો")+"</b>"+
+ "દુકાનની સ્થિતિ: <b>"+(isActive?"🟢 ON (ચાલુ)":"🔴 OFF (બંધ / સમય પૂરો)")+"</b>"+
  (end?"<br>પ્લાનની છેલ્લી તારીખ: "+end.toLocaleDateString("en-IN"):"<br>હજુ પ્લાન શરૂ થયો નથી.");
+ 
  $("cashReceived").checked=false;
  $("products").replaceChildren();
  snap.forEach(d=>{
@@ -264,7 +281,7 @@ async function loadProducts(){
   const title=document.createElement("b");
   title.textContent=p.name+" — ₹"+p.price+" / "+p.unit;
   const detail=document.createElement("p");
-  detail.textContent=(p.category||"")+" | "+(p.sizes||"")+" | "+(p.colors||"");
+  detail.textContent=(p.category||"")+" | સાઈઝ: "+(p.sizes||"લાગુ નથી")+" | કલર: "+(p.colors||"લાગુ નથી");
   const edit=document.createElement("button");
   edit.textContent="ભાવ / નામ બદલો";
   edit.onclick=async()=>{
@@ -293,24 +310,36 @@ $("activatePlan").onclick=async()=>{
   if(!selectedShop)throw new Error("દુકાન પસંદ કરો.");
   const snap=await getDocs(query(collection(db,"products"),where("shopId","==",selectedShop.id)));
   const count=snap.size;
-  if(count<30)throw new Error("પ્લાન માટે ઓછામાં ઓછા 30 પ્રોડક્ટ જરૂરી છે. હાલ "+count+" છે.");
+  if(count<30)throw new Error("પ્લાન ચાલુ કરવા માટે ઓછામાં ઓછા 30 પ્રોડક્ટ જરૂરી છે. હાલ "+count+" છે.");
   if(!$("cashReceived").checked)throw new Error("રોકડ પેમેન્ટ મળ્યાની ખાતરી કરો.");
-  const first=!selectedShop.registrationFeePaid;
-  if(first&&!confirm("પ્રથમ વખતની ₹300 રજિસ્ટ્રેશન ફી મળી ગઈ છે?"))return;
+  
   const start=new Date();
   const end=new Date(start.getTime()+30*24*60*60*1000);
   const amount=count*2;
+  
   await updateDoc(doc(db,"shops",selectedShop.id),{
-   planRequired:true,planActive:true,
+   planActive:true,
    registrationFeePaid:true,
    planStartAt:Timestamp.fromDate(start),
    planEndAt:Timestamp.fromDate(end),
-   lastCashPaidAt:serverTimestamp(),
-   paidProductCount:count,
    monthlyAmount:amount,
    updatedAt:serverTimestamp()
   });
-  msg("planMsg","પ્લાન ચાલુ થયો. 30 દિવસનો ચાર્જ ₹"+amount+".");
+  msg("planMsg","દુકાન સફળતાપૂર્વક ON થઈ ગઈ છે અને 30 દિવસનો પ્લાન ચાલુ થયો છે.");
+  await loadShops();
+  $("shopSelect").value=selectedShop.id;
+  await selectShop();
+ }catch(e){msg("planMsg",e.message);}
+};
+
+$("deactivatePlan").onclick=async()=>{
+ try{
+  if(!selectedShop)throw new Error("દુકાન પસંદ કરો.");
+  await updateDoc(doc(db,"shops",selectedShop.id),{
+   planActive:false,
+   updatedAt:serverTimestamp()
+  });
+  msg("planMsg","દુકાન મેન્યુઅલ OFF કરી દેવામાં આવી છે.");
   await loadShops();
   $("shopSelect").value=selectedShop.id;
   await selectShop();
