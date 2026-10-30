@@ -6,21 +6,27 @@
 <title>K.H Fresh - Online Ordering</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f2f6f2;font-family:Arial;color:#233}
+body{margin:0;background:#f2f6f2;font-family:Arial;color:#233;padding-bottom:80px}
 header{background:#087b43;color:white;padding:15px;text-align:center}
 main{max-width:800px;margin:auto;padding:10px}
 .shop-card{background:white;padding:15px;margin:10px 0;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.05);display:flex;justify-content:space-between;align-items:center}
 .product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:10px}
-.card{background:white;padding:12px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.05);text-align:center}
-.card img{width:100px;height:100px;object-fit:cover;border-radius:8px}
+.card{background:white;padding:12px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.05);text-align:center;display:flex;flex-direction:column;justify-content:space-between}
+.card img{width:100px;height:100px;object-fit:cover;border-radius:8px;margin:auto}
+.counter{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:10px}
+.counter button{background:#087b43;color:white;border:0;width:35px;height:35px;font-size:18px;border-radius:6px;cursor:pointer;font-weight:bold}
+.counter span{font-size:16px;font-weight:bold;min-width:30px;text-align:center}
 button{background:#087b43;color:white;border:0;padding:10px;border-radius:6px;width:100%;font-weight:bold;cursor:pointer;margin-top:8px}
 .back-btn{background:#555;width:auto;padding:8px 15px;margin-bottom:10px}
+/* નીચે ફિક્સ કાર્ટ બાર */
+#cartBar{position:fixed;bottom:0;left:0;right:0;background:#087b43;color:white;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 -2px 10px rgba(0,0,0,0.1);display:none;z-index:1000}
+#cartBar button{background:white;color:#087b43;width:auto;padding:8px 15px;margin:0}
 </style>
 </head>
 <body>
 <header>
 <h2 id="appTitle">K.H Fresh</h2>
-<p>સમાય: સવારે 9 થી સાંજે 6 (શાકભાજી/ફળો: 2 કિલો મિનિમમ)</p>
+<p>સમય: સવારે 9 થી સાંજે 6</p>
 </header>
 <main>
 <div id="shopListView">
@@ -35,9 +41,18 @@ button{background:#087b43;color:white;border:0;padding:10px;border-radius:6px;wi
 </div>
 </main>
 
+<!-- નીચે દેખાતું લાઈવ કાર્ટ અને WhatsApp બટન -->
+<div id="cartBar">
+<div>
+<span id="cartTotalItems">કુલ વસ્તુઓ: 0</span><br>
+<b>કુલ રકમ: ₹<span id="cartTotalPrice">0</span></b>
+</div>
+<button id="whatsappOrderBtn">WhatsApp પર ઓર્ડર મોકલો</button>
+</div>
+
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getFirestore,collection,getDocs,query,where,doc,getDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore,collection,getDocs,query,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
  apiKey:"AIzaSyCGSZ7QcASC_sUV6f7NDJrMbn0Ae-f9pR8",
@@ -53,13 +68,17 @@ const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 const $=id=>document.getElementById(id);
 
+let currentShopWhatsApp="";
+let productsData=[];
+let cart={}; // કૌંસમાં પ્રોડક્ટ આઈડી અને તેની જથ્થો સંગ્રહવા માટે
+
 async function loadShops(){
  const snap=await getDocs(collection(db,"shops"));
  const list=$("shopsList");
  list.innerHTML="";
  snap.forEach(d=>{
   const s=d.data();
-  if(!s.planActive)return; // Jeni plan ON hase te j dukan dekhase
+  if(!s.planActive)return;
   const div=document.createElement("div");
   div.className="shop-card";
   div.innerHTML=`<div><b>${s.name}</b><br><small>WhatsApp: ${s.whatsapp}</small></div>`;
@@ -73,10 +92,10 @@ async function loadShops(){
 }
 loadShops();
 
-let currentShopWhatsApp="";
-
 async function openShop(shopId,shopName,whatsapp){
  currentShopWhatsApp=whatsapp;
+ cart={}; // દુકાન બદલાય એટલે કાર્ટ ખાલી કરો
+ updateCartBar();
  $("shopListView").style.display="none";
  $("shopDetailView").style.display="block";
  $("shopNameTitle").textContent=shopName;
@@ -84,14 +103,17 @@ async function openShop(shopId,shopName,whatsapp){
  const snap=await getDocs(query(collection(db,"products"),where("shopId","==",shopId)));
  const grid=$("productList");
  grid.innerHTML="";
+ productsData=[];
  
  if(snap.empty){
   grid.innerHTML="<p>આ દુકાનમાં હજી કોઈ પ્રોડક્ટ નથી.</p>";
+  $("cartBar").style.display="none";
   return;
  }
 
  snap.forEach(d=>{
   const p=d.data();
+  productsData.push({id:d.id,...p});
   const card=document.createElement("div");
   card.className="card";
   card.innerHTML=`
@@ -99,11 +121,12 @@ async function openShop(shopId,shopName,whatsapp){
    <h4>${p.name}</h4>
    <p>₹${p.price} / ${p.unit}</p>
    <small>${p.category||""} ${p.sizes?`| સાઈઝ: ${p.sizes}`:""} ${p.colors?`| કલર: ${p.colors}`:""}</small>
+   <div class="counter">
+    <button onclick="changeQty('${d.id}', -1)">-</button>
+    <span id="qty_${d.id}">0</span>
+    <button onclick="changeQty('${d.id}', 1)">+</button>
+   </div>
   `;
-  const ordBtn=document.createElement("button");
-  ordBtn.textContent="WhatsApp પર ઓર્ડર";
-  ordBtn.onclick=()=>orderWhatsApp(currentShopWhatsApp,p.name,p.category,p.price,p.unit);
-  card.append(ordBtn);
   grid.append(card);
  });
 }
@@ -111,30 +134,71 @@ async function openShop(shopId,shopName,whatsapp){
 $("backBtn").onclick=()=>{
  $("shopDetailView").style.display="none";
  $("shopListView").style.display="block";
+ $("cartBar").style.display="none";
 };
 
-window.orderWhatsApp=function(whatsapp,name,category,price,unit){
+// પ્લસ અને માઇનસ કરવા માટેનું ફંક્શન
+window.changeQty=function(productId, delta){
+ if(!cart[productId]) cart[productId]=0;
+ cart[productId]+=delta;
+ if(cart[productId]<0) cart[productId]=0;
+ 
+ const qtySpan=$("qty_"+productId);
+ if(qtySpan) qtySpan.textContent=cart[productId];
+ 
+ updateCartBar();
+};
+
+// કુલ જથ્થો અને રકમ ગણવા તથા કાર્ટ બાર બતાવવા માટે
+function updateCartBar(){
+ let totalItems=0;
+ let totalPrice=0;
+ 
+ for(let id in cart){
+  let qty=cart[id];
+  if(qty>0){
+   totalItems+=qty;
+   let prod=productsData.find(p=>p.id===id);
+   if(prod){
+    totalPrice+=(prod.price * qty);
+   }
+  }
+ }
+ 
+ if(totalItems>0){
+  $("cartBar").style.display="flex";
+  $("cartTotalItems").textContent="કુલ વસ્તુઓ: "+totalItems;
+  $("cartTotalPrice").textContent=totalPrice;
+ }else{
+  $("cartBar").style.display="none";
+ }
+}
+
+// WhatsApp પર ઓર્ડર મોકલવા માટે
+$("whatsappOrderBtn").onclick=()=>{
  const hour=new Date().getHours();
  if(hour<9||hour>=18){
   alert("માફ કરશો! ઓર્ડરનો સમય સવારે 9:00 થી સાંજે 6:00 વાગ્યા સુધીનો છે.");
   return;
- }
+}
 
- // Jo product shakbhaji ke falo hase tyaj 2 kilo ni shart lagse, baki badha mate yogya unit puchhase
- if(category.includes("શાકભાજી") || category.includes("ફળો") || category.includes("કેળા") || category.includes("શાકફળ")){
-  const qty=prompt(name+" માટે કેટલું વજન જોઈએ છે? (શાકભાજી/ફળો માટે ઓછામાં ઓછું 2 કિલો અથવા વધુ લખੋ, દા.ત. 2 Kg, 2.5 Kg):","2 Kg");
-  if(!qty)return;
-  const num=parseFloat(qty);
-  if(isNaN(num)||num<2){
-   alert("નિયમ મુજબ શાકભાજી અને ફળો માટે ઓછામાં ઓછું 2 કિલો ઓર્ડર કરવો જરૂરી છે.");
-   return;
+ let message="મારે નીચે મુજબ ઓર્ડર કરવો છે:%0A";
+ let totalPrice=0;
+ 
+ for(let id in cart){
+  let qty=cart[id];
+  if(qty>0){
+   let prod=productsData.find(p=>p.id===id);
+   if(prod){
+    let itemTotal=prod.price * qty;
+    totalPrice+=itemTotal;
+    message+=`- ${encodeURIComponent(prod.name)}: ${qty} ${encodeURIComponent(prod.unit)} (₹${itemTotal})%0A`;
+   }
   }
-  window.open(`https://wa.me/91${whatsapp}?text=મારે ઓર્ડર કરવો છે:%0Aપ્રોડક્ટ: ${encodeURIComponent(name)}%0Aજથ્થો: ${encodeURIComponent(qty)}%0Aકિંમત: ₹${price}/${unit}`);
- } else {
-  const qty=prompt(name+" કેટલા "+unit+" / જથ્થો જોઈએ છે? (સાઇઝ કે કલર હોય તો તે પણ લખો):","1 "+unit);
-  if(!qty)return;
-  window.open(`https://wa.me/91${whatsapp}?text=મારે ઓર્ડર કરવો છે:%0Aપ્રોડક્ટ: ${encodeURIComponent(name)}%0Aજથ્થો/સાઇઝ: ${encodeURIComponent(qty)}%0Aકિંમત: ₹${price}/${unit}`);
  }
+ 
+ message+=`%0A*કુલ રકમ: ₹${totalPrice}*`;
+ window.open(`https://wa.me/91${currentShopWhatsApp}?text=${message}`);
 };
 </script>
 </body>
