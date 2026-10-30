@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>K.H Fresh Admin - 100% Free & No Login</title>
+<title>K.H Fresh Admin - Super Fast</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f2f6f2;font-family:Arial;color:#233}
@@ -24,7 +24,7 @@ img.preview{width:100px;height:100px;object-fit:cover;display:none}
 <body>
 <header>
 <h2>K.H Fresh – Admin Panel</h2>
-<p>લોગીન વગરની સીધી અને સરળ સિસ્ટમ</p>
+<p>સુપર-ફાસ્ટ અને ૧૦૦% ફ્રી સિસ્ટમ</p>
 </header>
 <main>
 
@@ -43,27 +43,27 @@ img.preview{width:100px;height:100px;object-fit:cover;display:none}
 </section>
 
 <section>
-<h3>નવી પ્રોડક્ટ ઉમેરો (૧ પ્રોડક્ટ પણ ચાલે)</h3>
-<input id="productName" placeholder="પ્રોડક્ટનું નામ (દા.ત. કેળા, ટમેટા, સાડી)">
+<h3>નવી પ્રોડક્ટ ઉમેરો (ઝટપટ ફાસ્ટ)</h3>
+<input id="productName" placeholder="પ્રોડક્ટનું નામ (દા.ત. કેળા, સફરજન, સાડી, કરિયાણું)">
 <input id="price" type="number" min="0" step="0.01" placeholder="ભાવ ₹">
 <select id="unit">
-<option>કિલો (Kg - 2 કિલો મિનિમમ)</option><option>ગ્રામ (Gram)</option><option>નંગ (Pcs)</option>
+<option>કિલો (Kg)</option><option>ગ્રામ (Gram)</option><option>નંગ (Pcs)</option>
 <option>ડઝન (Dozen)</option><option>લિટર</option><option>મિલીલીટર</option>
 <option>પેકેટ</option><option>બોક્સ</option><option>જોડી</option>
 </select>
 <input id="category" list="categoryList" placeholder="કેટેગરી પસંદ કરો">
 <datalist id="categoryList">
 <option value="શાકભાજી"><option value="ફળો"><option value="કેળા (Banana)"><option value="શાકફળ">
-<option value="કપડાં - લેડીઝ"><option value="કપડાં - જેન્ટ્સ"><option value="ફૂટવેર">
+<option value="કપડાં - લેડીઝ"><option value="કપડાં - જેન્ટ્સ"><option value="ફૂટવેਰ">
 <option value="મોબાઇલ"><option value="ઇલેક્ટ્રોનિક્સ"><option value="કરિયાણું">
 </datalist>
 <input id="sizes" placeholder="સાઇઝ (જો લાગુ પડતી હોય)">
 <input id="colors" placeholder="કલર (Colors)">
 <input id="design" placeholder="ડિઝાઇન / મોડેલ નંબર">
-<label>ફોટો પસંદ કરો (ઓટો રિસાઈઝ)</label>
+<label>ફોટો પસંદ કરો (ઓટો કમ્પ્રેસ)</label>
 <input id="photo" type="file" accept="image/*">
 <img id="preview" class="preview" alt="ફોટો">
-<button id="addProduct">પ્રોડક્ટ ઉમેરો</button>
+<button id="addProduct">પ્રોડક્ટ ઉમેરો (ઇન્સ્ટન્ટ)</button>
 <p id="productMsg" class="note"></p>
 </section>
 
@@ -82,7 +82,7 @@ img.preview{width:100px;height:100px;object-fit:cover;display:none}
 </label>
 <button id="activatePlan" class="blue">OK – પ્લાન 30 દિવસ માટે ON કરો</button>
 <button id="deactivatePlan" class="red">દુકાન OFF કરો</button>
-<p class="note">નિયમ: ઓછામાં ઓછી ૧ પ્રોડક્ટ હોય તો પણ પ્લાન ચાલુ થઈ જશે. 30 દિવસ પછી ઓટોમેટિક બંધ થઈ જશે.</p>
+<p class="note">નિયમ: ઓછામાં ઓછી ૧ પ્રોડક્ટ હોય તો પણ પ્લાન ચાલુ થઈ જશે.</p>
 <p id="planMsg" class="note"></p>
 </section>
 
@@ -111,7 +111,6 @@ let shops=[],selectedShop=null,resizedImageBlob=null;
 function msg(id,s){$(id).textContent=s;}
 function safe(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 
-// પેજ લોડ થતા જ દુકાનો લોડ થશે (કોઈ લોગીન વગર)
 async function loadShops(){
  const snap=await getDocs(collection(db,"shops"));
  shops=snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -141,7 +140,7 @@ $("saveShop").onclick=async()=>{
    planActive:false,registrationFeePaid:false,
    createdAt:serverTimestamp(),updatedAt:serverTimestamp()
   });
-  msg("shopMsg","દુકાન ઉમેરાઈ ગઈ.");
+  msg("shopMsg","દુકાન સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
   $("shopName").value="";$("shopWhatsApp").value="";
   await loadShops();
   $("shopSelect").value=shopRef.id;
@@ -149,7 +148,7 @@ $("saveShop").onclick=async()=>{
  }catch(e){msg("shopMsg",e.message);}
 };
 
-// ફોટો ઓટોમેટિક રિસાઈઝ અને કમ્પ્રેસ
+// ફોટો ફાસ્ટ રિસાઈઝ અને કમ્પ્રેસ કરવા માટે
 $("photo").onchange=(e)=>{
  const file=e.target.files[0];
  if(!file)return;
@@ -158,15 +157,15 @@ $("photo").onchange=(e)=>{
   const img=new Image();
   img.onload=function(){
    const canvas=document.createElement('canvas');
-   const MAX=800;
+   const MAX=600; // સાઈઝ નાની રાખી જેથી અપલોડ સ્પીડ સુપર ફાસ્ટ થાય
    let w=img.width,h=img.height;
    if(w>h){if(w>MAX){h*=MAX/w;w=MAX;}}else{if(h>MAX){w*=MAX/h;h=MAX;}}
    canvas.width=w;canvas.height=h;
    const ctx=canvas.getContext('2d');
    ctx.drawImage(img,0,0,w,h);
-   $("preview").src=canvas.toDataURL('image/jpeg',0.7);
+   $("preview").src=canvas.toDataURL('image/jpeg',0.6);
    $("preview").style.display="block";
-   canvas.toBlob(blob=>{resizedImageBlob=blob;},'image/jpeg',0.7);
+   canvas.toBlob(blob=>{resizedImageBlob=blob;},'image/jpeg',0.6);
   };
   img.src=event.target.result;
  };
@@ -182,7 +181,8 @@ $("addProduct").onclick=async()=>{
   const unit=$("unit").value;
   if(!name||!category||$("price").value===""||!Number.isFinite(price)||price<0)
    throw new Error("પ્રોડક્ટનું નામ, કેટેગરી અને યોગ્ય ભાવ ભરો.");
-  msg("productMsg","પ્રોડક્ટ સેવ થઈ રહી છે...");
+  
+  msg("productMsg","ઝટપટ સેવ થઈ રહી છે...");
   let imageUrl="";
   if(resizedImageBlob){
    const fileName=Date.now()+"_img.jpg";
@@ -201,7 +201,7 @@ $("addProduct").onclick=async()=>{
   ["productName","price","category","sizes","colors","design","photo"].forEach(id=>$(id).value="");
   $("preview").style.display="none";
   resizedImageBlob=null;
-  msg("productMsg","પ્રોડક્ટ ઉમેરાઈ ગઈ.");
+  msg("productMsg","પ્રોડક્ટ સફળતાપૂર્વક ઉમેરાઈ ગઈ! ✅");
   await loadProducts();
  }catch(e){msg("productMsg",e.message);}
 };
@@ -264,7 +264,6 @@ $("activatePlan").onclick=async()=>{
   if(!selectedShop)throw new Error("દુકાન પસંદ કરો.");
   const snap=await getDocs(query(collection(db,"products"),where("shopId","==",selectedShop.id)));
   const count=snap.size;
-  // નિયમ બદલ્યો: ૧ પ્રોડક્ટ હોય તો પણ પ્લાન ચાલુ થઈ શકે
   if(count<1)throw new Error("પ્લાન ચાલુ કરવા માટે ઓછામાં ઓછી ૧ પ્રોડક્ટ હોવી જરૂરી છે.");
   if(!$("cashReceived").checked)throw new Error("રોકડ પેમેન્ટ મળ્યાની ખાતરી કરો.");
   
@@ -280,7 +279,7 @@ $("activatePlan").onclick=async()=>{
    monthlyAmount:amount,
    updatedAt:serverTimestamp()
   });
-  msg("planMsg","દુકાન સફળતાપૂર્વક ON થઈ ગઈ છે અને 30 દિવસનો પ્લાન ચાલુ થયો છે.");
+  msg("planMsg","દુકાન સફળતાપૂર્વક ON થઈ ગઈ છે!");
   await loadShops();
   $("shopSelect").value=selectedShop.id;
   await selectShop();
