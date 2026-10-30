@@ -6,25 +6,27 @@
 <title>K.H Fresh - Online Ordering</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f2f6f2;font-family:Arial;color:#233;padding-bottom:90px}
+body{margin:0;background:#f2f6f2;font-family:Arial;color:#233;padding-bottom:100px}
 header{background:#087b43;color:white;padding:15px;text-align:center}
 main{max-width:800px;margin:auto;padding:10px}
 .shop-card{background:white;padding:15px;margin:10px 0;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.05);display:flex;justify-content:space-between;align-items:center}
 .product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:10px}
 .card{background:white;padding:12px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.05);text-align:center;display:flex;flex-direction:column;justify-content:space-between}
 .card img{width:100px;height:100px;object-fit:cover;border-radius:8px;margin:auto}
-input.qty-input{width:100%;padding:8px;margin-top:8px;text-align:center;border:1px solid #ccc;border-radius:6px;font-size:15px}
+.counter{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:10px}
+.counter button{background:#087b43;color:white;border:0;width:35px;height:35px;font-size:18px;border-radius:6px;cursor:pointer;font-weight:bold}
+.counter span{font-size:16px;font-weight:bold;min-width:60px;text-align:center}
 button{background:#087b43;color:white;border:0;padding:10px;border-radius:6px;width:100%;font-weight:bold;cursor:pointer;margin-top:8px}
 .back-btn{background:#555;width:auto;padding:8px 15px;margin-bottom:10px}
 /* નીચે ફિક્સ કાર્ટ બાર */
 #cartBar{position:fixed;bottom:0;left:0;right:0;background:#087b43;color:white;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 -2px 10px rgba(0,0,0,0.1);display:none;z-index:1000}
-#cartBar button{background:white;color:#087b43;width:auto;padding:8px 15px;margin:0}
+#cartBar button{background:#ff9800;color:white;width:auto;padding:10px 15px;margin:0;display:none}
 </style>
 </head>
 <body>
 <header>
 <h2 id="appTitle">K.H Fresh</h2>
-<p>સમય: સવારે 9 થી સાંજે 6</p>
+<p id="ruleText">નિયમ: શાકભાજી/ફળો માટે 2 કિલો વજન અથવા અન્ય વસ્તુઓ માટે ₹500 નો ઓર્ડર જરૂરી છે.</p>
 </header>
 <main>
 <div id="shopListView">
@@ -39,11 +41,11 @@ button{background:#087b43;color:white;border:0;padding:10px;border-radius:6px;wi
 </div>
 </main>
 
-<!-- નીચે દેખાતું લાઈવ કાર્ટ અને WhatsApp બટન -->
+<!-- નીચે દેખાતું લાઈવ કાર્ટ બાર -->
 <div id="cartBar">
 <div>
-<span id="cartTotalItems">ચૂંટેલી વસ્તુઓ: 0</span><br>
-<b>અંદાજિત રકમ: ₹<span id="cartTotalPrice">0</span></b>
+<span id="cartInfo">માહિતી ગણાઈ રહી છે...</span><br>
+<b>કુલ રકમ: ₹<span id="cartTotalPrice">0</span></b>
 </div>
 <button id="whatsappOrderBtn">WhatsApp પર ઓર્ડર મોકલો</button>
 </div>
@@ -112,6 +114,8 @@ async function openShop(shopId,shopName,whatsapp){
  snap.forEach(d=>{
   const p=d.data();
   productsData.push({id:d.id,...p});
+  cart[d.id]=0;
+  
   const card=document.createElement("div");
   card.className="card";
   card.innerHTML=`
@@ -119,7 +123,11 @@ async function openShop(shopId,shopName,whatsapp){
    <h4>${p.name}</h4>
    <p>₹${p.price} / ${p.unit}</p>
    <small>${p.category||""} ${p.sizes?`| સાઈઝ: ${p.sizes}`:""} ${p.colors?`| કલર: ${p.colors}`:""}</small>
-   <input type="text" class="qty-input" id="qty_${d.id}" placeholder="જથ્થો લખો (દા.ત. 250g, 500g, 3 નંગ)" oninput="updateQty('${d.id}', this.value)">
+   <div class="counter">
+    <button onclick="changeQty('${d.id}', -1, '${p.category}', '${p.unit}')">-</button>
+    <span id="qty_${d.id}">0 ${getUnitLabel(p.category, p.unit, 0)}</span>
+    <button onclick="changeQty('${d.id}', 1, '${p.category}', '${p.unit}')">+</button>
+   </div>
   `;
   grid.append(card);
  });
@@ -131,31 +139,118 @@ $("backBtn").onclick=()=>{
  $("cartBar").style.display="none";
 };
 
-// ગ્રાહક જાતે જથ્થો લખશે (જેવા કે 250g, 500g, 1 kg, 3 નંગ)
-window.updateQty=function(productId, value){
- cart[productId]=value.trim();
+function getUnitLabel(category, unit, val){
+ let cat = (category || "").toLowerCase();
+ if(cat.includes("શાકભાજી")) return "Kg";
+ if(cat.includes("ફળો") || cat.includes("કેળા")) {
+  if(unit && unit.includes("ડઝન")) return "ડઝન";
+  return "Kg";
+ }
+ return unit || "નંગ";
+}
+
+window.changeQty=function(productId, delta, category, unit){
+ let cat = (category || "").toLowerCase();
+ let step = 0.25; // ફળો માટે 250g
+ if(cat.includes("શાકભાજી")){
+  step = 0.1; // શાકભાજી માટે 100g
+ }
+ if(cat.includes("કેળા") || (unit && (unit.includes("ડઝન") || unit.includes("નંગ") || unit.includes("પેકેટ") || unit.includes("બોક્સ") || unit.includes("જોડી")))){
+  step = 1; // નંગ, ડઝન કે પેકેટ માટે 1
+ }
+
+ if(!cart[productId]) cart[productId]=0;
+ cart[productId] += (delta * step);
+ if(cart[productId] < 0) cart[productId] = 0;
+ 
+ cart[productId] = Math.round(cart[productId] * 100) / 100;
+ 
+ let displayVal = cart[productId];
+ 
+ if(step === 0.1) {
+  displayVal = (cart[productId] * 1000).toFixed(0) + "g";
+ } else if(step === 0.25) {
+  if(displayVal >= 1) {
+   displayVal = displayVal + " Kg";
+  } else {
+   displayVal = (cart[productId] * 1000).toFixed(0) + "g";
+  }
+ } else {
+  displayVal = displayVal + " " + (unit || "નંગ");
+ }
+
+ const qtySpan=$("qty_"+productId);
+ if(qtySpan) qtySpan.textContent = displayVal;
+ 
  updateCartBar();
 };
 
 function updateCartBar(){
- let selectedCount=0;
+ let totalWeightKg = 0;
+ let totalPrice = 0;
+ let hasAnySelection = false;
+ let isGroceryOrOther = false;
  
- for(let id in cart){
-  if(cart[id] && cart[id]!=="0"){
-   selectedCount++;
+ productsData.forEach(p=>{
+  let val = cart[p.id] || 0;
+  if(val > 0){
+   hasAnySelection = true;
+   let cat = (p.category || "").toLowerCase();
+   
+   // જો પ્રોડક્ટ શાકભાજી કે ફળ સિવાયની હોય (જેમ કે કરિયાણું, કપડાં વગેરે)
+   if(!cat.includes("શાકભાજી") && !cat.includes("ફળો") && !cat.includes("કેળા") && !cat.includes("શાકફળ")){
+    isGroceryOrOther = true;
+   }
+
+   let weightInKg = val;
+   if(cat.includes("કેળા") || (p.unit && p.unit.includes("ડઝન"))){
+    weightInKg = val * 1; 
+   } else if(p.unit && p.unit.includes("નંગ")) {
+    weightInKg = val * 0.25; 
+   }
+   
+   totalWeightKg += weightInKg;
+   totalPrice += (p.price * val);
   }
- }
+ });
  
- if(selectedCount>0){
+ if(hasAnySelection){
   $("cartBar").style.display="flex";
-  $("cartTotalItems").textContent="પસંદ કરેલી વસ્તુઓ: "+selectedCount;
-  $("cartTotalPrice").textContent="દુકાનદાર હિસાબ કરશે";
+  let totalGram = Math.round(totalWeightKg * 1000);
+  $("cartTotalPrice").textContent = totalPrice.toFixed(2);
+  
+  // નિયમ ચકાસણી: જો શાકભાજી/ફળ હોય તો 2 કિલો વજન, અથવા અન્ય કેટેગરી હોય તો ₹500 નો ઓર્ડર
+  let isValid = false;
+  let conditionText = "";
+
+  if(isGroceryOrOther){
+   // અન્ય કેટેગરી માટે ₹500 ની શરત
+   if(totalPrice >= 500){
+    isValid = true;
+    $("cartInfo").textContent = `કુલ રકમ: ₹${totalPrice.toFixed(2)} (ઓર્ડર માટે રેડી! 🟢)`;
+   } else {
+    $("cartInfo").textContent = `કુલ રકમ: ₹${totalPrice.toFixed(2)} (હજી ₹${500 - totalPrice} ઘટે છે - ઓછામાં ઓછું ₹500 જરૂરી છે 🔴)`;
+   }
+  } else {
+   // શાકભાજી અને ફળો માટે 2 કિલો વજનની શરત
+   if(totalWeightKg >= 2){
+    isValid = true;
+    $("cartInfo").textContent = `કુલ વજન: ${totalWeightKg.toFixed(2)} કિલો (ઓર્ડર માટે રેડી! 🟢)`;
+   } else {
+    $("cartInfo").textContent = `કુલ વજન: ${totalGram} ગ્રામ (હજી ${2000 - totalGram} ગ્રામ ઘટે છે - ઓછામાં ઓછું 2 કિલો જરૂરી છે 🔴)`;
+   }
+  }
+  
+  if(isValid){
+   $("whatsappOrderBtn").style.display="block";
+  } else {
+   $("whatsappOrderBtn").style.display="none";
+  }
  }else{
   $("cartBar").style.display="none";
  }
 }
 
-// WhatsApp પર ઓર્ડર મોકલવા માટે
 $("whatsappOrderBtn").onclick=()=>{
  const hour=new Date().getHours();
  if(hour<9||hour>=18){
@@ -163,25 +258,19 @@ $("whatsappOrderBtn").onclick=()=>{
   return;
  }
 
- let message="મારે નીચે મુજબ ઓર્ડર કરવો છે (કુલ વજન મળીને):%0A";
- let hasItems=false;
+ let message="મારે નીચે મુજબ ઓર્ડર કરવો છે:%0A";
+ let totalPrice=0;
  
- for(let id in cart){
-  let val=cart[id];
-  if(val && val!=="0"){
-   hasItems=true;
-   let prod=productsData.find(p=>p.id===id);
-   if(prod){
-    message+=`- ${encodeURIComponent(prod.name)}: ${encodeURIComponent(val)} (ભાવ: ₹${prod.price}/${prod.unit})%0A`;
-   }
+ productsData.forEach(p=>{
+  let val = cart[p.id] || 0;
+  if(val > 0){
+   let itemTotal = p.price * val;
+   totalPrice += itemTotal;
+   message+=`- ${encodeURIComponent(p.name)}: ${val} ${encodeURIComponent(p.unit)} (₹${itemTotal.toFixed(2)})%0A`;
   }
- }
+ });
  
- if(!hasItems){
-  alert("કૃપા કરીને કોઈ વસ્તુનો જથ્થો લખો.");
-  return;
- }
-
+ message+=`%0A*કુલ રકમ: ₹${totalPrice.toFixed(2)}*`;
  window.open(`https://wa.me/91${currentShopWhatsApp}?text=${message}`);
 };
 </script>
