@@ -6,16 +6,14 @@
 <title>K.H Fresh - Online Ordering</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f2f6f2;font-family:Arial;color:#233;padding-bottom:80px}
+body{margin:0;background:#f2f6f2;font-family:Arial;color:#233;padding-bottom:90px}
 header{background:#087b43;color:white;padding:15px;text-align:center}
 main{max-width:800px;margin:auto;padding:10px}
 .shop-card{background:white;padding:15px;margin:10px 0;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.05);display:flex;justify-content:space-between;align-items:center}
 .product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:10px}
 .card{background:white;padding:12px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.05);text-align:center;display:flex;flex-direction:column;justify-content:space-between}
 .card img{width:100px;height:100px;object-fit:cover;border-radius:8px;margin:auto}
-.counter{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:10px}
-.counter button{background:#087b43;color:white;border:0;width:35px;height:35px;font-size:18px;border-radius:6px;cursor:pointer;font-weight:bold}
-.counter span{font-size:16px;font-weight:bold;min-width:30px;text-align:center}
+input.qty-input{width:100%;padding:8px;margin-top:8px;text-align:center;border:1px solid #ccc;border-radius:6px;font-size:15px}
 button{background:#087b43;color:white;border:0;padding:10px;border-radius:6px;width:100%;font-weight:bold;cursor:pointer;margin-top:8px}
 .back-btn{background:#555;width:auto;padding:8px 15px;margin-bottom:10px}
 /* નીચે ફિક્સ કાર્ટ બાર */
@@ -44,8 +42,8 @@ button{background:#087b43;color:white;border:0;padding:10px;border-radius:6px;wi
 <!-- નીચે દેખાતું લાઈવ કાર્ટ અને WhatsApp બટન -->
 <div id="cartBar">
 <div>
-<span id="cartTotalItems">કુલ વસ્તુઓ: 0</span><br>
-<b>કુલ રકમ: ₹<span id="cartTotalPrice">0</span></b>
+<span id="cartTotalItems">ચૂંટેલી વસ્તુઓ: 0</span><br>
+<b>અંદાજિત રકમ: ₹<span id="cartTotalPrice">0</span></b>
 </div>
 <button id="whatsappOrderBtn">WhatsApp પર ઓર્ડર મોકલો</button>
 </div>
@@ -70,7 +68,7 @@ const $=id=>document.getElementById(id);
 
 let currentShopWhatsApp="";
 let productsData=[];
-let cart={}; // કૌંસમાં પ્રોડક્ટ આઈડી અને તેની જથ્થો સંગ્રહવા માટે
+let cart={}; 
 
 async function loadShops(){
  const snap=await getDocs(collection(db,"shops"));
@@ -94,7 +92,7 @@ loadShops();
 
 async function openShop(shopId,shopName,whatsapp){
  currentShopWhatsApp=whatsapp;
- cart={}; // દુકાન બદલાય એટલે કાર્ટ ખાલી કરો
+ cart={};
  updateCartBar();
  $("shopListView").style.display="none";
  $("shopDetailView").style.display="block";
@@ -121,11 +119,7 @@ async function openShop(shopId,shopName,whatsapp){
    <h4>${p.name}</h4>
    <p>₹${p.price} / ${p.unit}</p>
    <small>${p.category||""} ${p.sizes?`| સાઈઝ: ${p.sizes}`:""} ${p.colors?`| કલર: ${p.colors}`:""}</small>
-   <div class="counter">
-    <button onclick="changeQty('${d.id}', -1)">-</button>
-    <span id="qty_${d.id}">0</span>
-    <button onclick="changeQty('${d.id}', 1)">+</button>
-   </div>
+   <input type="text" class="qty-input" id="qty_${d.id}" placeholder="જથ્થો લખો (દા.ત. 250g, 500g, 3 નંગ)" oninput="updateQty('${d.id}', this.value)">
   `;
   grid.append(card);
  });
@@ -137,38 +131,25 @@ $("backBtn").onclick=()=>{
  $("cartBar").style.display="none";
 };
 
-// પ્લસ અને માઇનસ કરવા માટેનું ફંક્શન
-window.changeQty=function(productId, delta){
- if(!cart[productId]) cart[productId]=0;
- cart[productId]+=delta;
- if(cart[productId]<0) cart[productId]=0;
- 
- const qtySpan=$("qty_"+productId);
- if(qtySpan) qtySpan.textContent=cart[productId];
- 
+// ગ્રાહક જાતે જથ્થો લખશે (જેવા કે 250g, 500g, 1 kg, 3 નંગ)
+window.updateQty=function(productId, value){
+ cart[productId]=value.trim();
  updateCartBar();
 };
 
-// કુલ જથ્થો અને રકમ ગણવા તથા કાર્ટ બાર બતાવવા માટે
 function updateCartBar(){
- let totalItems=0;
- let totalPrice=0;
+ let selectedCount=0;
  
  for(let id in cart){
-  let qty=cart[id];
-  if(qty>0){
-   totalItems+=qty;
-   let prod=productsData.find(p=>p.id===id);
-   if(prod){
-    totalPrice+=(prod.price * qty);
-   }
+  if(cart[id] && cart[id]!=="0"){
+   selectedCount++;
   }
  }
  
- if(totalItems>0){
+ if(selectedCount>0){
   $("cartBar").style.display="flex";
-  $("cartTotalItems").textContent="કુલ વસ્તુઓ: "+totalItems;
-  $("cartTotalPrice").textContent=totalPrice;
+  $("cartTotalItems").textContent="પસંદ કરેલી વસ્તુઓ: "+selectedCount;
+  $("cartTotalPrice").textContent="દુકાનદાર હિસાબ કરશે";
  }else{
   $("cartBar").style.display="none";
  }
@@ -180,24 +161,27 @@ $("whatsappOrderBtn").onclick=()=>{
  if(hour<9||hour>=18){
   alert("માફ કરશો! ઓર્ડરનો સમય સવારે 9:00 થી સાંજે 6:00 વાગ્યા સુધીનો છે.");
   return;
-}
+ }
 
- let message="મારે નીચે મુજબ ઓર્ડર કરવો છે:%0A";
- let totalPrice=0;
+ let message="મારે નીચે મુજબ ઓર્ડર કરવો છે (કુલ વજન મળીને):%0A";
+ let hasItems=false;
  
  for(let id in cart){
-  let qty=cart[id];
-  if(qty>0){
+  let val=cart[id];
+  if(val && val!=="0"){
+   hasItems=true;
    let prod=productsData.find(p=>p.id===id);
    if(prod){
-    let itemTotal=prod.price * qty;
-    totalPrice+=itemTotal;
-    message+=`- ${encodeURIComponent(prod.name)}: ${qty} ${encodeURIComponent(prod.unit)} (₹${itemTotal})%0A`;
+    message+=`- ${encodeURIComponent(prod.name)}: ${encodeURIComponent(val)} (ભાવ: ₹${prod.price}/${prod.unit})%0A`;
    }
   }
  }
  
- message+=`%0A*કુલ રકમ: ₹${totalPrice}*`;
+ if(!hasItems){
+  alert("કૃપા કરીને કોઈ વસ્તુનો જથ્થો લખો.");
+  return;
+ }
+
  window.open(`https://wa.me/91${currentShopWhatsApp}?text=${message}`);
 };
 </script>
