@@ -3,40 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>K.H Fresh – Shopping</title>
+<title>K.H Fresh - Online Ordering</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f8f9fa;font-family:Arial;color:#222}
+body{margin:0;background:#f2f6f2;font-family:Arial;color:#233}
 header{background:#087b43;color:white;padding:15px;text-align:center}
 main{max-width:800px;margin:auto;padding:10px}
-.shop-card{background:white;padding:12px;margin:8px 0;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
-.product-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
-.product-card{background:white;border:1px solid #ddd;border-radius:8px;padding:10px;text-align:center}
-.product-card img{width:100%;height:120px;object-fit:cover;border-radius:6px}
-button{background:#087b43;color:white;border:0;padding:8px 12px;border-radius:6px;cursor:pointer;width:100%;margin-top:5px;font-weight:bold}
-.note{font-size:12px;color:#d9534f}
+.shop-card{background:white;padding:15px;margin:10px 0;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.05);display:flex;justify-content:space-between;align-items:center}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:10px}
+.card{background:white;padding:12px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.05);text-align:center}
+.card img{width:100px;height:100px;object-fit:cover;border-radius:8px}
+button{background:#087b43;color:white;border:0;padding:10px;border-radius:6px;width:100%;font-weight:bold;cursor:pointer;margin-top:8px}
+.back-btn{background:#555;width:auto;padding:8px 15px;margin-bottom:10px}
 </style>
 </head>
 <body>
 <header>
-<h2>K.H Fresh</h2>
-<p>સમય: સવારે 9 થી સાંજે 6 (શાકભાજી/ફળો: 2 કિલો મિનિમમ)</p>
+<h2 id="appTitle">K.H Fresh</h2>
+<p>સમાય: સવારે 9 થી સાંજે 6 (શાકભાજી/ફળો: 2 કિલો મિનિમમ)</p>
 </header>
 <main>
-<div id="shopListContainer">
- <h3>ચાલુ દુકાનો</h3>
- <div id="shopsList">લોડ થઈ રહ્યું છે...</div>
+<div id="shopListView">
+<h3>દુકાનોની યાદી</h3>
+<div id="shopsList"></div>
 </div>
-<div id="productContainer" style="display:none;">
- <button onclick="goBack()" style="background:#555;width:auto;padding:6px 12px;">← પાછા જાઓ</button>
- <h3 id="currentShopTitle"></h3>
- <div id="productsList" class="product-grid"></div>
+
+<div id="shopDetailView" style="display:none;">
+<button class="back-btn" id="backBtn">← પાછા જાઓ</button>
+<h2 id="shopNameTitle"></h2>
+<div class="product-grid" id="productList"></div>
 </div>
 </main>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getFirestore,collection,getDocs,query,where} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore,collection,getDocs,query,where,doc,getDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
  apiKey:"AIzaSyCGSZ7QcASC_sUV6f7NDJrMbn0Ae-f9pR8",
@@ -52,58 +53,76 @@ const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 const $=id=>document.getElementById(id);
 
-async function loadActiveShops(){
+async function loadShops(){
  const snap=await getDocs(collection(db,"shops"));
- let html="";
+ const list=$("shopsList");
+ list.innerHTML="";
  snap.forEach(d=>{
   const s=d.data();
-  if(s.planActive){ // માત્ર ચાલુ (ON) દુકાનો જ ગ્રાહકોને દેખાશે
-   html+=`<div class="shop-card">
-    <h3>${s.name}</h3>
-    <button onclick="openShop('${d.id}','${s.name}','${s.whatsapp}')">દુકાન જુઓ અને ઓર્ડર કરો</button>
-   </div>`;
-  }
+  if(!s.planActive)return; // Jeni plan ON hase te j dukan dekhase
+  const div=document.createElement("div");
+  div.className="shop-card";
+  div.innerHTML=`<div><b>${s.name}</b><br><small>WhatsApp: ${s.whatsapp}</small></div>`;
+  const btn=document.createElement("button");
+  btn.textContent="મુલાકાત લો";
+  btn.style.width="auto";
+  btn.onclick=()=>openShop(d.id,s.name,s.whatsapp);
+  div.append(btn);
+  list.append(div);
  });
- $("shopsList").innerHTML=html||"<p>હાલ કોઈ દુકાન ચાલુ નથી.</p>";
 }
-loadActiveShops();
+loadShops();
 
-window.openShop=async function(shopId,shopName,whatsapp){
- $("shopListContainer").style.display="none";
- $("productContainer").style.display="block";
- $("currentShopTitle").textContent=shopName;
+let currentShopWhatsApp="";
+
+async function openShop(shopId,shopName,whatsapp){
+ currentShopWhatsApp=whatsapp;
+ $("shopListView").style.display="none";
+ $("shopDetailView").style.display="block";
+ $("shopNameTitle").textContent=shopName;
  
  const snap=await getDocs(query(collection(db,"products"),where("shopId","==",shopId)));
- let html="";
+ const grid=$("productList");
+ grid.innerHTML="";
+ 
+ if(snap.empty){
+  grid.innerHTML="<p>આ દુકાનમાં હજી કોઈ પ્રોડક્ટ નથી.</p>";
+  return;
+ }
+
  snap.forEach(d=>{
   const p=d.data();
-  html+=`<div class="product-card">
-   <img src="${p.imageUrl||'https://via.placeholder.com/120'}" alt="img">
+  const card=document.createElement("div");
+  card.className="card";
+  card.innerHTML=`
+   ${p.imageUrl?`<img src="${p.imageUrl}">`:''}
    <h4>${p.name}</h4>
    <p>₹${p.price} / ${p.unit}</p>
-   <p style="font-size:11px;color:#666">${p.category} ${p.sizes?'| સાઈઝ: '+p.sizes:''} ${p.colors?'| કલર: '+p.colors:''}</p>
-   <button onclick="orderWhatsApp('${whatsapp}','${p.name}','${p.category}','${p.price}','${p.unit}')">WhatsApp પર ઓર્ડર</button>
-  </div>`;
+   <small>${p.category||""} ${p.sizes?`| સાઈઝ: ${p.sizes}`:""} ${p.colors?`| કલર: ${p.colors}`:""}</small>
+  `;
+  const ordBtn=document.createElement("button");
+  ordBtn.textContent="WhatsApp પર ઓર્ડર";
+  ordBtn.onclick=()=>orderWhatsApp(currentShopWhatsApp,p.name,p.category,p.price,p.unit);
+  card.append(ordBtn);
+  grid.append(card);
  });
- $("productsList").innerHTML=html||"<p>કોઈ પ્રોડક્ટ ઉપલબ્ધ નથી.</p>";
-};
+}
 
-window.goBack=function(){
- $("productContainer").style.display="none";
- $("shopListContainer").style.display="block";
+$("backBtn").onclick=()=>{
+ $("shopDetailView").style.display="none";
+ $("shopListView").style.display="block";
 };
 
 window.orderWhatsApp=function(whatsapp,name,category,price,unit){
- // ૧. સમય વેલિડેશન (સવારે 9 થી સાંજે 6)
  const hour=new Date().getHours();
  if(hour<9||hour>=18){
   alert("માફ કરશો! ઓર્ડરનો સમય સવારે 9:00 થી સાંજે 6:00 વાગ્યા સુધીનો છે.");
   return;
-}
+ }
 
- // ૨. વજન/ઓર્ડર નિયમ વેલિડેશન
- if(category.includes("શાકભાજી")||category.includes("ફળો")||category.includes("કેળા")||category.includes("શાકફળ")){
-  const qty=prompt(name+" માટે કેટલું વજન જોઈએ છે? (શાકભાજી/ફળો માટે ઓછામાં ઓછું 2 કિલો અથવા વધુ લખો, દા.ત. 2 Kg, 2.5 Kg):","2 Kg");
+ // Jo product shakbhaji ke falo hase tyaj 2 kilo ni shart lagse, baki badha mate yogya unit puchhase
+ if(category.includes("શાકભાજી") || category.includes("ફળો") || category.includes("કેળા") || category.includes("શાકફળ")){
+  const qty=prompt(name+" માટે કેટલું વજન જોઈએ છે? (શાકભાજી/ફળો માટે ઓછામાં ઓછું 2 કિલો અથવા વધુ લખੋ, દા.ત. 2 Kg, 2.5 Kg):","2 Kg");
   if(!qty)return;
   const num=parseFloat(qty);
   if(isNaN(num)||num<2){
@@ -111,10 +130,10 @@ window.orderWhatsApp=function(whatsapp,name,category,price,unit){
    return;
   }
   window.open(`https://wa.me/91${whatsapp}?text=મારે ઓર્ડર કરવો છે:%0Aપ્રોડક્ટ: ${encodeURIComponent(name)}%0Aજથ્થો: ${encodeURIComponent(qty)}%0Aકિંમત: ₹${price}/${unit}`);
- }else{
-  const qty=prompt(name+" કેટલા નંગ/જથ્થો જોઈએ છે?:","1");
+ } else {
+  const qty=prompt(name+" કેટલા "+unit+" / જથ્થો જોઈએ છે? (સાઇઝ કે કલર હોય તો તે પણ લખો):","1 "+unit);
   if(!qty)return;
-  window.open(`https://wa.me/91${whatsapp}?text=મારે ઓર્ડર કરવો છે:%0Aપ્રોડક્ટ: ${encodeURIComponent(name)}%0Aજથ્થો: ${encodeURIComponent(qty)}%0Aકિંમત: ₹${price}/${unit}`);
+  window.open(`https://wa.me/91${whatsapp}?text=મારે ઓર્ડર કરવો છે:%0Aપ્રોડક્ટ: ${encodeURIComponent(name)}%0Aજથ્થો/સાઇઝ: ${encodeURIComponent(qty)}%0Aકિંમત: ₹${price}/${unit}`);
  }
 };
 </script>
