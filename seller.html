@@ -4,128 +4,153 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>K.H Fresh - Seller Panel</title>
+<title>K.H Fresh - Seller Registration</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Noto+Sans+Gujarati:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f3f7f4;color:#202820;font-family:Poppins,'Noto Sans Gujarati',sans-serif}
-header{background:linear-gradient(135deg,#08783d,#20a45d);color:white;padding:18px}
+header{background:linear-gradient(135deg,#08783d,#20a45d);color:white;padding:20px}
 header h2{margin:0;font-size:21px}
 header p{margin:5px 0 0;font-size:12px}
 main{max-width:750px;margin:auto;padding:14px}
 .card{background:white;border-radius:15px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px #00000009}
 h3{margin:0 0 13px;font-size:17px}
+label{display:block;font-size:14px;font-weight:600}
 input,select,textarea{width:100%;padding:12px;border:1px solid #dce5dd;border-radius:10px;margin:6px 0 12px;font:inherit;background:white}
-button{border:0;border-radius:10px;padding:12px 15px;font:inherit;font-weight:700;cursor:pointer}
-button:disabled{opacity:.6}
+button{border:0;border-radius:10px;padding:13px 15px;font:inherit;font-weight:700;cursor:pointer}
 .primary{background:#168447;color:white;width:100%}
 .secondary{background:#e8f5ec;color:#126b38}
-.danger{background:#ffe9e9;color:#b32626}
+.status{padding:12px;border-radius:10px;background:#fff5d9;color:#765500;font-size:13px;margin:10px 0;line-height:1.7;overflow-wrap:anywhere}
 .hidden{display:none!important}
-.small{font-size:12px;color:#69756c;line-height:1.6}
-.status{padding:11px;border-radius:10px;background:#fff5d9;color:#765500;font-size:13px;margin:10px 0;overflow-wrap:anywhere}
-.product{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #eee;align-items:center}
-.product img{width:82px;height:82px;object-fit:cover;border-radius:10px;background:#edf2ed}
-.productInfo{flex:1;min-width:0}
-.productInfo b{display:block;overflow-wrap:anywhere}
-.productInfo small{color:#69756c}
-.actions{display:flex;gap:7px;margin-top:8px}
-.actions button{padding:7px 11px;font-size:12px}
-.preview{width:100%;max-height:230px;object-fit:contain;border-radius:12px;background:#f1f4f1;margin:5px 0 12px}
-.uploadLabel{display:block;background:#e8f5ec;color:#126b38;text-align:center;padding:13px;border-radius:10px;font-weight:700;margin:7px 0 12px}
+.small{font-size:12px;color:#69756c;line-height:1.7}
+hr{border:0;border-top:1px solid #eee;margin:18px 0}
 </style>
 </head>
 <body>
+
 <header>
-<h2>🏪 K.H Fresh - Seller Panel</h2>
-<p>તમારી દુકાન અને પ્રોડક્ટ જાતે મેનેજ કરો</p>
+<h2>🏪 K.H Fresh - દુકાનદાર પેનલ</h2>
+<p>તમારી દુકાન રજિસ્ટર કરો અને પ્રોડક્ટ મંજૂરી માટે મોકલો</p>
 </header>
 
 <main>
-<section class="card" id="loginCard">
-<h3>📱 દુકાનદાર Login</h3>
-<label>મોબાઇલ નંબર</label>
-<input id="phone" type="tel" inputmode="numeric" maxlength="10" placeholder="10 અંકનો મોબાઇલ નંબર">
-<div id="recaptcha-container"></div>
-<button class="primary" id="sendOtpBtn" onclick="sendOTP()">OTP મોકલો</button>
-<div id="otpArea" class="hidden">
-<label>મોબાઇલ પર આવેલ OTP નાખો</label>
-<input id="otp" type="tel" inputmode="numeric" maxlength="6" placeholder="6 અંકનો OTP">
-<button class="primary" onclick="verifyOTP()">Login કરો</button>
-</div>
-<div id="loginMessage" class="status hidden"></div>
-</section>
-
-<section id="sellerArea" class="hidden">
-<div class="card">
-<h3>👋 સ્વાગત છે!</h3>
-<div id="shopDetails"></div>
-<button class="secondary" onclick="loadMyProducts()">પ્રોડક્ટ ફરી લોડ કરો</button>
-<button class="danger" onclick="logout()">Logout</button>
-</div>
 
 <div class="card">
-<h3 id="formTitle">➕ નવી પ્રોડક્ટ ઉમેરો</h3>
-<form id="productForm" onsubmit="saveProduct(event)">
-<label>પ્રોડક્ટનું નામ</label>
-<input id="productName" required placeholder="જેમ કે શર્ટ, બટેટા, તેલ">
+<h3>🏬 દુકાનની માહિતી</h3>
 
-<label>કેટેગરી</label>
-<select id="category" required>
+<label>દુકાનનું નામ *</label>
+<input id="shopName" placeholder="દુકાનનું નામ લખો" required>
+
+<label>દુકાનદારનું નામ *</label>
+<input id="ownerName" placeholder="તમારું નામ" required>
+
+<label>મોબાઇલ નંબર *</label>
+<input id="phone" type="tel" inputmode="numeric" maxlength="10" placeholder="10 અંકનો નંબર" required>
+
+<label>WhatsApp નંબર</label>
+<input id="whatsapp" type="tel" inputmode="numeric" maxlength="10" placeholder="WhatsApp નંબર">
+
+<label>દુકાનનું સરનામું *</label>
+<textarea id="address" rows="2" placeholder="પૂરું સરનામું" required></textarea>
+
+<button class="primary" type="button" onclick="submitShop()">
+દુકાન મંજૂરી માટે મોકલો
+</button>
+
+<div id="shopMessage" class="status hidden"></div>
+</div>
+
+<div class="card">
+<h3>📦 પ્રોડક્ટની માહિતી</h3>
+<p class="small">પહેલાં દુકાનની અરજી મોકલો. તમારી દુકાન મંજૂર થયા પછી પ્રોડક્ટની અરજી મોકલી શકશો.</p>
+
+<label>દુકાનનો અરજી નંબર</label>
+<input id="shopRequestId" placeholder="Admin તરફથી મળેલો નંબર">
+
+<label>પ્રોડક્ટનું નામ *</label>
+<input id="productName" placeholder="જેમ કે શર્ટ, બટેટા, તેલ">
+
+<label>કેટેગરી *</label>
+<select id="category">
 <option value="">કેટેગરી પસંદ કરો</option>
-<option>શાકભાજી</option><option>ફળો</option>
-<option>મહિલાઓનાં કપડાં</option><option>પુરુષોનાં કપડાં</option>
-<option>બાળકોનાં કપડાં</option><option>ફૂટવેર</option>
+<option>શાકભાજી</option>
+<option>ફળો</option>
+<option>મહિલાઓનાં કપડાં</option>
+<option>પુરુષોનાં કપડાં</option>
+<option>બાળકોનાં કપડાં</option>
+<option>ફૂટવેર</option>
 <option>મોબાઇલ અને ઇલેક્ટ્રોનિક્સ</option>
-<option>ઘરવખરી અને કિચન</option><option>કરિયાણું</option>
-<option>કોસ્મેટિક્સ અને બ્યુટી</option><option>જ્વેલરી અને ઘડિયાળ</option>
-<option>બેગ અને એસેસરીઝ</option><option>રમકડાં</option>
-<option>ફર્નિચર</option><option>ખેતીનાં સાધનો</option>
-<option>નમકીન અને ફૂડ</option><option>અન્ય</option>
+<option>ઘરવખરી અને કિચન</option>
+<option>કરિયાણું</option>
+<option>કોસ્મેટિક્સ અને બ્યુટી</option>
+<option>જ્વેલરી અને ઘડિયાળ</option>
+<option>બેગ અને એસેસરીઝ</option>
+<option>રમકડાં</option>
+<option>ફર્નિચર</option>
+<option>ખેતીનાં સાધનો</option>
+<option>નમકીન અને ફૂડ</option>
+<option>અન્ય</option>
 </select>
 
-<label>ભાવ (₹)</label>
-<input id="price" type="number" min="0" step="0.01" required>
+<label>ભાવ (₹) *</label>
+<input id="price" type="number" min="0" step="0.01" placeholder="ભાવ">
 
-<label>માપ / યુનિટ</label>
-<select id="unit" required>
-<option>નંગ</option><option>કિલો</option><option>ગ્રામ</option>
-<option>લિટર</option><option>મિલીલીટર</option><option>મીટર</option>
-<option>ફૂટ</option><option>પેકેટ</option><option>બોક્સ</option>
-<option>જોડી</option><option>સેટ</option><option>ડઝન</option><option>અન્ય</option>
+<label>માપ / યુનિટ *</label>
+<select id="unit">
+<option>નંગ</option>
+<option>કિલો</option>
+<option>ગ્રામ</option>
+<option>લિટર</option>
+<option>મિલીલીટર</option>
+<option>મીટર</option>
+<option>ફૂટ</option>
+<option>પેકેટ</option>
+<option>બોક્સ</option>
+<option>જોડી</option>
+<option>સેટ</option>
+<option>ડઝન</option>
+<option>અન્ય</option>
 </select>
 
-<label>સાઇઝ</label><input id="size" placeholder="S, M, L, XL">
-<label>કલર</label><input id="color" placeholder="લાલ, કાળો, વાદળી">
-<label>ડિઝાઇન / વિગત</label><textarea id="design" rows="2"></textarea>
-<label>સ્ટોક</label><input id="stock" type="number" min="0">
+<label>સાઇઝ</label>
+<input id="size" placeholder="S, M, L, XL અથવા અન્ય">
 
-<label>પ્રોડક્ટનો ફોટો</label>
-<label class="uploadLabel" for="photoFile">📸 Gallery / Camera માંથી ફોટો પસંદ કરો</label>
-<input id="photoFile" type="file" accept="image/*" capture="environment" onchange="uploadPhoto()" style="display:none">
-<img id="photoPreview" class="preview hidden" alt="પ્રોડક્ટ ફોટો">
-<div id="uploadMessage" class="status hidden"></div>
-<input id="imageUrl" type="hidden">
+<label>કલર</label>
+<input id="color" placeholder="લાલ, કાળો, વાદળી">
 
-<button class="primary" type="submit" id="saveBtn">પ્રોડક્ટ Save કરો</button>
-<button class="secondary hidden" type="button" id="cancelEditBtn" onclick="cancelEdit()" style="width:100%;margin-top:8px">Edit Cancel કરો</button>
-</form>
-<div id="formMessage" class="status hidden"></div>
+<label>ડિઝાઇન / વિગત</label>
+<textarea id="design" rows="2" placeholder="પ્રોડક્ટની વિગત"></textarea>
+
+<label>સ્ટોક</label>
+<input id="stock" type="number" min="0" placeholder="કેટલા ઉપલબ્ધ છે?">
+
+<label>પ્રોડક્ટ ફોટાની લિંક</label>
+<input id="imageUrl" type="url" placeholder="ફોટાની HTTPS લિંક">
+
+<button class="primary" type="button" onclick="submitProduct()">
+પ્રોડક્ટ મંજૂરી માટે મોકલો
+</button>
+
+<div id="productMessage" class="status hidden"></div>
 </div>
 
 <div class="card">
-<h3>📦 મારી પ્રોડક્ટ્સ</h3>
-<div id="myProducts" class="small">પ્રોડક્ટ લોડ થઈ રહી છે...</div>
+<h3>ℹ️ મંજૂરીની પ્રક્રિયા</h3>
+<p class="small">
+1. દુકાનની વિગતો મોકલો.<br>
+2. Admin તમારી અરજી તપાસશે.<br>
+3. દુકાન મંજૂર થયા પછી પ્રોડક્ટ મોકલો.<br>
+4. પ્રોડક્ટની મંજૂરી પછી જ ગ્રાહકોને દેખાશે.<br>
+5. મંજૂરી પહેલાં કોઈ પ્રોડક્ટ જાહેર નહીં થાય.
+</p>
 </div>
-</section>
+
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
-/* સુધારેલો Firebase Config */
 const firebaseConfig = {
   apiKey: "AIzaSyCGSZ7QcASC_sUV6f7NDJrMbn0Ae-f9pR8",
   authDomain: "kh-fresh-sabji-fruits.firebaseapp.com",
@@ -136,321 +161,113 @@ const firebaseConfig = {
   measurementId: "G-HBL4EVF1MN"
 };
 
-/* Cloudinary વિગતો નાખ્યા વગર ફોટો Upload નહીં થાય */
-const CLOUDINARY_CLOUD_NAME = "YOUR_CLOUDINARY_CLOUD_NAME";
-const CLOUDINARY_UPLOAD_PRESET = "YOUR_UNSIGNED_UPLOAD_PRESET";
-
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
 const db = firebase.firestore();
 
-let confirmationResult = null;
-let recaptchaVerifier = null;
-let myShop = null;
-let editingProductId = null;
-let uploadInProgress = false;
+function val(id){
+ return document.getElementById(id).value.trim();
+}
 
-function showMessage(id,message){
+function message(id,text){
  const el=document.getElementById(id);
- el.textContent=message;
+ el.textContent=text;
  el.classList.remove("hidden");
 }
-function hideMessage(id){
- document.getElementById(id).classList.add("hidden");
-}
-function cleanPhone(value){
- return String(value||"").replace(/\D/g,"").slice(-10);
-}
-function fullPhone(value){
- return "+91"+cleanPhone(value);
-}
-function safeImage(url){
- try{
-  const u=new URL(url);
-  return ["https:","http:"].includes(u.protocol)?u.href:"";
- }catch(e){return "";}
-}
-function imageFallback(name){
- return "https://placehold.co/180x180/eaf8ef/168447?text="+encodeURIComponent(name||"Product");
+
+function validPhone(phone){
+ return /^[6-9]\d{9}$/.test(phone);
 }
 
-async function initRecaptcha(){
- if(recaptchaVerifier)return;
- recaptchaVerifier=new firebase.auth.RecaptchaVerifier(
-  "recaptcha-container",
-  {
-   size:"normal",
-   callback:function(){},
-   "expired-callback":function(){
-    showMessage("loginMessage","reCAPTCHA સમય પૂરો થયો. ફરી ચેક કરો.");
-   }
-  },
-  auth
- );
- await recaptchaVerifier.render();
-}
-async function resetRecaptcha(){
- if(recaptchaVerifier){
-  try{await recaptchaVerifier.clear();}catch(e){}
- }
- recaptchaVerifier=null;
- document.getElementById("recaptcha-container").innerHTML="";
-}
+async function submitShop(){
+ const name=val("shopName");
+ const owner=val("ownerName");
+ const phone=val("phone").replace(/\D/g,"");
+ const whatsapp=val("whatsapp").replace(/\D/g,"")||phone;
+ const address=val("address");
 
-async function sendOTP(){
- hideMessage("loginMessage");
- const phone=cleanPhone(document.getElementById("phone").value);
- if(!/^[6-9]\d{9}$/.test(phone)){
-  showMessage("loginMessage","યોગ્ય 10 અંકનો મોબાઇલ નંબર નાખો.");
+ if(!name||!owner||!validPhone(phone)||!address){
+  message("shopMessage","દુકાનનું નામ, માલિકનું નામ, સાચો મોબાઇલ નંબર અને સરનામું ભરો.");
   return;
  }
- const btn=document.getElementById("sendOtpBtn");
- btn.disabled=true;
- btn.textContent="OTP મોકલાઈ રહ્યો છે...";
+
  try{
-  await initRecaptcha();
-  confirmationResult=await auth.signInWithPhoneNumber(fullPhone(phone),recaptchaVerifier);
-  document.getElementById("otpArea").classList.remove("hidden");
-  showMessage("loginMessage","OTP મોકલી દીધો છે. SMSમાં આવેલ OTP નાખો.");
+  const existing=await db.collection("shopApplications")
+    .where("phone","==","+91"+phone).limit(1).get();
+
+  if(!existing.empty){
+   message("shopMessage","આ નંબરની અરજી પહેલેથી મોકલેલી છે. Adminનો સંપર્ક કરો.");
+   return;
+  }
+
+  const doc=await db.collection("shopApplications").add({
+   shopName:name,
+   ownerName:owner,
+   phone:"+91"+phone,
+   whatsapp:"+91"+whatsapp,
+   address:address,
+   status:"pending",
+   createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  document.getElementById("shopRequestId").value=doc.id;
+  message("shopMessage","તમારી દુકાનની અરજી મોકલાઈ ગઈ છે. અરજી નંબર સાચવી રાખો: "+doc.id+" . Adminની મંજૂરીની રાહ જુઓ.");
  }catch(e){
-  console.error("FIREBASE OTP ERROR:",e);
-  showMessage("loginMessage","Firebase OTP Error: "+(e.code||"UNKNOWN")+" - "+(e.message||String(e)));
-  confirmationResult=null;
-  await resetRecaptcha();
- }finally{
-  btn.disabled=false;
-  btn.textContent="OTP મોકલો";
+  console.error(e);
+  message("shopMessage","અરજી મોકલી શકાઈ નથી. Firebase Rules સેટ થયા પછી ફરી પ્રયાસ કરો. "+e.message);
  }
 }
 
-async function verifyOTP(){
- const otp=document.getElementById("otp").value.trim();
- if(!/^\d{6}$/.test(otp)){
-  showMessage("loginMessage","6 અંકનો OTP નાખો.");
+async function submitProduct(){
+ const requestId=val("shopRequestId");
+ const name=val("productName");
+ const category=val("category");
+ const price=Number(val("price"));
+ const unit=val("unit");
+ const stock=val("stock");
+
+ if(!requestId||!name||!category||val("price")===""||!Number.isFinite(price)||price<0||!unit){
+  message("productMessage","અરજી નંબર, પ્રોડક્ટનું નામ, કેટેગરી અને યોગ્ય ભાવ ભરો.");
   return;
  }
- if(!confirmationResult){
-  showMessage("loginMessage","પહેલા OTP મંગાવો.");
-  return;
- }
- try{
-  await confirmationResult.confirm(otp);
-  await findMyShop();
- }catch(e){
-  console.error("OTP VERIFY ERROR:",e);
-  showMessage("loginMessage","Login Error: "+(e.code||"")+" - "+(e.message||String(e)));
- }
-}
 
-async function findMyShop(){
- const user=auth.currentUser;
- if(!user||!user.phoneNumber)return;
  try{
-  const snapshot=await db.collection("shops").where("sellerPhone","==",user.phoneNumber).get();
-  if(snapshot.empty){
-   await auth.signOut();
-   showMessage("loginMessage","આ મોબાઇલ નંબર કોઈ દુકાન સાથે જોડાયેલો નથી. Adminનો સંપર્ક કરો.");
+  const shopDoc=await db.collection("shopApplications").doc(requestId).get();
+
+  if(!shopDoc.exists){
+   message("productMessage","અરજી નંબર મળ્યો નથી.");
    return;
   }
-  if(snapshot.size>1){
-   await auth.signOut();
-   showMessage("loginMessage","આ નંબર સાથે એકથી વધુ દુકાનો જોડાયેલી છે. Adminનો સંપર્ક કરો.");
+
+  if(shopDoc.data().status!=="approved"){
+   message("productMessage","તમારી દુકાનને Adminની મંજૂરી હજુ મળી નથી.");
    return;
   }
-  const doc=snapshot.docs[0];
-  myShop={id:doc.id,...doc.data()};
-  if(myShop.planActive!==true){
-   await auth.signOut();
-   showMessage("loginMessage","તમારી દુકાન હાલમાં Active નથી. Adminનો સંપર્ક કરો.");
-   return;
-  }
-  if(myShop.planEndAt&&typeof myShop.planEndAt.toDate==="function"&&myShop.planEndAt.toDate().getTime()<=Date.now()){
-   await auth.signOut();
-   showMessage("loginMessage","તમારી દુકાનનો સમય પૂરો થયો છે. Adminનો સંપર્ક કરો.");
-   return;
-  }
-  document.getElementById("loginCard").classList.add("hidden");
-  document.getElementById("sellerArea").classList.remove("hidden");
-  document.getElementById("shopDetails").textContent=(myShop.name||"તમારી દુકાન")+" • "+user.phoneNumber;
-  await loadMyProducts();
+
+  await db.collection("productApplications").add({
+   shopApplicationId:requestId,
+   shopName:shopDoc.data().shopName,
+   name:name,
+   category:category,
+   price:price,
+   unit:unit,
+   size:val("size"),
+   color:val("color"),
+   design:val("design"),
+   stock:stock===""?null:Number(stock),
+   imageUrl:val("imageUrl"),
+   status:"pending",
+   createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  message("productMessage","પ્રોડક્ટ Adminની મંજૂરી માટે મોકલાઈ ગઈ છે.");
+  ["productName","price","size","color","design","stock","imageUrl"].forEach(id=>{
+   document.getElementById(id).value="";
+  });
  }catch(e){
-  console.error("SHOP LOOKUP ERROR:",e);
-  showMessage("loginMessage","દુકાન શોધવામાં મુશ્કેલી: "+(e.code||"")+" - "+e.message);
+  console.error(e);
+  message("productMessage","પ્રોડક્ટ મોકલી શકાઈ નથી. Firebase Rules અને Admin Approval સેટ કરવાના બાકી છે. "+e.message);
  }
 }
-
-function escapeHtml(value){
- return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-
-async function uploadPhoto(){
- const file=document.getElementById("photoFile").files[0];
- if(!file)return;
- hideMessage("uploadMessage");
- if(CLOUDINARY_CLOUD_NAME==="YOUR_CLOUDINARY_CLOUD_NAME"||CLOUDINARY_UPLOAD_PRESET==="YOUR_UNSIGNED_UPLOAD_PRESET"){
-  showMessage("uploadMessage","Cloudinary Cloud Name અને Upload Preset સેટ કર્યા પછી ફોટો Upload થશે.");
-  document.getElementById("photoFile").value="";
-  return;
- }
- if(!file.type.startsWith("image/")){showMessage("uploadMessage","માત્ર ફોટો ફાઇલ પસંદ કરો.");return;}
- if(file.size>5*1024*1024){showMessage("uploadMessage","ફોટો 5 MBથી નાનો પસંદ કરો.");return;}
- const preview=document.getElementById("photoPreview");
- preview.src=URL.createObjectURL(file);
- preview.classList.remove("hidden");
- showMessage("uploadMessage","ફોટો Upload થઈ રહ્યો છે...");
- uploadInProgress=true;
- try{
-  const formData=new FormData();
-  formData.append("file",file);
-  formData.append("upload_preset",CLOUDINARY_UPLOAD_PRESET);
-  formData.append("folder","kh-fresh-products");
-  const response=await fetch("https://api.cloudinary.com/v1_1/"+encodeURIComponent(CLOUDINARY_CLOUD_NAME)+"/image/upload",{method:"POST",body:formData});
-  const result=await response.json();
-  if(!response.ok||!result.secure_url)throw new Error(result.error?.message||"Upload નિષ્ફળ ગયું.");
-  document.getElementById("imageUrl").value=result.secure_url;
-  showMessage("uploadMessage","ફોટો Upload થઈ ગયો. હવે પ્રોડક્ટ Save કરો.");
- }catch(e){
-  document.getElementById("imageUrl").value="";
-  showMessage("uploadMessage","ફોટો Upload થયો નથી: "+e.message);
- }finally{uploadInProgress=false;}
-}
-
-async function loadMyProducts(){
- if(!myShop)return;
- const el=document.getElementById("myProducts");
- el.textContent="પ્રોડક્ટ લોડ થઈ રહી છે...";
- try{
-  const snap=await db.collection("products").where("shopId","==",myShop.id).get();
-  if(snap.empty){el.innerHTML="<div class='status'>હજુ કોઈ પ્રોડક્ટ ઉમેરેલી નથી.</div>";return;}
-  el.innerHTML=snap.docs.map(doc=>{
-   const p=doc.data();
-   const img=safeImage(p.imageUrl)||imageFallback(p.name);
-   return `<div class="product">
-    <img src="${img}" alt="${escapeHtml(p.name)}">
-    <div class="productInfo">
-     <b>${escapeHtml(p.name||"પ્રોડક્ટ")}</b>
-     <small>${escapeHtml(p.category||"")} • ${escapeHtml(p.unit||"")}</small><br>
-     <b>₹${Number(p.price||0)}</b>
-     <div class="actions">
-      <button class="secondary" onclick="editProduct('${doc.id}')">Edit</button>
-      <button class="danger" onclick="deleteProduct('${doc.id}')">Delete</button>
-     </div>
-    </div>
-   </div>`;
-  }).join("");
- }catch(e){
-  el.innerHTML="<div class='status'>પ્રોડક્ટ લોડ થઈ શકી નથી: "+escapeHtml(e.message)+"</div>";
- }
-}
-
-async function saveProduct(event){
- event.preventDefault();
- if(!myShop||!auth.currentUser){showMessage("formMessage","પહેલા Login કરો.");return;}
- if(uploadInProgress){showMessage("formMessage","ફોટો Upload પૂરો થાય ત્યાં સુધી રાહ જુઓ.");return;}
- const name=document.getElementById("productName").value.trim();
- const category=document.getElementById("category").value;
- const price=Number(document.getElementById("price").value);
- const unit=document.getElementById("unit").value;
- if(!name||!category||!Number.isFinite(price)||price<0||!unit){
-  showMessage("formMessage","બધી જરૂરી માહિતી યોગ્ય રીતે ભરો.");return;
- }
- const data={
-  shopId:myShop.id,shopName:myShop.name||"",name,category,price,unit,
-  size:document.getElementById("size").value.trim(),
-  color:document.getElementById("color").value.trim(),
-  design:document.getElementById("design").value.trim(),
-  stock:document.getElementById("stock").value===""?null:Number(document.getElementById("stock").value),
-  imageUrl:safeImage(document.getElementById("imageUrl").value),
-  active:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()
- };
- const btn=document.getElementById("saveBtn");
- btn.disabled=true;
- btn.textContent="Save થઈ રહ્યું છે...";
- try{
-  if(editingProductId){
-   const ref=db.collection("products").doc(editingProductId);
-   const old=await ref.get();
-   if(!old.exists||old.data().shopId!==myShop.id)throw new Error("આ પ્રોડક્ટ તમારી દુકાનની નથી.");
-   await ref.update(data);
-   showMessage("formMessage","પ્રોડક્ટ Update થઈ ગઈ.");
-  }else{
-   data.createdAt=firebase.firestore.FieldValue.serverTimestamp();
-   await db.collection("products").add(data);
-   showMessage("formMessage","નવી પ્રોડક્ટ ઉમેરાઈ ગઈ.");
-  }
-  cancelEdit();
-  await loadMyProducts();
- }catch(e){
-  showMessage("formMessage","Save Error: "+(e.code||"")+" - "+e.message);
- }finally{
-  btn.disabled=false;
-  btn.textContent="પ્રોડક્ટ Save કરો";
- }
-}
-
-async function editProduct(id){
- try{
-  const doc=await db.collection("products").doc(id).get();
-  if(!doc.exists||doc.data().shopId!==myShop.id){alert("આ પ્રોડક્ટ તમારી દુકાનની નથી.");return;}
-  const p=doc.data();
-  editingProductId=id;
-  document.getElementById("productName").value=p.name||"";
-  document.getElementById("category").value=p.category||"";
-  document.getElementById("price").value=p.price??"";
-  document.getElementById("unit").value=p.unit||"નંગ";
-  document.getElementById("size").value=p.size||"";
-  document.getElementById("color").value=p.color||"";
-  document.getElementById("design").value=p.design||"";
-  document.getElementById("stock").value=p.stock??"";
-  document.getElementById("imageUrl").value=p.imageUrl||"";
-  const preview=document.getElementById("photoPreview");
-  if(p.imageUrl){preview.src=safeImage(p.imageUrl);preview.classList.remove("hidden");}
-  else{preview.classList.add("hidden");}
-  document.getElementById("formTitle").textContent="✏️ પ્રોડક્ટ Edit કરો";
-  document.getElementById("saveBtn").textContent="Update કરો";
-  document.getElementById("cancelEditBtn").classList.remove("hidden");
-  document.getElementById("productForm").scrollIntoView({behavior:"smooth"});
- }catch(e){alert("પ્રોડક્ટ ખોલી શકાઈ નથી: "+e.message);}
-}
-
-async function deleteProduct(id){
- if(!confirm("શું આ પ્રોડક્ટ Delete કરવી છે?"))return;
- try{
-  const ref=db.collection("products").doc(id);
-  const doc=await ref.get();
-  if(!doc.exists||doc.data().shopId!==myShop.id){alert("આ પ્રોડક્ટ તમારી દુકાનની નથી.");return;}
-  await ref.delete();
-  await loadMyProducts();
- }catch(e){alert("પ્રોડક્ટ Delete થઈ શકી નથી: "+e.message);}
-}
-
-function cancelEdit(){
- editingProductId=null;
- document.getElementById("productForm").reset();
- document.getElementById("imageUrl").value="";
- document.getElementById("photoPreview").classList.add("hidden");
- document.getElementById("formTitle").textContent="➕ નવી પ્રોડક્ટ ઉમેરો";
- document.getElementById("saveBtn").textContent="પ્રોડક્ટ Save કરો";
- document.getElementById("cancelEditBtn").classList.add("hidden");
- hideMessage("uploadMessage");
-}
-
-async function logout(){
- await auth.signOut();
- myShop=null;
- confirmationResult=null;
- document.getElementById("sellerArea").classList.add("hidden");
- document.getElementById("loginCard").classList.remove("hidden");
- document.getElementById("otpArea").classList.add("hidden");
- document.getElementById("otp").value="";
- document.getElementById("phone").value="";
- await resetRecaptcha();
- showMessage("loginMessage","તમે Logout થઈ ગયા છો.");
-}
-
-auth.onAuthStateChanged(async user=>{
- if(user&&user.phoneNumber)await findMyShop();
-});
 </script>
 </body>
 </html>
