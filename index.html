@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="gu">
 <head>
@@ -19,7 +18,7 @@ button{border:0;border-radius:8px;padding:11px 14px;font-weight:bold;cursor:poin
 .gray{background:#e6e9ed;color:#222}
 .red{background:#c62828;color:white}
 .shopGrid,.productGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:12px}
-.shopCard,.productCard{background:white;border:1px solid #e3e3e3;border-radius:11px;overflow:hidden}
+.shopCard,.productCard{background:white;border:1px solid #e3e3e3;border-radius:11px;overflow:hidden;cursor:pointer}
 .shopCard img{width:100%;height:125px;object-fit:cover;background:#eee}
 .productCard img{width:100%;height:145px;object-fit:cover;background:#eee}
 .shopInfo,.productInfo{padding:10px}
@@ -95,7 +94,7 @@ button{border:0;border-radius:8px;padding:11px 14px;font-weight:bold;cursor:poin
 
 <h3>ગ્રાહકની માહિતી</h3>
 <input id="customerName" placeholder="તમારું નામ *">
-<input id="customerMobile" type="tel" placeholder="મોબાઇલ નંબર *">
+<input id="customerMobile" type="tel" placeholder="મોબાઇલ નંબર *" maxlength="10">
 <textarea id="customerAddress" placeholder="પૂરું સરનામું, વિસ્તાર અને ઘર નંબર *"></textarea>
 
 <button class="green" style="width:100%" onclick="placeOrder()">WhatsApp પર ઓર્ડર મોકલો</button>
@@ -163,17 +162,13 @@ s.subscriptionEndAt.toDate().getTime()>Date.now();
 
 async function loadShops(){
 try{
-const q=query(
-collection(db,"shops"),
-where("active","==",true),
-where("subscriptionEndAt",">",Timestamp.now())
-);
+const q=query(collection(db,"shops"),where("active","==",true));
 const snap=await getDocs(q);
 shops=snap.docs.map(d=>({id:d.id,...d.data()})).filter(isShopActive);
 renderShops();
 }catch(e){
 $("shopList").innerHTML=
-'<div class="empty">દુકાનો લોડ થઈ શકી નથી. Firebase Rules તપાસો.<br>'+esc(e.message)+'</div>';
+'<div class="empty">દુકાનો લોડ થઈ શકી નથી.<br>'+esc(e.message)+'</div>';
 }
 }
 
@@ -478,4 +473,3 @@ loadShops();
 </script>
 </body>
 </html>
-
