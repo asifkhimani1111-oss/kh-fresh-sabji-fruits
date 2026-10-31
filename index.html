@@ -1,576 +1,287 @@
-K.H Fresh – Customer App ("index.html")
-
-તમારા GitHubમાં હાલની "index.html" ફાઇલનો જૂનો કોડ કાઢીને નીચેનો સંપૂર્ણ કોડ પેસ્ટ કરો.
-
 <!DOCTYPE html>
 <html lang="gu">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>K.H Fresh - Online Shopping</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K.H Fresh – Customer App</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#f3f6f3;color:#222;font-family:Arial,sans-serif;padding-bottom:95px}
-header{background:#087b43;color:white;padding:15px;text-align:center}
-header h1{margin:3px}
-header p{margin:6px 0;font-size:14px}
-.notice{background:#fff3cd;color:#654d00;padding:10px;margin:10px;border-radius:9px;font-size:13px;line-height:1.6}
-main{max-width:1050px;margin:auto;padding:10px}
-h3{margin:12px 0}
-.search{width:100%;padding:13px;border:1px solid #ddd;border-radius:9px;font-size:16px;margin:8px 0}
-.categories{display:flex;gap:8px;overflow-x:auto;padding:8px 0}
-.categories button{white-space:nowrap;background:white;color:#087b43;border:1px solid #087b43;padding:9px 13px;margin:0}
-.categories button.active{background:#087b43;color:white}
-.shop-card{background:white;padding:12px;margin:12px 0;border-radius:12px;box-shadow:0 2px 6px #0001;display:flex;justify-content:space-between;align-items:center;gap:10px}
-.shop-left{display:flex;align-items:center;gap:12px;min-width:0}
-.shop-img{width:80px;height:80px;object-fit:cover;border-radius:10px;background:#eee;flex-shrink:0}
-.shop-info{overflow-wrap:anywhere}
-.shop-info b{font-size:17px;color:#087b43}
-.shop-info small{color:#666}
-button{background:#087b43;color:white;border:0;padding:10px;border-radius:7px;font-weight:bold;cursor:pointer}
-button:disabled{background:#aaa;cursor:not-allowed}
-.visit-btn{flex-shrink:0}
-.back-btn{background:#555;margin:5px 0}
-.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px;margin-top:12px}
-.card{background:white;padding:10px;border-radius:12px;box-shadow:0 2px 5px #0001;text-align:center;display:flex;flex-direction:column;justify-content:space-between;min-width:0}
-.product-img{width:100%;height:145px;object-fit:cover;border-radius:9px;background:#eee}
-.no-photo{height:145px;background:#eee;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#777}
-.card h4{margin:9px 0 4px;overflow-wrap:anywhere}
-.price{margin:5px 0;color:#087b43;font-weight:bold}
-.details{color:#666;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
-.counter{display:flex;justify-content:center;align-items:center;gap:9px;margin-top:10px}
-.counter button{width:34px;height:34px;padding:0;font-size:19px}
-.counter span{font-size:13px;font-weight:bold;min-width:65px}
-.empty{text-align:center;background:white;padding:20px;border-radius:10px;color:#666;grid-column:1/-1}
-#cartBar{position:fixed;bottom:0;left:0;right:0;background:#087b43;color:white;padding:12px 15px;display:none;justify-content:space-between;align-items:center;gap:10px;box-shadow:0 -2px 10px #0002;z-index:1000}
-#cartBar button{background:#ff9800;color:white;margin:0;white-space:nowrap}
-#cartInfo{font-size:12px}
-#cartTotalPrice{font-size:17px}
-#cartDetails{background:white;padding:12px;border-radius:10px;margin:10px 0}
-#cartDetails button{margin:3px}
-.small-note{font-size:12px;color:#666;line-height:1.6}
-@media(max-width:420px){
-.shop-img{width:65px;height:65px}
-.shop-info b{font-size:15px}
-.visit-btn{font-size:12px;padding:8px}
-.product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-#cartBar{padding:10px}
-}
+body{font-family:Arial,sans-serif;background:#f4f7f2}
+button{cursor:pointer}
+.card{background:white;border-radius:14px;padding:12px;box-shadow:0 2px 8px #0001}
 </style>
 </head>
 <body>
 
-<header>
-<h1>🛒 K.H Fresh</h1>
+<header class="bg-green-700 text-white p-4">
+<h1 class="text-2xl font-bold">🛒 K.H Fresh</h1>
 <p>ગુજરાતની તમારી ઓનલાઇન શોપિંગ એપ</p>
-<p>ઓર્ડરનો સમય: સવારે 9:00 થી સાંજે 6:00</p>
+<p class="text-sm mt-2">ઓર્ડરનો સમય: સવારે 9:00 થી સાંજે 6:00</p>
 </header>
 
-<div class="notice">
-<b>ઓર્ડરના નિયમો:</b><br>
-🥦 શાકભાજી + ફળો મિક્સ કરીને ઓછામાં ઓછા 2 કિલો.<br>
-🍌 કેળાં: 3 નંગ = 250 ગ્રામ અને 12 નંગ = 1 કિલો.<br>
-🛍️ અન્ય કેટેગરી: ઓછામાં ઓછો ₹500નો ઓર્ડર.<br>
-🚚 2 કિમીથી વધારે અંતર હોય તો ડિલિવરી ચાર્જ લાગી શકે છે.
+<section class="p-3 bg-white m-3 rounded-xl text-sm">
+<b>ઓર્ડરના નિયમો:</b>
+<p>🥦 શાકભાજી + ફળો મિક્સ કરીને ઓછામાં ઓછા 2 કિલો.</p>
+<p>🍌 કેળાં: 3 નંગ = 250 ગ્રામ અને 12 નંગ = 1 કિલો.</p>
+<p>🛍️ અન્ય કેટેગરી: ઓછામાં ઓછો ₹500નો ઓર્ડર.</p>
+<p>🚚 2 કિમીથી વધારે અંતર હોય તો ડિલિવરી ચાર્જ લાગી શકે છે.</p>
+</section>
+
+<main class="p-3">
+<div class="flex justify-between items-center mb-3">
+<h2 class="text-xl font-bold">🏪 દુકાનોની યાદી</h2>
+<button onclick="loadShops()" class="bg-green-600 text-white px-3 py-2 rounded-lg">↻ રિફ્રેશ</button>
 </div>
 
-<main>
-<section id="shopListView">
-<h3>🏪 દુકાનોની યાદી</h3>
-<input class="search" id="shopSearch" placeholder="દુકાન શોધો...">
-<div id="shopsList">દુકાનો લોડ થઈ રહી છે...</div>
-</section>
-
-<section id="shopDetailView" style="display:none">
-<button class="back-btn" id="backBtn">← દુકાનો પર પાછા જાઓ</button>
-<div id="shopHeader"></div>
-<input class="search" id="productSearch" placeholder="પ્રોડક્ટ શોધો...">
-<div class="categories" id="categoryButtons"></div>
-<div class="product-grid" id="productList"></div>
-<div id="cartDetails" style="display:none"></div>
-<p class="small-note">
-નોંધ: પ્રોડક્ટનો ભાવ દુકાનદારે આપેલી માહિતી મુજબ છે. ડિલિવરી ચાર્જ અલગથી લાગી શકે છે.
-</p>
-</section>
+<div id="shops" class="grid gap-3"></div>
+<div id="productsArea" class="hidden mt-5">
+<h2 id="shopTitle" class="text-xl font-bold mb-3"></h2>
+<input id="search" oninput="renderProducts()" placeholder="પ્રોડક્ટ શોધો..." class="w-full p-3 border rounded-lg mb-3">
+<div id="categories" class="flex flex-wrap gap-2 mb-3"></div>
+<div id="products" class="grid grid-cols-2 gap-3"></div>
+</div>
 </main>
 
-<div id="cartBar">
-<div>
-<div id="cartInfo">કાર્ટ</div>
-<b>કુલ: ₹<span id="cartTotalPrice">0</span></b>
-</div>
-<button id="whatsappOrderBtn" style="display:none">WhatsApp ઓર્ડર</button>
+<div class="fixed bottom-0 left-0 right-0 bg-white shadow-lg p-3 flex justify-between items-center">
+<div><b>🛒 કાર્ટ</b><p id="cartTotal">₹0</p></div>
+<button onclick="showCart()" class="bg-green-700 text-white px-5 py-3 rounded-lg">ઓર્ડર કરો</button>
 </div>
 
-<script type="module">
-import {initializeApp}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+<div id="cartModal" class="hidden fixed inset-0 bg-black/50 z-50 p-3">
+<div class="bg-white rounded-xl p-4 max-w-lg mx-auto mt-8 max-h-[90vh] overflow-auto">
+<div class="flex justify-between">
+<h2 class="text-xl font-bold">તમારો ઓર્ડર</h2>
+<button onclick="closeCart()">✖</button>
+</div>
+<div id="cartItems" class="my-3"></div>
+<p id="cartSummary" class="font-bold my-3"></p>
+<input id="customerName" placeholder="તમારું નામ" class="w-full border p-3 rounded-lg mb-2">
+<input id="customerPhone" placeholder="મોબાઇલ નંબર" class="w-full border p-3 rounded-lg mb-2">
+<textarea id="customerAddress" placeholder="સંપૂર્ણ સરનામું" class="w-full border p-3 rounded-lg mb-2"></textarea>
+<button onclick="sendOrder()" class="w-full bg-green-700 text-white p-3 rounded-lg">WhatsApp પર ઓર્ડર મોકલો</button>
+</div>
+</div>
 
-import {
- getFirestore,collection,getDocs,query,where
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig={
- apiKey:"AIzaSyCGSZ7QcASC_sUV6f7NDJrMbn0Ae-f9pR8",
- authDomain:"kh-fresh-sabji-fruits.firebaseapp.com",
- projectId:"kh-fresh-sabji-fruits",
- storageBucket:"kh-fresh-sabji-fruits.firebasestorage.app",
- messagingSenderId:"815611229461",
- appId:"1:815611229461:web:ca713dc978e0997930251c",
- measurementId:"G-HBL4EVF1MN"
+<script>
+const firebaseConfig = {
+apiKey:"AIzaSyCGSZ7QcASC_sUV6f7NDJrMbn0Ae-f9pR8",
+authDomain:"kh-fresh-sabji-fruits.firebaseapp.com",
+projectId:"kh-fresh-sabji-fruits",
+storageBucket:"kh-fresh-sabji-fruits.firebasestorage.app",
+messagingSenderId:"815611229461",
+appId:"1:815611229461:web:ca713dc978e0997930251c",
+measurementId:"G-HBL4EVF1MN"
 };
 
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
-const $=id=>document.getElementById(id);
+firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
 
-let allShops=[];
-let currentShopWhatsApp="";
-let currentShopName="";
-let productsData=[];
-let cart={};
-let selectedCategory="બધી વસ્તુઓ";
+let shops=[];
+let products=[];
+let selectedShop=null;
+let cart=[];
+let activeCategory="બધા";
 
-const categories=[
-"બધી વસ્તુઓ",
-"શાકભાજી","ફળો","મહિલાઓનાં કપડાં","પુરુષોનાં કપડાં",
-"બાળકોનાં કપડાં","ફૂટવેર","મોબાઇલ અને ઇલેક્ટ્રોનિક્સ",
-"ઘરવખરી અને કિચન","કરિયાણું","કોસ્મેટિક્સ અને બ્યુટી",
-"જ્વેલરી અને ઘડિયાળ","બેગ અને એસેસરીઝ","રમકડાં",
-"ફર્નિચર","ખેતીનાં સાધનો","નમકીન અને ફૂડ","અન્ય"
-];
+const categories=["બધા","શાકભાજી","ફળો","મહિલાઓનાં કપડાં","પુરુષોનાં કપડાં","બાળકોનાં કપડાં","ફૂટવેર","મોબાઇલ અને ઇલેક્ટ્રોનિક્સ","ઘરવખરી અને કિચન","કરિયાણું","કોસ્મેટિક્સ અને બ્યુટી","જ્વેલરી અને ઘડિયાળ","બેગ અને એસેસરીઝ","રમકડાં","ફર્નિચર","ખેતીનાં સાધનો","નમકીન અને ફૂડ","અન્ય"];
 
-function safe(v){
- return String(v??"").replace(/[&<>"']/g,c=>({
- "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
- }[c]));
-}
-
-function makePlaceholder(symbol){
- const d=document.createElement("div");
- d.className="no-photo";
- d.textContent=symbol;
- return d;
-}
-
-function isProduce(p){
- const c=String(p.category||"").toLowerCase();
- return c.includes("શાક")||c.includes("ભાજી")||
- c.includes("ફળ")||c.includes("vegetable")||
- c.includes("fruit")||c.includes("sabji");
-}
-
-function isBanana(p){
- const n=String(p.name||"").toLowerCase();
- return n.includes("કેળા")||n.includes("banana");
-}
-
-function getQtyText(p,qty){
- if(isBanana(p)){
-  const grams=qty/12*1000;
-  return qty+" નંગ ("+grams+" ગ્રામ)";
- }
- if(isProduce(p)){
-  return qty.toFixed(2)+" કિલો";
- }
- return qty+" "+(p.unit||"નંગ");
-}
-
-function getAmount(p,qty){
- if(isBanana(p)){
-  return Number(p.price||0)*(qty/12);
- }
- return Number(p.price||0)*qty;
+function esc(s){
+return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
 
 async function loadShops(){
- try{
-  const snap=await getDocs(collection(db,"shops"));
-  allShops=[];
-  snap.forEach(d=>{
-   const s=d.data();
-   if(s.planActive===true){
-    allShops.push({id:d.id,...s});
-   }
-  });
-  renderShops();
- }catch(e){
-  console.error(e);
-  $("shopsList").textContent="દુકાનો લોડ કરવામાં ભૂલ: "+e.message;
- }
+const box=document.getElementById("shops");
+box.innerHTML="દુકાનો લોડ થઈ રહી છે...";
+try{
+const snap=await db.collection("shops").where("planActive","==",true).get();
+shops=snap.docs.map(d=>({id:d.id,...d.data()})).filter(s=>{
+if(s.planEndAt){
+let end=s.planEndAt.toDate?s.planEndAt.toDate():new Date(s.planEndAt);
+return end.getTime()>Date.now();
 }
-
-function renderShops(){
- const list=$("shopsList");
- list.replaceChildren();
- const term=$("shopSearch").value.trim().toLowerCase();
- const filtered=allShops.filter(s=>
-  String(s.name||"").toLowerCase().includes(term)
- );
-
- if(!filtered.length){
-  list.innerHTML='<div class="empty">હાલમાં કોઈ ચાલુ દુકાન ઉપલબ્ધ નથી.</div>';
-  return;
- }
-
- filtered.forEach(s=>{
-  const div=document.createElement("div");
-  div.className="shop-card";
-  const left=document.createElement("div");
-  left.className="shop-left";
-
-  if(s.shopImageUrl){
-   const img=document.createElement("img");
-   img.src=s.shopImageUrl;
-   img.className="shop-img";
-   img.alt="દુકાનનો ફોટો";
-   img.onerror=()=>img.replaceWith(makePlaceholder("🏪"));
-   left.append(img);
-  }else left.append(makePlaceholder("🏪"));
-
-  const info=document.createElement("div");
-  info.className="shop-info";
-  info.innerHTML="<b>"+safe(s.name||"દુકાન")+"</b><br><small>ગુજરાતમાં ઓનલાઇન દુકાન</small>";
-  left.append(info);
-  div.append(left);
-
-  const btn=document.createElement("button");
-  btn.className="visit-btn";
-  btn.textContent="દુકાન જુઓ";
-  btn.onclick=()=>openShop(s);
-  div.append(btn);
-  list.append(div);
- });
+return true;
+});
+box.innerHTML="";
+if(!shops.length){
+box.innerHTML='<p class="text-gray-600">હાલમાં કોઈ ચાલુ દુકાન ઉપલબ્ધ નથી.</p>';
+return;
 }
-
-$("shopSearch").addEventListener("input",renderShops);
+shops.forEach(shop=>{
+const card=document.createElement("div");
+card.className="card flex gap-3 items-center";
+const photo=shop.shopImageUrl||"";
+card.innerHTML=`
+${photo?`<img src="${esc(photo)}" class="w-20 h-20 object-cover rounded-lg" onerror="this.style.display='none'">`:'<div class="w-20 h-20 bg-green-100 rounded-lg flex items-center justify-center text-3xl">🏪</div>'}
+<div class="flex-1 min-w-0">
+<h3 class="font-bold text-lg">${esc(shop.name)}</h3>
+<p class="text-gray-500 text-sm">ગુજરાતમાં ઓનલાઇન દુકાન</p>
+<button class="mt-2 bg-green-700 text-white px-4 py-2 rounded-lg">દુકાન જુઓ</button>
+</div>`;
+card.querySelector("button").onclick=()=>openShop(shop);
+box.appendChild(card);
+});
+}catch(e){
+box.innerHTML='<p class="text-red-600">દુકાનો લોડ કરવામાં સમસ્યા: '+esc(e.message)+'</p>';
+}
+}
 
 async function openShop(shop){
- currentShopWhatsApp=String(shop.whatsapp||"").replace(/\D/g,"");
- currentShopName=shop.name||"દુકાન";
- productsData=[];
- cart={};
- selectedCategory="બધી વસ્તુઓ";
- $("productSearch").value="";
- $("cartBar").style.display="none";
- $("shopListView").style.display="none";
- $("shopDetailView").style.display="block";
-
- const header=$("shopHeader");
- header.replaceChildren();
-
- const title=document.createElement("h2");
- title.textContent="🏪 "+currentShopName;
- header.append(title);
-
- if(shop.shopImageUrl){
-  const img=document.createElement("img");
-  img.src=shop.shopImageUrl;
-  img.alt=currentShopName;
-  img.style.cssText="width:100%;max-height:180px;object-fit:cover;border-radius:12px";
-  header.append(img);
- }
-
- $("productList").innerHTML='<div class="empty">પ્રોડક્ટ લોડ થઈ રહી છે...</div>';
-
- try{
-  const snap=await getDocs(query(
-   collection(db,"products"),
-   where("shopId","==",shop.id)
-  ));
-
-  productsData=[];
-  snap.forEach(d=>{
-   const p={id:d.id,...d.data()};
-   if(p.active!==false)productsData.push(p);
-  });
-
-  productsData.forEach(p=>cart[p.id]=0);
-  renderCategories();
-  renderProducts();
- }catch(e){
-  console.error(e);
-  $("productList").textContent="પ્રોડક્ટ લોડ કરવામાં ભૂલ: "+e.message;
- }
+selectedShop=shop;
+cart=[];
+updateCart();
+document.getElementById("productsArea").classList.remove("hidden");
+document.getElementById("shopTitle").textContent="🏪 "+shop.name;
+document.getElementById("products").innerHTML="પ્રોડક્ટ લોડ થઈ રહી છે...";
+document.getElementById("search").value="";
+activeCategory="બધા";
+try{
+const snap=await db.collection("products").where("shopId","==",shop.id).get();
+products=snap.docs.map(d=>({id:d.id,...d.data()})).filter(p=>p.active!==false);
+renderCategories();
+renderProducts();
+document.getElementById("productsArea").scrollIntoView({behavior:"smooth"});
+}catch(e){
+document.getElementById("products").textContent="પ્રોડક્ટ લોડ કરવામાં સમસ્યા: "+e.message;
+}
 }
 
 function renderCategories(){
- const area=$("categoryButtons");
- area.replaceChildren();
-
- categories.forEach(cat=>{
-  const b=document.createElement("button");
-  b.textContent=cat;
-  b.className=selectedCategory===cat?"active":"";
-  b.onclick=()=>{
-   selectedCategory=cat;
-   renderCategories();
-   renderProducts();
-  };
-  area.append(b);
- });
-}
-
-function categoryMatches(p,cat){
- if(cat==="બધી વસ્તુઓ")return true;
- const c=String(p.category||"").toLowerCase();
- const map={
-  "શાકભાજી":["શાકભાજી","શાક","vegetable","sabji"],
-  "ફળો":["ફળો","ફળ","fruit"],
-  "મહિલાઓનાં કપડાં":["મહિલા","ladies","women"],
-  "પુરુષોનાં કપડાં":["પુરુષ","gents","men"],
-  "બાળકોનાં કપડાં":["બાળક","kids","children"],
-  "ફૂટવેર":["ફૂટવેર","ચંપલ","શૂઝ","footwear","shoes"],
-  "મોબાઇલ અને ઇલેક્ટ્રોનિક્સ":["મોબાઇલ","ઇલેક્ટ્રોનિક","mobile","electronics"],
-  "ઘરવખરી અને કિચન":["ઘર","કિચન","home","kitchen"],
-  "કરિયાણું":["કરિયાણું","grocery","grocery"],
-  "કોસ્મેટિક્સ અને બ્યુટી":["કોસ્મેટિક","બ્યુટી","cosmetic","beauty"],
-  "જ્વેલરી અને ઘડિયાળ":["જ્વેલરી","ઘડિયાળ","jewellery","watch"],
-  "બેગ અને એસેસરીઝ":["બેગ","bag","accessory"],
-  "રમકડાં":["રમકડાં","toy"],
-  "ફર્નિચર":["ફર્નિચર","furniture"],
-  "ખેતીનાં સાધનો":["ખેતી","agriculture"],
-  "નમકીન અને ફૂડ":["નમકીન","ફૂડ","food","snack"]
- };
- const words=map[cat]||[];
- return words.some(w=>c.includes(w.toLowerCase()));
+const box=document.getElementById("categories");
+box.innerHTML="";
+categories.forEach(c=>{
+const b=document.createElement("button");
+b.textContent=c;
+b.className="px-3 py-2 rounded-full text-sm "+(activeCategory===c?"bg-green-700 text-white":"bg-white border");
+b.onclick=()=>{activeCategory=c;renderCategories();renderProducts()};
+box.appendChild(b);
+});
 }
 
 function renderProducts(){
- const grid=$("productList");
- grid.replaceChildren();
- const term=$("productSearch").value.trim().toLowerCase();
-
- const filtered=productsData.filter(p=>
-  categoryMatches(p,selectedCategory)&&
-  (String(p.name||"").toLowerCase().includes(term)||
-   String(p.category||"").toLowerCase().includes(term))
- );
-
- if(!filtered.length){
-  grid.innerHTML='<div class="empty">આ કેટેગરીમાં પ્રોડક્ટ ઉપલબ્ધ નથી.</div>';
-  return;
- }
-
- filtered.forEach(p=>{
-  const card=document.createElement("div");
-  card.className="card";
-
-  if(p.imageUrl){
-   const img=document.createElement("img");
-   img.src=p.imageUrl;
-   img.className="product-img";
-   img.alt=p.name||"પ્રોડક્ટ";
-   img.onerror=()=>img.replaceWith(makePlaceholder("📦"));
-   card.append(img);
-  }else card.append(makePlaceholder("📦 ફોટો નથી"));
-
-  const title=document.createElement("h4");
-  title.textContent=p.name||"પ્રોડક્ટ";
-  card.append(title);
-
-  const price=document.createElement("div");
-  price.className="price";
-  price.textContent="₹"+Number(p.price||0)+" / "+(isBanana(p)?"કિલો":(p.unit||"નંગ"));
-  card.append(price);
-
-  const details=document.createElement("div");
-  details.className="details";
-  details.textContent=[
-   p.category||"",
-   p.sizes?"સાઇઝ: "+p.sizes:"",
-   p.colors?"કલર: "+p.colors:"",
-   p.design?"ડિઝાઇન: "+p.design:""
-  ].filter(Boolean).join(" | ");
-  card.append(details);
-
-  const counter=document.createElement("div");
-  counter.className="counter";
-
-  const minus=document.createElement("button");
-  minus.textContent="−";
-  minus.onclick=()=>changeQty(p.id,-1);
-
-  const qty=document.createElement("span");
-  qty.id="qty_"+p.id;
-  qty.textContent=getQtyText(p,cart[p.id]||0);
-
-  const plus=document.createElement("button");
-  plus.textContent="+";
-  plus.onclick=()=>changeQty(p.id,1);
-
-  counter.append(minus,qty,plus);
-  card.append(counter);
-  grid.append(card);
- });
+const box=document.getElementById("products");
+const q=document.getElementById("search").value.toLowerCase();
+const filtered=products.filter(p=>{
+const matchCat=activeCategory==="બધા"||p.category===activeCategory;
+const matchText=(p.name||"").toLowerCase().includes(q);
+return matchCat&&matchText;
+});
+box.innerHTML="";
+if(!filtered.length){
+box.innerHTML='<p class="col-span-2 text-gray-500">પ્રોડક્ટ મળી નથી.</p>';
+return;
+}
+filtered.forEach(p=>{
+const div=document.createElement("div");
+div.className="card";
+const img=p.imageUrl?`<img src="${esc(p.imageUrl)}" class="w-full h-32 object-cover rounded-lg mb-2" onerror="this.style.display='none'">`:'<div class="h-32 bg-gray-100 rounded-lg flex items-center justify-center text-4xl mb-2">📦</div>';
+div.innerHTML=`
+${img}
+<h3 class="font-bold">${esc(p.name)}</h3>
+<p class="text-green-700 font-bold">₹${Number(p.price||0)} / ${esc(p.unit||"નંગ")}</p>
+${p.sizes?`<p class="text-xs">સાઇઝ: ${esc(p.sizes)}</p>`:""}
+${p.colors?`<p class="text-xs">કલર: ${esc(p.colors)}</p>`:""}
+<input type="number" min="1" value="1" class="w-full border rounded p-2 mt-2 qty">
+<button class="w-full bg-green-700 text-white p-2 rounded-lg mt-2">કાર્ટમાં ઉમેરો</button>`;
+div.querySelector("button").onclick=()=>{
+const qty=Number(div.querySelector(".qty").value);
+if(!Number.isFinite(qty)||qty<=0){alert("યોગ્ય જથ્થો દાખલ કરો.");return;}
+addToCart(p,qty);
+};
+box.appendChild(div);
+});
 }
 
-$("productSearch").addEventListener("input",renderProducts);
-
-function changeQty(id,delta){
- const p=productsData.find(x=>x.id===id);
- if(!p)return;
-
- let old=cart[id]||0;
- let next=old;
-
- if(isBanana(p)){
-  next=Math.max(0,old+delta*3);
- }else if(isProduce(p)){
-  next=Math.max(0,Math.round((old+delta*0.25)*100)/100);
- }else{
-  next=Math.max(0,old+delta);
- }
-
- cart[id]=next;
- const qty=$("qty_"+id);
- if(qty)qty.textContent=getQtyText(p,next);
- updateCart();
+function addToCart(p,qty){
+const old=cart.find(x=>x.id===p.id);
+if(old)old.qty+=qty;
+else cart.push({...p,qty});
+updateCart();
+alert("પ્રોડક્ટ કાર્ટમાં ઉમેરાઈ.");
 }
 
-function calculateCart(){
- let produceKg=0;
- let otherTotal=0;
- let total=0;
- let hasProduce=false;
- let hasOther=false;
+function isProduce(p){
+return ["શાકભાજી","ફળો"].includes(p.category);
+}
 
- productsData.forEach(p=>{
-  const q=cart[p.id]||0;
-  if(q<=0)return;
+function isBanana(p){
+return (p.name||"").toLowerCase().includes("કેળ")||(p.name||"").toLowerCase().includes("banana");
+}
 
-  const amount=getAmount(p,q);
-  total+=amount;
+function getWeight(p){
+if(isBanana(p))return p.qty/12;
+if(["કિલો","kg","કિલોગ્રામ"].includes((p.unit||"").toLowerCase()))return p.qty;
+if(["ગ્રામ","g"].includes((p.unit||"").toLowerCase()))return p.qty/1000;
+return 0;
+}
 
-  if(isProduce(p)){
-   hasProduce=true;
-   if(isBanana(p))produceKg+=q/12;
-   else produceKg+=q;
-  }else{
-   hasOther=true;
-   otherTotal+=amount;
-  }
- });
-
- let valid=true;
- let messages=[];
-
- if(hasProduce&&produceKg<2){
-  valid=false;
-  messages.push("શાકભાજી અને ફળોનું કુલ વજન ઓછામાં ઓછું 2 કિલો હોવું જોઈએ. હાલ: "+produceKg.toFixed(2)+" કિલો");
- }
-
- if(hasOther&&otherTotal<500){
-  valid=false;
-  messages.push("અન્ય વસ્તુઓનો ઓર્ડર ઓછામાં ઓછો ₹500 હોવો જોઈએ. હાલ: ₹"+otherTotal.toFixed(2));
- }
-
- if(!hasProduce&&!hasOther)valid=false;
- if(valid)messages=["ઓર્ડર આપવા માટે તૈયાર 🟢"];
-
- return {produceKg,otherTotal,total,valid,messages,hasProduce,hasOther};
+function getPrice(p){
+if(isBanana(p))return Number(p.price||0)*p.qty/12;
+return Number(p.price||0)*p.qty;
 }
 
 function updateCart(){
- const c=calculateCart();
- let count=productsData.reduce((n,p)=>n+(cart[p.id]||0),0);
-
- if(count<=0){
-  $("cartBar").style.display="none";
-  $("cartDetails").style.display="none";
-  return;
- }
-
- $("cartBar").style.display="flex";
- $("cartTotalPrice").textContent=c.total.toFixed(2);
- $("cartInfo").textContent=c.messages.join(" | ");
- $("whatsappOrderBtn").style.display=c.valid?"block":"none";
-
- const detail=$("cartDetails");
- detail.style.display="block";
- detail.replaceChildren();
-
- const heading=document.createElement("h3");
- heading.textContent="🛒 તમારો ઓર્ડર";
- detail.append(heading);
-
- productsData.forEach(p=>{
-  const q=cart[p.id]||0;
-  if(q<=0)return;
-  const row=document.createElement("p");
-  row.textContent=p.name+" – "+getQtyText(p,q)+" – ₹"+getAmount(p,q).toFixed(2);
-  detail.append(row);
- });
-
- const summary=document.createElement("b");
- summary.textContent="કુલ રકમ: ₹"+c.total.toFixed(2);
- detail.append(summary);
-
- c.messages.forEach(m=>{
-  const msg=document.createElement("p");
-  msg.className="small-note";
-  msg.textContent=m;
-  detail.append(msg);
- });
+let total=cart.reduce((s,p)=>s+getPrice(p),0);
+document.getElementById("cartTotal").textContent="₹"+total.toFixed(2);
 }
 
-$("backBtn").onclick=()=>{
- $("shopDetailView").style.display="none";
- $("shopListView").style.display="block";
- $("cartBar").style.display="none";
- $("cartDetails").style.display="none";
- productsData=[];
- cart={};
-};
+function showCart(){
+if(!selectedShop){alert("પહેલાં દુકાન પસંદ કરો.");return;}
+const box=document.getElementById("cartItems");
+box.innerHTML="";
+cart.forEach((p,i)=>{
+const row=document.createElement("div");
+row.className="flex justify-between border-b py-2 gap-2";
+row.innerHTML=`<div>${esc(p.name)}<br><small>જથ્થો: ${p.qty} ${esc(p.unit||"નંગ")}</small></div>
+<div class="text-right">₹${getPrice(p).toFixed(2)}<br><button class="text-red-600" data-i="${i}">કાઢો</button></div>`;
+row.querySelector("button").onclick=()=>{cart.splice(i,1);showCart();updateCart()};
+box.appendChild(row);
+});
+const produceWeight=cart.filter(isProduce).reduce((s,p)=>s+getWeight(p),0);
+const otherTotal=cart.filter(p=>!isProduce(p)).reduce((s,p)=>s+getPrice(p),0);
+document.getElementById("cartSummary").textContent=
+`કુલ: ₹${cart.reduce((s,p)=>s+getPrice(p),0).toFixed(2)} | શાકભાજી/ફળો: ${produceWeight.toFixed(2)} kg | અન્ય: ₹${otherTotal.toFixed(2)}`;
+document.getElementById("cartModal").classList.remove("hidden");
+}
 
-$("whatsappOrderBtn").onclick=()=>{
- const hour=new Date().getHours();
+function closeCart(){
+document.getElementById("cartModal").classList.add("hidden");
+}
 
- if(hour<9||hour>=18){
-  alert("ઓર્ડરનો સમય સવારે 9:00 થી સાંજે 6:00 વાગ્યા સુધીનો છે.");
-  return;
- }
+function sendOrder(){
+if(!cart.length){alert("કાર્ટ ખાલી છે.");return;}
+const now=new Date();
+const hour=now.getHours();
+if(hour<9||hour>=18){alert("ઓર્ડરનો સમય સવારે 9 થી સાંજે 6 છે.");return;}
 
- const c=calculateCart();
- if(!c.valid){
-  alert(c.messages.join("\n"));
-  return;
- }
+const name=document.getElementById("customerName").value.trim();
+const phone=document.getElementById("customerPhone").value.trim();
+const address=document.getElementById("customerAddress").value.trim();
+if(!name||!phone||!address){alert("નામ, મોબાઇલ અને સરનામું ભરો.");return;}
+if(!/^[0-9]{10,13}$/.test(phone.replace(/\D/g,""))){alert("યોગ્ય મોબાઇલ નંબર દાખલ કરો.");return;}
 
- if(!currentShopWhatsApp){
-  alert("દુકાનનો WhatsApp નંબર ઉપલબ્ધ નથી.");
-  return;
- }
+const produceWeight=cart.filter(isProduce).reduce((s,p)=>s+getWeight(p),0);
+const otherTotal=cart.filter(p=>!isProduce(p)).reduce((s,p)=>s+getPrice(p),0);
+if(produceWeight>0&&produceWeight<2){
+alert("શાકભાજી અને ફળોનો મિક્સ ઓર્ડર ઓછામાં ઓછો 2 કિલો હોવો જોઈએ.");return;
+}
+if(otherTotal>0&&otherTotal<500){
+alert("અન્ય કેટેગરીનો ઓર્ડર ઓછામાં ઓછો ₹500 હોવો જોઈએ.");return;
+}
 
- let lines=[
-  "નમસ્તે "+currentShopName+", મારે નીચે મુજબ ઓર્ડર કરવો છે:",
-  ""
- ];
-
- productsData.forEach(p=>{
-  const q=cart[p.id]||0;
-  if(q<=0)return;
-  lines.push(p.name+": "+getQtyText(p,q)+" – ₹"+getAmount(p,q).toFixed(2));
- });
-
- lines.push("");
- lines.push("શાકભાજી અને ફળોનું કુલ વજન: "+c.produceKg.toFixed(2)+" Kg");
- lines.push("કુલ ઓર્ડર: ₹"+c.total.toFixed(2));
- lines.push("");
- lines.push("ડિલિવરી ચાર્જ દુકાનદાર સાથે નક્કી કરશો.");
-
- const number=currentShopWhatsApp.startsWith("91")?
-  currentShopWhatsApp:"91"+currentShopWhatsApp;
-
- const url="https://wa.me/"+number+"?text="+encodeURIComponent(lines.join("\n"));
- window.open(url,"_blank");
-};
+const total=cart.reduce((s,p)=>s+getPrice(p),0);
+let msg=`નમસ્તે ${selectedShop.name}, નવો ઓર્ડર\nગ્રાહક: ${name}\nમોબાઇલ: ${phone}\nસરનામું: ${address}\n\n`;
+cart.forEach(p=>{
+msg+=`${p.name} - ${p.qty} ${p.unit||"નંગ"} = ₹${getPrice(p).toFixed(2)}\n`;
+});
+msg+=`\nકુલ: ₹${total.toFixed(2)}\nડિલિવરી ચાર્જ (જો લાગુ પડે તો) દુકાનદાર સાથે નક્કી કરવો.`;
+let wa=String(selectedShop.whatsapp||"").replace(/\D/g,"");
+if(wa.length===10)wa="91"+wa;
+if(wa.length<11){alert("દુકાનનો WhatsApp નંબર ઉપલબ્ધ નથી.");return;}
+window.open("https://wa.me/"+wa+"?text="+encodeURIComponent(msg),"_blank");
+}
 
 loadShops();
 </script>
 </body>
 </html>
-
-મહત્વપૂર્ણ નોંધ: આ Customer App હાલ Firestoreમાંથી "planActive: true" હોય તેવી દુકાનો બતાવે છે. કેળાંના ભાવ અહીં પ્રતિ કિલો ગણ્યા છે; દુકાનદારના પ્રોડક્ટમાં કેળાંનો ભાવ પ્રતિ કિલો દાખલ કરવો. ડિલિવરીનું 2 કિમી અંતર અને વધારાનો ચાર્જ હાલ WhatsAppમાં દુકાનદાર સાથે નક્કી થશે; આ કોડ પોતે અંતર માપતો નથી.
-
-આ ફક્ત Customer App છે. દુકાનદારનું રજીસ્ટ્રેશન, ₹300/₹60 રોકડ હિસાબ, મહિનો પૂરો થતાં દુકાન બંધ કરવી અને Adminનું ચાલુ/બંધ બટન અલગ Admin/Seller કોડમાં જોડવાનું રહેશે. કોઈ Paid Billing ચાલુ કરવાની જરૂર નથી.
