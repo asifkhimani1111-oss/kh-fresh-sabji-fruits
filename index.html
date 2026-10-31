@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="gu">
 <head>
@@ -17,6 +18,7 @@ header{background:linear-gradient(135deg,#08783d,#20a45d);color:white;padding:18
 .tag{font-size:12px;opacity:.95}
 .cartBtn{border:0;background:white;color:var(--dark);border-radius:12px;padding:10px 13px;font-weight:700}
 .cartCount{background:#f04444;color:white;border-radius:20px;padding:2px 7px;margin-left:4px}
+.sellerBtn{display:block;margin-top:12px;text-align:center;background:white;color:#08783d;padding:12px;border-radius:12px;font-weight:700;text-decoration:none}
 .hours{margin-top:13px;background:#ffffff20;padding:9px 11px;border-radius:10px;font-size:13px}
 .notice{margin:12px 13px 0;padding:12px;background:#fff7df;border:1px solid #f0d58c;border-radius:12px;font-size:13px;line-height:1.7}
 main{max-width:850px;margin:auto;padding:13px}
@@ -69,6 +71,11 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:25px}
     </div>
     <button class="cartBtn" onclick="showCart()">🛒 કાર્ટ <span class="cartCount" id="cartCount">0</span></button>
   </div>
+
+  <a class="sellerBtn" href="seller.html">
+    🏪 દુકાનદાર છો? અહીં Login કરો
+  </a>
+
   <div class="hours">🕘 ઓર્ડર સમય: સવારે 9:00 થી સાંજે 6:00 વાગ્યા સુધી</div>
 </header>
 
@@ -170,7 +177,6 @@ function unitOf(p){
 function stepOf(p){
   if(isProduce(p)){
     if(isBanana(p)) return 3;
-    if(["કિલો","કિલોગ્રામ","kg","ગ્રામ","g"].includes(unitOf(p))) return 0.25;
     return 0.25;
   }
   return 1;
@@ -339,7 +345,7 @@ function changeQty(id,direction){
 }
 
 function updateCartCount(){
-  document.getElementById("cartCount").textContent = cart.reduce((s,p)=>s+1,0);
+  document.getElementById("cartCount").textContent = cart.length;
 }
 
 function showCart(){
