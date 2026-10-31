@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="gu">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>K.H Fresh - Admin Panel</title>
 <style>
 *{box-sizing:border-box}
@@ -10,24 +11,25 @@ body{font-family:Arial,sans-serif;background:#f1f5f2;margin:0;padding:15px;color
 .container{max-width:850px;margin:auto}
 header{background:#08783d;color:white;padding:20px;border-radius:14px;margin-bottom:15px}
 .card{background:white;padding:16px;border-radius:12px;margin-bottom:15px;box-shadow:0 2px 8px #0001}
-input,select,button{width:100%;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:8px;font-size:15px}
-button{background:#08783d;color:white;border:0;font-weight:bold}
+input,select,button,textarea{width:100%;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:8px;font-size:15px}
+button{background:#08783d;color:white;border:0;font-weight:bold;cursor:pointer}
 button.danger{background:#c62828}
 button.secondary{background:#555}
 button:disabled{opacity:.5}
-.shop{border:1px solid #ddd;padding:12px;border-radius:10px;margin:10px 0}
+.shop{border:1px solid #ddd;padding:12px;border-radius:10px;margin:10px 0;overflow-wrap:anywhere}
 .shop img{width:75px;height:75px;object-fit:cover;border-radius:8px}
 .row{display:flex;gap:10px;align-items:center}
 .row>div{flex:1;min-width:0}
 .status{font-weight:bold}
 .green{color:green}
 .red{color:#c62828}
-.hidden{display:none}
-.small{font-size:13px;color:#666}
+.hidden{display:none!important}
+.small{font-size:13px;color:#666;line-height:1.6}
 </style>
 </head>
 <body>
 <div class="container">
+
 <header>
 <h1>🛒 K.H Fresh</h1>
 <p>Admin Control Panel</p>
@@ -42,13 +44,24 @@ button:disabled{opacity:.5}
 </section>
 
 <section id="dashboard" class="hidden">
+
 <div class="card">
-<div class="row">
 <h2>Admin Dashboard</h2>
+<p id="adminInfo"></p>
 <button class="secondary" onclick="loadAll()">↻ રિફ્રેશ</button>
 <button class="danger" onclick="logout()">Logout</button>
 </div>
-<p id="adminInfo"></p>
+
+<div class="card">
+<h2>🆕 દુકાનની મંજૂરી માટેની અરજીઓ</h2>
+<button onclick="loadShopApplications()">↻ અરજીઓ રિફ્રેશ કરો</button>
+<div id="shopApplicationsList">લોડ થઈ રહ્યું છે...</div>
+</div>
+
+<div class="card">
+<h2>📦 પ્રોડક્ટની મંજૂરી માટેની અરજીઓ</h2>
+<button onclick="loadProductApplications()">↻ અરજીઓ રિફ્રેશ કરો</button>
+<div id="productApplicationsList">લોડ થઈ રહ્યું છે...</div>
 </div>
 
 <div class="card">
@@ -57,7 +70,7 @@ button:disabled{opacity:.5}
 <input id="shopPhone" placeholder="WhatsApp નંબર">
 <input id="shopPhoto" placeholder="Cloudinary Shop Image URL">
 <button onclick="addShop()">દુકાન ઉમેરો</button>
-<p class="small">દુકાન ઉમેર્યા પછી ₹300 રોકડા મળ્યા બાદ જ તેને ચાલુ કરો.</p>
+<p class="small">દુકાન ઉમેર્યા પછી પ્રથમ ₹300 રોકડા મળ્યા બાદ જ ચાલુ કરો.</p>
 </div>
 
 <div class="card">
@@ -73,6 +86,7 @@ button:disabled{opacity:.5}
 
 <input id="productName" placeholder="પ્રોડક્ટનું નામ">
 <input id="productPrice" type="number" min="0" placeholder="ભાવ">
+
 <select id="productCategory">
 <option value="શાકભાજી">શાકભાજી</option>
 <option value="ફળો">ફળો</option>
@@ -94,48 +108,35 @@ button:disabled{opacity:.5}
 </select>
 
 <select id="productUnit">
-<option value="કિલો">કિલો</option>
-<option value="ગ્રામ">ગ્રામ</option>
-<option value="નંગ">નંગ</option>
-<option value="ડઝન">ડઝન</option>
-<option value="લીટર">લીટર</option>
-<option value="મિલીલીટર">મિલીલીટર</option>
-<option value="મીટર">મીટર</option>
-<option value="સેમી">સેમી</option>
-<option value="ઇંચ">ઇંચ</option>
-<option value="ફૂટ">ફૂટ</option>
-<option value="પેકેટ">પેકેટ</option>
-<option value="બોક્સ">બોક્સ</option>
-<option value="જોડી">જોડી</option>
-<option value="સેટ">સેટ</option>
-<option value="XS">XS</option>
-<option value="S">S</option>
-<option value="M">M</option>
-<option value="L">L</option>
-<option value="XL">XL</option>
-<option value="XXL">XXL</option>
-<option value="અન્ય">અન્ય</option>
+<option>કિલો</option><option>ગ્રામ</option><option>નંગ</option>
+<option>ડઝન</option><option>લીટર</option><option>મિલીલીટર</option>
+<option>મીટર</option><option>સેમી</option><option>ઇંચ</option>
+<option>ફૂટ</option><option>પેકેટ</option><option>બોક્સ</option>
+<option>જોડી</option><option>સેટ</option><option>XS</option>
+<option>S</option><option>M</option><option>L</option>
+<option>XL</option><option>XXL</option><option>અન્ય</option>
 </select>
 
-<input id="productSizes" placeholder="સાઇઝ (જેમ કે S,M,L,XL)">
+<input id="productSizes" placeholder="સાઇઝ (S,M,L,XL)">
 <input id="productColors" placeholder="કલર">
 <input id="productDesign" placeholder="ડિઝાઇન">
 <input id="productStock" type="number" min="0" placeholder="સ્ટોક">
 <input id="productPhoto" placeholder="Cloudinary Product Image URL">
 <button onclick="addProduct()">પ્રોડક્ટ ઉમેરો</button>
-<p class="small">કેળાંનો ભાવ પ્રતિ કિલો દાખલ કરવો. ફોટા માટે Cloudinary URL વાપરો.</p>
 </div>
 
 <div class="card">
 <h2>🗂️ પસંદ કરેલી દુકાનની પ્રોડક્ટ</h2>
 <div id="productsList">દુકાન પસંદ કરો.</div>
 </div>
+
 </section>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
 <script>
 const firebaseConfig={
 apiKey:"AIzaSyCGSZ7QcASC_sUV6f7NDJrMbn0Ae-f9pR8",
@@ -177,15 +178,11 @@ const result=await auth.signInWithEmailAndPassword(email,password);
 if(result.user.uid!==ADMIN_UID){
 await auth.signOut();
 error.textContent="આ એકાઉન્ટ Admin નથી.";
-return;
 }
-showDashboard(result.user);
-}catch(e){
-error.textContent=e.message;
-}
+}catch(e){error.textContent=e.message;}
 }
 
-auth.onAuthStateChanged(async user=>{
+auth.onAuthStateChanged(user=>{
 if(user&&user.uid===ADMIN_UID){
 showDashboard(user);
 }else{
@@ -201,12 +198,152 @@ document.getElementById("adminInfo").textContent="Admin Login સફળ: "+user.
 loadAll();
 }
 
-async function logout(){
-await auth.signOut();
-}
+async function logout(){await auth.signOut();}
 
 async function loadAll(){
 await loadShops();
+await loadShopApplications();
+await loadProductApplications();
+}
+
+async function loadShopApplications(){
+const box=document.getElementById("shopApplicationsList");
+box.textContent="અરજીઓ લોડ થઈ રહી છે...";
+try{
+const snap=await db.collection("shopApplications").where("status","==","pending").get();
+box.innerHTML="";
+if(snap.empty){box.textContent="નવી દુકાનની અરજી નથી.";return;}
+snap.forEach(doc=>{
+const s=doc.data();
+const div=document.createElement("div");
+div.className="shop";
+div.innerHTML=`
+<b>${safe(s.shopName)}</b>
+<p>માલિક: ${safe(s.ownerName)}</p>
+<p>મોબાઇલ: ${safe(s.phone)}</p>
+<p>WhatsApp: ${safe(s.whatsapp)}</p>
+<p>સરનામું: ${safe(s.address)}</p>
+<button data-approve>દુકાન મંજૂર કરો</button>
+<button class="danger" data-reject>નામંજૂર કરો</button>`;
+div.querySelector("[data-approve]").onclick=()=>approveShopApplication(doc.id,s);
+div.querySelector("[data-reject]").onclick=()=>rejectApplication("shopApplications",doc.id);
+box.appendChild(div);
+});
+}catch(e){box.textContent="Error: "+e.message;}
+}
+
+async function approveShopApplication(id,s){
+if(!confirm(s.shopName+" દુકાન મંજૂર કરવી છે?"))return;
+try{
+const ref=db.collection("shopApplications").doc(id);
+const latest=await ref.get();
+if(!latest.exists||latest.data().status!=="pending"){
+alert("આ અરજી હવે Pending નથી.");return;
+}
+await db.collection("shops").doc(id).set({
+name:s.shopName,
+ownerName:s.ownerName,
+whatsapp:s.whatsapp,
+sellerPhone:s.phone,
+address:s.address,
+planActive:false,
+registrationFeePaid:false,
+planStartAt:null,
+planEndAt:null,
+createdAt:firebase.firestore.FieldValue.serverTimestamp()
+});
+await ref.update({
+status:"approved",
+approvedShopId:id,
+approvedAt:firebase.firestore.FieldValue.serverTimestamp()
+});
+alert("દુકાન મંજૂર થઈ ગઈ.");
+await loadShopApplications();
+await loadShops();
+}catch(e){alert("મંજૂરી Error: "+e.message);}
+}
+
+async function loadProductApplications(){
+const box=document.getElementById("productApplicationsList");
+box.textContent="અરજીઓ લોડ થઈ રહી છે...";
+try{
+const snap=await db.collection("productApplications").where("status","==","pending").get();
+box.innerHTML="";
+if(snap.empty){box.textContent="નવી પ્રોડક્ટ અરજી નથી.";return;}
+snap.forEach(doc=>{
+const p=doc.data();
+const img=validImage(p.imageUrl||"");
+const div=document.createElement("div");
+div.className="shop";
+div.innerHTML=`
+${img?`<img src="${safe(img)}" alt="Product">`:""}
+<b>${safe(p.name)}</b>
+<p>દુકાન: ${safe(p.shopName)}</p>
+<p>કેટેગરી: ${safe(p.category)}</p>
+<p>ભાવ: ₹${safe(p.price)} / ${safe(p.unit)}</p>
+<p>સાઇઝ: ${safe(p.size)}</p>
+<p>કલર: ${safe(p.color)}</p>
+<p>ડિઝાઇન: ${safe(p.design)}</p>
+<p>સ્ટોક: ${safe(p.stock??0)}</p>
+<button data-approve>પ્રોડક્ટ મંજૂર કરો</button>
+<button class="danger" data-reject>નામંજૂર કરો</button>`;
+div.querySelector("[data-approve]").onclick=()=>approveProductApplication(doc.id,p);
+div.querySelector("[data-reject]").onclick=()=>rejectApplication("productApplications",doc.id);
+box.appendChild(div);
+});
+}catch(e){box.textContent="Error: "+e.message;}
+}
+
+async function approveProductApplication(id,p){
+if(!confirm(p.name+" પ્રોડક્ટ મંજૂર કરવી છે?"))return;
+try{
+const appRef=db.collection("productApplications").doc(id);
+const latest=await appRef.get();
+if(!latest.exists||latest.data().status!=="pending"){
+alert("આ અરજી હવે Pending નથી.");return;
+}
+const shopId=p.shopApplicationId;
+const shopRef=db.collection("shops").doc(shopId);
+const shop=await shopRef.get();
+if(!shop.exists){alert("દુકાન મળી નથી.");return;}
+
+await db.collection("products").add({
+shopId,
+shopName:shop.data().name||p.shopName||"",
+name:p.name,
+category:p.category,
+price:p.price,
+unit:p.unit,
+size:p.size||"",
+color:p.color||"",
+design:p.design||"",
+stock:p.stock??null,
+imageUrl:validImage(p.imageUrl||""),
+active:true,
+createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+});
+
+await appRef.update({
+status:"approved",
+approvedAt:firebase.firestore.FieldValue.serverTimestamp()
+});
+alert("પ્રોડક્ટ મંજૂર થઈ ગઈ.");
+await loadProductApplications();
+}catch(e){alert("મંજૂરી Error: "+e.message);}
+}
+
+async function rejectApplication(collection,id){
+if(!confirm("આ અરજી નામંજૂર કરવી છે?"))return;
+try{
+await db.collection(collection).doc(id).update({
+status:"rejected",
+rejectedAt:firebase.firestore.FieldValue.serverTimestamp()
+});
+alert("અરજી નામંજૂર થઈ ગઈ.");
+if(collection==="shopApplications")await loadShopApplications();
+else await loadProductApplications();
+}catch(e){alert("Error: "+e.message);}
 }
 
 async function loadShops(){
@@ -219,28 +356,20 @@ for(const shop of shops){
 if(shop.planActive&&shop.planEndAt){
 const end=shop.planEndAt.toDate?shop.planEndAt.toDate():new Date(shop.planEndAt);
 if(end.getTime()<=Date.now()){
-await db.collection("shops").doc(shop.id).update({
-planActive:false,
-updatedAt:firebase.firestore.FieldValue.serverTimestamp()
-});
+await db.collection("shops").doc(shop.id).update({planActive:false});
 shop.planActive=false;
 }
 }
 }
 renderShops();
 fillShopSelect();
-}catch(e){
-box.textContent="Error: "+e.message;
-}
+}catch(e){box.textContent="Error: "+e.message;}
 }
 
 function renderShops(){
 const box=document.getElementById("shopsList");
 box.innerHTML="";
-if(!shops.length){
-box.textContent="હજી કોઈ દુકાન નથી.";
-return;
-}
+if(!shops.length){box.textContent="હજી કોઈ દુકાન નથી.";return;}
 shops.forEach(shop=>{
 const active=shop.planActive===true;
 const paid=shop.registrationFeePaid===true;
@@ -258,23 +387,21 @@ ${photo?`<img src="${safe(photo)}" alt="Shop">`:'<div style="font-size:40px">�
 <div>
 <b>${safe(shop.name)}</b>
 <div>WhatsApp: ${safe(shop.whatsapp)}</div>
-<div class="status ${active?'green':'red'}">સ્થિતિ: ${active?'● ચાલુ':'● બંધ'}</div>
+<div class="status ${active?'green':'red'}">${active?'● ચાલુ':'● બંધ'}</div>
 <div>ચુકવણી: ${paid?'પ્રથમ ₹300 નોંધાયેલ':'પ્રથમ ₹300 બાકી'}</div>
-<div>સમાપ્તિ તારીખ: ${safe(expiry)}</div>
-</div>
-</div>
+<div>સમાપ્તિ: ${safe(expiry)}</div>
+</div></div>
 <div class="row">
-<button data-action="activate">${paid?'₹60 લઈને 30 દિવસ ચાલુ કરો':'₹300 લઈને પ્રથમ વખત ચાલુ કરો'}</button>
-<button class="secondary" data-action="products">પ્રોડક્ટ જુઓ</button>
-<button class="danger" data-action="delete">દુકાન ડિલીટ</button>
+<button data-activate>${paid?'₹60 લઈને 30 દિવસ ચાલુ કરો':'₹300 લઈને પ્રથમ વખત ચાલુ કરો'}</button>
+<button class="secondary" data-products>પ્રોડક્ટ જુઓ</button>
+<button class="danger" data-delete>દુકાન ડિલીટ</button>
 </div>`;
-div.querySelector('[data-action="activate"]').onclick=()=>activateShop(shop);
-div.querySelector('[data-action="products"]').onclick=()=>{
+div.querySelector("[data-activate]").onclick=()=>activateShop(shop);
+div.querySelector("[data-products]").onclick=()=>{
 document.getElementById("productShop").value=shop.id;
 loadProducts();
-document.getElementById("productsList").scrollIntoView({behavior:"smooth"});
 };
-div.querySelector('[data-action="delete"]').onclick=()=>deleteShop(shop);
+div.querySelector("[data-delete]").onclick=()=>deleteShop(shop);
 box.appendChild(div);
 });
 }
@@ -294,35 +421,26 @@ async function addShop(){
 const name=document.getElementById("shopName").value.trim();
 const phone=document.getElementById("shopPhone").value.trim().replace(/\D/g,"");
 const imageUrl=validImage(document.getElementById("shopPhoto").value.trim());
-if(!name||phone.length<10){
-alert("દુકાનનું નામ અને યોગ્ય WhatsApp નંબર દાખલ કરો.");
-return;
-}
+if(!name||phone.length<10){alert("દુકાનનું નામ અને યોગ્ય નંબર નાખો.");return;}
 try{
 await db.collection("shops").add({
-name,
-whatsapp:phone,
-shopImageUrl:imageUrl,
-planActive:false,
-registrationFeePaid:false,
-planStartAt:null,
-planEndAt:null,
+name,whatsapp:phone,shopImageUrl:imageUrl,
+planActive:false,registrationFeePaid:false,
+planStartAt:null,planEndAt:null,
 createdAt:firebase.firestore.FieldValue.serverTimestamp()
 });
+alert("દુકાન ઉમેરાઈ ગઈ.");
 document.getElementById("shopName").value="";
 document.getElementById("shopPhone").value="";
 document.getElementById("shopPhoto").value="";
-alert("દુકાન ઉમેરાઈ ગઈ. ₹300 મળ્યા પછી ચાલુ કરો.");
 await loadShops();
-}catch(e){
-alert("દુકાન ઉમેરવામાં Error: "+e.message);
-}
+}catch(e){alert("Error: "+e.message);}
 }
 
 async function activateShop(shop){
 const first=!shop.registrationFeePaid;
 const amount=first?300:60;
-if(!confirm(`શું ${shop.name} પાસેથી ₹${amount} રોકડા મળ્યા છે? દુકાન 30 દિવસ માટે ચાલુ કરવી છે?`))return;
+if(!confirm(`${shop.name} પાસેથી ₹${amount} રોકડા મળ્યા છે?`))return;
 try{
 const now=new Date();
 let start=now;
@@ -333,75 +451,56 @@ if(previous>now)start=previous;
 const end=new Date(start);
 end.setDate(end.getDate()+30);
 await db.collection("shops").doc(shop.id).update({
-registrationFeePaid:true,
-planActive:true,
+registrationFeePaid:true,planActive:true,
 planStartAt:firebase.firestore.Timestamp.fromDate(start),
 planEndAt:firebase.firestore.Timestamp.fromDate(end),
 lastCashPayment:amount,
 lastCashPaymentAt:firebase.firestore.FieldValue.serverTimestamp(),
 updatedAt:firebase.firestore.FieldValue.serverTimestamp()
 });
-alert(`દુકાન 30 દિવસ માટે ચાલુ થઈ. રોકડ ચુકવણી: ₹${amount}`);
+alert("દુકાન 30 દિવસ માટે ચાલુ થઈ.");
 await loadShops();
-}catch(e){
-alert("ચુકવણી નોંધવામાં Error: "+e.message);
-}
+}catch(e){alert("Error: "+e.message);}
 }
 
 async function deleteShop(shop){
-if(!confirm(`શું ${shop.name} દુકાન ડિલીટ કરવી છે? આ દુકાનની પ્રોડક્ટ પણ ડિલીટ થશે.`))return;
+if(!confirm(shop.name+" અને તેની પ્રોડક્ટ ડિલીટ કરવી છે?"))return;
 try{
 const snap=await db.collection("products").where("shopId","==",shop.id).get();
 const batch=db.batch();
 snap.docs.forEach(doc=>batch.delete(doc.ref));
 batch.delete(db.collection("shops").doc(shop.id));
 await batch.commit();
-alert("દુકાન અને તેની પ્રોડક્ટ ડિલીટ થઈ.");
+alert("દુકાન ડિલીટ થઈ.");
 await loadShops();
-document.getElementById("productsList").textContent="દુકાન પસંદ કરો.";
-}catch(e){
-alert("ડિલીટ Error: "+e.message);
-}
+}catch(e){alert("Error: "+e.message);}
 }
 
 async function addProduct(){
 const shopId=document.getElementById("productShop").value;
 const name=document.getElementById("productName").value.trim();
 const price=Number(document.getElementById("productPrice").value);
-const category=document.getElementById("productCategory").value;
-const unit=document.getElementById("productUnit").value;
-const sizes=document.getElementById("productSizes").value.trim();
-const colors=document.getElementById("productColors").value.trim();
-const design=document.getElementById("productDesign").value.trim();
-const stock=Number(document.getElementById("productStock").value||0);
-const imageUrl=validImage(document.getElementById("productPhoto").value.trim());
-
 if(!shopId||!name||!Number.isFinite(price)||price<=0){
-alert("દુકાન, પ્રોડક્ટનું નામ અને યોગ્ય ભાવ દાખલ કરો.");
-return;
+alert("દુકાન, પ્રોડક્ટ અને યોગ્ય ભાવ દાખલ કરો.");return;
 }
 try{
 await db.collection("products").add({
-shopId,
-name,
-price,
-category,
-unit,
-sizes,
-colors,
-design,
-stock,
-imageUrl,
+shopId,name,price,
+category:document.getElementById("productCategory").value,
+unit:document.getElementById("productUnit").value,
+sizes:document.getElementById("productSizes").value.trim(),
+colors:document.getElementById("productColors").value.trim(),
+design:document.getElementById("productDesign").value.trim(),
+stock:Number(document.getElementById("productStock").value||0),
+imageUrl:validImage(document.getElementById("productPhoto").value.trim()),
 active:true,
 createdAt:firebase.firestore.FieldValue.serverTimestamp(),
 updatedAt:firebase.firestore.FieldValue.serverTimestamp()
 });
-["productName","productPrice","productSizes","productColors","productDesign","productStock","productPhoto"].forEach(id=>document.getElementById(id).value="");
 alert("પ્રોડક્ટ ઉમેરાઈ ગઈ.");
+["productName","productPrice","productSizes","productColors","productDesign","productStock","productPhoto"].forEach(id=>document.getElementById(id).value="");
 await loadProducts();
-}catch(e){
-alert("પ્રોડક્ટ ઉમેરવામાં Error: "+e.message);
-}
+}catch(e){alert("Error: "+e.message);}
 }
 
 document.getElementById("productShop").addEventListener("change",loadProducts);
@@ -409,19 +508,13 @@ document.getElementById("productShop").addEventListener("change",loadProducts);
 async function loadProducts(){
 const shopId=document.getElementById("productShop").value;
 const box=document.getElementById("productsList");
-if(!shopId){
-box.textContent="દુકાન પસંદ કરો.";
-return;
-}
-box.textContent="પ્રોડક્ટ લોડ થઈ રહી છે...";
+if(!shopId){box.textContent="દુકાન પસંદ કરો.";return;}
+box.textContent="લોડ થઈ રહ્યું છે...";
 try{
 const snap=await db.collection("products").where("shopId","==",shopId).get();
 box.innerHTML="";
-if(snap.empty){
-box.textContent="આ દુકાનમાં હજી પ્રોડક્ટ નથી.";
-return;
-}
-snap.docs.forEach(doc=>{
+if(snap.empty){box.textContent="આ દુકાનમાં પ્રોડક્ટ નથી.";return;}
+snap.forEach(doc=>{
 const p=doc.data();
 const div=document.createElement("div");
 div.className="shop";
@@ -432,17 +525,15 @@ div.innerHTML=`
 <p>સ્ટોક: ${safe(p.stock??0)}</p>
 <button class="danger">પ્રોડક્ટ ડિલીટ કરો</button>`;
 div.querySelector("button").onclick=async()=>{
-if(!confirm(`${p.name} ડિલીટ કરવી છે?`))return;
+if(!confirm(p.name+" ડિલીટ કરવી છે?"))return;
 try{
 await db.collection("products").doc(doc.id).delete();
 await loadProducts();
-}catch(e){alert(e.message)}
+}catch(e){alert(e.message);}
 };
 box.appendChild(div);
 });
-}catch(e){
-box.textContent="Error: "+e.message;
-}
+}catch(e){box.textContent="Error: "+e.message;}
 }
 </script>
 </body>
