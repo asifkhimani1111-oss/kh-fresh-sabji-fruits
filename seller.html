@@ -5,107 +5,151 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>K.H Fresh - Seller Panel</title>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f3f6f4;font-family:Arial,sans-serif;color:#202820}
 header{background:#087b43;color:white;padding:20px;text-align:center}
+header h1{margin:0 0 8px}
 main{max-width:650px;margin:18px auto;padding:12px}
 .card{background:white;padding:18px;border-radius:14px;margin-bottom:18px;box-shadow:0 2px 10px #0001}
 h2{font-size:20px;margin-top:0;color:#087b43}
+label{font-weight:bold;font-size:14px}
 input,select,textarea{width:100%;padding:13px;margin:7px 0 13px;border:1px solid #ccc;border-radius:9px;font-size:16px;background:white}
+input[type=file]{background:#f8faf8}
 button{width:100%;padding:14px;background:#087b43;color:white;border:0;border-radius:9px;font-size:16px;font-weight:bold;margin-top:7px}
 button:disabled{opacity:.6}
-.note{background:#e8f5ec;padding:12px;border-radius:9px;font-size:14px}
-.preview{width:100%;max-height:220px;object-fit:contain;display:none;margin:8px 0;border-radius:10px}
-#message{padding:12px;border-radius:9px;display:none;margin-bottom:15px}
-.small{font-size:13px;color:#666}
+.note{background:#e8f5ec;padding:12px;border-radius:9px;font-size:14px;line-height:1.6}
+.preview{width:100%;max-height:240px;object-fit:contain;display:none;margin:8px 0;border-radius:10px;background:#f4f4f4}
+#message{padding:12px;border-radius:9px;display:none;margin-bottom:15px;line-height:1.6;overflow-wrap:anywhere}
+.small{font-size:13px;color:#666;line-height:1.5}
+.copyButton{background:#2355a5}
 </style>
 </head>
+
 <body>
+
 <header>
-  <h1>K.H Fresh</h1>
-  <div>દુકાનદાર પેનલ - તમારી દુકાન જાતે ઉમેરો</div>
+<h1>K.H Fresh</h1>
+<div>દુકાનદાર પેનલ - તમારી દુકાન જાતે ઉમેરો</div>
 </header>
 
 <main>
+
 <div id="message"></div>
 
 <div class="card">
 <h2>1. તમારી દુકાન ઉમેરો</h2>
+
 <form id="shopForm">
+
 <label>દુકાનનું નામ *</label>
-<input id="shopName" required placeholder="દુકાનનું નામ">
+<input id="shopName" required maxlength="100" placeholder="દુકાનનું નામ">
 
 <label>માલિકનું નામ *</label>
-<input id="ownerName" required placeholder="માલિકનું નામ">
+<input id="ownerName" required maxlength="100" placeholder="માલિકનું નામ">
 
 <label>મોબાઇલ નંબર *</label>
-<input id="phone" required type="tel" placeholder="મોબાઇલ નંબર">
+<input id="phone" required type="tel" maxlength="15" placeholder="મોબાઇલ નંબર">
 
 <label>WhatsApp નંબર</label>
-<input id="whatsapp" type="tel" placeholder="WhatsApp નંબર">
+<input id="whatsapp" type="tel" maxlength="15" placeholder="WhatsApp નંબર">
 
-<label>દુકાનનું સરનામું *</label>
-<textarea id="address" required placeholder="પૂરું સરનામું"></textarea>
+<label>દુકાનનું પૂરું સરનામું *</label>
+<textarea id="address" required maxlength="500" placeholder="પૂરું સરનામું"></textarea>
 
-<label>દુકાનનો ફોટો (કેમેરા અથવા ગેલેરી)</label>
+<label>દુકાનનો ફોટો - કેમેરા અથવા ગેલેરી</label>
 <input id="shopPhoto" type="file" accept="image/*">
 <img id="shopPreview" class="preview" alt="દુકાનનો ફોટો">
 
+<p class="small">ફોટો પસંદ કરવા માટે ઉપર દબાવો. મોબાઇલમાં કેમેરા અથવા ગેલેરીનો વિકલ્પ મળી શકે છે.</p>
+
 <button id="shopButton" type="submit">દુકાનની અરજી મોકલો</button>
+
 </form>
-<p class="small">તમારી અરજી Admin મંજૂર કરશે ત્યાર પછી પ્રોડક્ટ ઉમેરી શકશો.</p>
+
+<p class="small">તમારી દુકાનની અરજી Admin મંજૂર કરશે. મંજૂરી પછી તમે પ્રોડક્ટ ઉમેરી શકશો.</p>
 </div>
+
 
 <div class="card">
 <h2>2. પ્રોડક્ટ ઉમેરો</h2>
+
 <form id="productForm">
+
 <label>દુકાન અરજી ID *</label>
 <input id="shopId" required placeholder="દુકાનની અરજી પછી મળેલો ID">
 
 <label>પ્રોડક્ટનું નામ *</label>
-<input id="productName" required placeholder="પ્રોડક્ટનું નામ">
+<input id="productName" required maxlength="100" placeholder="પ્રોડક્ટનું નામ">
 
 <label>કેટેગરી *</label>
-<input id="category" required placeholder="જેમ કે કપડાં, શાકભાજી, ફળો">
+<input id="category" required maxlength="80" placeholder="કપડાં, શાકભાજી, ફળો વગેરે">
 
 <label>ભાવ *</label>
 <input id="price" type="number" min="0" step="0.01" required placeholder="પ્રોડક્ટનો ભાવ">
 
 <label>માપ / યુનિટ</label>
-<input id="unit" placeholder="કિલો, નંગ, પીસ, લીટર, મીટર વગેરે">
+<input id="unit" maxlength="40" placeholder="કિલો, નંગ, પીસ, લીટર, મીટર વગેરે">
 
 <label>સાઇઝ</label>
-<input id="size" placeholder="S, M, L, XL અથવા અન્ય">
+<input id="size" maxlength="100" placeholder="S, M, L, XL અથવા અન્ય">
 
 <label>કલર</label>
-<input id="color" placeholder="પ્રોડક્ટનો રંગ">
+<input id="color" maxlength="100" placeholder="પ્રોડક્ટનો રંગ">
 
 <label>ડિઝાઇન / વિગતો</label>
-<input id="design" placeholder="ડિઝાઇન અથવા અન્ય વિગતો">
+<input id="design" maxlength="300" placeholder="ડિઝાઇન અથવા અન્ય વિગતો">
 
 <label>સ્ટોક</label>
-<input id="stock" type="number" min="0" placeholder="સ્ટોકની સંખ્યા">
+<input id="stock" type="number" min="0" step="1" placeholder="સ્ટોકની સંખ્યા">
 
-<label>પ્રોડક્ટનો ફોટો (કેમેરા અથવા ગેલેરી)</label>
+<label>પ્રોડક્ટનો ફોટો - કેમેરા અથવા ગેલેરી</label>
 <input id="productPhoto" type="file" accept="image/*">
 <img id="productPreview" class="preview" alt="પ્રોડક્ટનો ફોટો">
 
+<p class="small">પ્રોડક્ટનો ફોટો પસંદ કરો. ફોટો અપલોડ થયા પછી તેની લિંક આપમેળે સેવ થશે.</p>
+
 <button id="productButton" type="submit">પ્રોડક્ટની અરજી મોકલો</button>
+
 </form>
 </div>
 
-<div class="note">
-<strong>મહત્વપૂર્ણ:</strong> દુકાન અને પ્રોડક્ટની અરજી Admin મંજૂર કર્યા પછી જ ગ્રાહકોને દેખાશે. અરજી ID સાચવી રાખજો.
+
+<div class="card">
+<h2>3. દુકાન અરજી ID</h2>
+<p class="small">દુકાનની અરજી મોકલ્યા પછી મળેલો ID અહીં દેખાશે. તેને સાચવી રાખજો.</p>
+<input id="savedShopId" readonly placeholder="હજુ દુકાનની અરજી મોકલાઈ નથી">
+<button type="button" class="copyButton" id="copyIdButton">અરજી ID Copy કરો</button>
 </div>
+
+
+<div class="note">
+<strong>મહત્વપૂર્ણ:</strong><br>
+1. દુકાનની અરજી Admin પાસે જશે.<br>
+2. Admin મંજૂરી આપ્યા પછી જ પ્રોડક્ટ ઉમેરી શકશો.<br>
+3. પ્રોડક્ટ પણ Admin મંજૂર કર્યા પછી ગ્રાહકોને દેખાશે.<br>
+4. દુકાન અરજી ID સાચવી રાખજો.
+</div>
+
 </main>
 
+
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 import {
-  getFirestore, collection, addDoc, getDoc, doc, serverTimestamp
+  getFirestore,
+  collection,
+  addDoc,
+  getDoc,
+  doc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+
+// FIREBASE CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyCGSZ7QcASC_sUV6f7NDJrMbn0Ae-f9pR8",
   authDomain: "kh-fresh-sabji-fruits.firebaseapp.com",
@@ -119,154 +163,299 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Cloudinary સેટિંગ
+
+// CLOUDINARY CONFIG
 const CLOUDINARY_NAME = "irdsjwvm";
 const CLOUDINARY_UPLOAD_PRESET = "khfresh";
 
 const $ = id => document.getElementById(id);
 
+
+// MESSAGE
 function showMessage(message, success=false) {
   const box = $("message");
+
   box.style.display = "block";
   box.style.background = success ? "#d9f7df" : "#ffe4e4";
   box.style.color = success ? "#075b2b" : "#a00000";
   box.textContent = message;
-  box.scrollIntoView({behavior:"smooth",block:"center"});
-}
 
-function preview(inputId, imageId) {
-  $(inputId).addEventListener("change", () => {
-    const file = $(inputId).files[0];
-    const img = $(imageId);
-    if (!file) {
-      img.style.display = "none";
-      return;
-    }
-    if (!file.type.startsWith("image/")) {
-      showMessage("કૃપા કરીને ફોટો પસંદ કરો.");
-      $(inputId).value = "";
-      return;
-    }
-    img.src = URL.createObjectURL(file);
-    img.style.display = "block";
+  box.scrollIntoView({
+    behavior:"smooth",
+    block:"center"
   });
 }
 
-preview("shopPhoto","shopPreview");
-preview("productPhoto","productPreview");
 
+// IMAGE PREVIEW
+function setupPreview(inputId, imageId) {
+
+  $(inputId).addEventListener("change", () => {
+
+    const file = $(inputId).files[0];
+    const img = $(imageId);
+
+    if (!file) {
+      img.style.display = "none";
+      img.removeAttribute("src");
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      showMessage("કૃપા કરીને સાચો ફોટો પસંદ કરો.");
+      $(inputId).value = "";
+      img.style.display = "none";
+      return;
+    }
+
+    if (file.size > 8 * 1024 * 1024) {
+      showMessage("ફોટો 8 MB કરતાં નાનો પસંદ કરો.");
+      $(inputId).value = "";
+      img.style.display = "none";
+      return;
+    }
+
+    img.src = URL.createObjectURL(file);
+    img.style.display = "block";
+
+  });
+
+}
+
+setupPreview("shopPhoto","shopPreview");
+setupPreview("productPhoto","productPreview");
+
+
+// CLOUDINARY IMAGE UPLOAD
 async function uploadImage(file) {
+
   if (!file) return "";
 
-  if (CLOUDINARY_UPLOAD_PRESET === "YOUR_UNSIGNED_PRESET") {
-    throw new Error("Cloudinary Upload Preset સેટ કરવાનું બાકી છે.");
+  if (!CLOUDINARY_NAME || !CLOUDINARY_UPLOAD_PRESET) {
+    throw new Error("Cloudinary સેટિંગ અધૂરું છે.");
   }
 
   const data = new FormData();
+
   data.append("file", file);
   data.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
   const response = await fetch(
     `https://api.cloudinary.com/v1_1/${CLOUDINARY_NAME}/image/upload`,
-    {method:"POST",body:data}
+    {
+      method:"POST",
+      body:data
+    }
   );
 
   const result = await response.json();
 
   if (!response.ok || !result.secure_url) {
-    throw new Error(result.error?.message || "ફોટો અપલોડ થયો નથી.");
+    throw new Error(
+      result.error?.message || "ફોટો અપલોડ થઈ શક્યો નથી."
+    );
   }
 
   return result.secure_url;
+
 }
 
-// દુકાન અરજી
-$("shopForm").addEventListener("submit", async e => {
-  e.preventDefault();
+
+// COPY APPLICATION ID
+$("copyIdButton").addEventListener("click", async () => {
+
+  const id = $("savedShopId").value;
+
+  if (!id) {
+    showMessage("પહેલાં દુકાનની અરજી મોકલો.");
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(id);
+    showMessage("અરજી ID Copy થઈ ગયો.",true);
+  } catch (error) {
+    $("savedShopId").select();
+    showMessage("ID પસંદ થયો છે. Copy કરો.",true);
+  }
+
+});
+
+
+// SHOP APPLICATION
+$("shopForm").addEventListener("submit", async event => {
+
+  event.preventDefault();
+
   const button = $("shopButton");
+
   button.disabled = true;
   button.textContent = "અરજી મોકલાઈ રહી છે...";
 
   try {
+
     const file = $("shopPhoto").files[0];
+
     const shopImageUrl = await uploadImage(file);
 
-    const ref = await addDoc(collection(db,"shopApplications"), {
+    const shopData = {
+
       shopName: $("shopName").value.trim(),
       ownerName: $("ownerName").value.trim(),
       phone: $("phone").value.trim(),
       whatsapp: $("whatsapp").value.trim(),
       address: $("address").value.trim(),
-      shopImageUrl,
+
+      shopImageUrl: shopImageUrl,
+
       status: "pending",
       createdAt: serverTimestamp()
-    });
+
+    };
+
+    const ref = await addDoc(
+      collection(db,"shopApplications"),
+      shopData
+    );
+
+    $("shopId").value = ref.id;
+    $("savedShopId").value = ref.id;
 
     showMessage(
-      "દુકાનની અરજી સફળતાપૂર્વક મોકલાઈ! તમારી અરજી ID: " + ref.id +
-      " — આ ID સાચવી રાખજો.",
+      "તમારી દુકાનની અરજી સફળતાપૂર્વક મોકલાઈ! અરજી ID: " +
+      ref.id +
+      ". આ ID સાચવી રાખજો.",
       true
     );
-    $("shopId").value = ref.id;
+
     $("shopForm").reset();
     $("shopPreview").style.display = "none";
+
   } catch (error) {
-    showMessage("અરજી મોકલવામાં સમસ્યા: " + error.message);
+
+    console.error(error);
+
+    showMessage(
+      "દુકાનની અરજી મોકલવામાં સમસ્યા: " + error.message
+    );
+
   } finally {
+
     button.disabled = false;
     button.textContent = "દુકાનની અરજી મોકલો";
+
   }
+
 });
 
-// પ્રોડક્ટ અરજી
-$("productForm").addEventListener("submit", async e => {
-  e.preventDefault();
+
+// PRODUCT APPLICATION
+$("productForm").addEventListener("submit", async event => {
+
+  event.preventDefault();
+
   const button = $("productButton");
+
   button.disabled = true;
   button.textContent = "પ્રોડક્ટ મોકલાઈ રહી છે...";
 
   try {
+
     const shopId = $("shopId").value.trim();
-    const shopSnap = await getDoc(doc(db,"shopApplications",shopId));
+
+    if (!shopId) {
+      throw new Error("દુકાન અરજી ID નાખો.");
+    }
+
+    const shopSnap = await getDoc(
+      doc(db,"shopApplications",shopId)
+    );
 
     if (!shopSnap.exists()) {
-      throw new Error("દુકાન અરજી ID મળ્યો નથી.");
+      throw new Error("આ દુકાન અરજી ID મળ્યો નથી.");
     }
-    if (shopSnap.data().status !== "approved") {
-      throw new Error("તમારી દુકાન Admin દ્વારા મંજૂર થયા પછી પ્રોડક્ટ ઉમેરી શકશો.");
+
+    const shopData = shopSnap.data();
+
+    if (shopData.status !== "approved") {
+      throw new Error(
+        "તમારી દુકાન Admin દ્વારા મંજૂર થયા પછી પ્રોડક્ટ ઉમેરી શકશો."
+      );
+    }
+
+    const price = Number($("price").value);
+
+    if (!Number.isFinite(price) || price < 0) {
+      throw new Error("યોગ્ય ભાવ દાખલ કરો.");
+    }
+
+    const stockValue = $("stock").value;
+    const stock = stockValue === "" ? 0 : Number(stockValue);
+
+    if (!Number.isInteger(stock) || stock < 0) {
+      throw new Error("યોગ્ય સ્ટોક દાખલ કરો.");
     }
 
     const file = $("productPhoto").files[0];
+
     const imageUrl = await uploadImage(file);
 
-    await addDoc(collection(db,"productApplications"), {
+    const productData = {
+
       shopApplicationId: shopId,
-      shopName: shopSnap.data().shopName,
+      shopName: shopData.shopName,
+
       name: $("productName").value.trim(),
       category: $("category").value.trim(),
-      price: Number($("price").value),
+
+      price: price,
+
       unit: $("unit").value.trim(),
       size: $("size").value.trim(),
       color: $("color").value.trim(),
       design: $("design").value.trim(),
-      stock: Number($("stock").value || 0),
-      imageUrl,
+
+      stock: stock,
+
+      imageUrl: imageUrl,
+
       status: "pending",
       createdAt: serverTimestamp()
-    });
 
-    showMessage("પ્રોડક્ટની અરજી સફળતાપૂર્વક મોકલાઈ! Admin મંજૂરી આપશે.",true);
-    const savedShopId = shopId;
+    };
+
+    await addDoc(
+      collection(db,"productApplications"),
+      productData
+    );
+
+    showMessage(
+      "પ્રોડક્ટની અરજી સફળતાપૂર્વક મોકલાઈ! Admin મંજૂરી આપશે.",
+      true
+    );
+
     $("productForm").reset();
-    $("shopId").value = savedShopId;
+    $("shopId").value = shopId;
     $("productPreview").style.display = "none";
+
   } catch (error) {
-    showMessage("પ્રોડક્ટ મોકલવામાં સમસ્યા: " + error.message);
+
+    console.error(error);
+
+    showMessage(
+      "પ્રોડક્ટ મોકલવામાં સમસ્યા: " + error.message
+    );
+
   } finally {
+
     button.disabled = false;
     button.textContent = "પ્રોડક્ટની અરજી મોકલો";
+
   }
+
 });
+
 </script>
+
 </body>
 </html>
