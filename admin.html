@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="gu">
 <head>
@@ -145,7 +144,7 @@ Admin Management Panel
 <input type="hidden" id="productId">
 
 <label>દુકાન પસંદ કરો *</label>
-<select id="productShop"></select>
+<select id="productShop" onchange="fillCategoryDropdown()"></select>
 
 <label>કેટેગરી પસંદ કરો *</label>
 <select id="productCategory"></select>
@@ -523,6 +522,7 @@ const opts=shops.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join(
 $("catShop").innerHTML='<option value="">દુકાન પસંદ કરો</option>'+opts;
 $("productShop").innerHTML='<option value="">દુકાન પસંદ કરો</option>'+opts;
 $("filterProductShop").innerHTML='<option value="">બધી દુકાનો</option>'+opts;
+fillCategoryDropdown();
 }
 
 window.saveCategory=async()=>{
@@ -573,9 +573,9 @@ await deleteDoc(doc(db,"categories",id));
 };
 
 // DEFAULT CATEGORIES
-function fillCategoryDropdown(){
+window.fillCategoryDropdown=()=>{
 const shopId=$("productShop").value;
-const saved=categories.filter(c=>c.shopId===shopId);
+const saved=categories.filter(c=>!shopId || c.shopId===shopId);
 const defaults=[
 "ફળો","શાકભાજી","કરિયાણું","અનાજ અને દાળ","ચોખા અને લોટ",
 "તેલ અને મસાલા","નાસ્તા અને બિસ્કિટ","ડ્રાયફ્રૂટ",
@@ -695,10 +695,6 @@ ${p.imageUrl?`<img src="${esc(p.imageUrl)}" alt="પ્રોડક્ટ" onerr
 </div>`).join("")||"પ્રોડક્ટ મળી નથી.";
 }
 
-$("productShop").addEventListener("change",()=>{
-fillCategoryDropdown();
-});
-
 window.editProduct=id=>{
 const p=products.find(x=>x.id===id);
 if(!p)return;
@@ -736,7 +732,7 @@ window.toggleProduct=async id=>{
 const p=products.find(x=>x.id===id);
 if(!p)return;
 await updateDoc(doc(db,"products",id),{
-active:p.active===false,updatedAt:serverTimestamp()
+active:!p.active,updatedAt:serverTimestamp()
 });
 };
 
