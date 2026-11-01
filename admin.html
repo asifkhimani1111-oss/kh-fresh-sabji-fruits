@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K.H Admin - Store with WhatsApp Number</title>
+    <title>K.H Admin - Ultimate Store Manager</title>
     <style>
         :root { 
             --primary: #6366f1; 
@@ -102,8 +102,8 @@
 <body>
 
     <header>
-        <h2>⚡ K.H Store Manager</h2>
-        <p>Admin Dashboard (WhatsApp Integration)</p>
+        <h2>⚡ K.H Store Admin Panel</h2>
+        <p>Complete Store & Inventory Control</p>
     </header>
 
     <div class="admin-panel">
@@ -129,26 +129,26 @@
         <select id="productStoreSelect"></select>
 
         <label>પ્રોડક્ટનું નામ:</label>
-        <input type="text" id="pName" placeholder="દા.ત., Banana / Kurti">
+        <input type="text" id="pName" placeholder="દા.ત., Palm Oil / Kurti / Shoes">
         
         <label>કેટેગરી સિલેક્ટ કરો:</label>
         <select id="pCat">
             <option value="fruit">🍎 Fruit & Sabji (Min 2kg, 250gm step)</option>
-            <option value="fashion">👕 Fashion & Clothing</option>
+            <option value="fashion">👕 Fashion & Clothing (Size/Color)</option>
+            <option value="shoes">👞 Footwear & Shoes</option>
             <option value="electronics">📱 Electronics & Appliances</option>
-            <option value="home">🏠 Home, Kitchen & Decor</option>
-            <option value="beauty">✨ Beauty & Personal Care</option>
+            <option value="home">🏠 Home, Kitchen & Oil/Grocery</option>
             <option value="other">📦 Other General Items</option>
         </select>
         
-        <label>સાઇઝ / વજન / કલર (Details):</label>
-        <input type="text" id="pSizeSpec" placeholder="દા.ત., Regular, Size: M">
+        <label>સાઇઝ / વજન / કલર / બ્રાન્ડ (Details):</label>
+        <input type="text" id="pSizeSpec" placeholder="દા.ત., 1 Litre Pack / Size: M, L / Red">
 
         <label>ભાવ (₹):</label>
-        <input type="text" id="pPrice" placeholder="50">
+        <input type="text" id="pPrice" placeholder="120">
         
-        <label>યુનિટ (kg / pcs / dozen / pair):</label>
-        <input type="text" id="pUnit" placeholder="kg / pcs / 12 pic">
+        <label>યુનિટ (kg / litre / pcs / pair / packet):</label>
+        <input type="text" id="pUnit" placeholder="kg / litre / pcs / pair">
 
         <label>પ્રોડક્ટનો ફોટો સિલેક્ટ કરો (Camera / Gallery):</label>
         <input type="file" id="productImageFile" accept="image/*">
