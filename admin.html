@@ -3,113 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Admin Panel - Final Fixed</title>
+    <title>K.H Admin - Premium Store Manager</title>
     <style>
         :root { 
-            --primary: #ff3366; 
-            --primary-gradient: linear-gradient(135deg, #ff3366 0%, #ff6b6b 100%);
-            --bg: #f4f7f6; 
-            --card-bg: #ffffff;
-            --text-main: #2d3748;
+            --primary: #6366f1; 
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --bg: #0f172a; 
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: var(--bg); color: var(--text-main); padding: 20px; max-width: 650px; margin: auto; padding-bottom: 50px; }
+        body { background: var(--bg); color: var(--text-main); padding: 20px; max-width: 600px; margin: auto; padding-bottom: 60px; }
         
         header { 
             background: var(--primary-gradient); 
             color: white; 
-            padding: 20px; 
-            border-radius: 16px; 
-            margin-bottom: 20px; 
+            padding: 24px; 
+            border-radius: 20px; 
+            margin-bottom: 24px; 
             text-align: center; 
-            box-shadow: 0 8px 20px rgba(255, 51, 102, 0.25);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
         }
-        header h2 { font-size: 22px; font-weight: 700; }
+        header h2 { font-size: 24px; font-weight: 800; letter-spacing: 0.5px; }
+        header p { font-size: 13px; opacity: 0.9; margin-top: 4px; }
 
         .admin-panel { 
             background: var(--card-bg); 
-            border: 1px solid #edf2f7; 
-            padding: 20px; 
-            border-radius: 16px; 
+            border: 1px solid var(--border); 
+            padding: 22px; 
+            border-radius: 20px; 
             margin-bottom: 20px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
-        .admin-panel h3 { font-size: 18px; margin-bottom: 12px; color: #1a202c; border-bottom: 2px solid #edf2f7; padding-bottom: 8px; }
+        .admin-panel h3 { font-size: 17px; margin-bottom: 16px; color: #818cf8; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; align-items: center; gap: 8px;}
 
-        label { font-size: 13px; font-weight: 600; color: #4a5568; display: block; margin-top: 10px; }
+        label { font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-top: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
         input, select { 
             width: 100%; 
-            padding: 11px 14px; 
-            margin: 6px 0 12px 0; 
-            border: 1px solid #cbd5e0; 
-            border-radius: 10px; 
+            padding: 12px 16px; 
+            margin: 6px 0 4px 0; 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
             font-size: 14px; 
             outline: none; 
-            background: #fcfdfe;
+            background: #0f172a;
+            color: #fff;
+            transition: all 0.3s ease;
         }
-        input[type="file"] { padding: 8px; background: #fff; }
-        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255, 51, 102, 0.1); }
+        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
 
         button { 
             background: var(--primary-gradient); 
             color: white; 
             border: none; 
-            padding: 12px; 
-            border-radius: 10px; 
+            padding: 14px; 
+            border-radius: 12px; 
             cursor: pointer; 
             width: 100%; 
             font-weight: 700; 
-            font-size: 14px; 
-            box-shadow: 0 4px 12px rgba(255, 51, 102, 0.25);
-            margin-top: 5px;
+            font-size: 15px; 
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+            margin-top: 14px;
+            transition: transform 0.2s;
         }
-        button:active { opacity: 0.9; }
+        button:active { transform: scale(0.98); }
+
+        .section-title { font-size: 16px; margin: 25px 0 12px 0; color: #cbd5e1; font-weight: 700; display: flex; align-items: center; gap: 6px; }
 
         .item-box { 
-            background: white; 
-            padding: 14px; 
-            border-radius: 12px; 
-            margin-bottom: 10px; 
+            background: var(--card-bg); 
+            padding: 14px 16px; 
+            border-radius: 14px; 
+            margin-bottom: 12px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-            border: 1px solid #edf2f7;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .item-info { display: flex; align-items: center; gap: 12px; }
-        .item-thumb { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; border: 1px solid #edf2f7; background: #eee; }
-        .del-btn { background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%); width: auto; padding: 7px 14px; font-size: 12px; border-radius: 8px; margin: 0; }
+        .item-info { display: flex; align-items: center; gap: 14px; }
+        .item-thumb { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border); background: #334155; }
+        
+        .del-btn { 
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); 
+            width: auto; 
+            padding: 8px 14px; 
+            font-size: 12px; 
+            border-radius: 8px; 
+            margin: 0; 
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
+        .empty-text { font-size: 13px; color: var(--text-muted); font-style: italic; background: var(--card-bg); padding: 12px; border-radius: 10px; text-align: center; border: 1px dashed var(--border); }
     </style>
 </head>
 <body>
 
     <header>
-        <h2>⚙️ Admin Panel</h2>
+        <h2>⚡ K.H Store Manager</h2>
+        <p>Admin Dashboard & Inventory Control</p>
     </header>
 
     <div class="admin-panel">
-        <h3>🏪 1. Navi Dukan (Store) Add Karo</h3>
-        <label>Dukan Nu Naam:</label>
-        <input type="text" id="storeName" placeholder="e.g., Gujarat Super Market">
+        <h3>🏪 1. નવી દુકાન ઉમેરો (Add Store)</h3>
+        <label>દુકાનનું નામ:</label>
+        <input type="text" id="storeName" placeholder="દા.ત., ગુજરાત સુપર માર્કેટ">
         
-        <label>Google Maps Location Link:</label>
+        <label>ગૂગલ મેપ્સ લોકેશન લિંક:</label>
         <input type="text" id="storeMap" placeholder="https://maps.app.goo.gl/...">
 
-        <label>Dukan No Photo:</label>
-        <input type="file" id="storeImageFile" accept="image/*">
+        <label>દુકાનના ફોટાની લિંક (URL):</label>
+        <input type="text" id="storeImgUrl" placeholder="https://images.unsplash.com/photo-...">
         
-        <button onclick="addStore()">Dukan Add Karo</button>
+        <button onclick="addStore()">✨ દુકાન ઉમેરો</button>
     </div>
 
     <div class="admin-panel">
-        <h3>📦 2. Product Add Karo</h3>
-        <label>Kyi Dukan Ma Product Nakvi Chhe?</label>
+        <h3>📦 2. પ્રોડક્ટ ઉમેરો (Add Product)</h3>
+        <label>કઈ દુકાનમાં પ્રોડક્ટ નાખવી છે?</label>
         <select id="productStoreSelect"></select>
 
-        <label>Product Nu Naam:</label>
-        <input type="text" id="pName" placeholder="e.g., Banana / Kurti">
+        <label>પ્રોડક્ટનું નામ:</label>
+        <input type="text" id="pName" placeholder="દા.ત., Banana / Kurti">
         
-        <label>Category Select Karo:</label>
+        <label>કેટેગરી સિલેક્ટ કરો:</label>
         <select id="pCat">
             <option value="fruit">🍎 Fruit & Sabji (Min 2kg, 250gm step)</option>
             <option value="fashion">👕 Fashion & Clothing</option>
@@ -119,22 +137,22 @@
             <option value="other">📦 Other General Items</option>
         </select>
         
-        <label>Size / Vajan / Tol / Color (Details):</label>
-        <input type="text" id="pSizeSpec" placeholder="e.g., Regular, Size: M">
+        <label>સાઇઝ / વજન / કલર (Details):</label>
+        <input type="text" id="pSizeSpec" placeholder="દા.ત., Regular, Size: M">
 
-        <label>Bhav (₹):</label>
+        <label>ભાવ (₹):</label>
         <input type="text" id="pPrice" placeholder="50">
         
-        <label>Unit (kg / pcs / dozen / pair):</label>
+        <label>યુનિટ (kg / pcs / dozen / pair):</label>
         <input type="text" id="pUnit" placeholder="kg / pcs / 12 pic">
 
-        <label>Product No Photo:</label>
-        <input type="file" id="productImageFile" accept="image/*">
+        <label>પ્રોડક્ટના ફોટાની લિંક (URL):</label>
+        <input type="text" id="pImgUrl" placeholder="https://images.unsplash.com/photo-...">
         
-        <button onclick="addProduct()">Product Add Karo</button>
+        <button onclick="addProduct()">🚀 પ્રોડક્ટ ઉમેરો</button>
     </div>
 
-    <h3 style="font-size: 17px; margin: 20px 0 10px 0;">📋 Manage Stores & Products</h3>
+    <div class="section-title">📋 મેનેજમેન્ટ લિસ્ટ (Stores & Products)</div>
     <div id="adminStoresList"></div>
     <div id="adminProductList"></div>
 
@@ -142,54 +160,11 @@
         let stores = JSON.parse(localStorage.getItem('stores')) || [];
         let products = JSON.parse(localStorage.getItem('products')) || [];
 
-        // Image Compressor Function (Fixes storage size & shows image perfectly)
-        function compressAndGetImage(fileInputId, callback) {
-            let fileInput = document.getElementById(fileInputId);
-            if (fileInput.files && fileInput.files[0]) {
-                let reader = new FileReader();
-                reader.onload = function (e) {
-                    let img = new Image();
-                    img.src = e.target.result;
-                    img.onload = function () {
-                        let canvas = document.createElement('canvas');
-                        let ctx = canvas.getContext('2d');
-                        
-                        let MAX_WIDTH = 300;
-                        let MAX_HEIGHT = 300;
-                        let width = img.width;
-                        let height = img.height;
-
-                        if (width > height) {
-                            if (width > MAX_WIDTH) {
-                                height *= MAX_WIDTH / width;
-                                width = MAX_WIDTH;
-                            }
-                        } else {
-                            if (height > MAX_HEIGHT) {
-                                width *= MAX_HEIGHT / height;
-                                height = MAX_HEIGHT;
-                            }
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-                        ctx.drawImage(img, 0, 0, width, height);
-                        
-                        let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
-                        callback(compressedDataUrl);
-                    };
-                };
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                callback(null);
-            }
-        }
-
         function updateStoreDropdown() {
             let select = document.getElementById('productStoreSelect');
             select.innerHTML = '';
             if(stores.length === 0) {
-                select.innerHTML = `<option value="">Phela dukan add karo</option>`;
+                select.innerHTML = `<option value="">પહેલા દુકાન ઉમેરો</option>`;
                 return;
             }
             stores.forEach(s => {
@@ -200,31 +175,28 @@
         function addStore() {
             let name = document.getElementById('storeName').value;
             let mapLink = document.getElementById('storeMap').value;
+            let imgUrl = document.getElementById('storeImgUrl').value;
 
             if(!name) {
-                alert("Krupaya dukan nu naam lakho.");
+                alert("કૃપા કરીને દુકાનનું નામ લખો.");
                 return;
             }
 
-            compressAndGetImage('storeImageFile', function(imgUrl) {
-                let finalImg = imgUrl || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500";
-                
-                let newId = stores.length > 0 ? stores[stores.length - 1].id + 1 : 1;
-                stores.push({
-                    id: newId,
-                    name,
-                    img: finalImg,
-                    mapLink: mapLink || "https://maps.app.goo.gl/example"
-                });
-
-                localStorage.setItem('stores', JSON.stringify(stores));
-                alert("Navi Dukan Safaltapurvak Add Thai Gai!");
-                document.getElementById('storeName').value = '';
-                document.getElementById('storeMap').value = '';
-                document.getElementById('storeImageFile').value = '';
-                updateStoreDropdown();
-                renderAdminLists();
+            let newId = stores.length > 0 ? stores[stores.length - 1].id + 1 : 1;
+            stores.push({
+                id: newId,
+                name,
+                img: imgUrl || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500",
+                mapLink: mapLink || "https://maps.app.goo.gl/example"
             });
+
+            localStorage.setItem('stores', JSON.stringify(stores));
+            alert("નવી દુકાન સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
+            document.getElementById('storeName').value = '';
+            document.getElementById('storeMap').value = '';
+            document.getElementById('storeImgUrl').value = '';
+            updateStoreDropdown();
+            renderAdminLists();
         }
 
         function addProduct() {
@@ -234,45 +206,42 @@
             let spec = document.getElementById('pSizeSpec').value;
             let price = document.getElementById('pPrice').value;
             let unit = document.getElementById('pUnit').value;
+            let imgUrl = document.getElementById('pImgUrl').value;
 
             if(!storeId || isNaN(storeId)) {
-                alert("Krupaya pehla koi dukan select karo.");
+                alert("કૃપા કરીને પહેલા કોઈ દુકાન સિલેક્ટ કરો.");
                 return;
             }
             if(!name || !price || !unit) {
-                alert("Krupaya product nu naam, bhav ane unit barabar lakho.");
+                alert("કૃપા કરીને પ્રોડક્ટનું નામ, ભાવ અને યુનિટ બરાબર લખો.");
                 return;
             }
 
-            compressAndGetImage('productImageFile', function(imgUrl) {
-                let finalImg = imgUrl || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300";
-
-                let newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;
-                products.push({ 
-                    id: newId, 
-                    storeId, 
-                    name, 
-                    category: cat, 
-                    spec: spec || "Standard", 
-                    price, 
-                    unit, 
-                    img: finalImg 
-                });
-                
-                localStorage.setItem('products', JSON.stringify(products));
-                alert("Product Safaltapurvak Add Thai Gai!");
-                
-                document.getElementById('pName').value = '';
-                document.getElementById('pSizeSpec').value = '';
-                document.getElementById('pPrice').value = '';
-                document.getElementById('pUnit').value = '';
-                document.getElementById('productImageFile').value = '';
-                renderAdminLists();
+            let newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;
+            products.push({ 
+                id: newId, 
+                storeId, 
+                name, 
+                category: cat, 
+                spec: spec || "Standard", 
+                price, 
+                unit, 
+                img: imgUrl || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300" 
             });
+            
+            localStorage.setItem('products', JSON.stringify(products));
+            alert("પ્રોડક્ટ સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
+            
+            document.getElementById('pName').value = '';
+            document.getElementById('pSizeSpec').value = '';
+            document.getElementById('pPrice').value = '';
+            document.getElementById('pUnit').value = '';
+            document.getElementById('pImgUrl').value = '';
+            renderAdminLists();
         }
 
         function deleteStore(id) {
-            if(confirm("Aa dukan ane teani badhi product delete thai jase. Kharekhar delete karvu chhe?")) {
+            if(confirm("આ દુકાન અને તેની બધી પ્રોડક્ટ ડિલીટ થઈ જશે. ખરેખર ડિલીટ કરવું છે?")) {
                 stores = stores.filter(s => s.id !== id);
                 products = products.filter(p => p.storeId !== id);
                 localStorage.setItem('stores', JSON.stringify(stores));
@@ -283,7 +252,7 @@
         }
 
         function deleteProduct(id) {
-            if(confirm("Tame aa product delete karva mango cho?")) {
+            if(confirm("તમે આ પ્રોડક્ટ ડિલીટ કરવા માંગो છો?")) {
                 products = products.filter(p => p.id !== id);
                 localStorage.setItem('products', JSON.stringify(products));
                 renderAdminLists();
@@ -294,26 +263,26 @@
             let sList = document.getElementById('adminStoresList');
             let pList = document.getElementById('adminProductList');
             
-            sList.innerHTML = '<h4 style="font-size:14px; color:#718096; margin-bottom:8px;">Dukano:</h4>';
+            sList.innerHTML = '<div style="font-size:13px; color:#94a3b8; margin-bottom:6px;">દુકાનોની યાદી:</div>';
             if(stores.length === 0) {
-                sList.innerHTML += `<p style="font-size:13px; color:#777;">Koi dukan nathi.</p>`;
+                sList.innerHTML += `<div class="empty-text">કોઈ દુકાન નથી.</div>`;
             } else {
                 stores.forEach(s => {
                     sList.innerHTML += `
                         <div class="item-box">
                             <div class="item-info">
                                 <img src="${s.img}" class="item-thumb" alt="Store">
-                                <span><b>${s.name}</b></span>
+                                <div><b style="font-size:14px;">${s.name}</b></div>
                             </div>
-                            <button class="del-btn" onclick="deleteStore(${s.id})">Delete</button>
+                            <button class="del-btn" onclick="deleteStore(${s.id})">ડિલીટ</button>
                         </div>
                     `;
                 });
             }
 
-            pList.innerHTML = '<h4 style="font-size:14px; color:#718096; margin:15px 0 8px 0;">Products:</h4>';
+            pList.innerHTML = '<div style="font-size:13px; color:#94a3b8; margin:18px 0 6px 0;">પ્રોડક્ટ્સની યાદી:</div>';
             if(products.length === 0) {
-                pList.innerHTML += `<p style="font-size:13px; color:#777;">Koi product nathi.</p>`;
+                pList.innerHTML += `<div class="empty-text">કોઈ પ્રોડક્ટ નથી.</div>`;
             } else {
                 products.forEach(p => {
                     let storeObj = stores.find(s => s.id === p.storeId);
@@ -323,11 +292,11 @@
                             <div class="item-info">
                                 <img src="${p.img}" class="item-thumb" alt="Product">
                                 <div>
-                                    <b>${p.name}</b> <span style="font-size:12px; color:#718096;">(${storeName})</span><br>
-                                    <small style="color:#4a5568;">Spec: ${p.spec} | ₹${p.price} / ${p.unit}</small>
+                                    <b style="font-size:14px;">${p.name}</b> <span style="font-size:11px; color:#818cf8;">(${storeName})</span><br>
+                                    <small style="color:#94a3b8;">Spec: ${p.spec} | ₹${p.price} / ${p.unit}</small>
                                 </div>
                             </div>
-                            <button class="del-btn" onclick="deleteProduct(${p.id})">Delete</button>
+                            <button class="del-btn" onclick="deleteProduct(${p.id})">ડિલીટ</button>
                         </div>
                     `;
                 });
