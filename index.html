@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gujarat Bazaar - Smart Customer Portal</title>
+    <title>Gujarat Bazaar - Size & Color Portal</title>
     <style>
         :root { 
             --primary: #ff3366; 
@@ -18,7 +18,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: var(--bg); color: var(--text-main); padding-bottom: 90px; }
         
-        /* Modern Header */
         header { 
             background: var(--primary-gradient); 
             color: white; 
@@ -35,7 +34,6 @@
         
         .container { padding: 16px; max-width: 600px; margin: auto; }
         
-        /* Smart Banner */
         .banner { 
             background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); 
             color: #be123c; 
@@ -46,10 +44,8 @@
             text-align: center; 
             font-weight: 700; 
             border: 1px dashed #fda4af;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
         }
         
-        /* Store Card */
         .store-card { 
             background: var(--card-bg); 
             border-radius: 18px; 
@@ -58,16 +54,15 @@
             margin-bottom: 16px; 
             cursor: pointer; 
             border: 1px solid var(--border);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.2s ease;
         }
-        .store-card:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); }
+        .store-card:hover { transform: translateY(-3px); }
         .store-card img { width: 100%; height: 170px; object-fit: cover; background: #f1f5f9; }
         .store-info { padding: 16px; }
         .store-info h3 { font-size: 18px; margin-bottom: 6px; color: #0f172a; font-weight: 700; }
         .store-info p { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
         .map-link { color: #2563eb; font-size: 13px; text-decoration: none; font-weight: 600; display: inline-block; margin-bottom: 12px; }
 
-        /* Products Grid */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         .card { 
             background: var(--card-bg); 
@@ -78,32 +73,30 @@
             flex-direction: column; 
             justify-content: space-between; 
             border: 1px solid var(--border);
-            transition: all 0.2s;
         }
         .card img { width: 100%; height: 120px; object-fit: cover; border-radius: 12px; background: #f8fafc; }
         .card h3 { font-size: 14px; margin: 8px 0 4px; font-weight: 700; color: #1e293b; }
-        .spec-text { font-size: 11px; color: #475569; background: #f1f5f9; padding: 4px 8px; border-radius: 6px; margin-bottom: 8px; display: inline-block; font-weight: 600; }
+        .spec-text { font-size: 11px; color: #475569; background: #f1f5f9; padding: 4px 8px; border-radius: 6px; margin-bottom: 6px; display: inline-block; font-weight: 600; }
         .price { color: var(--primary); font-weight: 800; font-size: 15px; margin-bottom: 6px; }
         
-        /* Modern Qty Controls */
-        .qty-control { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); margin-top: 6px; }
-        .qty-control button { background: #f1f5f9; border: none; padding: 8px 12px; cursor: pointer; font-weight: bold; font-size: 15px; width: auto; color: #1e293b; transition: background 0.2s; }
-        .qty-control button:hover { background: #e2e8f0; }
-        .qty-control span { font-size: 13px; font-weight: 700; color: #0f172a; }
-        
-        /* Action Buttons */
-        button.main-btn { background: var(--primary-gradient); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; width: 100%; font-weight: 700; font-size: 14px; box-shadow: 0 4px 15px rgba(255, 51, 102, 0.25); transition: opacity 0.2s; }
-        button.main-btn:active { opacity: 0.9; }
+        /* Variant selectors for Fashion/Shoes */
+        .variant-box { margin-bottom: 8px; }
+        .variant-box label { font-size: 10px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 2px; text-transform: uppercase; }
+        .variant-select { width: 100%; padding: 6px 8px; font-size: 12px; border: 1px solid var(--border); border-radius: 8px; background: #f8fafc; outline: none; }
 
-        /* Cart Badge & Modal */
-        .cart-badge { background: rgba(255,255,255,0.25); padding: 8px 16px; border-radius: 30px; font-size: 13px; font-weight: 700; backdrop-filter: blur(5px); cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.4); }
+        .qty-control { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); margin-top: 6px; }
+        .qty-control button { background: #f1f5f9; border: none; padding: 8px 12px; cursor: pointer; font-weight: bold; font-size: 15px; width: auto; color: #1e293b; }
+        .qty-control span { font-size: 12px; font-weight: 700; color: #0f172a; text-align: center; }
+        
+        button.main-btn { background: var(--primary-gradient); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; width: 100%; font-weight: 700; font-size: 14px; box-shadow: 0 4px 15px rgba(255, 51, 102, 0.25); }
+        
+        .cart-badge { background: rgba(255,255,255,0.25); padding: 8px 16px; border-radius: 30px; font-size: 13px; font-weight: 700; backdrop-filter: blur(5px); cursor: pointer; display: flex; align-items: center; gap: 6px; }
         
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 200; }
         .modal-content { background: white; width: 92%; max-width: 450px; padding: 24px; border-radius: 22px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 30px -5px rgba(0,0,0,0.15); }
         .modal-content h3 { font-size: 20px; margin-bottom: 16px; color: #0f172a; font-weight: 800; }
         
-        input, select { width: 100%; padding: 12px 14px; margin: 6px 0 14px 0; border: 1px solid var(--border); border-radius: 12px; font-size: 14px; outline: none; background: #f8fafc; transition: border-color 0.2s; }
-        input:focus { border-color: var(--primary); background: #fff; }
+        input, select { width: 100%; padding: 12px 14px; margin: 6px 0 14px 0; border: 1px solid var(--border); border-radius: 12px; font-size: 14px; outline: none; background: #f8fafc; }
         
         .back-btn { background: #334155; color: white; width: auto; padding: 8px 16px; margin-bottom: 14px; display: inline-block; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600; border: none; }
     </style>
@@ -120,14 +113,12 @@
     <div class="container">
         <div class="banner">🕒 Order Time: Savar na 9 thi Sanj na 6</div>
 
-        <!-- Step 1: Stores List View -->
         <div id="storeView">
             <h3 style="margin-bottom: 6px; font-size: 18px; font-weight: 800;">Gujaratni Badhi Dukano</h3>
             <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Jevi dukan ma jvu hoy teana par click karo:</p>
             <div id="storesContainer"></div>
         </div>
 
-        <!-- Step 2: Store Products View -->
         <div id="productView" style="display: none;">
             <button class="back-btn" onclick="goBackToStores()">⬅️ Badhi Dukano Par Jao</button>
             <h3 id="currentStoreTitle" style="margin-bottom: 16px; font-size: 18px; font-weight: 800;">Products</h3>
@@ -135,7 +126,6 @@
         </div>
     </div>
 
-    <!-- Cart Modal -->
     <div class="modal" id="cartModal">
         <div class="modal-content">
             <h3>Tamaru Smart Cart</h3>
@@ -143,7 +133,6 @@
             
             <div style="border-top: 1px solid var(--border); padding-top: 14px;">
                 <p style="margin-bottom: 4px;">Total Amount: <b id="cartTotal" style="color: var(--primary);">₹0</b></p>
-                <p style="margin-bottom: 14px; font-size: 13px; color: var(--text-muted);">Fruit/Sabji Weight: <b id="fruitWeight">0</b> gm</p>
                 
                 <input type="text" id="custName" placeholder="Tamaru Naam">
                 <input type="text" id="custPhone" placeholder="Mobile Number">
@@ -152,8 +141,7 @@
                 
                 <div style="font-size: 11px; color: #64748b; margin-top: 12px; background: #f8fafc; padding: 12px; border-radius: 12px; border: 1px solid var(--border); line-height: 1.5;">
                     ⚠️ <b>Niyamo:</b><br>
-                    - Fruit/Sabji minimum 2kg (2000gm) jaruri chhe.<br>
-                    - Biji badhi vastu mate min order ₹500.<br>
+                    - Minimum total order value ₹500 hovi jaruri chhe.<br>
                     - Order cancel ya exchange nahi thase.
                 </div>
 
@@ -175,7 +163,7 @@
             container.innerHTML = '';
 
             if(stores.length === 0) {
-                container.innerHTML = `<p style="color:#64748b; text-align:center; padding: 30px; font-style: italic;">Haji koi dukan add thai nathi. (Admin panel mathi dukan add karo)</p>`;
+                container.innerHTML = `<p style="color:#64748b; text-align:center; padding: 30px; font-style: italic;">Haji koi dukan add thai nathi.</p>`;
                 return;
             }
 
@@ -223,6 +211,39 @@
                 let cartItem = cart.find(i => i.id === p.id);
                 let qty = cartItem ? cartItem.qty : 0;
                 let specText = p.spec ? `📏 ${p.spec}` : '';
+                
+                let unitLower = (p.unit || 'kg').toLowerCase();
+                let displayQtyText = "";
+                if(unitLower.includes('kg') || unitLower.includes('litre') || unitLower.includes('ltr')) {
+                    if(qty < 1 && qty > 0) {
+                        displayQtyText = (qty * 1000).toFixed(0) + " gm";
+                    } else {
+                        displayQtyText = qty + " " + p.unit;
+                    }
+                } else {
+                    displayQtyText = qty + " " + p.unit;
+                }
+
+                // Jo category fashion ya shoes hoy to size/color dropdown batavsu
+                let isFashion = p.category === 'fashion' || p.category === 'shoes';
+                let variantHTML = '';
+                if(isFashion) {
+                    variantHTML = `
+                        <div class="variant-box">
+                            <label>Size / Color:</label>
+                            <select class="variant-select" id="var_${p.id}">
+                                <option value="Standard/Default">Standard</option>
+                                <option value="S / Red">S (Red)</option>
+                                <option value="M / Blue">M (Blue)</option>
+                                <option value="L / Black">L (Black)</option>
+                                <option value="XL / White">XL (White)</option>
+                                <option value="Size 7">Size 7</option>
+                                <option value="Size 8">Size 8</option>
+                                <option value="Size 9">Size 9</option>
+                            </select>
+                        </div>
+                    `;
+                }
 
                 grid.innerHTML += `
                     <div class="card">
@@ -230,10 +251,11 @@
                         <h3>${p.name}</h3>
                         ${p.spec ? `<div class="spec-text">${specText}</div>` : ''}
                         <div class="price">₹${p.price} / ${p.unit}</div>
+                        ${variantHTML}
                         
                         <div class="qty-control">
                             <button onclick="changeQty(${p.id}, -1)">-</button>
-                            <span>${qty} ${p.unit}</span>
+                            <span>${displayQtyText || '0 ' + p.unit}</span>
                             <button onclick="changeQty(${p.id}, 1)">+</button>
                         </div>
                     </div>
@@ -244,22 +266,38 @@
         function changeQty(id, change) {
             let p = products.find(item => item.id === id);
             let existing = cart.find(item => item.id === id);
-            let step = (p.category === 'fruit') ? 0.25 : 1;
+            
+            let unitLower = (p.unit || 'kg').toLowerCase();
+            let step = 1;
+
+            if(unitLower.includes('kg') || unitLower.includes('litre') || unitLower.includes('ltr')) {
+                step = 0.05; // 50 gram step
+            } else {
+                step = 1; 
+            }
+
+            // Selected variant (Size/Color) get karvu
+            let selectedVariant = "Standard";
+            let varElem = document.getElementById(`var_${id}`);
+            if(varElem) {
+                selectedVariant = varElem.value;
+            }
 
             if(existing) {
-                existing.qty += (change * step);
+                existing.qty = parseFloat((existing.qty + (change * step)).toFixed(3));
+                existing.variant = selectedVariant; // Update variant if changed
                 if(existing.qty <= 0) {
                     cart = cart.filter(i => i.id !== id);
                 }
             } else if(change > 0) {
-                cart.push({ ...p, qty: step });
+                cart.push({ ...p, qty: step, variant: selectedVariant });
             }
             updateCartUI();
             renderProducts();
         }
 
         function updateCartUI() {
-            let totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+            let totalCount = cart.reduce((sum, item) => sum + 1, 0);
             document.getElementById('cartCount').innerText = totalCount;
         }
 
@@ -267,7 +305,6 @@
             let list = document.getElementById('cartItemsList');
             list.innerHTML = '';
             let total = 0;
-            let fruitTotalGm = 0;
 
             if(cart.length === 0) {
                 list.innerHTML = `<p style="text-align:center; color:#64748b; padding: 20px; font-style: italic;">Tamaru cart khali chhe.</p>`;
@@ -276,18 +313,24 @@
             cart.forEach((item) => {
                 let sub = item.price * item.qty;
                 total += sub;
-                if(item.category === 'fruit') fruitTotalGm += (item.qty * 1000);
+
+                let unitLower = (item.unit || 'kg').toLowerCase();
+                let qtyFormatted = "";
+                if((unitLower.includes('kg') || unitLower.includes('litre')) && item.qty < 1) {
+                    qtyFormatted = (item.qty * 1000).toFixed(0) + " gm";
+                } else {
+                    qtyFormatted = item.qty + " " + item.unit;
+                }
 
                 list.innerHTML += `
                     <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:13px; border-bottom:1px solid var(--border); padding-bottom:8px;">
-                        <span><b>${item.name}</b> ${item.spec ? '('+item.spec+')':''}<br><span style="color:var(--text-muted);">${item.qty} ${item.unit}</span></span>
+                        <span><b>${item.name}</b> <span style="color:#2563eb; font-weight:600;">[${item.variant || 'Standard'}]</span><br><span style="color:var(--text-muted);">${qtyFormatted}</span></span>
                         <span style="font-weight:800; color:var(--primary);">₹${sub.toFixed(0)}</span>
                     </div>
                 `;
             });
 
             document.getElementById('cartTotal').innerText = '₹' + total.toFixed(0);
-            document.getElementById('fruitWeight').innerText = fruitTotalGm;
             document.getElementById('cartModal').style.display = 'flex';
         }
 
@@ -306,16 +349,10 @@
                 return;
             }
 
-            let fruitGm = cart.filter(i => i.category === 'fruit').reduce((sum, i) => sum + (i.qty * 1000), 0);
-            let generalTotal = cart.filter(i => i.category !== 'fruit').reduce((sum, i) => sum + (i.price * i.qty), 0);
             let totalAmt = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
 
-            if(fruitGm > 0 && fruitGm < 2000) {
-                alert("Fruit ane Sabji mate minimum total vajan 2 Kg (2000gm) hovu anivary chhe!");
-                return;
-            }
-            if(generalTotal > 0 && generalTotal < 500 && fruitGm === 0) {
-                alert("General vastu mate minimum order value ₹500 hovi anivary chhe!");
+            if(totalAmt < 500) {
+                alert("Krupaya minimum total order value ₹500 thi vadhu rakho!");
                 return;
             }
 
@@ -337,7 +374,9 @@
 
             let msg = `*New Order*%0ANaam: ${name}%0APhone: ${phone}%0AAddress: ${address}%0A%0A*Items:*%0A`;
             cart.forEach(i => {
-                msg += `- ${i.name} ${i.spec ? '['+i.spec+']':''} (${i.qty} ${i.unit}) = ₹${(i.price * i.qty).toFixed(0)}%0A`;
+                let unitLower = (i.unit || 'kg').toLowerCase();
+                let qtyStr = ((unitLower.includes('kg') || unitLower.includes('litre')) && i.qty < 1) ? (i.qty * 1000).toFixed(0) + " gm" : i.qty + " " + i.unit;
+                msg += `- ${i.name} (${i.variant || 'Standard'}) - ${qtyStr} = ₹${(i.price * i.qty).toFixed(0)}%0A`;
             });
             if(isLong) msg += `*Delivery:* 2km thi vadare (Extra Charge Lagse)%0A`;
             msg += `*Total Amount:* ₹${totalAmt.toFixed(0)}%0A%0A_Note: Order cancel ya exchange nahi thase._`;
