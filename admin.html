@@ -1,385 +1,103 @@
+
 <!DOCTYPE html>
 <html lang="gu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K.H Admin - Ultimate Store Manager</title>
-    <style>
-        :root { 
-            --primary: #6366f1; 
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            --bg: #0f172a; 
-            --card-bg: #1e293b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: var(--bg); color: var(--text-main); padding: 20px; max-width: 600px; margin: auto; padding-bottom: 60px; }
-        
-        header { 
-            background: var(--primary-gradient); 
-            color: white; 
-            padding: 24px; 
-            border-radius: 20px; 
-            margin-bottom: 24px; 
-            text-align: center; 
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
-        }
-        header h2 { font-size: 24px; font-weight: 800; letter-spacing: 0.5px; }
-        header p { font-size: 13px; opacity: 0.9; margin-top: 4px; }
-
-        .admin-panel { 
-            background: var(--card-bg); 
-            border: 1px solid var(--border); 
-            padding: 22px; 
-            border-radius: 20px; 
-            margin-bottom: 20px; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        }
-        .admin-panel h3 { font-size: 17px; margin-bottom: 16px; color: #818cf8; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; align-items: center; gap: 8px;}
-
-        label { font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-top: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-        input, select { 
-            width: 100%; 
-            padding: 12px 16px; 
-            margin: 6px 0 4px 0; 
-            border: 1px solid var(--border); 
-            border-radius: 12px; 
-            font-size: 14px; 
-            outline: none; 
-            background: #0f172a;
-            color: #fff;
-            transition: all 0.3s ease;
-        }
-        input[type="file"] { padding: 9px; background: #0f172a; cursor: pointer; }
-        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
-
-        button { 
-            background: var(--primary-gradient); 
-            color: white; 
-            border: none; 
-            padding: 14px; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            width: 100%; 
-            font-weight: 700; 
-            font-size: 15px; 
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
-            margin-top: 14px;
-            transition: transform 0.2s;
-        }
-        button:active { transform: scale(0.98); }
-
-        .section-title { font-size: 16px; margin: 25px 0 12px 0; color: #cbd5e1; font-weight: 700; display: flex; align-items: center; gap: 6px; }
-
-        .item-box { 
-            background: var(--card-bg); 
-            padding: 14px 16px; 
-            border-radius: 14px; 
-            margin-bottom: 12px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .item-info { display: flex; align-items: center; gap: 14px; }
-        .item-thumb { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border); background: #334155; }
-        
-        .del-btn { 
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); 
-            width: auto; 
-            padding: 8px 14px; 
-            font-size: 12px; 
-            border-radius: 8px; 
-            margin: 0; 
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-        }
-        .empty-text { font-size: 13px; color: var(--text-muted); font-style: italic; background: var(--card-bg); padding: 12px; border-radius: 10px; text-align: center; border: 1px dashed var(--border); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K.H Fresh Admin</title>
+<style>
+body{font-family:Arial;background:#f3f5f7;padding:15px}
+.card{background:white;padding:16px;border-radius:14px;margin:12px 0}
+h2{color:#087b43}
+input,button{width:100%;padding:13px;margin:8px 0;box-sizing:border-box;border-radius:8px}
+input{border:1px solid #ccc}
+button{background:#087b43;color:white;border:0}
+img{width:100%;max-height:200px;object-fit:contain;background:#eee;border-radius:10px}
+</style>
 </head>
 <body>
 
-    <header>
-        <h2>⚡ K.H Store Admin Panel</h2>
-        <p>Complete Store & Inventory Control</p>
-    </header>
+<h2>🛍️ K.H Fresh & Fashion Admin</h2>
 
-    <div class="admin-panel">
-        <h3>🏪 1. નવી દુકાન ઉમેરો (Add Store)</h3>
-        <label>દુકાનનું નામ:</label>
-        <input type="text" id="storeName" placeholder="દા.ત., ગુજરાત સુપર માર્કેટ">
-        
-        <label>દુકાનદારનો WhatsApp નંબર (Country code સાથે):</label>
-        <input type="text" id="storeWhatsapp" placeholder="દા.ત., 919876543210">
+<div class="card">
+<h3>🏪 દુકાન ઉમેરો</h3>
+<input id="shopName" placeholder="દુકાનનું નામ">
 
-        <label>ગૂગલ મેપ્સ લોકેશન લિંક:</label>
-        <input type="text" id="storeMap" placeholder="https://maps.app.goo.gl/...">
+<label>દુકાનનો ફોટો પસંદ કરો</label>
+<input type="file" id="shopPhoto" accept="image/*" onchange="previewPhoto(this,'shopPreview','shopBase64')">
+<img id="shopPreview" alt="દુકાનનો ફોટો અહીં દેખાશે">
+<input type="hidden" id="shopBase64">
+<button onclick="saveShop()">દુકાન સેવ કરો</button>
+</div>
 
-        <label>દુકાનનો ફોટો સિલેક્ટ કરો (Camera / Gallery):</label>
-        <input type="file" id="storeImageFile" accept="image/*">
-        
-        <button onclick="addStore()">✨ દુકાન ઉમેરો</button>
-    </div>
+<div class="card">
+<h3>📦 પ્રોડક્ટ ઉમેરો</h3>
+<input id="productName" placeholder="પ્રોડક્ટનું નામ">
+<input id="productPrice" type="number" placeholder="ભાવ">
 
-    <div class="admin-panel">
-        <h3>📦 2. પ્રોડક્ટ ઉમેરો (Add Product)</h3>
-        <label>કઈ દુકાનમાં પ્રોડક્ટ નાખવી છે?</label>
-        <select id="productStoreSelect"></select>
+<label>પ્રોડક્ટનો ફોટો પસંદ કરો</label>
+<input type="file" id="productPhoto" accept="image/*" onchange="previewPhoto(this,'productPreview','productBase64')">
+<img id="productPreview" alt="પ્રોડક્ટનો ફોટો અહીં દેખાશે">
+<input type="hidden" id="productBase64">
+<button onclick="saveProduct()">પ્રોડક્ટ સેવ કરો</button>
+</div>
 
-        <label>પ્રોડક્ટનું નામ:</label>
-        <input type="text" id="pName" placeholder="દા.ત., Palm Oil / Kurti / Shoes">
-        
-        <label>કેટેગરી સિલેક્ટ કરો:</label>
-        <select id="pCat">
-            <option value="fruit">🍎 Fruit & Sabji (Min 2kg, 250gm step)</option>
-            <option value="fashion">👕 Fashion & Clothing (Size/Color)</option>
-            <option value="shoes">👞 Footwear & Shoes</option>
-            <option value="electronics">📱 Electronics & Appliances</option>
-            <option value="home">🏠 Home, Kitchen & Oil/Grocery</option>
-            <option value="other">📦 Other General Items</option>
-        </select>
-        
-        <label>સાઇઝ / વજન / કલર / બ્રાન્ડ (Details):</label>
-        <input type="text" id="pSizeSpec" placeholder="દા.ત., 1 Litre Pack / Size: M, L / Red">
+<script>
+async function compressImage(file){
+ return new Promise((resolve,reject)=>{
+  const reader=new FileReader();
+  reader.onload=()=>{
+   const img=new Image();
+   img.onload=()=>{
+    const max=700;
+    let w=img.width,h=img.height;
+    if(w>h && w>max){h=h*max/w;w=max}
+    else if(h>max){w=w*max/h;h=max}
+    const canvas=document.createElement("canvas");
+    canvas.width=Math.round(w);
+    canvas.height=Math.round(h);
+    canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);
+    resolve(canvas.toDataURL("image/jpeg",0.65));
+   };
+   img.onerror=reject;
+   img.src=reader.result;
+  };
+  reader.onerror=reject;
+  reader.readAsDataURL(file);
+ });
+}
 
-        <label>ભાવ (₹):</label>
-        <input type="text" id="pPrice" placeholder="120">
-        
-        <label>યુનિટ (kg / litre / pcs / pair / packet):</label>
-        <input type="text" id="pUnit" placeholder="kg / litre / pcs / pair">
+async function previewPhoto(input,previewId,hiddenId){
+ const file=input.files[0];
+ if(!file)return;
+ if(!file.type.startsWith("image/")){
+  alert("મહેરબાની કરીને ફોટો પસંદ કરો.");
+  input.value="";
+  return;
+ }
+ try{
+  const base64=await compressImage(file);
+  document.getElementById(hiddenId).value=base64;
+  document.getElementById(previewId).src=base64;
+ }catch(e){
+  alert("ફોટો વાંચી શકાયો નથી.");
+ }
+}
 
-        <label>પ્રોડક્ટનો ફોટો સિલેક્ટ કરો (Camera / Gallery):</label>
-        <input type="file" id="productImageFile" accept="image/*">
-        
-        <button onclick="addProduct()">🚀 પ્રોડક્ટ ઉમેરો</button>
-    </div>
+function saveShop(){
+ const name=document.getElementById("shopName").value.trim();
+ const photo=document.getElementById("shopBase64").value;
+ if(!name||!photo){alert("દુકાનનું નામ અને ફોટો નાખો.");return}
+ alert("ફોટો તૈયાર છે. ડેટાબેઝ જોડ્યા પછી દુકાન સાચવી શકાશે.");
+}
 
-    <div class="section-title">📋 મેનેજમેન્ટ લિસ્ટ (Stores & Products)</div>
-    <div id="adminStoresList"></div>
-    <div id="adminProductList"></div>
-
-    <script>
-        let stores = JSON.parse(localStorage.getItem('stores')) || [];
-        let products = JSON.parse(localStorage.getItem('products')) || [];
-
-        function compressImage(file, callback) {
-            let reader = new FileReader();
-            reader.onload = function (e) {
-                let img = new Image();
-                img.src = e.target.result;
-                img.onload = function () {
-                    let canvas = document.createElement('canvas');
-                    let ctx = canvas.getContext('2d');
-                    
-                    let MAX_WIDTH = 250;
-                    let MAX_HEIGHT = 250;
-                    let width = img.width;
-                    let height = img.height;
-
-                    if (width > height) {
-                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
-                    } else {
-                        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    let dataUrl = canvas.toDataURL('image/jpeg', 0.6);
-                    callback(dataUrl);
-                };
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function updateStoreDropdown() {
-            let select = document.getElementById('productStoreSelect');
-            select.innerHTML = '';
-            if(stores.length === 0) {
-                select.innerHTML = `<option value="">પહેલા દુકાન ઉમેરો</option>`;
-                return;
-            }
-            stores.forEach(s => {
-                select.innerHTML += `<option value="${s.id}">${s.name}</option>`;
-            });
-        }
-
-        function addStore() {
-            let name = document.getElementById('storeName').value;
-            let whatsapp = document.getElementById('storeWhatsapp').value;
-            let mapLink = document.getElementById('storeMap').value;
-            let fileInput = document.getElementById('storeImageFile');
-
-            if(!name) {
-                alert("કૃપા કરીને દુકાનનું નામ લખો.");
-                return;
-            }
-            if(!whatsapp) {
-                alert("કૃપા કરીને દુકાનદારનો WhatsApp નંબર લખો.");
-                return;
-            }
-
-            let proceedSave = (imgUrl) => {
-                let newId = stores.length > 0 ? stores[stores.length - 1].id + 1 : 1;
-                stores.push({
-                    id: newId,
-                    name,
-                    whatsapp,
-                    img: imgUrl,
-                    mapLink: mapLink || "https://maps.app.goo.gl/example"
-                });
-
-                try {
-                    localStorage.setItem('stores', JSON.stringify(stores));
-                    alert("નવી દુકાન સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
-                    document.getElementById('storeName').value = '';
-                    document.getElementById('storeWhatsapp').value = '';
-                    document.getElementById('storeMap').value = '';
-                    document.getElementById('storeImageFile').value = '';
-                    updateStoreDropdown();
-                    renderAdminLists();
-                } catch (e) {
-                    alert("સ્ટોરેજ ફૂલ થઈ ગઈ છે!");
-                    stores.pop();
-                }
-            };
-
-            if (fileInput.files && fileInput.files[0]) {
-                compressImage(fileInput.files[0], (compressedImg) => {
-                    proceedSave(compressedImg);
-                });
-            } else {
-                proceedSave("https://images.unsplash.com/photo-1542838132-92c53300491e?w=500");
-            }
-        }
-
-        function addProduct() {
-            let storeId = parseInt(document.getElementById('productStoreSelect').value);
-            let name = document.getElementById('pName').value;
-            let cat = document.getElementById('pCat').value;
-            let spec = document.getElementById('pSizeSpec').value;
-            let price = document.getElementById('pPrice').value;
-            let unit = document.getElementById('pUnit').value;
-            let fileInput = document.getElementById('productImageFile');
-
-            if(!storeId || isNaN(storeId)) {
-                alert("કૃપા કરીને પહેલા કોઈ દુકાન સિલેક્ટ કરો.");
-                return;
-            }
-            if(!name || !price || !unit) {
-                alert("કૃપા કરીને પ્રોડક્ટનું નામ, ભાવ અને યુનિટ બરાબર લખો.");
-                return;
-            }
-
-            let proceedSaveProduct = (imgUrl) => {
-                let newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;
-                products.push({ 
-                    id: newId, 
-                    storeId, 
-                    name, 
-                    category: cat, 
-                    spec: spec || "Standard", 
-                    price, 
-                    unit, 
-                    img: imgUrl 
-                });
-                
-                try {
-                    localStorage.setItem('products', JSON.stringify(products));
-                    alert("પ્રોડક્ટ સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
-                    
-                    document.getElementById('pName').value = '';
-                    document.getElementById('pSizeSpec').value = '';
-                    document.getElementById('pPrice').value = '';
-                    document.getElementById('pUnit').value = '';
-                    document.getElementById('productImageFile').value = '';
-                    renderAdminLists();
-                } catch (e) {
-                    alert("સ્ટોરેજ ફૂલ થઈ ગઈ છે!");
-                    products.pop();
-                }
-            };
-
-            if (fileInput.files && fileInput.files[0]) {
-                compressImage(fileInput.files[0], (compressedImg) => {
-                    proceedSaveProduct(compressedImg);
-                });
-            } else {
-                proceedSaveProduct("https://images.unsplash.com/photo-1542838132-92c53300491e?w=300");
-            }
-        }
-
-        function deleteStore(id) {
-            if(confirm("આ દુકાન અને તેની બધી પ્રોડક્ટ ડિલીટ થઈ જશે. ખરેખર ડિલીટ કરવું છે?")) {
-                stores = stores.filter(s => s.id !== id);
-                products = products.filter(p => p.storeId !== id);
-                localStorage.setItem('stores', JSON.stringify(stores));
-                localStorage.setItem('products', JSON.stringify(products));
-                updateStoreDropdown();
-                renderAdminLists();
-            }
-        }
-
-        function deleteProduct(id) {
-            if(confirm("તમે આ પ્રોડક્ટ ડિલીટ કરવા માંગો છો?")) {
-                products = products.filter(p => p.id !== id);
-                localStorage.setItem('products', JSON.stringify(products));
-                renderAdminLists();
-            }
-        }
-
-        function renderAdminLists() {
-            let sList = document.getElementById('adminStoresList');
-            let pList = document.getElementById('adminProductList');
-            
-            sList.innerHTML = '<div style="font-size:13px; color:#94a3b8; margin-bottom:6px;">દુકાનોની યાદી:</div>';
-            if(stores.length === 0) {
-                sList.innerHTML += `<div class="empty-text">કોઈ દુકાન નથી.</div>`;
-            } else {
-                stores.forEach(s => {
-                    sList.innerHTML += `
-                        <div class="item-box">
-                            <div class="item-info">
-                                <img src="${s.img}" class="item-thumb" alt="Store">
-                                <div>
-                                    <b style="font-size:14px;">${s.name}</b><br>
-                                    <small style="color:#818cf8;">📱 WhatsApp: ${s.whatsapp || 'નથી'}</small>
-                                </div>
-                            </div>
-                            <button class="del-btn" onclick="deleteStore(${s.id})">ડિલીટ</button>
-                        </div>
-                    `;
-                });
-            }
-
-            pList.innerHTML = '<div style="font-size:13px; color:#94a3b8; margin:18px 0 6px 0;">પ્રોડક્ટ્સની યાદી:</div>';
-            if(products.length === 0) {
-                pList.innerHTML += `<div class="empty-text">કોઈ પ્રોડક્ટ નથી.</div>`;
-            } else {
-                products.forEach(p => {
-                    let storeObj = stores.find(s => s.id === p.storeId);
-                    let storeName = storeObj ? storeObj.name : 'Unknown Store';
-                    pList.innerHTML += `
-                        <div class="item-box">
-                            <div class="item-info">
-                                <img src="${p.img}" class="item-thumb" alt="Product">
-                                <div>
-                                    <b style="font-size:14px;">${p.name}</b> <span style="font-size:11px; color:#818cf8;">(${storeName})</span><br>
-                                    <small style="color:#94a3b8;">Spec: ${p.spec} | ₹${p.price} / ${p.unit}</small>
-                                </div>
-                            </div>
-                            <button class="del-btn" onclick="deleteProduct(${p.id})">ડિલીટ</button>
-                        </div>
-                    `;
-                });
-            }
-        }
-
-        updateStoreDropdown();
-        renderAdminLists();
-    </script>
+function saveProduct(){
+ const name=document.getElementById("productName").value.trim();
+ const price=document.getElementById("productPrice").value;
+ const photo=document.getElementById("productBase64").value;
+ if(!name||!price||!photo){alert("નામ, ભાવ અને ફોટો નાખો.");return}
+ alert("ફોટો તૈયાર છે. ડેટાબેઝ જોડ્યા પછી પ્રોડક્ટ સાચવી શકાશે.");
+}
+</script>
 </body>
 </html>
