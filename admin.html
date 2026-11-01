@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Admin Panel - 100% Working Image Fix</title>
+    <title>Store Admin Panel - Final Fixed</title>
     <style>
         :root { 
             --primary: #ff3366; 
@@ -77,7 +77,7 @@
             border: 1px solid #edf2f7;
         }
         .item-info { display: flex; align-items: center; gap: 12px; }
-        .item-thumb { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; border: 1px solid #edf2f7; }
+        .item-thumb { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; border: 1px solid #edf2f7; background: #eee; }
         .del-btn { background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%); width: auto; padding: 7px 14px; font-size: 12px; border-radius: 8px; margin: 0; }
     </style>
 </head>
@@ -142,8 +142,8 @@
         let stores = JSON.parse(localStorage.getItem('stores')) || [];
         let products = JSON.parse(localStorage.getItem('products')) || [];
 
-        // Perfect Image Compressor & Resizer function
-        function processImage(fileInputId, callback) {
+        // Image Compressor Function (Fixes storage size & shows image perfectly)
+        function compressAndGetImage(fileInputId, callback) {
             let fileInput = document.getElementById(fileInputId);
             if (fileInput.files && fileInput.files[0]) {
                 let reader = new FileReader();
@@ -154,9 +154,8 @@
                         let canvas = document.createElement('canvas');
                         let ctx = canvas.getContext('2d');
                         
-                        // Set max dimensions to keep size small for localStorage
-                        let MAX_WIDTH = 250;
-                        let MAX_HEIGHT = 250;
+                        let MAX_WIDTH = 300;
+                        let MAX_HEIGHT = 300;
                         let width = img.width;
                         let height = img.height;
 
@@ -176,9 +175,8 @@
                         canvas.height = height;
                         ctx.drawImage(img, 0, 0, width, height);
                         
-                        // Convert to compressed JPEG base64 string
-                        let dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-                        callback(dataUrl);
+                        let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                        callback(compressedDataUrl);
                     };
                 };
                 reader.readAsDataURL(fileInput.files[0]);
@@ -208,7 +206,7 @@
                 return;
             }
 
-            processImage('storeImageFile', function(imgUrl) {
+            compressAndGetImage('storeImageFile', function(imgUrl) {
                 let finalImg = imgUrl || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500";
                 
                 let newId = stores.length > 0 ? stores[stores.length - 1].id + 1 : 1;
@@ -246,7 +244,7 @@
                 return;
             }
 
-            processImage('productImageFile', function(imgUrl) {
+            compressAndGetImage('productImageFile', function(imgUrl) {
                 let finalImg = imgUrl || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300";
 
                 let newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;
@@ -297,37 +295,43 @@
             let pList = document.getElementById('adminProductList');
             
             sList.innerHTML = '<h4 style="font-size:14px; color:#718096; margin-bottom:8px;">Dukano:</h4>';
-            if(stores.length === 0) sList.innerHTML += `<p style="font-size:13px; color:#777;">Koi dukan nathi.</p>`;
-            stores.forEach(s => {
-                sList.innerHTML += `
-                    <div class="item-box">
-                        <div class="item-info">
-                            <img src="${s.img}" class="item-thumb" alt="Store">
-                            <span><b>${s.name}</b></span>
+            if(stores.length === 0) {
+                sList.innerHTML += `<p style="font-size:13px; color:#777;">Koi dukan nathi.</p>`;
+            } else {
+                stores.forEach(s => {
+                    sList.innerHTML += `
+                        <div class="item-box">
+                            <div class="item-info">
+                                <img src="${s.img}" class="item-thumb" alt="Store">
+                                <span><b>${s.name}</b></span>
+                            </div>
+                            <button class="del-btn" onclick="deleteStore(${s.id})">Delete</button>
                         </div>
-                        <button class="del-btn" onclick="deleteStore(${s.id})">Delete</button>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
 
             pList.innerHTML = '<h4 style="font-size:14px; color:#718096; margin:15px 0 8px 0;">Products:</h4>';
-            if(products.length === 0) pList.innerHTML += `<p style="font-size:13px; color:#777;">Koi product nathi.</p>`;
-            products.forEach(p => {
-                let storeObj = stores.find(s => s.id === p.storeId);
-                let storeName = storeObj ? storeObj.name : 'Unknown Store';
-                pList.innerHTML += `
-                    <div class="item-box">
-                        <div class="item-info">
-                            <img src="${p.img}" class="item-thumb" alt="Product">
-                            <div>
-                                <b>${p.name}</b> <span style="font-size:12px; color:#718096;">(${storeName})</span><br>
-                                <small style="color:#4a5568;">Spec: ${p.spec} | ₹${p.price} / ${p.unit}</small>
+            if(products.length === 0) {
+                pList.innerHTML += `<p style="font-size:13px; color:#777;">Koi product nathi.</p>`;
+            } else {
+                products.forEach(p => {
+                    let storeObj = stores.find(s => s.id === p.storeId);
+                    let storeName = storeObj ? storeObj.name : 'Unknown Store';
+                    pList.innerHTML += `
+                        <div class="item-box">
+                            <div class="item-info">
+                                <img src="${p.img}" class="item-thumb" alt="Product">
+                                <div>
+                                    <b>${p.name}</b> <span style="font-size:12px; color:#718096;">(${storeName})</span><br>
+                                    <small style="color:#4a5568;">Spec: ${p.spec} | ₹${p.price} / ${p.unit}</small>
+                                </div>
                             </div>
+                            <button class="del-btn" onclick="deleteProduct(${p.id})">Delete</button>
                         </div>
-                        <button class="del-btn" onclick="deleteProduct(${p.id})">Delete</button>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
         }
 
         updateStoreDropdown();
