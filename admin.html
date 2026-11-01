@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Admin Panel - Fast & Easy</title>
+    <title>Store Admin Panel - Fixed</title>
     <style>
         :root { 
             --primary: #ff3366; 
@@ -88,7 +88,7 @@
 <body>
 
     <header>
-        <h2>⚙️ Admin Panel (Fast Add)</h2>
+        <h2>⚙️ Admin Panel</h2>
     </header>
 
     <div class="admin-panel">
@@ -103,12 +103,12 @@
     </div>
 
     <div class="admin-panel">
-        <h3>📦 2. Product Add Karo (Instant)</h3>
+        <h3>📦 2. Product Add Karo</h3>
         <label>Kyi Dukan Ma Product Nakvi Chhe?</label>
         <select id="productStoreSelect"></select>
 
         <label>Product Nu Naam:</label>
-        <input type="text" id="pName" placeholder="e.g., Banana / Kurti / Mobile">
+        <input type="text" id="pName" placeholder="e.g., Banana / Kurti">
         
         <label>Category Select Karo:</label>
         <select id="pCat">
@@ -121,13 +121,13 @@
         </select>
         
         <label>Size / Vajan / Tol / Color (Details):</label>
-        <input type="text" id="pSizeSpec" placeholder="e.g., Regular, Size: M, 1 Dozen">
+        <input type="text" id="pSizeSpec" placeholder="e.g., Regular, Size: M">
 
         <label>Bhav (₹):</label>
-        <input type="number" id="pPrice" placeholder="50">
+        <input type="text" id="pPrice" placeholder="50">
         
         <label>Unit (kg / pcs / dozen / pair):</label>
-        <input type="text" id="pUnit" placeholder="kg / pcs">
+        <input type="text" id="pUnit" placeholder="kg / pcs / 12 pic">
         
         <button onclick="addProduct()">Product Add Karo</button>
     </div>
@@ -182,14 +182,14 @@
             let name = document.getElementById('pName').value;
             let cat = document.getElementById('pCat').value;
             let spec = document.getElementById('pSizeSpec').value;
-            let price = parseFloat(document.getElementById('pPrice').value);
+            let price = document.getElementById('pPrice').value;
             let unit = document.getElementById('pUnit').value;
 
             if(!storeId || isNaN(storeId)) {
                 alert("Krupaya pehla koi dukan select karo.");
                 return;
             }
-            if(!name || isNaN(price) || !unit) {
+            if(!name || !price || !unit) {
                 alert("Krupaya product nu naam, bhav ane unit barabar lakho.");
                 return;
             }
