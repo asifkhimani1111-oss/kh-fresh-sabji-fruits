@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K.H Admin - Direct Image Preview & URL</title>
+    <title>K.H Admin - Permanent Image Storage</title>
     <style>
         :root { 
             --primary: #6366f1; 
@@ -103,7 +103,7 @@
 
     <header>
         <h2>⚡ K.H Store Manager</h2>
-        <p>Admin Dashboard & Instant Photo URL Creator</p>
+        <p>Admin Dashboard (Permanent Image Storage)</p>
     </header>
 
     <div class="admin-panel">
@@ -183,12 +183,18 @@
                 return;
             }
 
-            let imgUrl = "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500";
             if (fileInput.files && fileInput.files[0]) {
-                // કેમેરા કે ગેલેરીમાંથી લીધેલા ફોટાનો લોકલ URL ડાયરેક્ટ બની જશે
-                imgUrl = URL.createObjectURL(fileInput.files[0]);
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    saveStoreFinal(name, mapLink, e.target.result);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                saveStoreFinal(name, mapLink, "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500");
             }
+        }
 
+        function saveStoreFinal(name, mapLink, imgUrl) {
             let newId = stores.length > 0 ? stores[stores.length - 1].id + 1 : 1;
             stores.push({
                 id: newId,
@@ -224,12 +230,18 @@
                 return;
             }
 
-            let imgUrl = "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300";
             if (fileInput.files && fileInput.files[0]) {
-                // પ્રોડક્ટના ફોટાનો પણ ડાયરેક્ટ લાઈવ URL બની જશે
-                imgUrl = URL.createObjectURL(fileInput.files[0]);
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    saveProductFinal(storeId, name, cat, spec, price, unit, e.target.result);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                saveProductFinal(storeId, name, cat, spec, price, unit, "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300");
             }
+        }
 
+        function saveProductFinal(storeId, name, cat, spec, price, unit, imgUrl) {
             let newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;
             products.push({ 
                 id: newId, 
