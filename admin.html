@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K.H Admin - Permanent Image Storage</title>
+    <title>K.H Admin - Compressed Storage Fix</title>
     <style>
         :root { 
             --primary: #6366f1; 
@@ -103,7 +103,7 @@
 
     <header>
         <h2>⚡ K.H Store Manager</h2>
-        <p>Admin Dashboard (Permanent Image Storage)</p>
+        <p>Admin Dashboard (Auto Compressed Images)</p>
     </header>
 
     <div class="admin-panel">
@@ -161,6 +161,39 @@
         let stores = JSON.parse(localStorage.getItem('stores')) || [];
         let products = JSON.parse(localStorage.getItem('products')) || [];
 
+        // Image Compressor Function (ફોટાને નાનો અને હળવો કરે છે જેથી મેમરી ફૂલ ન થાય)
+        function compressImage(file, callback) {
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                let img = new Image();
+                img.src = e.target.result;
+                img.onload = function () {
+                    let canvas = document.createElement('canvas');
+                    let ctx = canvas.getContext('2d');
+                    
+                    let MAX_WIDTH = 250;
+                    let MAX_HEIGHT = 250;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                    } else {
+                        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Compress to JPEG with 0.6 quality
+                    let dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+                    callback(dataUrl);
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+
         function updateStoreDropdown() {
             let select = document.getElementById('productStoreSelect');
             select.innerHTML = '';
@@ -183,33 +216,36 @@
                 return;
             }
 
+            let proceedSave = (imgUrl) => {
+                let newId = stores.length > 0 ? stores[stores.length - 1].id + 1 : 1;
+                stores.push({
+                    id: newId,
+                    name,
+                    img: imgUrl,
+                    mapLink: mapLink || "https://maps.app.goo.gl/example"
+                });
+
+                try {
+                    localStorage.setItem('stores', JSON.stringify(stores));
+                    alert("નવી દુકાન સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
+                    document.getElementById('storeName').value = '';
+                    document.getElementById('storeMap').value = '';
+                    document.getElementById('storeImageFile').value = '';
+                    updateStoreDropdown();
+                    renderAdminLists();
+                } catch (e) {
+                    alert("સ્ટોરેજ ફૂલ થઈ ગઈ છે! થોડા જૂના ફોટા ડિલીટ કરો.");
+                    stores.pop();
+                }
+            };
+
             if (fileInput.files && fileInput.files[0]) {
-                let reader = new FileReader();
-                reader.onload = function(e) {
-                    saveStoreFinal(name, mapLink, e.target.result);
-                };
-                reader.readAsDataURL(fileInput.files[0]);
+                compressImage(fileInput.files[0], (compressedImg) => {
+                    proceedSave(compressedImg);
+                });
             } else {
-                saveStoreFinal(name, mapLink, "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500");
+                proceedSave("https://images.unsplash.com/photo-1542838132-92c53300491e?w=500");
             }
-        }
-
-        function saveStoreFinal(name, mapLink, imgUrl) {
-            let newId = stores.length > 0 ? stores[stores.length - 1].id + 1 : 1;
-            stores.push({
-                id: newId,
-                name,
-                img: imgUrl,
-                mapLink: mapLink || "https://maps.app.goo.gl/example"
-            });
-
-            localStorage.setItem('stores', JSON.stringify(stores));
-            alert("નવી દુકાન સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
-            document.getElementById('storeName').value = '';
-            document.getElementById('storeMap').value = '';
-            document.getElementById('storeImageFile').value = '';
-            updateStoreDropdown();
-            renderAdminLists();
         }
 
         function addProduct() {
@@ -230,39 +266,42 @@
                 return;
             }
 
-            if (fileInput.files && fileInput.files[0]) {
-                let reader = new FileReader();
-                reader.onload = function(e) {
-                    saveProductFinal(storeId, name, cat, spec, price, unit, e.target.result);
-                };
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                saveProductFinal(storeId, name, cat, spec, price, unit, "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300");
-            }
-        }
+            let proceedSaveProduct = (imgUrl) => {
+                let newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;
+                products.push({ 
+                    id: newId, 
+                    storeId, 
+                    name, 
+                    category: cat, 
+                    spec: spec || "Standard", 
+                    price, 
+                    unit, 
+                    img: imgUrl 
+                });
+                
+                try {
+                    localStorage.setItem('products', JSON.stringify(products));
+                    alert("પ્રોડક્ટ સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
+                    
+                    document.getElementById('pName').value = '';
+                    document.getElementById('pSizeSpec').value = '';
+                    document.getElementById('pPrice').value = '';
+                    document.getElementById('pUnit').value = '';
+                    document.getElementById('productImageFile').value = '';
+                    renderAdminLists();
+                } catch (e) {
+                    alert("સ્ટોરેજ ફૂલ થઈ ગઈ છે! કૃપા કરીને થોડી જૂની પ્રોડક્ટ્સ ડિલીટ કરો.");
+                    products.pop();
+                }
+            };
 
-        function saveProductFinal(storeId, name, cat, spec, price, unit, imgUrl) {
-            let newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;
-            products.push({ 
-                id: newId, 
-                storeId, 
-                name, 
-                category: cat, 
-                spec: spec || "Standard", 
-                price, 
-                unit, 
-                img: imgUrl 
-            });
-            
-            localStorage.setItem('products', JSON.stringify(products));
-            alert("પ્રોડક્ટ સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
-            
-            document.getElementById('pName').value = '';
-            document.getElementById('pSizeSpec').value = '';
-            document.getElementById('pPrice').value = '';
-            document.getElementById('pUnit').value = '';
-            document.getElementById('productImageFile').value = '';
-            renderAdminLists();
+            if (fileInput.files && fileInput.files[0]) {
+                compressImage(fileInput.files[0], (compressedImg) => {
+                    proceedSaveProduct(compressedImg);
+                });
+            } else {
+                proceedSaveProduct("https://images.unsplash.com/photo-1542838132-92c53300491e?w=300");
+            }
         }
 
         function deleteStore(id) {
