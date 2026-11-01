@@ -21,24 +21,36 @@ img{width:100%;max-height:200px;object-fit:contain;background:#eee;border-radius
 
 <div class="card">
 <h3>🏪 દુકાન ઉમેરો</h3>
+
 <input id="shopName" placeholder="દુકાનનું નામ">
 
+<input id="shopWhatsApp" type="tel" inputmode="numeric"
+placeholder="દુકાનનો WhatsApp નંબર (ઉદાહરણ: 9426852334)"
+maxlength="10">
+
 <label>દુકાનનો ફોટો પસંદ કરો</label>
-<input type="file" id="shopPhoto" accept="image/*" onchange="previewPhoto(this,'shopPreview','shopBase64')">
+<input type="file" id="shopPhoto" accept="image/*"
+onchange="previewPhoto(this,'shopPreview','shopBase64')">
+
 <img id="shopPreview" alt="દુકાનનો ફોટો અહીં દેખાશે">
 <input type="hidden" id="shopBase64">
+
 <button onclick="saveShop()">દુકાન સેવ કરો</button>
 </div>
 
 <div class="card">
 <h3>📦 પ્રોડક્ટ ઉમેરો</h3>
+
 <input id="productName" placeholder="પ્રોડક્ટનું નામ">
 <input id="productPrice" type="number" placeholder="ભાવ">
 
 <label>પ્રોડક્ટનો ફોટો પસંદ કરો</label>
-<input type="file" id="productPhoto" accept="image/*" onchange="previewPhoto(this,'productPreview','productBase64')">
+<input type="file" id="productPhoto" accept="image/*"
+onchange="previewPhoto(this,'productPreview','productBase64')">
+
 <img id="productPreview" alt="પ્રોડક્ટનો ફોટો અહીં દેખાશે">
 <input type="hidden" id="productBase64">
+
 <button onclick="saveProduct()">પ્રોડક્ટ સેવ કરો</button>
 </div>
 
@@ -53,6 +65,7 @@ async function compressImage(file){
     let w=img.width,h=img.height;
     if(w>h && w>max){h=h*max/w;w=max}
     else if(h>max){w=w*max/h;h=max}
+
     const canvas=document.createElement("canvas");
     canvas.width=Math.round(w);
     canvas.height=Math.round(h);
@@ -70,11 +83,13 @@ async function compressImage(file){
 async function previewPhoto(input,previewId,hiddenId){
  const file=input.files[0];
  if(!file)return;
+
  if(!file.type.startsWith("image/")){
   alert("મહેરબાની કરીને ફોટો પસંદ કરો.");
   input.value="";
   return;
  }
+
  try{
   const base64=await compressImage(file);
   document.getElementById(hiddenId).value=base64;
@@ -86,17 +101,42 @@ async function previewPhoto(input,previewId,hiddenId){
 
 function saveShop(){
  const name=document.getElementById("shopName").value.trim();
+ const whatsapp=document.getElementById("shopWhatsApp").value.trim();
  const photo=document.getElementById("shopBase64").value;
- if(!name||!photo){alert("દુકાનનું નામ અને ફોટો નાખો.");return}
- alert("ફોટો તૈયાર છે. ડેટાબેઝ જોડ્યા પછી દુકાન સાચવી શકાશે.");
+
+ if(!name||!whatsapp||!photo){
+  alert("દુકાનનું નામ, WhatsApp નંબર અને ફોટો નાખો.");
+  return;
+ }
+
+ if(!/^[6-9][0-9]{9}$/.test(whatsapp)){
+  alert("10 અંકનો સાચો ભારતીય મોબાઇલ નંબર નાખો.");
+  return;
+ }
+
+ const shop={
+  name:name,
+  whatsapp:whatsapp,
+  shopImageBase64:photo
+ };
+
+ alert("દુકાનની માહિતી તૈયાર છે:\n"+
+       "દુકાન: "+shop.name+
+       "\nWhatsApp: "+shop.whatsapp+
+       "\n\nહજુ ડેટાબેઝ સાથે જોડાણ બાકી છે.");
 }
 
 function saveProduct(){
  const name=document.getElementById("productName").value.trim();
  const price=document.getElementById("productPrice").value;
  const photo=document.getElementById("productBase64").value;
- if(!name||!price||!photo){alert("નામ, ભાવ અને ફોટો નાખો.");return}
- alert("ફોટો તૈયાર છે. ડેટાબેઝ જોડ્યા પછી પ્રોડક્ટ સાચવી શકાશે.");
+
+ if(!name||!price||!photo){
+  alert("નામ, ભાવ અને ફોટો નાખો.");
+  return;
+ }
+
+ alert("પ્રોડક્ટની માહિતી તૈયાર છે. ડેટાબેઝ સાથે જોડાણ બાકી છે.");
 }
 </script>
 </body>
