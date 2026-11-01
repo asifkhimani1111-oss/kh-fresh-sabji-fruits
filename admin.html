@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K.H Admin - Premium Store Manager</title>
+    <title>K.H Admin - Direct Image Preview & URL</title>
     <style>
         :root { 
             --primary: #6366f1; 
@@ -52,6 +52,7 @@
             color: #fff;
             transition: all 0.3s ease;
         }
+        input[type="file"] { padding: 9px; background: #0f172a; cursor: pointer; }
         input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
 
         button { 
@@ -102,7 +103,7 @@
 
     <header>
         <h2>⚡ K.H Store Manager</h2>
-        <p>Admin Dashboard & Inventory Control</p>
+        <p>Admin Dashboard & Instant Photo URL Creator</p>
     </header>
 
     <div class="admin-panel">
@@ -113,8 +114,8 @@
         <label>ગૂગલ મેપ્સ લોકેશન લિંક:</label>
         <input type="text" id="storeMap" placeholder="https://maps.app.goo.gl/...">
 
-        <label>દુકાનના ફોટાની લિંક (URL):</label>
-        <input type="text" id="storeImgUrl" placeholder="https://images.unsplash.com/photo-...">
+        <label>દુકાનનો ફોટો સિલેક્ટ કરો (Camera / Gallery):</label>
+        <input type="file" id="storeImageFile" accept="image/*">
         
         <button onclick="addStore()">✨ દુકાન ઉમેરો</button>
     </div>
@@ -146,8 +147,8 @@
         <label>યુનિટ (kg / pcs / dozen / pair):</label>
         <input type="text" id="pUnit" placeholder="kg / pcs / 12 pic">
 
-        <label>પ્રોડક્ટના ફોટાની લિંક (URL):</label>
-        <input type="text" id="pImgUrl" placeholder="https://images.unsplash.com/photo-...">
+        <label>પ્રોડક્ટનો ફોટો સિલેક્ટ કરો (Camera / Gallery):</label>
+        <input type="file" id="productImageFile" accept="image/*">
         
         <button onclick="addProduct()">🚀 પ્રોડક્ટ ઉમેરો</button>
     </div>
@@ -175,18 +176,24 @@
         function addStore() {
             let name = document.getElementById('storeName').value;
             let mapLink = document.getElementById('storeMap').value;
-            let imgUrl = document.getElementById('storeImgUrl').value;
+            let fileInput = document.getElementById('storeImageFile');
 
             if(!name) {
                 alert("કૃપા કરીને દુકાનનું નામ લખો.");
                 return;
             }
 
+            let imgUrl = "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500";
+            if (fileInput.files && fileInput.files[0]) {
+                // કેમેરા કે ગેલેરીમાંથી લીધેલા ફોટાનો લોકલ URL ડાયરેક્ટ બની જશે
+                imgUrl = URL.createObjectURL(fileInput.files[0]);
+            }
+
             let newId = stores.length > 0 ? stores[stores.length - 1].id + 1 : 1;
             stores.push({
                 id: newId,
                 name,
-                img: imgUrl || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500",
+                img: imgUrl,
                 mapLink: mapLink || "https://maps.app.goo.gl/example"
             });
 
@@ -194,7 +201,7 @@
             alert("નવી દુકાન સફળતાપૂર્વક ઉમેરાઈ ગઈ!");
             document.getElementById('storeName').value = '';
             document.getElementById('storeMap').value = '';
-            document.getElementById('storeImgUrl').value = '';
+            document.getElementById('storeImageFile').value = '';
             updateStoreDropdown();
             renderAdminLists();
         }
@@ -206,7 +213,7 @@
             let spec = document.getElementById('pSizeSpec').value;
             let price = document.getElementById('pPrice').value;
             let unit = document.getElementById('pUnit').value;
-            let imgUrl = document.getElementById('pImgUrl').value;
+            let fileInput = document.getElementById('productImageFile');
 
             if(!storeId || isNaN(storeId)) {
                 alert("કૃપા કરીને પહેલા કોઈ દુકાન સિલેક્ટ કરો.");
@@ -215,6 +222,12 @@
             if(!name || !price || !unit) {
                 alert("કૃપા કરીને પ્રોડક્ટનું નામ, ભાવ અને યુનિટ બરાબર લખો.");
                 return;
+            }
+
+            let imgUrl = "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300";
+            if (fileInput.files && fileInput.files[0]) {
+                // પ્રોડક્ટના ફોટાનો પણ ડાયરેક્ટ લાઈવ URL બની જશે
+                imgUrl = URL.createObjectURL(fileInput.files[0]);
             }
 
             let newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;
@@ -226,7 +239,7 @@
                 spec: spec || "Standard", 
                 price, 
                 unit, 
-                img: imgUrl || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300" 
+                img: imgUrl 
             });
             
             localStorage.setItem('products', JSON.stringify(products));
@@ -236,7 +249,7 @@
             document.getElementById('pSizeSpec').value = '';
             document.getElementById('pPrice').value = '';
             document.getElementById('pUnit').value = '';
-            document.getElementById('pImgUrl').value = '';
+            document.getElementById('productImageFile').value = '';
             renderAdminLists();
         }
 
@@ -252,7 +265,7 @@
         }
 
         function deleteProduct(id) {
-            if(confirm("તમે આ પ્રોડક્ટ ડિલીટ કરવા માંગो છો?")) {
+            if(confirm("તમે આ પ્રોડક્ટ ડિલીટ કરવા માંગો છો?")) {
                 products = products.filter(p => p.id !== id);
                 localStorage.setItem('products', JSON.stringify(products));
                 renderAdminLists();
