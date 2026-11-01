@@ -3,27 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Admin Panel - All Categories & Size/Weight</title>
+    <title>Store Admin Panel - Gujarat Bazaar</title>
     <style>
-        :root { --primary: #333; --bg: #f8f9fa; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background: var(--bg); color: #333; padding: 15px; max-width: 600px; margin: auto; }
-        header { background: #222; color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center; }
-        .admin-panel { background: #fff3cd; border: 1px solid #ffeeba; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        input, select { width: 100%; padding: 8px; margin: 6px 0 12px 0; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
-        button { background: #28a745; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
-        .item-box { background: white; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .del-btn { background: #dc3545; width: auto; padding: 5px 10px; font-size: 12px; margin: 0; }
+        :root { 
+            --primary: #ff3366; 
+            --primary-gradient: linear-gradient(135deg, #ff3366 0%, #ff6b6b 100%);
+            --bg: #f4f7f6; 
+            --card-bg: #ffffff;
+            --text-main: #2d3748;
+            --text-muted: #718096;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: var(--bg); color: var(--text-main); padding: 20px; max-width: 650px; margin: auto; padding-bottom: 50px; }
+        
+        /* Modern Header */
+        header { 
+            background: var(--primary-gradient); 
+            color: white; 
+            padding: 20px; 
+            border-radius: 16px; 
+            margin-bottom: 20px; 
+            text-align: center; 
+            box-shadow: 0 8px 20px rgba(255, 51, 102, 0.25);
+        }
+        header h2 { font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
+
+        /* Admin Panels / Cards */
+        .admin-panel { 
+            background: var(--card-bg); 
+            border: 1px solid #edf2f7; 
+            padding: 20px; 
+            border-radius: 16px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+        }
+        .admin-panel h3 { font-size: 18px; margin-bottom: 12px; color: #1a202c; border-bottom: 2px solid #edf2f7; padding-bottom: 8px; }
+
+        label { font-size: 13px; font-weight: 600; color: #4a5568; display: block; margin-top: 10px; }
+        input, select { 
+            width: 100%; 
+            padding: 11px 14px; 
+            margin: 6px 0 12px 0; 
+            border: 1px solid #cbd5e0; 
+            border-radius: 10px; 
+            font-size: 14px; 
+            outline: none; 
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fcfdfe;
+        }
+        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255, 51, 102, 0.1); }
+
+        /* Modern Action Buttons */
+        button { 
+            background: var(--primary-gradient); 
+            color: white; 
+            border: none; 
+            padding: 12px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            width: 100%; 
+            font-weight: 700; 
+            font-size: 14px; 
+            box-shadow: 0 4px 12px rgba(255, 51, 102, 0.25);
+            transition: opacity 0.2s, transform 0.1s;
+            margin-top: 5px;
+        }
+        button:active { opacity: 0.9; transform: scale(0.99); }
+
+        /* Items List Box */
+        .item-box { 
+            background: white; 
+            padding: 14px; 
+            border-radius: 12px; 
+            margin-bottom: 10px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border: 1px solid #edf2f7;
+        }
+        .del-btn { 
+            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%); 
+            width: auto; 
+            padding: 7px 14px; 
+            font-size: 12px; 
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(229, 62, 62, 0.3);
+            margin: 0; 
+        }
+        h3.section-title { font-size: 17px; margin: 20px 0 10px 0; color: #2d3748; }
     </style>
 </head>
 <body>
 
     <header>
-        <h2>⚙️ Admin Panel - All Categories & Specs</h2>
+        <h2>⚙️ Admin Control Panel</h2>
     </header>
 
     <div class="admin-panel">
-        <h3>1. Navi Dukan (Store) Add Karo</h3>
+        <h3>🏪 1. Navi Dukan (Store) Add Karo</h3>
         <label>Dukan Nu Naam:</label>
         <input type="text" id="storeName" placeholder="e.g., Gujarat Super Market">
         
@@ -36,8 +114,8 @@
         <button onclick="addStore()">Dukan Add Karo</button>
     </div>
 
-    <div class="admin-panel" style="background: #e2f0d9; border-color: #c3e6cb;">
-        <h3>2. Product Add Karo (Size, Weight, Color, Tol Sathe)</h3>
+    <div class="admin-panel">
+        <h3>📦 2. Product Add Karo (Size, Weight, Color Sathe)</h3>
         <label>Kyi Dukan Ma Product Nakvi Chhe?</label>
         <select id="productStoreSelect"></select>
 
@@ -55,7 +133,7 @@
         </select>
         
         <label>Size / Vajan / Tol / Color / Number (Details):</label>
-        <input type="text" id="pSizeSpec" placeholder="e.g., Size: M/L/XL, Color: Red, 1kg, 500ml, 32 inch">
+        <input type="text" id="pSizeSpec" placeholder="e.g., Size: M/L/XL, Color: Red, 1kg, 500ml">
 
         <label>Bhav (₹):</label>
         <input type="number" id="pPrice" placeholder="Price">
@@ -66,12 +144,12 @@
         <label>Photo ni Link (URL):</label>
         <input type="text" id="pImg" placeholder="https://...">
         
-        <button onclick="addProduct()" style="background: #007bff;">Product Add Karo</button>
+        <button onclick="addProduct()">Product Add Karo</button>
     </div>
 
-    <h3>Manage Existing Stores & Products</h3>
-    <div id="adminStoresList" style="margin-top: 10px;"></div>
-    <div id="adminProductList" style="margin-top: 10px;"></div>
+    <h3 class="section-title">📋 Manage Existing Stores & Products</h3>
+    <div id="adminStoresList"></div>
+    <div id="adminProductList"></div>
 
     <script>
         let stores = JSON.parse(localStorage.getItem('stores')) || [
@@ -177,7 +255,7 @@
             let sList = document.getElementById('adminStoresList');
             let pList = document.getElementById('adminProductList');
             
-            sList.innerHTML = '<h4>Dukano:</h4>';
+            sList.innerHTML = '<h4 style="font-size:14px; color:#718096; margin-bottom:8px;">Dukano:</h4>';
             stores.forEach(s => {
                 sList.innerHTML += `
                     <div class="item-box">
@@ -187,15 +265,15 @@
                 `;
             });
 
-            pList.innerHTML = '<h4 style="margin-top:15px;">Products:</h4>';
+            pList.innerHTML = '<h4 style="font-size:14px; color:#718096; margin:15px 0 8px 0;">Products:</h4>';
             products.forEach(p => {
                 let storeObj = stores.find(s => s.id === p.storeId);
                 let storeName = storeObj ? storeObj.name : 'Unknown Store';
                 pList.innerHTML += `
                     <div class="item-box">
                         <div>
-                            <b>${p.name}</b> (${storeName})<br>
-                            <small>Spec: ${p.spec} | ₹${p.price} / ${p.unit}</small>
+                            <b>${p.name}</b> <span style="font-size:12px; color:#718096;">(${storeName})</span><br>
+                            <small style="color:#4a5568;">Spec: ${p.spec} | ₹${p.price} / ${p.unit}</small>
                         </div>
                         <button class="del-btn" onclick="deleteProduct(${p.id})">Delete</button>
                     </div>
