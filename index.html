@@ -3,49 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gujarat Bazaar - All Categories & Specs</title>
+    <title>Gujarat Bazaar - Online Shopping</title>
     <style>
-        :root { --primary: #ff3366; --bg: #f8f9fa; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background: var(--bg); color: #333; padding-bottom: 80px; }
-        header { background: var(--primary); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        :root { 
+            --primary: #ff3366; 
+            --primary-gradient: linear-gradient(135deg, #ff3366 0%, #ff6b6b 100%);
+            --bg: #f4f7f6; 
+            --card-bg: #ffffff;
+            --text-main: #2d3748;
+            --text-muted: #718096;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: var(--bg); color: var(--text-main); padding-bottom: 90px; }
+        
+        /* Attractive Header with Gradient */
+        header { 
+            background: var(--primary-gradient); 
+            color: white; 
+            padding: 18px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3);
+        }
+        header h2 { font-size: 20px; font-weight: 700; letter-spacing: 0.5px; }
+        
         .container { padding: 15px; max-width: 600px; margin: auto; }
-        .banner { background: #ffe6ec; color: #cc0033; padding: 10px; border-radius: 8px; font-size: 13px; margin-bottom: 15px; text-align: center; font-weight: bold; }
         
-        .store-card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 15px; cursor: pointer; }
-        .store-card img { width: 100%; height: 160px; object-fit: cover; background: #eee; }
-        .store-info { padding: 12px; }
-        .store-info h3 { font-size: 18px; margin-bottom: 5px; }
-        .store-info p { font-size: 13px; color: #666; margin-bottom: 8px; }
-        .map-link { color: #0066cc; font-size: 13px; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 8px; }
+        /* Stylish Banner */
+        .banner { 
+            background: linear-gradient(135deg, #fff5f7 0%, #ffe3e8 100%); 
+            color: #d90429; 
+            padding: 12px; 
+            border-radius: 12px; 
+            font-size: 13px; 
+            margin-bottom: 18px; 
+            text-align: center; 
+            font-weight: 600; 
+            border: 1px dashed #ff3366;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        
+        /* Store Card Styling */
+        .store-card { 
+            background: var(--card-bg); 
+            border-radius: 16px; 
+            overflow: hidden; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06); 
+            margin-bottom: 18px; 
+            cursor: pointer; 
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .store-card:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0,0,0,0.1); }
+        .store-card img { width: 100%; height: 180px; object-fit: cover; background: #eee; }
+        .store-info { padding: 15px; }
+        .store-info h3 { font-size: 19px; margin-bottom: 6px; color: #1a202c; }
+        .store-info p { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
+        .map-link { color: #3182ce; font-size: 13px; text-decoration: none; font-weight: 600; display: inline-block; margin-bottom: 10px; }
 
-        /* Category Filter Bar */
-        .filter-bar { display: flex; gap: 8px; margin: 12px 0; overflow-x: auto; padding-bottom: 5px; }
-        .filter-btn { background: #e9ecef; color: #333; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; white-space: nowrap; font-weight: bold; width: auto; }
-        .filter-btn.active { background: var(--primary); color: white; }
+        /* Product Grid & Cards */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .card { 
+            background: var(--card-bg); 
+            border-radius: 14px; 
+            padding: 12px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            border: 1px solid #edf2f7;
+            transition: all 0.2s;
+        }
+        .card:hover { border-color: #cbd5e0; }
+        .card img { width: 100%; height: 130px; object-fit: cover; border-radius: 10px; background: #f7fafc; }
+        .card h3 { font-size: 15px; margin: 8px 0 4px; font-weight: 600; color: #2d3748; }
+        .spec-text { font-size: 11px; color: #4a5568; background: #edf2f7; padding: 4px 8px; border-radius: 6px; margin-bottom: 8px; display: inline-block; font-weight: 500; }
+        .price { color: var(--primary); font-weight: 700; font-size: 15px; margin-bottom: 5px; }
+        
+        /* Modern Qty Controls */
+        .qty-control { display: flex; align-items: center; justify-content: space-between; background: #f7fafc; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; margin-top: 6px; }
+        .qty-control button { background: #edf2f7; border: none; padding: 8px 12px; cursor: pointer; font-weight: bold; font-size: 15px; width: auto; color: #2d3748; transition: background 0.2s; }
+        .qty-control button:hover { background: #cbd5e0; }
+        .qty-control span { font-size: 13px; font-weight: 700; color: #1a202c; }
+        
+        /* Action Buttons */
+        button.main-btn { background: var(--primary-gradient); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 700; font-size: 14px; box-shadow: 0 4px 12px rgba(255, 51, 102, 0.25); transition: opacity 0.2s; }
+        button.main-btn:active { opacity: 0.9; }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card { background: white; border-radius: 10px; padding: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
-        .card img { width: 100%; height: 120px; object-fit: cover; border-radius: 6px; background: #eee; }
-        .card h3 { font-size: 15px; margin: 6px 0 2px; }
-        .spec-text { font-size: 11px; color: #555; background: #f1f1f1; padding: 3px 6px; border-radius: 4px; margin-bottom: 6px; display: inline-block; }
-        .price { color: var(--primary); font-weight: bold; font-size: 14px; }
+        /* Cart Badge & Modal Styling */
+        .cart-badge { background: rgba(255,255,255,0.25); padding: 6px 14px; border-radius: 30px; font-size: 13px; font-weight: 600; backdrop-filter: blur(5px); cursor: pointer; display: flex; align-items: center; gap: 5px; }
         
-        .qty-control { display: flex; align-items: center; justify-content: space-between; background: #f1f1f1; border-radius: 5px; margin-top: 8px; overflow: hidden; border: 1px solid #ddd; }
-        .qty-control button { background: #e0e0e0; border: none; padding: 8px 12px; cursor: pointer; font-weight: bold; font-size: 16px; width: auto; color: #333; margin: 0; }
-        .qty-control span { font-size: 13px; font-weight: bold; color: #333; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 200; }
+        .modal-content { background: white; width: 92%; max-width: 450px; padding: 22px; border-radius: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .modal-content h3 { font-size: 20px; margin-bottom: 15px; color: #1a202c; }
         
-        button { background: var(--primary); color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 5px; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 200; }
-        .modal-content { background: white; width: 90%; max-width: 450px; padding: 20px; border-radius: 10px; max-height: 90vh; overflow-y: auto; }
-        .back-btn { background: #6c757d; width: auto; padding: 6px 12px; margin-bottom: 10px; display: inline-block; border-radius: 4px; color: white; cursor: pointer; font-size: 13px; }
+        input, select { width: 100%; padding: 10px 14px; margin: 6px 0 12px 0; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s; }
+        input:focus { border-color: var(--primary); }
+        
+        .back-btn { background: #4a5568; color: white; width: auto; padding: 6px 14px; margin-bottom: 12px; display: inline-block; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; border: none; }
     </style>
 </head>
 <body>
 
     <header>
         <h2>🛍️ Gujarat Bazaar</h2>
-        <div onclick="openCart()" style="cursor: pointer; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 13px;">
+        <div class="cart-badge" onclick="openCart()">
             🛒 Cart (<span id="cartCount">0</span>)
         </div>
     </header>
@@ -55,28 +120,16 @@
 
         <!-- Step 1: Stores List View -->
         <div id="storeView">
-            <h3>Gujaratni Badhi Dukano</h3>
-            <p style="font-size: 13px; color: #666; margin-bottom: 10px;">Jevi dukan ma jvu hoy teana par click karo:</p>
+            <h3 style="margin-bottom: 10px; font-size: 18px;">Gujaratni Badhi Dukano</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Jevi dukan ma jvu hoy teana par click karo:</p>
             <div id="storesContainer"></div>
         </div>
 
         <!-- Step 2: Store Products View -->
         <div id="productView" style="display: none;">
-            <div class="back-btn" onclick="goBackToStores()">⬅️ Badhi Dukano Par Jao</div>
-            <h3 id="currentStoreTitle">Products</h3>
-
-            <!-- Category Filter Bar -->
-            <div class="filter-bar" id="categoryFilterBar">
-                <button class="filter-btn active" onclick="filterCategory('all', this)">Badhi Vastu</button>
-                <button class="filter-btn" onclick="filterCategory('fruit', this)">🍎 Fruit & Sabji</button>
-                <button class="filter-btn" onclick="filterCategory('fashion', this)">👕 Fashion</button>
-                <button class="filter-btn" onclick="filterCategory('electronics', this)">📱 Electronics</button>
-                <button class="filter-btn" onclick="filterCategory('home', this)">🏠 Home</button>
-                <button class="filter-btn" onclick="filterCategory('beauty', this)">✨ Beauty</button>
-                <button class="filter-btn" onclick="filterCategory('other', this)">📦 Other</button>
-            </div>
-
-            <div class="grid" id="productGrid" style="margin-top: 10px;"></div>
+            <button class="back-btn" onclick="goBackToStores()">⬅️ Badhi Dukano Par Jao</button>
+            <h3 id="currentStoreTitle" style="margin-bottom: 15px; font-size: 18px;">Products</h3>
+            <div class="grid" id="productGrid"></div>
         </div>
     </div>
 
@@ -86,24 +139,24 @@
             <h3>Tamaru Cart</h3>
             <div id="cartItemsList" style="margin: 15px 0; max-height: 200px; overflow-y: auto;"></div>
             
-            <div style="border-top: 1px solid #ddd; padding-top: 10px;">
-                <p>Total Amount: <b id="cartTotal">₹0</b></p>
-                <p>Fruit/Sabji Weight: <b id="fruitWeight">0</b> gm</p>
+            <div style="border-top: 1px solid #edf2f7; padding-top: 12px;">
+                <p style="margin-bottom: 5px;">Total Amount: <b id="cartTotal" style="color: var(--primary);">₹0</b></p>
+                <p style="margin-bottom: 12px; font-size: 13px;">Fruit/Sabji Weight: <b id="fruitWeight">0</b> gm</p>
                 
-                <input type="text" id="custName" placeholder="Tamaru Naam" style="padding:8px; margin:5px 0; border:1px solid #ddd; display:block; width:100%; border-radius:4px;">
-                <input type="text" id="custPhone" placeholder="Mobile Number" style="padding:8px; margin:5px 0; border:1px solid #ddd; display:block; width:100%; border-radius:4px;">
-                <input type="text" id="custAddress" placeholder="Puro Address (Village/City)" style="padding:8px; margin:5px 0; border:1px solid #ddd; display:block; width:100%; border-radius:4px;">
-                <label style="font-size: 12px; display:block; margin:5px 0;"><input type="checkbox" id="longDist"> 2 Kilometer thi vadare dur chhe? (+ Delivery Charge)</label>
+                <input type="text" id="custName" placeholder="Tamaru Naam">
+                <input type="text" id="custPhone" placeholder="Mobile Number">
+                <input type="text" id="custAddress" placeholder="Puro Address (Village/City)">
+                <label style="font-size: 12px; display:block; margin: 8px 0; color: #4a5568;"><input type="checkbox" id="longDist"> 2 Kilometer thi vadare dur chhe? (+ Delivery Charge)</label>
                 
-                <div style="font-size: 11px; color: #666; margin-top: 10px; background: #f1f1f1; padding: 8px; border-radius: 5px;">
+                <div style="font-size: 11px; color: #718096; margin-top: 12px; background: #f7fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
                     ⚠️ <b>Niyamo:</b><br>
                     - Fruit/Sabji minimum 2kg (2000gm) jaruri chhe.<br>
                     - Biji badhi vastu mate min order ₹500.<br>
                     - Order cancel ya exchange nahi thase.
                 </div>
 
-                <button onclick="checkoutWhatsApp()" style="background: #25D366; margin-top: 10px;">WhatsApp Par Order Moklo 📲</button>
-                <button onclick="closeCart()" style="background: #888; margin-top: 5px;">Bandh Karo</button>
+                <button class="main-btn" onclick="checkoutWhatsApp()" style="background: #25d366; margin-top: 15px;">WhatsApp Par Order Moklo 📲</button>
+                <button class="main-btn" onclick="closeCart()" style="background: #a0aec0; margin-top: 8px;">Bandh Karo</button>
             </div>
         </div>
     </div>
@@ -119,7 +172,6 @@
 
         let cart = [];
         let activeStoreId = null;
-        let currentCategory = 'all';
 
         function renderStores() {
             let container = document.getElementById('storesContainer');
@@ -138,7 +190,7 @@
                             <h3>${s.name}</h3>
                             <p>📍 Gujarat, India</p>
                             <a href="${s.mapLink}" target="_blank" class="map-link" onclick="event.stopPropagation()">Google Map Location Jueo 🗺️</a>
-                            <button style="margin-top:5px;">Dukan Andar Jao ➡️</button>
+                            <button class="main-btn" style="padding: 8px; font-size: 13px;">Dukan Andar Jao ➡️</button>
                         </div>
                     </div>
                 `;
@@ -147,15 +199,9 @@
 
         function openStore(storeId, storeName) {
             activeStoreId = storeId;
-            currentCategory = 'all';
             document.getElementById('storeView').style.display = 'none';
             document.getElementById('productView').style.display = 'block';
             document.getElementById('currentStoreTitle').innerText = storeName + " - Products";
-            
-            let buttons = document.querySelectorAll('.filter-btn');
-            buttons.forEach(b => b.classList.remove('active'));
-            buttons[0].classList.add('active');
-
             renderProducts();
         }
 
@@ -164,37 +210,27 @@
             document.getElementById('storeView').style.display = 'block';
         }
 
-        function filterCategory(cat, btnElement) {
-            currentCategory = cat;
-            let buttons = document.querySelectorAll('.filter-btn');
-            buttons.forEach(b => b.classList.remove('active'));
-            btnElement.classList.add('active');
-            renderProducts();
-        }
-
         function renderProducts() {
             let grid = document.getElementById('productGrid');
             grid.innerHTML = '';
             
-            let storeProducts = products.filter(p => p.storeId === activeStoreId);
-            if(currentCategory !== 'all') {
-                storeProducts = storeProducts.filter(p => p.category === currentCategory);
-            }
+            let storeProducts = products.filter(p => p.storeId === activeStoreId || !p.storeId);
 
             if(storeProducts.length === 0) {
-                grid.innerHTML = `<p style="grid-column: span 2; text-align: center; color: #777; padding: 20px;">Aa category ma koi vastu nathi.</p>`;
+                grid.innerHTML = `<p style="grid-column: span 2; text-align: center; color: #777; padding: 20px;">Aa dukan ma haji koi vastu nathi.</p>`;
                 return;
             }
 
             storeProducts.forEach(p => {
                 let cartItem = cart.find(i => i.id === p.id);
                 let qty = cartItem ? cartItem.qty : 0;
+                let specText = p.spec ? `📏 ${p.spec}` : '';
 
                 grid.innerHTML += `
                     <div class="card">
-                        <img src="${p.img}" alt="${p.name}">
+                        <img src="${p.img || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=300'}" alt="${p.name}">
                         <h3>${p.name}</h3>
-                        <div class="spec-text">📏 ${p.spec}</div>
+                        ${p.spec ? `<div class="spec-text">${specText}</div>` : ''}
                         <div class="price">₹${p.price} / ${p.unit}</div>
                         
                         <div class="qty-control">
@@ -210,7 +246,7 @@
         function changeQty(id, change) {
             let p = products.find(item => item.id === id);
             let existing = cart.find(item => item.id === id);
-            let step = p.category === 'fruit' ? 0.25 : 1;
+            let step = (p.category === 'fruit') ? 0.25 : 1;
 
             if(existing) {
                 existing.qty += (change * step);
@@ -245,9 +281,9 @@
                 if(item.category === 'fruit') fruitTotalGm += (item.qty * 1000);
 
                 list.innerHTML += `
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px; border-bottom:1px solid #eee; padding-bottom:5px;">
-                        <span><b>${item.name}</b> (${item.spec})<br>${item.qty} ${item.unit}</span>
-                        <span>₹${sub.toFixed(0)}</span>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px; border-bottom:1px solid #edf2f7; padding-bottom:6px;">
+                        <span><b>${item.name}</b> ${item.spec ? '('+item.spec+')':''}<br>${item.qty} ${item.unit}</span>
+                        <span style="font-weight:700; color:var(--primary);">₹${sub.toFixed(0)}</span>
                     </div>
                 `;
             });
@@ -297,7 +333,7 @@
 
             let msg = `*New Order*%0ANaam: ${name}%0APhone: ${phone}%0AAddress: ${address}%0A%0A*Items:*%0A`;
             cart.forEach(i => {
-                msg += `- ${i.name} [${i.spec}] (${i.qty} ${i.unit}) = ₹${(i.price * i.qty).toFixed(0)}%0A`;
+                msg += `- ${i.name} ${i.spec ? '['+i.spec+']':''} (${i.qty} ${i.unit}) = ₹${(i.price * i.qty).toFixed(0)}%0A`;
             });
             if(isLong) msg += `*Delivery:* 2km thi vadare (Extra Charge Lagse)%0A`;
             msg += `*Total Amount:* ₹${totalAmt.toFixed(0)}%0A%0A_Note: Order cancel ya exchange nahi thase._`;
