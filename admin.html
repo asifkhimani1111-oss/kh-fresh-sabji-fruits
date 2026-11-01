@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Admin Panel - Auto Resize Photo</title>
+    <title>Store Admin Panel - Fast & Easy</title>
     <style>
         :root { 
             --primary: #ff3366; 
@@ -11,7 +11,6 @@
             --bg: #f4f7f6; 
             --card-bg: #ffffff;
             --text-main: #2d3748;
-            --text-muted: #718096;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: var(--bg); color: var(--text-main); padding: 20px; max-width: 650px; margin: auto; padding-bottom: 50px; }
@@ -25,7 +24,7 @@
             text-align: center; 
             box-shadow: 0 8px 20px rgba(255, 51, 102, 0.25);
         }
-        header h2 { font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
+        header h2 { font-size: 22px; font-weight: 700; }
 
         .admin-panel { 
             background: var(--card-bg); 
@@ -84,22 +83,18 @@
             border-radius: 8px; 
             margin: 0; 
         }
-        .preview-img { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; margin-right: 10px; }
     </style>
 </head>
 <body>
 
     <header>
-        <h2>⚙️ Admin Panel (Auto-Resize Photo)</h2>
+        <h2>⚙️ Admin Panel (Fast Add)</h2>
     </header>
 
     <div class="admin-panel">
         <h3>🏪 1. Navi Dukan (Store) Add Karo</h3>
         <label>Dukan Nu Naam:</label>
         <input type="text" id="storeName" placeholder="e.g., Gujarat Super Market">
-        
-        <label>Dukan No Photo Select Karo (Auto-Resize):</label>
-        <input type="file" id="storeImgFile" accept="image/*">
         
         <label>Google Maps Location Link:</label>
         <input type="text" id="storeMap" placeholder="https://maps.app.goo.gl/...">
@@ -108,12 +103,12 @@
     </div>
 
     <div class="admin-panel">
-        <h3>📦 2. Product Add Karo (Auto-Resize Photo)</h3>
+        <h3>📦 2. Product Add Karo (Instant)</h3>
         <label>Kyi Dukan Ma Product Nakvi Chhe?</label>
         <select id="productStoreSelect"></select>
 
         <label>Product Nu Naam:</label>
-        <input type="text" id="pName" placeholder="e.g., Cotton Kurti / Fresh Keri">
+        <input type="text" id="pName" placeholder="e.g., Banana / Kurti / Mobile">
         
         <label>Category Select Karo:</label>
         <select id="pCat">
@@ -125,17 +120,14 @@
             <option value="other">📦 Other General Items</option>
         </select>
         
-        <label>Size / Vajan / Tol / Color / Number (Details):</label>
-        <input type="text" id="pSizeSpec" placeholder="e.g., Size: M/L, 1kg, 500ml">
+        <label>Size / Vajan / Tol / Color (Details):</label>
+        <input type="text" id="pSizeSpec" placeholder="e.g., Regular, Size: M, 1 Dozen">
 
         <label>Bhav (₹):</label>
-        <input type="number" id="pPrice" placeholder="Price">
+        <input type="number" id="pPrice" placeholder="50">
         
         <label>Unit (kg / pcs / dozen / pair):</label>
-        <input type="text" id="pUnit" placeholder="kg / pcs / pair">
-        
-        <label>Product No Photo Select Karo (Auto-Resize):</label>
-        <input type="file" id="pImgFile" accept="image/*">
+        <input type="text" id="pUnit" placeholder="kg / pcs">
         
         <button onclick="addProduct()">Product Add Karo</button>
     </div>
@@ -151,83 +143,38 @@
         function updateStoreDropdown() {
             let select = document.getElementById('productStoreSelect');
             select.innerHTML = '';
+            if(stores.length === 0) {
+                select.innerHTML = `<option value="">Phela dukan add karo</option>`;
+                return;
+            }
             stores.forEach(s => {
                 select.innerHTML += `<option value="${s.id}">${s.name}</option>`;
             });
         }
 
-        // Automatic Image Resizer & Compressor function
-        function processImage(fileInput, callback) {
-            let file = fileInput.files[0];
-            if (!file) {
-                callback(null);
-                return;
-            }
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                let img = new Image();
-                img.onload = function() {
-                    let canvas = document.createElement('canvas');
-                    let ctx = canvas.getContext('2d');
-                    
-                    // Max width/height limit to keep size light and fast
-                    let MAX_WIDTH = 400;
-                    let MAX_HEIGHT = 400;
-                    let width = img.width;
-                    let height = img.height;
-
-                    if (width > height) {
-                        if (width > MAX_WIDTH) {
-                            height *= MAX_WIDTH / width;
-                            width = MAX_WIDTH;
-                        }
-                    } else {
-                        if (height > MAX_HEIGHT) {
-                            width *= MAX_HEIGHT / height;
-                            height = MAX_HEIGHT;
-                        }
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    // Automatically compress to JPEG with 0.7 quality
-                    let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
-                    callback(compressedDataUrl);
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
         function addStore() {
             let name = document.getElementById('storeName').value;
             let mapLink = document.getElementById('storeMap').value;
-            let fileInput = document.getElementById('storeImgFile');
 
             if(!name) {
                 alert("Krupaya dukan nu naam lakho.");
                 return;
             }
 
-            processImage(fileInput, function(base64Img) {
-                let newId = stores.length > 0 ? stores[stores.length - 1].id + 1 : 1;
-                stores.push({
-                    id: newId,
-                    name,
-                    img: base64Img || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500",
-                    mapLink: mapLink || "https://maps.app.goo.gl/example"
-                });
-
-                localStorage.setItem('stores', JSON.stringify(stores));
-                alert("Navi Dukan Safaltapurvak Add Thai Gai!");
-                document.getElementById('storeName').value = '';
-                document.getElementById('storeMap').value = '';
-                document.getElementById('storeImgFile').value = '';
-                updateStoreDropdown();
-                renderAdminLists();
+            let newId = stores.length > 0 ? stores[stores.length - 1].id + 1 : 1;
+            stores.push({
+                id: newId,
+                name,
+                img: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500",
+                mapLink: mapLink || "https://maps.app.goo.gl/example"
             });
+
+            localStorage.setItem('stores', JSON.stringify(stores));
+            alert("Navi Dukan Safaltapurvak Add Thai Gai!");
+            document.getElementById('storeName').value = '';
+            document.getElementById('storeMap').value = '';
+            updateStoreDropdown();
+            renderAdminLists();
         }
 
         function addProduct() {
@@ -237,36 +184,36 @@
             let spec = document.getElementById('pSizeSpec').value;
             let price = parseFloat(document.getElementById('pPrice').value);
             let unit = document.getElementById('pUnit').value;
-            let fileInput = document.getElementById('pImgFile');
 
-            if(!name || !price || !unit) {
-                alert("Krupaya badhi mahiti bharo.");
+            if(!storeId || isNaN(storeId)) {
+                alert("Krupaya pehla koi dukan select karo.");
+                return;
+            }
+            if(!name || isNaN(price) || !unit) {
+                alert("Krupaya product nu naam, bhav ane unit barabar lakho.");
                 return;
             }
 
-            processImage(fileInput, function(base64Img) {
-                let newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;
-                products.push({ 
-                    id: newId, 
-                    storeId, 
-                    name, 
-                    category: cat, 
-                    spec: spec || "Standard", 
-                    price, 
-                    unit, 
-                    img: base64Img || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300" 
-                });
-                
-                localStorage.setItem('products', JSON.stringify(products));
-                alert("Product Safaltapurvak Add Thai Gai!");
-                
-                document.getElementById('pName').value = '';
-                document.getElementById('pSizeSpec').value = '';
-                document.getElementById('pPrice').value = '';
-                document.getElementById('pUnit').value = '';
-                document.getElementById('pImgFile').value = '';
-                renderAdminLists();
+            let newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;
+            products.push({ 
+                id: newId, 
+                storeId, 
+                name, 
+                category: cat, 
+                spec: spec || "Standard", 
+                price, 
+                unit, 
+                img: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300" 
             });
+            
+            localStorage.setItem('products', JSON.stringify(products));
+            alert("Product Safaltapurvak Add Thai Gai!");
+            
+            document.getElementById('pName').value = '';
+            document.getElementById('pSizeSpec').value = '';
+            document.getElementById('pPrice').value = '';
+            document.getElementById('pUnit').value = '';
+            renderAdminLists();
         }
 
         function deleteStore(id) {
@@ -297,10 +244,7 @@
             stores.forEach(s => {
                 sList.innerHTML += `
                     <div class="item-box">
-                        <div style="display:flex; align-items:center;">
-                            <img src="${s.img}" class="preview-img">
-                            <span><b>${s.name}</b></span>
-                        </div>
+                        <span><b>${s.name}</b></span>
                         <button class="del-btn" onclick="deleteStore(${s.id})">Delete</button>
                     </div>
                 `;
@@ -313,12 +257,9 @@
                 let storeName = storeObj ? storeObj.name : 'Unknown Store';
                 pList.innerHTML += `
                     <div class="item-box">
-                        <div style="display:flex; align-items:center;">
-                            <img src="${p.img}" class="preview-img">
-                            <div>
-                                <b>${p.name}</b> <span style="font-size:12px; color:#718096;">(${storeName})</span><br>
-                                <small style="color:#4a5568;">Spec: ${p.spec} | ₹${p.price} / ${p.unit}</small>
-                            </div>
+                        <div>
+                            <b>${p.name}</b> <span style="font-size:12px; color:#718096;">(${storeName})</span><br>
+                            <small style="color:#4a5568;">Spec: ${p.spec} | ₹${p.price} / ${p.unit}</small>
                         </div>
                         <button class="del-btn" onclick="deleteProduct(${p.id})">Delete</button>
                     </div>
