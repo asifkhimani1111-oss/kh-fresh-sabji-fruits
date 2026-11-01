@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Admin Panel - Fixed Image Upload</title>
+    <title>Store Admin Panel - 100% Working Image Fix</title>
     <style>
         :root { 
             --primary: #ff3366; 
@@ -142,41 +142,48 @@
         let stores = JSON.parse(localStorage.getItem('stores')) || [];
         let products = JSON.parse(localStorage.getItem('products')) || [];
 
-        // Image Compressor Helper (Fixes storage size limits)
-        function compressImage(file, callback) {
-            let reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = function (event) {
-                let img = new Image();
-                img.src = event.target.result;
-                img.onload = function () {
-                    let canvas = document.createElement('canvas');
-                    let MAX_WIDTH = 300;
-                    let MAX_HEIGHT = 300;
-                    let width = img.width;
-                    let height = img.height;
+        // Perfect Image Compressor & Resizer function
+        function processImage(fileInputId, callback) {
+            let fileInput = document.getElementById(fileInputId);
+            if (fileInput.files && fileInput.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    let img = new Image();
+                    img.src = e.target.result;
+                    img.onload = function () {
+                        let canvas = document.createElement('canvas');
+                        let ctx = canvas.getContext('2d');
+                        
+                        // Set max dimensions to keep size small for localStorage
+                        let MAX_WIDTH = 250;
+                        let MAX_HEIGHT = 250;
+                        let width = img.width;
+                        let height = img.height;
 
-                    if (width > height) {
-                        if (width > MAX_WIDTH) {
-                            height *= MAX_WIDTH / width;
-                            width = MAX_WIDTH;
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
                         }
-                    } else {
-                        if (height > MAX_HEIGHT) {
-                            width *= MAX_HEIGHT / height;
-                            height = MAX_HEIGHT;
-                        }
-                    }
 
-                    canvas.width = width;
-                    canvas.height = height;
-                    let ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    // Compress to JPEG with 0.7 quality
-                    let dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-                    callback(dataUrl);
-                }
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Convert to compressed JPEG base64 string
+                        let dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                        callback(dataUrl);
+                    };
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                callback(null);
             }
         }
 
@@ -195,19 +202,20 @@
         function addStore() {
             let name = document.getElementById('storeName').value;
             let mapLink = document.getElementById('storeMap').value;
-            let imageFile = document.getElementById('storeImageFile').files[0];
 
             if(!name) {
                 alert("Krupaya dukan nu naam lakho.");
                 return;
             }
 
-            let saveStoreData = (imgUrl) => {
+            processImage('storeImageFile', function(imgUrl) {
+                let finalImg = imgUrl || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500";
+                
                 let newId = stores.length > 0 ? stores[stores.length - 1].id + 1 : 1;
                 stores.push({
                     id: newId,
                     name,
-                    img: imgUrl || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500",
+                    img: finalImg,
                     mapLink: mapLink || "https://maps.app.goo.gl/example"
                 });
 
@@ -218,15 +226,7 @@
                 document.getElementById('storeImageFile').value = '';
                 updateStoreDropdown();
                 renderAdminLists();
-            };
-
-            if(imageFile) {
-                compressImage(imageFile, (compressedImg) => {
-                    saveStoreData(compressedImg);
-                });
-            } else {
-                saveStoreData(null);
-            }
+            });
         }
 
         function addProduct() {
@@ -236,7 +236,6 @@
             let spec = document.getElementById('pSizeSpec').value;
             let price = document.getElementById('pPrice').value;
             let unit = document.getElementById('pUnit').value;
-            let imageFile = document.getElementById('productImageFile').files[0];
 
             if(!storeId || isNaN(storeId)) {
                 alert("Krupaya pehla koi dukan select karo.");
@@ -247,7 +246,9 @@
                 return;
             }
 
-            let saveProductData = (imgUrl) => {
+            processImage('productImageFile', function(imgUrl) {
+                let finalImg = imgUrl || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300";
+
                 let newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;
                 products.push({ 
                     id: newId, 
@@ -257,7 +258,7 @@
                     spec: spec || "Standard", 
                     price, 
                     unit, 
-                    img: imgUrl || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300" 
+                    img: finalImg 
                 });
                 
                 localStorage.setItem('products', JSON.stringify(products));
@@ -269,15 +270,7 @@
                 document.getElementById('pUnit').value = '';
                 document.getElementById('productImageFile').value = '';
                 renderAdminLists();
-            };
-
-            if(imageFile) {
-                compressImage(imageFile, (compressedImg) => {
-                    saveProductData(compressedImg);
-                });
-            } else {
-                saveProductData(null);
-            }
+            });
         }
 
         function deleteStore(id) {
