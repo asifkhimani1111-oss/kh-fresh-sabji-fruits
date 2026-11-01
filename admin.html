@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Admin Panel - Fast Upload</title>
+    <title>Store Admin Panel - Auto Resize Photo</title>
     <style>
         :root { 
             --primary: #ff3366; 
@@ -90,7 +90,7 @@
 <body>
 
     <header>
-        <h2>⚙️ Fast Admin Panel</h2>
+        <h2>⚙️ Admin Panel (Auto-Resize Photo)</h2>
     </header>
 
     <div class="admin-panel">
@@ -98,7 +98,7 @@
         <label>Dukan Nu Naam:</label>
         <input type="text" id="storeName" placeholder="e.g., Gujarat Super Market">
         
-        <label>Dukan No Photo Select Karo (Gallery/Camera):</label>
+        <label>Dukan No Photo Select Karo (Auto-Resize):</label>
         <input type="file" id="storeImgFile" accept="image/*">
         
         <label>Google Maps Location Link:</label>
@@ -108,7 +108,7 @@
     </div>
 
     <div class="admin-panel">
-        <h3>📦 2. Product Add Karo (Fast Photo Upload)</h3>
+        <h3>📦 2. Product Add Karo (Auto-Resize Photo)</h3>
         <label>Kyi Dukan Ma Product Nakvi Chhe?</label>
         <select id="productStoreSelect"></select>
 
@@ -134,7 +134,7 @@
         <label>Unit (kg / pcs / dozen / pair):</label>
         <input type="text" id="pUnit" placeholder="kg / pcs / pair">
         
-        <label>Product No Photo Select Karo (Gallery/Camera):</label>
+        <label>Product No Photo Select Karo (Auto-Resize):</label>
         <input type="file" id="pImgFile" accept="image/*">
         
         <button onclick="addProduct()">Product Add Karo</button>
@@ -156,8 +156,8 @@
             });
         }
 
-        // Helper to convert uploaded file into base64 string
-        function convertImageToBase64(fileInput, callback) {
+        // Automatic Image Resizer & Compressor function
+        function processImage(fileInput, callback) {
             let file = fileInput.files[0];
             if (!file) {
                 callback(null);
@@ -165,7 +165,38 @@
             }
             let reader = new FileReader();
             reader.onload = function(e) {
-                callback(e.target.result);
+                let img = new Image();
+                img.onload = function() {
+                    let canvas = document.createElement('canvas');
+                    let ctx = canvas.getContext('2d');
+                    
+                    // Max width/height limit to keep size light and fast
+                    let MAX_WIDTH = 400;
+                    let MAX_HEIGHT = 400;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Automatically compress to JPEG with 0.7 quality
+                    let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    callback(compressedDataUrl);
+                };
+                img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -180,7 +211,7 @@
                 return;
             }
 
-            convertImageToBase64(fileInput, function(base64Img) {
+            processImage(fileInput, function(base64Img) {
                 let newId = stores.length > 0 ? stores[stores.length - 1].id + 1 : 1;
                 stores.push({
                     id: newId,
@@ -213,7 +244,7 @@
                 return;
             }
 
-            convertImageToBase64(fileInput, function(base64Img) {
+            processImage(fileInput, function(base64Img) {
                 let newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;
                 products.push({ 
                     id: newId, 
