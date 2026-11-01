@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Admin Panel - Fixed</title>
+    <title>Store Admin Panel - Camera & Gallery</title>
     <style>
         :root { 
             --primary: #ff3366; 
@@ -47,6 +47,10 @@
             outline: none; 
             background: #fcfdfe;
         }
+        input[type="file"] {
+            padding: 8px;
+            background: #fff;
+        }
         input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255, 51, 102, 0.1); }
 
         button { 
@@ -75,6 +79,18 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.03);
             border: 1px solid #edf2f7;
         }
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .item-thumb {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #edf2f7;
+        }
         .del-btn { 
             background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%); 
             width: auto; 
@@ -88,7 +104,7 @@
 <body>
 
     <header>
-        <h2>⚙️ Admin Panel</h2>
+        <h2>⚙️ Admin Panel (Camera & Gallery)</h2>
     </header>
 
     <div class="admin-panel">
@@ -98,6 +114,9 @@
         
         <label>Google Maps Location Link:</label>
         <input type="text" id="storeMap" placeholder="https://maps.app.goo.gl/...">
+
+        <label>Dukan No Photo (Camera / Gallery):</label>
+        <input type="file" id="storeImageFile" accept="image/*">
         
         <button onclick="addStore()">Dukan Add Karo</button>
     </div>
@@ -128,6 +147,9 @@
         
         <label>Unit (kg / pcs / dozen / pair):</label>
         <input type="text" id="pUnit" placeholder="kg / pcs / 12 pic">
+
+        <label>Product No Photo (Camera / Gallery):</label>
+        <input type="file" id="productImageFile" accept="image/*">
         
         <button onclick="addProduct()">Product Add Karo</button>
     </div>
@@ -139,6 +161,18 @@
     <script>
         let stores = JSON.parse(localStorage.getItem('stores')) || [];
         let products = JSON.parse(localStorage.getItem('products')) || [];
+
+        // Base64 Image Converter Helper
+        function getBase64(file, callback) {
+            let reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function () {
+                callback(reader.result);
+            };
+            reader.onerror = function (error) {
+                console.log('Error: ', error);
+            };
+        }
 
         function updateStoreDropdown() {
             let select = document.getElementById('productStoreSelect');
@@ -155,26 +189,38 @@
         function addStore() {
             let name = document.getElementById('storeName').value;
             let mapLink = document.getElementById('storeMap').value;
+            let imageFile = document.getElementById('storeImageFile').files[0];
 
             if(!name) {
                 alert("Krupaya dukan nu naam lakho.");
                 return;
             }
 
-            let newId = stores.length > 0 ? stores[stores.length - 1].id + 1 : 1;
-            stores.push({
-                id: newId,
-                name,
-                img: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500",
-                mapLink: mapLink || "https://maps.app.goo.gl/example"
-            });
+            let saveStoreData = (imgUrl) => {
+                let newId = stores.length > 0 ? stores[stores.length - 1].id + 1 : 1;
+                stores.push({
+                    id: newId,
+                    name,
+                    img: imgUrl || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500",
+                    mapLink: mapLink || "https://maps.app.goo.gl/example"
+                });
 
-            localStorage.setItem('stores', JSON.stringify(stores));
-            alert("Navi Dukan Safaltapurvak Add Thai Gai!");
-            document.getElementById('storeName').value = '';
-            document.getElementById('storeMap').value = '';
-            updateStoreDropdown();
-            renderAdminLists();
+                localStorage.setItem('stores', JSON.stringify(stores));
+                alert("Navi Dukan Safaltapurvak Add Thai Gai!");
+                document.getElementById('storeName').value = '';
+                document.getElementById('storeMap').value = '';
+                document.getElementById('storeImageFile').value = '';
+                updateStoreDropdown();
+                renderAdminLists();
+            };
+
+            if(imageFile) {
+                getBase64(imageFile, (base64Img) => {
+                    saveStoreData(base64Img);
+                });
+            } else {
+                saveStoreData(null);
+            }
         }
 
         function addProduct() {
@@ -184,6 +230,7 @@
             let spec = document.getElementById('pSizeSpec').value;
             let price = document.getElementById('pPrice').value;
             let unit = document.getElementById('pUnit').value;
+            let imageFile = document.getElementById('productImageFile').files[0];
 
             if(!storeId || isNaN(storeId)) {
                 alert("Krupaya pehla koi dukan select karo.");
@@ -194,26 +241,37 @@
                 return;
             }
 
-            let newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;
-            products.push({ 
-                id: newId, 
-                storeId, 
-                name, 
-                category: cat, 
-                spec: spec || "Standard", 
-                price, 
-                unit, 
-                img: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300" 
-            });
-            
-            localStorage.setItem('products', JSON.stringify(products));
-            alert("Product Safaltapurvak Add Thai Gai!");
-            
-            document.getElementById('pName').value = '';
-            document.getElementById('pSizeSpec').value = '';
-            document.getElementById('pPrice').value = '';
-            document.getElementById('pUnit').value = '';
-            renderAdminLists();
+            let saveProductData = (imgUrl) => {
+                let newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;
+                products.push({ 
+                    id: newId, 
+                    storeId, 
+                    name, 
+                    category: cat, 
+                    spec: spec || "Standard", 
+                    price, 
+                    unit, 
+                    img: imgUrl || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300" 
+                });
+                
+                localStorage.setItem('products', JSON.stringify(products));
+                alert("Product Safaltapurvak Add Thai Gai!");
+                
+                document.getElementById('pName').value = '';
+                document.getElementById('pSizeSpec').value = '';
+                document.getElementById('pPrice').value = '';
+                document.getElementById('pUnit').value = '';
+                document.getElementById('productImageFile').value = '';
+                renderAdminLists();
+            };
+
+            if(imageFile) {
+                getBase64(imageFile, (base64Img) => {
+                    saveProductData(base64Img);
+                });
+            } else {
+                saveProductData(null);
+            }
         }
 
         function deleteStore(id) {
@@ -244,7 +302,10 @@
             stores.forEach(s => {
                 sList.innerHTML += `
                     <div class="item-box">
-                        <span><b>${s.name}</b></span>
+                        <div class="item-info">
+                            <img src="${s.img}" class="item-thumb" alt="Store">
+                            <span><b>${s.name}</b></span>
+                        </div>
                         <button class="del-btn" onclick="deleteStore(${s.id})">Delete</button>
                     </div>
                 `;
@@ -257,9 +318,12 @@
                 let storeName = storeObj ? storeObj.name : 'Unknown Store';
                 pList.innerHTML += `
                     <div class="item-box">
-                        <div>
-                            <b>${p.name}</b> <span style="font-size:12px; color:#718096;">(${storeName})</span><br>
-                            <small style="color:#4a5568;">Spec: ${p.spec} | ₹${p.price} / ${p.unit}</small>
+                        <div class="item-info">
+                            <img src="${p.img}" class="item-thumb" alt="Product">
+                            <div>
+                                <b>${p.name}</b> <span style="font-size:12px; color:#718096;">(${storeName})</span><br>
+                                <small style="color:#4a5568;">Spec: ${p.spec} | ₹${p.price} / ${p.unit}</small>
+                            </div>
                         </div>
                         <button class="del-btn" onclick="deleteProduct(${p.id})">Delete</button>
                     </div>
