@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Admin Panel</title>
+    <title>Store Admin Panel - All Categories & Size/Weight</title>
     <style>
         :root { --primary: #333; --bg: #f8f9fa; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
@@ -12,86 +12,116 @@
         .admin-panel { background: #fff3cd; border: 1px solid #ffeeba; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
         input, select { width: 100%; padding: 8px; margin: 6px 0 12px 0; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
         button { background: #28a745; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
-        .product-list-item { background: white; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .item-box { background: white; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .del-btn { background: #dc3545; width: auto; padding: 5px 10px; font-size: 12px; margin: 0; }
-        .edit-btn { background: #ffc107; color: #000; width: auto; padding: 5px 10px; font-size: 12px; margin-right: 5px; }
     </style>
 </head>
 <body>
 
     <header>
-        <h2>⚙️ Dukan Admin Panel</h2>
+        <h2>⚙️ Admin Panel - All Categories & Specs</h2>
     </header>
 
     <div class="admin-panel">
-        <h3>Dukan Ni Mahiti Update Karo (Photo & Location)</h3>
+        <h3>1. Navi Dukan (Store) Add Karo</h3>
         <label>Dukan Nu Naam:</label>
-        <input type="text" id="adminStoreName">
+        <input type="text" id="storeName" placeholder="e.g., Gujarat Super Market">
         
         <label>Dukan na Photo ni Link (URL):</label>
-        <input type="text" id="adminStoreImg">
+        <input type="text" id="storeImg" placeholder="https://...">
         
         <label>Google Maps Location Link:</label>
-        <input type="text" id="adminStoreMap">
+        <input type="text" id="storeMap" placeholder="https://maps.app.goo.gl/...">
         
-        <button onclick="saveStoreInfo()">Dukan Update Karo</button>
+        <button onclick="addStore()">Dukan Add Karo</button>
     </div>
 
     <div class="admin-panel" style="background: #e2f0d9; border-color: #c3e6cb;">
-        <h3>Navi Product Add Karo</h3>
+        <h3>2. Product Add Karo (Size, Weight, Color, Tol Sathe)</h3>
+        <label>Kyi Dukan Ma Product Nakvi Chhe?</label>
+        <select id="productStoreSelect"></select>
+
         <label>Product Nu Naam:</label>
-        <input type="text" id="pName" placeholder="e.g., Kela / Banana">
+        <input type="text" id="pName" placeholder="e.g., Cotton Kurti / Fresh Keri / Mobile">
         
-        <label>Category:</label>
+        <label>Category Select Karo:</label>
         <select id="pCat">
-            <option value="fruit">Fruit & Sabji (Min 2kg, 250gm step)</option>
-            <option value="general">General Items (Min ₹500)</option>
+            <option value="fruit">🍎 Fruit & Sabji (Min 2kg, 250gm step)</option>
+            <option value="fashion">👕 Fashion & Clothing (Saree, Kurti, Shirt)</option>
+            <option value="electronics">📱 Electronics & Appliances</option>
+            <option value="home">🏠 Home, Kitchen & Decor</option>
+            <option value="beauty">✨ Beauty & Personal Care</option>
+            <option value="other">📦 Other General Items</option>
         </select>
         
+        <label>Size / Vajan / Tol / Color / Number (Details):</label>
+        <input type="text" id="pSizeSpec" placeholder="e.g., Size: M/L/XL, Color: Red, 1kg, 500ml, 32 inch">
+
         <label>Bhav (₹):</label>
         <input type="number" id="pPrice" placeholder="Price">
         
-        <label>Unit (kg / pcs / dozen):</label>
-        <input type="text" id="pUnit" placeholder="kg / pcs">
+        <label>Unit (kg / pcs / dozen / pair / set):</label>
+        <input type="text" id="pUnit" placeholder="kg / pcs / pair">
         
         <label>Photo ni Link (URL):</label>
         <input type="text" id="pImg" placeholder="https://...">
         
-        <button onclick="addProduct()">Product Add Karo</button>
+        <button onclick="addProduct()" style="background: #007bff;">Product Add Karo</button>
     </div>
 
-    <h3>Manage Existing Products</h3>
+    <h3>Manage Existing Stores & Products</h3>
+    <div id="adminStoresList" style="margin-top: 10px;"></div>
     <div id="adminProductList" style="margin-top: 10px;"></div>
 
     <script>
-        let storeData = JSON.parse(localStorage.getItem('storeData')) || {
-            name: "K.H Fresh Sabji & Fruit Store",
-            img: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500",
-            mapLink: "https://maps.app.goo.gl/example"
-        };
-
-        let products = JSON.parse(localStorage.getItem('products')) || [
-            { id: 1, name: "Kela (Banana - 1 Dozen = 1kg)", category: "fruit", price: 60, unit: "kg", img: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300" },
-            { id: 2, name: "Fresh Keri (Mango)", category: "fruit", price: 120, unit: "kg", img: "https://images.unsplash.com/photo-1553279768-865429fa0078?w=300" },
-            { id: 3, name: "Stylish T-Shirt", category: "general", price: 350, unit: "pcs", img: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=300" }
+        let stores = JSON.parse(localStorage.getItem('stores')) || [
+            { id: 1, name: "K.H Fresh Sabji & Fruit Store", img: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500", mapLink: "https://maps.app.goo.gl/example" }
         ];
 
-        document.getElementById('adminStoreName').value = storeData.name;
-        document.getElementById('adminStoreImg').value = storeData.img;
-        document.getElementById('adminStoreMap').value = storeData.mapLink;
+        let products = JSON.parse(localStorage.getItem('products')) || [
+            { id: 1, storeId: 1, name: "Kela (Banana)", category: "fruit", spec: "1 Dozen = 1kg", price: 60, unit: "kg", img: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300" }
+        ];
 
-        function saveStoreInfo() {
-            storeData.name = document.getElementById('adminStoreName').value;
-            storeData.img = document.getElementById('adminStoreImg').value;
-            storeData.mapLink = document.getElementById('adminStoreMap').value;
-            
-            localStorage.setItem('storeData', JSON.stringify(storeData));
-            alert("Dukan ni mahiti safaltapurvak update thai gai!");
+        function updateStoreDropdown() {
+            let select = document.getElementById('productStoreSelect');
+            select.innerHTML = '';
+            stores.forEach(s => {
+                select.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+            });
+        }
+
+        function addStore() {
+            let name = document.getElementById('storeName').value;
+            let img = document.getElementById('storeImg').value;
+            let mapLink = document.getElementById('storeMap').value;
+
+            if(!name) {
+                alert("Krupaya dukan nu naam lakho.");
+                return;
+            }
+
+            let newId = stores.length > 0 ? stores[stores.length - 1].id + 1 : 1;
+            stores.push({
+                id: newId,
+                name,
+                img: img || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500",
+                mapLink: mapLink || "https://maps.app.goo.gl/example"
+            });
+
+            localStorage.setItem('stores', JSON.stringify(stores));
+            alert("Navi Dukan Safaltapurvak Add Thai Gai!");
+            document.getElementById('storeName').value = '';
+            document.getElementById('storeImg').value = '';
+            document.getElementById('storeMap').value = '';
+            updateStoreDropdown();
+            renderAdminLists();
         }
 
         function addProduct() {
+            let storeId = parseInt(document.getElementById('productStoreSelect').value);
             let name = document.getElementById('pName').value;
             let cat = document.getElementById('pCat').value;
+            let spec = document.getElementById('pSizeSpec').value;
             let price = parseFloat(document.getElementById('pPrice').value);
             let unit = document.getElementById('pUnit').value;
             let img = document.getElementById('pImg').value;
@@ -104,51 +134,34 @@
             let newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;
             products.push({ 
                 id: newId, 
+                storeId, 
                 name, 
                 category: cat, 
+                spec: spec || "Standard", 
                 price, 
                 unit, 
                 img: img || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300" 
             });
             
             localStorage.setItem('products', JSON.stringify(products));
-            alert("Navi Product Add Thai Gai!");
+            alert("Product Safaltapurvak Add Thai Gai!");
             
             document.getElementById('pName').value = '';
+            document.getElementById('pSizeSpec').value = '';
             document.getElementById('pPrice').value = '';
             document.getElementById('pUnit').value = '';
             document.getElementById('pImg').value = '';
-            renderAdminProducts();
+            renderAdminLists();
         }
 
-        function renderAdminProducts() {
-            let list = document.getElementById('adminProductList');
-            list.innerHTML = '';
-
-            products.forEach(p => {
-                list.innerHTML += `
-                    <div class="product-list-item">
-                        <div>
-                            <b>${p.name}</b><br>
-                            <small>₹${p.price} / ${p.unit}</small>
-                        </div>
-                        <div style="display:flex;">
-                            <button class="edit-btn" onclick="editPrice(${p.id})">Edit</button>
-                            <button class="del-btn" onclick="deleteProduct(${p.id})">Delete</button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function editPrice(id) {
-            let p = products.find(item => item.id === id);
-            let newPrice = prompt("Navo Bhav Lakho (₹):", p.price);
-            if(newPrice) {
-                p.price = parseFloat(newPrice);
+        function deleteStore(id) {
+            if(confirm("Aa dukan ane teani badhi product delete thai jase. Kharekhar delete karvu chhe?")) {
+                stores = stores.filter(s => s.id !== id);
+                products = products.filter(p => p.storeId !== id);
+                localStorage.setItem('stores', JSON.stringify(stores));
                 localStorage.setItem('products', JSON.stringify(products));
-                renderAdminProducts();
-                alert("Bhav update thai gayo!");
+                updateStoreDropdown();
+                renderAdminLists();
             }
         }
 
@@ -156,11 +169,42 @@
             if(confirm("Tame aa product delete karva mango cho?")) {
                 products = products.filter(p => p.id !== id);
                 localStorage.setItem('products', JSON.stringify(products));
-                renderAdminProducts();
+                renderAdminLists();
             }
         }
 
-        renderAdminProducts();
+        function renderAdminLists() {
+            let sList = document.getElementById('adminStoresList');
+            let pList = document.getElementById('adminProductList');
+            
+            sList.innerHTML = '<h4>Dukano:</h4>';
+            stores.forEach(s => {
+                sList.innerHTML += `
+                    <div class="item-box">
+                        <span><b>${s.name}</b></span>
+                        <button class="del-btn" onclick="deleteStore(${s.id})">Delete Store</button>
+                    </div>
+                `;
+            });
+
+            pList.innerHTML = '<h4 style="margin-top:15px;">Products:</h4>';
+            products.forEach(p => {
+                let storeObj = stores.find(s => s.id === p.storeId);
+                let storeName = storeObj ? storeObj.name : 'Unknown Store';
+                pList.innerHTML += `
+                    <div class="item-box">
+                        <div>
+                            <b>${p.name}</b> (${storeName})<br>
+                            <small>Spec: ${p.spec} | ₹${p.price} / ${p.unit}</small>
+                        </div>
+                        <button class="del-btn" onclick="deleteProduct(${p.id})">Delete</button>
+                    </div>
+                `;
+            });
+        }
+
+        updateStoreDropdown();
+        renderAdminLists();
     </script>
 </body>
 </html>
