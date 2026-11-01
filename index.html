@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Local Store - Gadhada Bazaar</title>
+    <title>Gujarat Bazaar - All Categories & Specs</title>
     <style>
         :root { --primary: #ff3366; --bg: #f8f9fa; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
@@ -13,16 +13,22 @@
         .banner { background: #ffe6ec; color: #cc0033; padding: 10px; border-radius: 8px; font-size: 13px; margin-bottom: 15px; text-align: center; font-weight: bold; }
         
         .store-card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 15px; cursor: pointer; }
-        .store-card img { width: 100%; height: 160px; object-fit: cover; }
+        .store-card img { width: 100%; height: 160px; object-fit: cover; background: #eee; }
         .store-info { padding: 12px; }
         .store-info h3 { font-size: 18px; margin-bottom: 5px; }
         .store-info p { font-size: 13px; color: #666; margin-bottom: 8px; }
         .map-link { color: #0066cc; font-size: 13px; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 8px; }
 
+        /* Category Filter Bar */
+        .filter-bar { display: flex; gap: 8px; margin: 12px 0; overflow-x: auto; padding-bottom: 5px; }
+        .filter-btn { background: #e9ecef; color: #333; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; white-space: nowrap; font-weight: bold; width: auto; }
+        .filter-btn.active { background: var(--primary); color: white; }
+
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .card { background: white; border-radius: 10px; padding: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
         .card img { width: 100%; height: 120px; object-fit: cover; border-radius: 6px; background: #eee; }
-        .card h3 { font-size: 15px; margin: 8px 0 4px; }
+        .card h3 { font-size: 15px; margin: 6px 0 2px; }
+        .spec-text { font-size: 11px; color: #555; background: #f1f1f1; padding: 3px 6px; border-radius: 4px; margin-bottom: 6px; display: inline-block; }
         .price { color: var(--primary); font-weight: bold; font-size: 14px; }
         
         .qty-control { display: flex; align-items: center; justify-content: space-between; background: #f1f1f1; border-radius: 5px; margin-top: 8px; overflow: hidden; border: 1px solid #ddd; }
@@ -38,7 +44,7 @@
 <body>
 
     <header>
-        <h2>🛍️ Gadhada Bazaar</h2>
+        <h2>🛍️ Gujarat Bazaar</h2>
         <div onclick="openCart()" style="cursor: pointer; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 13px;">
             🛒 Cart (<span id="cartCount">0</span>)
         </div>
@@ -47,17 +53,29 @@
     <div class="container">
         <div class="banner">🕒 Order Time: Savar na 9 thi Sanj na 6</div>
 
-        <!-- Step 1: Store View -->
+        <!-- Step 1: Stores List View -->
         <div id="storeView">
-            <h3>Hamari Dukan</h3>
-            <p style="font-size: 13px; color: #666; margin-bottom: 10px;">Dukan par click karo andarni vastu jova mate:</p>
-            <div id="storeContainer"></div>
+            <h3>Gujaratni Badhi Dukano</h3>
+            <p style="font-size: 13px; color: #666; margin-bottom: 10px;">Jevi dukan ma jvu hoy teana par click karo:</p>
+            <div id="storesContainer"></div>
         </div>
 
-        <!-- Step 2: Product View (Without Filters) -->
+        <!-- Step 2: Store Products View -->
         <div id="productView" style="display: none;">
-            <div class="back-btn" onclick="goBackToStores()">⬅️ Dukan Paachi Jao</div>
+            <div class="back-btn" onclick="goBackToStores()">⬅️ Badhi Dukano Par Jao</div>
             <h3 id="currentStoreTitle">Products</h3>
+
+            <!-- Category Filter Bar -->
+            <div class="filter-bar" id="categoryFilterBar">
+                <button class="filter-btn active" onclick="filterCategory('all', this)">Badhi Vastu</button>
+                <button class="filter-btn" onclick="filterCategory('fruit', this)">🍎 Fruit & Sabji</button>
+                <button class="filter-btn" onclick="filterCategory('fashion', this)">👕 Fashion</button>
+                <button class="filter-btn" onclick="filterCategory('electronics', this)">📱 Electronics</button>
+                <button class="filter-btn" onclick="filterCategory('home', this)">🏠 Home</button>
+                <button class="filter-btn" onclick="filterCategory('beauty', this)">✨ Beauty</button>
+                <button class="filter-btn" onclick="filterCategory('other', this)">📦 Other</button>
+            </div>
+
             <div class="grid" id="productGrid" style="margin-top: 10px;"></div>
         </div>
     </div>
@@ -74,13 +92,13 @@
                 
                 <input type="text" id="custName" placeholder="Tamaru Naam" style="padding:8px; margin:5px 0; border:1px solid #ddd; display:block; width:100%; border-radius:4px;">
                 <input type="text" id="custPhone" placeholder="Mobile Number" style="padding:8px; margin:5px 0; border:1px solid #ddd; display:block; width:100%; border-radius:4px;">
-                <input type="text" id="custAddress" placeholder="Puro Address" style="padding:8px; margin:5px 0; border:1px solid #ddd; display:block; width:100%; border-radius:4px;">
+                <input type="text" id="custAddress" placeholder="Puro Address (Village/City)" style="padding:8px; margin:5px 0; border:1px solid #ddd; display:block; width:100%; border-radius:4px;">
                 <label style="font-size: 12px; display:block; margin:5px 0;"><input type="checkbox" id="longDist"> 2 Kilometer thi vadare dur chhe? (+ Delivery Charge)</label>
                 
                 <div style="font-size: 11px; color: #666; margin-top: 10px; background: #f1f1f1; padding: 8px; border-radius: 5px;">
                     ⚠️ <b>Niyamo:</b><br>
                     - Fruit/Sabji minimum 2kg (2000gm) jaruri chhe.<br>
-                    - Biji vastu mate min order ₹500.<br>
+                    - Biji badhi vastu mate min order ₹500.<br>
                     - Order cancel ya exchange nahi thase.
                 </div>
 
@@ -91,39 +109,53 @@
     </div>
 
     <script>
-        let storeData = JSON.parse(localStorage.getItem('storeData')) || {
-            name: "K.H Fresh Sabji & Fruit Store",
-            img: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500",
-            mapLink: "https://maps.app.goo.gl/example"
-        };
+        let stores = JSON.parse(localStorage.getItem('stores')) || [
+            { id: 1, name: "K.H Fresh Sabji & Fruit Store", img: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500", mapLink: "https://maps.app.goo.gl/example" }
+        ];
 
         let products = JSON.parse(localStorage.getItem('products')) || [
-            { id: 1, name: "Kela (Banana - 1 Dozen = 1kg)", category: "fruit", price: 60, unit: "kg", img: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300" },
-            { id: 2, name: "Fresh Keri (Mango)", category: "fruit", price: 120, unit: "kg", img: "https://images.unsplash.com/photo-1553279768-865429fa0078?w=300" },
-            { id: 3, name: "Stylish T-Shirt", category: "general", price: 350, unit: "pcs", img: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=300" }
+            { id: 1, storeId: 1, name: "Kela (Banana)", category: "fruit", spec: "1 Dozen = 1kg", price: 60, unit: "kg", img: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300" }
         ];
 
         let cart = [];
+        let activeStoreId = null;
+        let currentCategory = 'all';
 
-        function renderStore() {
-            let container = document.getElementById('storeContainer');
-            container.innerHTML = `
-                <div class="store-card" onclick="openStoreProducts()">
-                    <img src="${storeData.img}" alt="Store Photo">
-                    <div class="store-info">
-                        <h3>${storeData.name}</h3>
-                        <p>📍 Gadhada, Gujarat</p>
-                        <a href="${storeData.mapLink}" target="_blank" class="map-link" onclick="event.stopPropagation()">Google Map Location Jueo 🗺️</a>
-                        <button style="margin-top:5px;">Dukan Andar Jao ➡️</button>
+        function renderStores() {
+            let container = document.getElementById('storesContainer');
+            container.innerHTML = '';
+
+            if(stores.length === 0) {
+                container.innerHTML = `<p style="color:#777; text-align:center;">Haji koi dukan add thai nathi.</p>`;
+                return;
+            }
+
+            stores.forEach(s => {
+                container.innerHTML += `
+                    <div class="store-card" onclick="openStore(${s.id}, '${s.name}')">
+                        <img src="${s.img}" alt="Store Photo">
+                        <div class="store-info">
+                            <h3>${s.name}</h3>
+                            <p>📍 Gujarat, India</p>
+                            <a href="${s.mapLink}" target="_blank" class="map-link" onclick="event.stopPropagation()">Google Map Location Jueo 🗺️</a>
+                            <button style="margin-top:5px;">Dukan Andar Jao ➡️</button>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            });
         }
 
-        function openStoreProducts() {
+        function openStore(storeId, storeName) {
+            activeStoreId = storeId;
+            currentCategory = 'all';
             document.getElementById('storeView').style.display = 'none';
             document.getElementById('productView').style.display = 'block';
-            document.getElementById('currentStoreTitle').innerText = storeData.name + " - Products";
+            document.getElementById('currentStoreTitle').innerText = storeName + " - Products";
+            
+            let buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+            buttons[0].classList.add('active');
+
             renderProducts();
         }
 
@@ -132,12 +164,29 @@
             document.getElementById('storeView').style.display = 'block';
         }
 
+        function filterCategory(cat, btnElement) {
+            currentCategory = cat;
+            let buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            renderProducts();
+        }
+
         function renderProducts() {
             let grid = document.getElementById('productGrid');
             grid.innerHTML = '';
             
-            // Badhi product seedhi dekhase (Filter vagar)
-            products.forEach(p => {
+            let storeProducts = products.filter(p => p.storeId === activeStoreId);
+            if(currentCategory !== 'all') {
+                storeProducts = storeProducts.filter(p => p.category === currentCategory);
+            }
+
+            if(storeProducts.length === 0) {
+                grid.innerHTML = `<p style="grid-column: span 2; text-align: center; color: #777; padding: 20px;">Aa category ma koi vastu nathi.</p>`;
+                return;
+            }
+
+            storeProducts.forEach(p => {
                 let cartItem = cart.find(i => i.id === p.id);
                 let qty = cartItem ? cartItem.qty : 0;
 
@@ -145,6 +194,7 @@
                     <div class="card">
                         <img src="${p.img}" alt="${p.name}">
                         <h3>${p.name}</h3>
+                        <div class="spec-text">📏 ${p.spec}</div>
                         <div class="price">₹${p.price} / ${p.unit}</div>
                         
                         <div class="qty-control">
@@ -196,7 +246,7 @@
 
                 list.innerHTML += `
                     <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px; border-bottom:1px solid #eee; padding-bottom:5px;">
-                        <span><b>${item.name}</b><br>${item.qty} ${item.unit}</span>
+                        <span><b>${item.name}</b> (${item.spec})<br>${item.qty} ${item.unit}</span>
                         <span>₹${sub.toFixed(0)}</span>
                     </div>
                 `;
@@ -223,7 +273,7 @@
             }
 
             let fruitGm = cart.filter(i => i.category === 'fruit').reduce((sum, i) => sum + (i.qty * 1000), 0);
-            let generalTotal = cart.filter(i => i.category === 'general').reduce((sum, i) => sum + (i.price * i.qty), 0);
+            let generalTotal = cart.filter(i => i.category !== 'fruit').reduce((sum, i) => sum + (i.price * i.qty), 0);
             let totalAmt = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
 
             if(fruitGm > 0 && fruitGm < 2000) {
@@ -247,16 +297,16 @@
 
             let msg = `*New Order*%0ANaam: ${name}%0APhone: ${phone}%0AAddress: ${address}%0A%0A*Items:*%0A`;
             cart.forEach(i => {
-                msg += `- ${i.name} (${i.qty} ${i.unit}) = ₹${(i.price * i.qty).toFixed(0)}%0A`;
+                msg += `- ${i.name} [${i.spec}] (${i.qty} ${i.unit}) = ₹${(i.price * i.qty).toFixed(0)}%0A`;
             });
             if(isLong) msg += `*Delivery:* 2km thi vadare (Extra Charge Lagse)%0A`;
             msg += `*Total Amount:* ₹${totalAmt.toFixed(0)}%0A%0A_Note: Order cancel ya exchange nahi thase._`;
 
-            let whatsappNum = "919876543210"; // 👈 Tamaro WhatsApp number ahiya nakho
+            let whatsappNum = "919876543210"; 
             window.open(`https://wa.me/${whatsappNum}?text=${msg}`, '_blank');
         }
 
-        renderStore();
+        renderStores();
     </script>
 </body>
 </html>
