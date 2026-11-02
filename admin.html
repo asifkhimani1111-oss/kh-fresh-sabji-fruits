@@ -24,6 +24,8 @@ button.secondary{background:#64748b}
 .small{font-size:13px;color:#666}
 .hidden{display:none}
 .preview{max-width:120px;max-height:120px;object-fit:cover;border-radius:8px}
+label{display:block;margin-top:10px;font-weight:bold;font-size:14px}
+.help{font-size:13px;color:#555;background:#f1f5f9;padding:10px;border-radius:8px}
 </style>
 </head>
 <body>
@@ -76,7 +78,7 @@ button.secondary{background:#64748b}
 </select>
 
 <label>મુખ્ય કેટેગરી</label>
-<select id="category" onchange="loadSubcategories()">
+<select id="category" onchange="loadSubcategories();suggestType()">
 <option value="">કેટેગરી પસંદ કરો</option>
 </select>
 
@@ -89,36 +91,36 @@ button.secondary{background:#64748b}
 <input id="customSubcategory" placeholder="નવી પોતાની Sub-category (જરૂર હોય તો)">
 
 <input id="productName" placeholder="પ્રોડક્ટનું નામ">
-<input id="productPrice" type="number" min="0" placeholder="ભાવ ₹">
+<input id="productPrice" type="number" min="0" step="0.01" placeholder="એક વખતના માપનો ભાવ ₹">
 
-<label>માપ / Unit</label>
-<select id="unit">
-<option value="">માપ પસંદ કરો</option>
-<option>1 કિલો</option>
-<option>500 ગ્રામ</option>
-<option>250 ગ્રામ</option>
-<option>100 ગ્રામ</option>
-<option>1 ગ્રામ</option>
-<option>1 લિટર</option>
-<option>500 ML</option>
-<option>1 મીટર</option>
-<option>1 ફૂટ</option>
-<option>1 ઇંચ</option>
-<option>1 નંગ</option>
-<option>1 પીસ</option>
-<option>1 પેકેટ</option>
-<option>1 જોડી</option>
-<option>12 નંગ</option>
-<option>કસ્ટમ માપ</option>
+<label>પ્રોડક્ટનો પ્રકાર</label>
+<select id="categoryType" onchange="suggestStep()">
+<option value="other">બીજો સામાન</option>
+<option value="fruit">ફળ</option>
+<option value="vegetable">શાકભાજી</option>
 </select>
-<input id="customUnit" placeholder="કસ્ટમ માપ લખો">
+
+<label>એક વખતમાં કેટલું ઉમેરાશે?</label>
+<input id="unit" placeholder="જેમ કે 250 ગ્રામ, 500 ગ્રામ, 3 નંગ, 1 પેકેટ">
+
+<label>એક વખતનું વજન ગ્રામમાં</label>
+<input id="stepGrams" type="number" min="0" step="1" placeholder="જેમ કે 250">
+<p class="help">ફળ/શાક માટે વજન જરૂરી છે. કેળાંના 3 નંગ માટે 250 લખો. પેકેટ અથવા બીજા સામાન માટે 0 રાખો.</p>
+
+<label>એક વખતમાં કેટલા નંગ?</label>
+<input id="stepPieces" type="number" min="0" step="1" placeholder="જેમ કે 3">
+
+<p class="help">
+કેળાંનું ઉદાહરણ: ભાવ ₹12.50, માપ 3 નંગ, વજન 250 ગ્રામ, નંગ 3.
+આ પ્રમાણે 12 નંગ = ₹50 અને 1 કિલો થશે.
+</p>
 
 <h3>પ્રોડક્ટની વધુ વિગતો</h3>
 <input id="productSize" placeholder="Size (S, M, L, XL, 28, 30 વગેરે)">
 <input id="productColor" placeholder="Colour / રંગ">
 <input id="productDesign" placeholder="Design / ડિઝાઇન">
 <input id="shoeNumber" placeholder="Shoe Number (જેમ કે 6, 7, 8, 9)">
-<input id="productWeight" placeholder="વજન / Weight">
+<input id="productWeight" placeholder="વધારાનું વજન / Weight">
 <input id="productOther" placeholder="બીજી વિગતો">
 
 <label>પ્રોડક્ટનો ફોટો</label>
@@ -147,8 +149,7 @@ import {
 
 import {
  getFirestore, collection, addDoc, deleteDoc,
- doc, updateDoc, onSnapshot, serverTimestamp,
- getDocs, query, where
+ doc, updateDoc, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -213,6 +214,24 @@ window.loadSubcategories = function(){
   op.textContent=name;
   sub.appendChild(op);
  });
+};
+
+window.suggestType = function(){
+ const main=categorySelect.value;
+ const sub=document.getElementById("subcategory").value;
+ if(main==="Fruits & Vegetables"){
+  const isVeg=/vegetable|શાક|ભાજી/i.test(sub);
+  document.getElementById("categoryType").value=isVeg?"vegetable":"fruit";
+  suggestStep();
+ }
+};
+
+window.suggestStep = function(){
+ const type=document.getElementById("categoryType").value;
+ const grams=document.getElementById("stepGrams");
+ if(type==="fruit" && !grams.value) grams.value=250;
+ if(type==="vegetable" && !grams.value) grams.value=100;
+ if(type==="other" && !grams.value) grams.value=0;
 };
 
 async function compressImage(file){
@@ -420,6 +439,21 @@ async function deleteShop(s){
  }catch(e){alert("Delete Error: "+e.message);}
 }
 
+function resetProductForm(){
+ ["productName","productPrice","customCategory","customSubcategory",
+ "unit","stepGrams","stepPieces","productSize","productColor",
+ "productDesign","shoeNumber","productWeight","productOther"].forEach(id=>{
+  document.getElementById(id).value="";
+ });
+ document.getElementById("category").value="";
+ document.getElementById("subcategory").innerHTML=
+ '<option value="">પહેલાં મુખ્ય કેટેગરી પસંદ કરો</option>';
+ document.getElementById("categoryType").value="other";
+ document.getElementById("productPhoto").value="";
+ document.getElementById("productPreview").classList.add("hidden");
+ productPhotoBase64="";
+}
+
 window.addProduct = async function(){
  const shopId=document.getElementById("productShop").value;
  const shop=shops.find(s=>s.id===shopId);
@@ -429,15 +463,23 @@ window.addProduct = async function(){
   || document.getElementById("category").value;
  const subcategory=document.getElementById("customSubcategory").value.trim()
   || document.getElementById("subcategory").value;
- const unit=document.getElementById("customUnit").value.trim()
-  || document.getElementById("unit").value;
+ const unit=document.getElementById("unit").value.trim();
+ const categoryType=document.getElementById("categoryType").value;
+ const stepGrams=Number(document.getElementById("stepGrams").value||0);
+ const stepPieces=Number(document.getElementById("stepPieces").value||0);
 
- if(!shop || !name || !category || !Number.isFinite(price) || price<0 || !unit){
-  alert("દુકાન, નામ, કેટેગરી, ભાવ અને માપ પસંદ કરો");
+ if(!shop || !name || !category || !Number.isFinite(price) || price<=0 || !unit){
+  alert("દુકાન, નામ, કેટેગરી, યોગ્ય ભાવ અને માપ નાખો");
   return;
  }
-
- const categoryType=category==="Fruits & Vegetables" ? "fruitveg" : "other";
+ if((categoryType==="fruit" || categoryType==="vegetable") && stepGrams<=0){
+  alert("ફળ અને શાકભાજી માટે એક વખતનું વજન ગ્રામમાં નાખો");
+  return;
+ }
+ if(stepGrams<0 || stepPieces<0){
+  alert("વજન અને નંગની સંખ્યા યોગ્ય નાખો");
+  return;
+ }
 
  try{
   await addDoc(collection(db,"products"),{
@@ -449,6 +491,8 @@ window.addProduct = async function(){
    subcategory,
    categoryType,
    unit,
+   stepGrams,
+   stepPieces,
    size:document.getElementById("productSize").value.trim(),
    color:document.getElementById("productColor").value.trim(),
    design:document.getElementById("productDesign").value.trim(),
@@ -460,19 +504,7 @@ window.addProduct = async function(){
    createdAt:serverTimestamp()
   });
 
-  ["productName","productPrice","customCategory","customSubcategory",
-   "customUnit","productSize","productColor","productDesign",
-   "shoeNumber","productWeight","productOther"].forEach(id=>{
-    document.getElementById(id).value="";
-   });
-
-  document.getElementById("category").value="";
-  document.getElementById("subcategory").innerHTML=
-   '<option value="">પહેલાં મુખ્ય કેટેગરી પસંદ કરો</option>';
-  document.getElementById("unit").value="";
-  document.getElementById("productPhoto").value="";
-  document.getElementById("productPreview").classList.add("hidden");
-  productPhotoBase64="";
+  resetProductForm();
   alert("પ્રોડક્ટ ઉમેરાઈ ગઈ");
  }catch(e){alert("Error: "+e.message);}
 };
@@ -488,11 +520,13 @@ function renderProducts(){
   img.src=p.imageBase64||p.imageUrl||"";
   img.alt="Product";
   const info=document.createElement("div");
-  info.innerHTML="<b></b><br><span></span><br><span></span><br><span></span>";
+  info.innerHTML="<b></b><br><span></span><br><span></span><br><span></span><br><span></span>";
   info.querySelector("b").textContent=p.name||"";
   info.querySelectorAll("span")[0].textContent="દુકાન: "+(p.shopName||"");
   info.querySelectorAll("span")[1].textContent="ભાવ: ₹"+(p.price??"")+" / "+(p.unit||"");
-  info.querySelectorAll("span")[2].textContent="કેટેગરી: "+(p.category||"")+
+  info.querySelectorAll("span")[2].textContent="પ્રકાર: "+(p.categoryType||"other")+
+   " | વજન: "+(p.stepGrams||0)+" ગ્રામ | નંગ: "+(p.stepPieces||0);
+  info.querySelectorAll("span")[3].textContent="કેટેગરી: "+(p.category||"")+
    (p.subcategory?" - "+p.subcategory:"");
   const row=document.createElement("div");
   row.className="row";
@@ -518,14 +552,23 @@ function renderProducts(){
 async function editProduct(p){
  const name=prompt("પ્રોડક્ટનું નામ",p.name||"");
  if(name===null)return;
- const price=prompt("ભાવ",String(p.price??""));
+ const price=prompt("એક વખતના માપનો ભાવ",String(p.price??""));
  if(price===null)return;
- const unit=prompt("માપ / Unit",p.unit||"");
+ const unit=prompt("એક વખતનું માપ",p.unit||"");
  if(unit===null)return;
  const category=prompt("મુખ્ય કેટેગરી",p.category||"");
  if(category===null)return;
  const subcategory=prompt("Sub-category",p.subcategory||"");
  if(subcategory===null)return;
+ const type=prompt("પ્રકાર લખો: fruit / vegetable / other",p.categoryType||"other");
+ if(type===null)return;
+ if(!["fruit","vegetable","other"].includes(type.trim())){
+  alert("પ્રકાર fruit, vegetable અથવા other હોવો જોઈએ");return;
+ }
+ const grams=prompt("એક વખતનું વજન ગ્રામમાં",String(p.stepGrams??0));
+ if(grams===null)return;
+ const pieces=prompt("એક વખતમાં કેટલા નંગ?",String(p.stepPieces??0));
+ if(pieces===null)return;
  const size=prompt("Size",p.size||"");
  if(size===null)return;
  const color=prompt("Colour",p.color||"");
@@ -534,10 +577,19 @@ async function editProduct(p){
  if(design===null)return;
  const shoeNumber=prompt("Shoe Number",p.shoeNumber||"");
  if(shoeNumber===null)return;
+
  const numericPrice=Number(price);
- if(!Number.isFinite(numericPrice)||numericPrice<0){
-  alert("યોગ્ય ભાવ નાખો");return;
+ const numericGrams=Number(grams);
+ const numericPieces=Number(pieces);
+ if(!Number.isFinite(numericPrice)||numericPrice<=0||
+    !Number.isFinite(numericGrams)||numericGrams<0||
+    !Number.isFinite(numericPieces)||numericPieces<0){
+  alert("ભાવ, વજન અને નંગ યોગ્ય નાખો");return;
  }
+ if(type.trim()!=="other" && numericGrams<=0){
+  alert("ફળ અને શાકભાજીનું વજન 0 કરતાં વધારે હોવું જોઈએ");return;
+ }
+
  const shop=shops.find(s=>s.id===p.shopId);
  try{
   await updateDoc(doc(db,"products",p.id),{
@@ -546,7 +598,9 @@ async function editProduct(p){
    unit:unit.trim(),
    category:category.trim(),
    subcategory:subcategory.trim(),
-   categoryType:category.trim()==="Fruits & Vegetables"?"fruitveg":"other",
+   categoryType:type.trim(),
+   stepGrams:numericGrams,
+   stepPieces:numericPieces,
    size:size.trim(),
    color:color.trim(),
    design:design.trim(),
