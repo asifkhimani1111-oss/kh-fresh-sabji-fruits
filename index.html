@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K.H Fresh - Online Store</title>
+    <title>K.H Fresh</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -53,7 +53,6 @@
 
         <!-- ================= CUSTOMER VIEW ================= -->
         <div id="customerView">
-            <!-- Search & Banner -->
             <div class="mb-4 bg-white p-3 rounded-xl shadow-sm">
                 <div class="relative mb-3">
                     <input type="text" id="searchBox" onkeyup="filterProducts()" placeholder="પ્રોડક્ટ અથવા શાકભાજી/ફ્રૂટ શોધો..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500">
@@ -126,8 +125,8 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold mb-1 text-gray-600">ફોટાની લિંક (Image URL):</label>
-                    <input type="url" id="pImage" required class="w-full border p-2 rounded text-sm" placeholder="https://images.unsplash.com/...">
+                    <label class="block text-xs font-bold mb-1 text-gray-600">ફોટો અપલોડ કરો (Gallery/Camera):</label>
+                    <input type="file" id="pImageFile" accept="image/*" class="w-full border p-2 rounded text-sm bg-gray-50">
                 </div>
                 <button type="submit" class="w-full bg-pink-600 text-white font-bold py-2.5 rounded-lg hover:bg-pink-700 shadow text-sm">પ્રોડક્ટ ઉમેરો</button>
             </form>
@@ -166,7 +165,7 @@
                 <h3 class="font-bold text-gray-700">ડિલિવરી સરનામું:</h3>
                 <input type="text" id="custName" placeholder="તમારું નામ" class="w-full border p-2 rounded">
                 <input type="text" id="custPhone" placeholder="મોબાઈલ નંબર" class="w-full border p-2 rounded">
-                <textarea id="custAddress" placeholder="పూర్ણ સરનામું અને પિનકોડ" class="w-full border p-2 rounded"></textarea>
+                <textarea id="custAddress" placeholder="પૂર્ણ સરનામું અને પિનકોડ" class="w-full border p-2 rounded"></textarea>
             </div>
 
             <div class="text-[10px] text-red-500 font-bold mt-2 text-center">
@@ -412,7 +411,7 @@
                 msg += `\n⚖️ *કુલ વજન (Veg/Fruit):* ${totalVegWeight.toFixed(2)} Kg`;
             }
             msg += `\n💰 *કુલ બિલ રકમ: ₹${totalBill}*\n\n`;
-            msg += `📌 *શરતો:* ઓર્ડર કેન્સલ કે એક્સચેન્જ થશે નહીં.`;
+            msg += `📌 *શરતો:* ઓર્ડર કેન્સલ થશે નહીં | એક્સચેન્જ થશે નહીં.`;
 
             let url = `https://wa.me/${whatsappNum}?text=${encodeURIComponent(msg)}`;
             window.open(url, '_blank');
@@ -435,15 +434,31 @@
             let price = parseFloat(document.getElementById('pPrice').value);
             let size = document.getElementById('pSize').value;
             let weightKg = parseFloat(document.getElementById('pWeightKg').value) || 0;
-            let image = document.getElementById('pImage').value;
+            let fileInput = document.getElementById('pImageFile');
 
+            if (fileInput.files && fileInput.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    let image = e.target.result;
+                    saveNewProduct(name, category, price, size, weightKg, image);
+                }
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                // Default image if none chosen
+                let image = 'https://images.unsplash.com/photo-1582281298055-e2f38a520443?w=500';
+                saveNewProduct(name, category, price, size, weightKg, image);
+            }
+        }
+
+        function saveNewProduct(name, category, price, size, weightKg, image) {
             let newP = { id: Date.now(), category, name, price, originalPrice: Math.round(price * 1.3), size, weightKg, rating: 4.7, reviews: 10, image };
             products.push(newP);
             localStorage.setItem('kh_products', JSON.stringify(products));
 
-            alert('પ્રોડક્ટ ઉમેરાઈ ગઈ!');
+            alert('પ્રોડક્ટ સફળતાપૂર્વક ઉમેરાઈ ગઈ!');
             document.getElementById('productForm').reset();
             renderSellerProducts();
+            renderProducts();
         }
 
         function renderSellerProducts() {
@@ -473,6 +488,7 @@
             products = products.filter(p => p.id !== id);
             localStorage.setItem('kh_products', JSON.stringify(products));
             renderSellerProducts();
+            renderProducts();
         }
 
         renderProducts();
