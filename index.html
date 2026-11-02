@@ -55,7 +55,7 @@ footer{text-align:center;padding:20px;color:#666}
 <div class="rules">
 <h3>📌 ગ્રાહકો માટે જરૂરી નિયમો</h3>
 <p>🕘 ઓર્ડરનો સમય: સવારે 9:00 થી સાંજે 6:00 સુધી.</p>
-<p>🥬 ફળો અને શાકભાજીનો મિક્સ ઓર્ડર ઓછામાં ઓછો 2 કિલો.</p>
+<p>🥬 ફળો અને શાકભાજીનો મિક્સ ઓર્ડર ઓછામાં ઓછો 2 કિલો પ્રતિ દુકાન.</p>
 <p>🛒 અન્ય વસ્તુઓનો ઓર્ડર ઓછામાં ઓછો ₹500 પ્રતિ દુકાન.</p>
 <p>🚚 2 કિમીથી વધુ અંતરે ડિલિવરી ચાર્જ લાગી શકે છે.</p>
 <p>❌ ઓર્ડર કન્ફર્મ થયા પછી સામાન્ય રીતે કેન્સલેશન નહીં.</p>
@@ -120,49 +120,118 @@ function safeText(value){
  return String(value??"");
 }
 
-function isFruitVeg(product){
- if(product.categoryType==="fruitveg")return true;
- if(product.categoryType==="other")return false;
-
- const category=safeText(product.category).toLowerCase();
- return /fruit|vegetable|ફળ|શાક|sabji|ભાજી/.test(category);
+function money(value){
+ return Number(value||0).toFixed(2);
 }
 
-function getWeightKg(product,qty){
+// નવા અને જૂના બંને પ્રકારના પ્રોડક્ટ ઓળખે છે.
+function isFruitVeg(product){
+ const type=safeText(product.categoryType).toLowerCase();
+
+ if(type==="fruit" || type==="vegetable" || type==="fruitveg"){
+  return true;
+ }
+
+ if(type==="other")return false;
+
+ const category=safeText(product.category).toLowerCase();
+ const subcategory=safeText(product.subcategory).toLowerCase();
+
+ return /fruit|vegetable|ફળ|શાક|sabji|ભાજી/.test(category+" "+subcategory);
+}
+
+function getTypeLabel(product){
+ const type=safeText(product.categoryType).toLowerCase();
+
+ if(type==="fruit")return "ફળ";
+ if(type==="vegetable")return "શાકભાજી";
+ if(type==="fruitveg")return "ફળ / શાકભાજી";
+
+ return "બીજો સામાન";
+}
+
+// જૂના પ્રોડક્ટ માટે યુનિટમાંથી વજન શોધે છે.
+function legacyWeightGrams(product){
  const unit=safeText(product.unit).toLowerCase().replace(/\s/g,"");
 
- // 12 કેળાં = 1 કિલો
  if(/12pic|12piece|12pcs|12નંગ|12નં/.test(unit)){
-  return qty;
+  return 1000;
  }
 
- // 1 કિલો
- if(/1kilo|1kg|કિલો|કિલોગ્રામ/.test(unit)){
-  return qty;
- }
-
- // ગ્રામ: 250 ગ્રામ, 500 ગ્રામ વગેરે
  const gramMatch=unit.match(/(\d+(?:\.\d+)?)?(gram|gm|ગ્રામ)/);
  if(gramMatch){
-  const grams=Number(gramMatch[1]||1);
-  return qty*grams/1000;
+  return Number(gramMatch[1]||1);
  }
 
- // 500g, 250g જેવા યુનિટ
  const shortGram=unit.match(/(\d+(?:\.\d+)?)g/);
- if(shortGram){
-  return qty*Number(shortGram[1])/1000;
- }
+ if(shortGram)return Number(shortGram[1]);
 
- // અન્ય વજન આધારિત યુનિટ
  const kgMatch=unit.match(/(\d+(?:\.\d+)?)kg/);
- if(kgMatch)return qty*Number(kgMatch[1]);
+ if(kgMatch)return Number(kgMatch[1])*1000;
+
+ if(/1kilo|1કિલો|કિલોગ્રામ/.test(unit))return 1000;
 
  return 0;
 }
 
-function getShop(shopId){
- return shops.find(s=>s.id===shopId);
+function getStepGrams(product){
+ const saved=Number(product.stepGrams);
+
+ if(Number.isFinite(saved) && saved>0){
+  return saved;
+ }
+
+ return legacyWeightGrams(product);
+}
+
+function getStepPieces(product){
+ const saved=Number(product.stepPieces);
+
+ if(Number.isFinite(saved) && saved>0){
+  return saved;
+ }
+
+ const unit=safeText(product.unit).toLowerCase().replace(/\s/g,"");
+
+ const match=unit.match(/(\d+)(?:pic|piece|pcs|નંગ|નં)/);
+ if(match)return Number(match[1]);
+
+ return 0;
+}
+
+function getActualWeightGrams(item){
+ return getStepGrams(item)*item.qty;
+}
+
+function getActualPieces(item){
+ return getStepPieces(item)*item.qty;
+}
+
+function getQuantityLabel(item){
+ const grams=getActualWeightGrams(item);
+ const pieces=getActualPieces(item);
+
+ if(grams>0 && pieces>0){
+  return pieces+" નંગ • "+formatWeight(grams);
+ }
+
+ if(grams>0){
+  return formatWeight(grams);
+ }
+
+ if(pieces>0){
+  return pieces+" નંગ";
+ }
+
+ return item.qty+" × "+item.unit;
+}
+
+function formatWeight(grams){
+ if(grams>=1000){
+  const kg=grams/1000;
+  return Number.isInteger(kg)?kg+" કિલો":kg.toFixed(2)+" કિલો";
+ }
+ return grams+" ગ્રામ";
 }
 
 function getImage(item){
@@ -230,11 +299,12 @@ function renderShops(){
 
     const price=document.createElement("div");
     price.className="price";
-    price.textContent="₹"+Number(product.price||0)+" / "+(product.unit||"");
+    price.textContent="₹"+money(product.price)+" / "+(product.unit||"");
 
     const details=document.createElement("p");
     details.className="small";
     details.textContent=[
+     getTypeLabel(product),
      product.category,
      product.subcategory,
      product.size,
@@ -262,6 +332,7 @@ function renderShops(){
 
 function addToCart(product,shop){
  const existing=cart.find(i=>i.id===product.id);
+
  if(existing){
   existing.qty++;
  }else{
@@ -274,24 +345,34 @@ function addToCart(product,shop){
    price:Number(product.price||0),
    unit:product.unit||"",
    image:getImage(product),
-   categoryType:product.categoryType,
-   category:product.category,
+   categoryType:product.categoryType||"",
+   category:product.category||"",
+   subcategory:product.subcategory||"",
+   stepGrams:Number(product.stepGrams||0),
+   stepPieces:Number(product.stepPieces||0),
    qty:1
   });
  }
+
  renderCart();
 }
 
 function changeQty(id,change){
  const item=cart.find(i=>i.id===id);
  if(!item)return;
+
  item.qty+=change;
- if(item.qty<=0)cart=cart.filter(i=>i.id!==id);
+
+ if(item.qty<=0){
+  cart=cart.filter(i=>i.id!==id);
+ }
+
  renderCart();
 }
 
 function getShopGroups(){
  const groups={};
+
  cart.forEach(item=>{
   if(!groups[item.shopId]){
    groups[item.shopId]={
@@ -303,6 +384,7 @@ function getShopGroups(){
   }
   groups[item.shopId].items.push(item);
  });
+
  return Object.values(groups);
 }
 
@@ -310,23 +392,29 @@ function validateShop(group){
  const fruitItems=group.items.filter(isFruitVeg);
  const otherItems=group.items.filter(i=>!isFruitVeg(i));
 
- const fruitWeight=fruitItems.reduce((sum,item)=>
-  sum+getWeightKg(item,item.qty),0);
+ const fruitWeightGrams=fruitItems.reduce((sum,item)=>
+  sum+getActualWeightGrams(item),0);
 
  const otherTotal=otherItems.reduce((sum,item)=>
   sum+item.price*item.qty,0);
 
  const errors=[];
 
- if(fruitItems.length && fruitWeight<2){
-  errors.push("ફળો અને શાકભાજી ઓછામાં ઓછાં 2 કિલો હોવાં જોઈએ. હાલમાં "+fruitWeight.toFixed(2)+" કિલો છે.");
+ if(fruitItems.length && fruitWeightGrams<2000){
+  errors.push(
+   "ફળો અને શાકભાજી ઓછામાં ઓછાં 2 કિલો હોવાં જોઈએ. હાલમાં "+
+   formatWeight(fruitWeightGrams)+" છે."
+  );
  }
 
  if(otherItems.length && otherTotal<500){
-  errors.push("અન્ય વસ્તુઓનો ઓર્ડર ઓછામાં ઓછો ₹500 હોવો જોઈએ. હાલમાં ₹"+otherTotal.toFixed(2)+" છે.");
+  errors.push(
+   "અન્ય વસ્તુઓનો ઓર્ડર ઓછામાં ઓછો ₹500 હોવો જોઈએ. હાલમાં ₹"+
+   money(otherTotal)+" છે."
+  );
  }
 
- return {errors,fruitWeight,otherTotal};
+ return {errors,fruitWeightGrams,otherTotal};
 }
 
 function renderCart(){
@@ -362,7 +450,11 @@ function renderCart(){
   shop.textContent=item.shopName;
 
   const price=document.createElement("p");
-  price.textContent="₹"+item.price+" / "+item.unit;
+  price.textContent="₹"+money(item.price)+" / "+item.unit;
+
+  const actual=document.createElement("p");
+  actual.style.color="#15803d";
+  actual.textContent="કુલ જથ્થો: "+getQuantityLabel(item);
 
   const qty=document.createElement("div");
   qty.className="qty";
@@ -379,16 +471,16 @@ function renderCart(){
   plus.onclick=()=>changeQty(item.id,1);
 
   qty.append(minus,number,plus);
-  info.append(name,shop,price,qty);
+  info.append(name,shop,price,actual,qty);
 
   const amount=document.createElement("b");
-  amount.textContent="₹"+line.toFixed(2);
+  amount.textContent="₹"+money(line);
 
   div.append(img,info,amount);
   cartArea.append(div);
  });
 
- grandTotal.textContent="કુલ: ₹"+total.toFixed(2);
+ grandTotal.textContent="કુલ: ₹"+money(total);
  renderOrderValidation();
 }
 
@@ -404,8 +496,13 @@ function renderOrderValidation(){
 
   const title=document.createElement("b");
   title.textContent=group.shopName;
-
   box.append(title);
+
+  if(result.fruitWeightGrams>0){
+   const weight=document.createElement("p");
+   weight.textContent="ફળ / શાકનું કુલ વજન: "+formatWeight(result.fruitWeightGrams);
+   box.append(weight);
+  }
 
   if(result.errors.length){
    result.errors.forEach(error=>{
@@ -436,6 +533,7 @@ function renderOrderValidation(){
 
 function sendWhatsApp(group){
  const result=validateShop(group);
+
  if(result.errors.length){
   alert(result.errors.join("\n"));
   return;
@@ -459,6 +557,7 @@ function sendWhatsApp(group){
  }
 
  let number=safeText(group.whatsapp).replace(/\D/g,"");
+
  if(number.length===10)number="91"+number;
 
  if(number.length<11){
@@ -478,20 +577,22 @@ function sendWhatsApp(group){
  group.items.forEach((item,index)=>{
   const amount=item.price*item.qty;
   total+=amount;
-  message+=(index+1)+". "+item.name+"\n";
-  message+="માપ: "+item.unit+"\n";
-  message+="જથ્થો: "+item.qty+"\n";
-  message+="ભાવ: ₹"+item.price+"\n";
-  message+="કુલ: ₹"+amount.toFixed(2)+"\n";
 
-  // માત્ર જાહેર HTTP ફોટો URL જ WhatsApp સંદેશમાં મોકલી શકાય.
+  message+=(index+1)+". "+item.name+"\n";
+  message+="એક વખતનું માપ: "+item.unit+"\n";
+  message+="વખત: "+item.qty+"\n";
+  message+="કુલ જથ્થો: "+getQuantityLabel(item)+"\n";
+  message+="એક વખતનો ભાવ: ₹"+money(item.price)+"\n";
+  message+="કુલ: ₹"+money(amount)+"\n";
+
   if(item.image && /^https?:\/\//i.test(item.image)){
    message+="ફોટો: "+item.image+"\n";
   }
+
   message+="\n";
  });
 
- message+="ઓર્ડર કુલ: ₹"+total.toFixed(2)+"\n\n";
+ message+="ઓર્ડર કુલ: ₹"+money(total)+"\n\n";
  message+="કૃપા કરીને મારો ઓર્ડર કન્ફર્મ કરો.";
 
  const url="https://wa.me/"+number+"?text="+encodeURIComponent(message);
