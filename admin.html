@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>K.H Fresh & Fashion - Admin</title>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f3f4f6;color:#222}
@@ -26,8 +27,10 @@ button.secondary{background:#64748b}
 .preview{max-width:120px;max-height:120px;object-fit:cover;border-radius:8px}
 label{display:block;margin-top:10px;font-weight:bold;font-size:14px}
 .help{font-size:13px;color:#555;background:#f1f5f9;padding:10px;border-radius:8px}
+.status{font-size:13px;color:#2563eb}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -55,12 +58,16 @@ label{display:block;margin-top:10px;font-weight:bold;font-size:14px}
 
 <div class="card">
 <h2>નવી દુકાન ઉમેરો</h2>
+
 <input id="shopName" placeholder="દુકાનનું નામ">
 <input id="shopArea" placeholder="વિસ્તાર / ગામ">
 <input id="shopWhatsapp" placeholder="WhatsApp નંબર">
+
 <label>દુકાનનો ફોટો</label>
 <input type="file" id="shopPhoto" accept="image/*">
+<p class="status" id="shopPhotoStatus"></p>
 <img id="shopPreview" class="preview hidden">
+
 <button onclick="addShop()">દુકાન ઉમેરો</button>
 </div>
 
@@ -105,7 +112,11 @@ label{display:block;margin-top:10px;font-weight:bold;font-size:14px}
 
 <label>એક વખતનું વજન ગ્રામમાં</label>
 <input id="stepGrams" type="number" min="0" step="1" placeholder="જેમ કે 250">
-<p class="help">ફળ/શાક માટે વજન જરૂરી છે. કેળાંના 3 નંગ માટે 250 લખો. પેકેટ અથવા બીજા સામાન માટે 0 રાખો.</p>
+
+<p class="help">
+ફળ/શાક માટે વજન જરૂરી છે. કેળાંના 3 નંગ માટે 250 લખો.
+પેકેટ અથવા બીજા સામાન માટે 0 રાખો.
+</p>
 
 <label>એક વખતમાં કેટલા નંગ?</label>
 <input id="stepPieces" type="number" min="0" step="1" placeholder="જેમ કે 3">
@@ -125,6 +136,7 @@ label{display:block;margin-top:10px;font-weight:bold;font-size:14px}
 
 <label>પ્રોડક્ટનો ફોટો</label>
 <input type="file" id="productPhoto" accept="image/*">
+<p class="status" id="productPhotoStatus"></p>
 <img id="productPreview" class="preview hidden">
 
 <button onclick="addProduct()">પ્રોડક્ટ ઉમેરો</button>
@@ -139,6 +151,7 @@ label{display:block;margin-top:10px;font-weight:bold;font-size:14px}
 </div>
 
 <script type="module">
+
 import {initializeApp}
 from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 
@@ -153,7 +166,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 const firebaseConfig = {
- apiKey: "AIzaSyB_9gcc4UHtrIHeASd8txglLZ4kkc_clQU",
+ apiKey: "AIzaSyB_9gcc4UHtrIHeASd8txglZL4Zkkc_clQU",
  authDomain: "kh-fresh-fashion.firebaseapp.com",
  projectId: "kh-fresh-fashion",
  storageBucket: "kh-fresh-fashion.firebasestorage.app",
@@ -162,6 +175,7 @@ const firebaseConfig = {
 };
 
 const ADMIN_EMAIL = "asifkhimani1111@gmail.com";
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -207,7 +221,9 @@ Object.keys(categories).forEach(name=>{
 window.loadSubcategories = function(){
  const main=categorySelect.value;
  const sub=document.getElementById("subcategory");
+
  sub.innerHTML='<option value="">Sub-category પસંદ કરો</option>';
+
  (categories[main] || []).forEach(name=>{
   const op=document.createElement("option");
   op.value=name;
@@ -219,6 +235,7 @@ window.loadSubcategories = function(){
 window.suggestType = function(){
  const main=categorySelect.value;
  const sub=document.getElementById("subcategory").value;
+
  if(main==="Fruits & Vegetables"){
   const isVeg=/vegetable|શાક|ભાજી/i.test(sub);
   document.getElementById("categoryType").value=isVeg?"vegetable":"fruit";
@@ -229,73 +246,172 @@ window.suggestType = function(){
 window.suggestStep = function(){
  const type=document.getElementById("categoryType").value;
  const grams=document.getElementById("stepGrams");
+
  if(type==="fruit" && !grams.value) grams.value=250;
  if(type==="vegetable" && !grams.value) grams.value=100;
  if(type==="other" && !grams.value) grams.value=0;
 };
 
+/* PHOTO COMPRESSION - UPDATED */
+
 async function compressImage(file){
  if(!file) return "";
- if(file.size > 25*1024*1024){
-  throw new Error("ફોટો 25MB કરતાં નાનો હોવો જોઈએ");
+
+ if(!file.type.startsWith("image/")){
+  throw new Error("કૃપા કરીને ફોટો પસંદ કરો");
  }
+
  return new Promise((resolve,reject)=>{
+
   const reader=new FileReader();
-  reader.onerror=()=>reject(new Error("ફોટો વાંચી શકાયો નથી"));
+
+  reader.onerror=()=>{
+   reject(new Error("ફોટો વાંચી શકાયો નથી"));
+  };
+
   reader.onload=()=>{
+
    const img=new Image();
-   img.onerror=()=>reject(new Error("ફોટો ખોલી શકાયો નથી"));
-   img.onload=()=>{
-    const canvas=document.createElement("canvas");
-    let w=img.width,h=img.height;
-    const max=1000;
-    if(w>max || h>max){
-     const ratio=Math.min(max/w,max/h);
-     w=Math.round(w*ratio);
-     h=Math.round(h*ratio);
-    }
-    canvas.width=w;
-    canvas.height=h;
-    const ctx=canvas.getContext("2d");
-    ctx.drawImage(img,0,0,w,h);
-    let quality=0.72;
-    let result=canvas.toDataURL("image/jpeg",quality);
-    while(result.length>650000 && quality>0.3){
-     quality-=0.08;
-     result=canvas.toDataURL("image/jpeg",quality);
-    }
-    resolve(result);
+
+   img.onerror=()=>{
+    reject(new Error("ફોટો ખોલી શકાયો નથી"));
    };
+
+   img.onload=()=>{
+
+    const canvas=document.createElement("canvas");
+    const ctx=canvas.getContext("2d");
+
+    let width=img.width;
+    let height=img.height;
+
+    const maxSize=1200;
+    const targetLength=300000;
+
+    if(width>maxSize || height>maxSize){
+     const ratio=Math.min(maxSize/width,maxSize/height);
+     width=Math.round(width*ratio);
+     height=Math.round(height*ratio);
+    }
+
+    let quality=0.75;
+    let attempts=0;
+
+    function makeImage(){
+
+     canvas.width=width;
+     canvas.height=height;
+
+     ctx.fillStyle="#ffffff";
+     ctx.fillRect(0,0,width,height);
+     ctx.drawImage(img,0,0,width,height);
+
+     const result=canvas.toDataURL("image/jpeg",quality);
+
+     if(result.length<=targetLength){
+      resolve(result);
+      return;
+     }
+
+     attempts++;
+
+     if(attempts>=15){
+      reject(new Error("ફોટો પૂરતો નાનો થઈ શક્યો નથી. બીજો ફોટો પસંદ કરો."));
+      return;
+     }
+
+     if(quality>0.35){
+      quality=Math.max(0.35,quality-0.10);
+     }else{
+      width=Math.round(width*0.75);
+      height=Math.round(height*0.75);
+
+      if(width<160 || height<160){
+       reject(new Error("ફોટો નાનો થઈ શક્યો નથી."));
+       return;
+      }
+     }
+
+     makeImage();
+    }
+
+    makeImage();
+   };
+
    img.src=reader.result;
   };
+
   reader.readAsDataURL(file);
  });
 }
 
+/* SHOP PHOTO */
+
 document.getElementById("shopPhoto").addEventListener("change",async e=>{
+
+ const file=e.target.files[0];
+ if(!file)return;
+
+ const status=document.getElementById("shopPhotoStatus");
+
+ status.textContent="ફોટો નાનો થઈ રહ્યો છે...";
+
  try{
-  shopPhotoBase64=await compressImage(e.target.files[0]);
+  shopPhotoBase64=await compressImage(file);
+
   document.getElementById("shopPreview").src=shopPhotoBase64;
   document.getElementById("shopPreview").classList.remove("hidden");
- }catch(err){alert(err.message);}
+
+  status.textContent="ફોટો તૈયાર છે ✓";
+
+ }catch(err){
+  shopPhotoBase64="";
+  status.textContent="";
+  e.target.value="";
+  alert(err.message);
+ }
 });
+
+/* PRODUCT PHOTO */
 
 document.getElementById("productPhoto").addEventListener("change",async e=>{
+
+ const file=e.target.files[0];
+ if(!file)return;
+
+ const status=document.getElementById("productPhotoStatus");
+
+ status.textContent="ફોટો નાનો થઈ રહ્યો છે...";
+
  try{
-  productPhotoBase64=await compressImage(e.target.files[0]);
+  productPhotoBase64=await compressImage(file);
+
   document.getElementById("productPreview").src=productPhotoBase64;
   document.getElementById("productPreview").classList.remove("hidden");
- }catch(err){alert(err.message);}
+
+  status.textContent="ફોટો તૈયાર છે ✓";
+
+ }catch(err){
+  productPhotoBase64="";
+  status.textContent="";
+  e.target.value="";
+  alert(err.message);
+ }
 });
 
+/* LOGIN */
+
 window.login = async function(){
+
  const email=document.getElementById("email").value.trim();
  const password=document.getElementById("password").value;
  const msg=document.getElementById("loginMsg");
+
  if(email.toLowerCase()!==ADMIN_EMAIL.toLowerCase()){
   msg.textContent="આ Admin Email માન્ય નથી";
   return;
  }
+
  try{
   await signInWithEmailAndPassword(auth,email,password);
  }catch(e){
@@ -308,41 +424,60 @@ window.logout = async function(){
 };
 
 onAuthStateChanged(auth,user=>{
+
  if(user && user.email?.toLowerCase()===ADMIN_EMAIL.toLowerCase()){
+
   document.getElementById("loginBox").classList.add("hidden");
   document.getElementById("adminPanel").classList.remove("hidden");
   document.getElementById("adminEmail").textContent=user.email;
+
   startData();
+
  }else{
+
   stopShops?.();
   stopProducts?.();
+
   stopShops=null;
   stopProducts=null;
+
   document.getElementById("adminPanel").classList.add("hidden");
   document.getElementById("loginBox").classList.remove("hidden");
  }
 });
 
+/* FIRESTORE DATA */
+
 function startData(){
+
  if(stopShops || stopProducts) return;
 
  stopShops=onSnapshot(collection(db,"shops"),snap=>{
+
   shops=snap.docs.map(d=>({id:d.id,...d.data()}));
+
   renderShops();
   fillShopOptions();
+
  },err=>{
   alert("દુકાનો લોડ થઈ શકી નથી: "+err.message);
  });
 
  stopProducts=onSnapshot(collection(db,"products"),snap=>{
+
   products=snap.docs.map(d=>({id:d.id,...d.data()}));
+
   renderProducts();
+
  },err=>{
   alert("પ્રોડક્ટ લોડ થઈ શકી નથી: "+err.message);
  });
 }
 
+/* ADD SHOP */
+
 window.addShop = async function(){
+
  const name=document.getElementById("shopName").value.trim();
  const area=document.getElementById("shopArea").value.trim();
  const whatsapp=document.getElementById("shopWhatsapp").value.trim();
@@ -351,120 +486,204 @@ window.addShop = async function(){
   alert("દુકાનનું નામ, વિસ્તાર અને WhatsApp નંબર નાખો");
   return;
  }
+
  try{
+
   await addDoc(collection(db,"shops"),{
-   name,area,whatsapp,
+   name,
+   area,
+   whatsapp,
    shopImageBase64,
    active:true,
    createdAt:serverTimestamp()
   });
+
   document.getElementById("shopName").value="";
   document.getElementById("shopArea").value="";
   document.getElementById("shopWhatsapp").value="";
   document.getElementById("shopPhoto").value="";
+
   document.getElementById("shopPreview").classList.add("hidden");
+  document.getElementById("shopPhotoStatus").textContent="";
+
   shopPhotoBase64="";
+
   alert("દુકાન ઉમેરાઈ ગઈ");
- }catch(e){alert("Error: "+e.message);}
+
+ }catch(e){
+  alert("Error: "+e.message);
+ }
 };
 
+/* SHOP SELECT */
+
 function fillShopOptions(){
+
  const select=document.getElementById("productShop");
  const old=select.value;
+
  select.innerHTML='<option value="">દુકાન પસંદ કરો</option>';
+
  shops.forEach(s=>{
+
   const op=document.createElement("option");
+
   op.value=s.id;
   op.textContent=s.name+" - "+s.area;
+
   select.appendChild(op);
  });
+
  if(shops.some(s=>s.id===old)) select.value=old;
 }
 
+/* RENDER SHOPS */
+
 function renderShops(){
+
  const box=document.getElementById("shopsList");
- if(!shops.length){box.textContent="હજુ કોઈ દુકાન નથી";return;}
+
+ if(!shops.length){
+  box.textContent="હજુ કોઈ દુકાન નથી";
+  return;
+ }
+
  box.innerHTML="";
+
  shops.forEach(s=>{
+
   const div=document.createElement("div");
   div.className="item";
+
   const img=document.createElement("img");
   img.src=s.shopImageBase64 || s.shopImageUrl || "";
   img.alt="Shop";
+
   const info=document.createElement("div");
+
   info.innerHTML="<b></b><br><span class='small'></span><br><span class='small'></span>";
+
   info.querySelector("b").textContent=s.name||"";
+
   info.querySelectorAll("span")[0].textContent="વિસ્તાર: "+(s.area||"");
   info.querySelectorAll("span")[1].textContent="WhatsApp: "+(s.whatsapp||"");
+
   const row=document.createElement("div");
   row.className="row";
+
   const edit=document.createElement("button");
   edit.className="edit";
   edit.textContent="Edit";
   edit.onclick=()=>editShop(s);
+
   const del=document.createElement("button");
   del.className="danger";
   del.textContent="Delete";
   del.onclick=()=>deleteShop(s);
+
   row.append(edit,del);
   div.append(img,info,row);
   box.appendChild(div);
  });
 }
 
+/* EDIT SHOP */
+
 async function editShop(s){
+
  const name=prompt("દુકાનનું નામ",s.name||"");
  if(name===null)return;
+
  const area=prompt("વિસ્તાર",s.area||"");
  if(area===null)return;
+
  const whatsapp=prompt("WhatsApp નંબર",s.whatsapp||"");
  if(whatsapp===null)return;
+
  try{
+
   await updateDoc(doc(db,"shops",s.id),{
-   name:name.trim(),area:area.trim(),whatsapp:whatsapp.trim()
+   name:name.trim(),
+   area:area.trim(),
+   whatsapp:whatsapp.trim()
   });
+
   alert("દુકાન અપડેટ થઈ");
- }catch(e){alert(e.message);}
+
+ }catch(e){
+  alert(e.message);
+ }
 }
 
+/* DELETE SHOP */
+
 async function deleteShop(s){
+
  if(!confirm("આ દુકાન અને તેની બધી પ્રોડક્ટ Delete કરવી છે?"))return;
+
  try{
+
   const related=products.filter(p=>p.shopId===s.id);
+
   for(const p of related){
    await deleteDoc(doc(db,"products",p.id));
   }
+
   await deleteDoc(doc(db,"shops",s.id));
+
   alert("દુકાન અને તેની પ્રોડક્ટ Delete થઈ ગઈ");
- }catch(e){alert("Delete Error: "+e.message);}
+
+ }catch(e){
+  alert("Delete Error: "+e.message);
+ }
 }
 
+/* RESET PRODUCT FORM */
+
 function resetProductForm(){
- ["productName","productPrice","customCategory","customSubcategory",
+
+ [
+ "productName","productPrice","customCategory","customSubcategory",
  "unit","stepGrams","stepPieces","productSize","productColor",
- "productDesign","shoeNumber","productWeight","productOther"].forEach(id=>{
+ "productDesign","shoeNumber","productWeight","productOther"
+ ].forEach(id=>{
   document.getElementById(id).value="";
  });
+
  document.getElementById("category").value="";
+
  document.getElementById("subcategory").innerHTML=
  '<option value="">પહેલાં મુખ્ય કેટેગરી પસંદ કરો</option>';
+
  document.getElementById("categoryType").value="other";
+
  document.getElementById("productPhoto").value="";
  document.getElementById("productPreview").classList.add("hidden");
+ document.getElementById("productPhotoStatus").textContent="";
+
  productPhotoBase64="";
 }
 
+/* ADD PRODUCT */
+
 window.addProduct = async function(){
+
  const shopId=document.getElementById("productShop").value;
  const shop=shops.find(s=>s.id===shopId);
+
  const name=document.getElementById("productName").value.trim();
  const price=Number(document.getElementById("productPrice").value);
+
  const category=document.getElementById("customCategory").value.trim()
   || document.getElementById("category").value;
+
  const subcategory=document.getElementById("customSubcategory").value.trim()
   || document.getElementById("subcategory").value;
+
  const unit=document.getElementById("unit").value.trim();
+
  const categoryType=document.getElementById("categoryType").value;
+
  const stepGrams=Number(document.getElementById("stepGrams").value||0);
  const stepPieces=Number(document.getElementById("stepPieces").value||0);
 
@@ -472,17 +691,21 @@ window.addProduct = async function(){
   alert("દુકાન, નામ, કેટેગરી, યોગ્ય ભાવ અને માપ નાખો");
   return;
  }
+
  if((categoryType==="fruit" || categoryType==="vegetable") && stepGrams<=0){
   alert("ફળ અને શાકભાજી માટે એક વખતનું વજન ગ્રામમાં નાખો");
   return;
  }
+
  if(stepGrams<0 || stepPieces<0){
   alert("વજન અને નંગની સંખ્યા યોગ્ય નાખો");
   return;
  }
 
  try{
+
   await addDoc(collection(db,"products"),{
+
    shopId,
    shopName:shop.name,
    name,
@@ -493,106 +716,166 @@ window.addProduct = async function(){
    unit,
    stepGrams,
    stepPieces,
+
    size:document.getElementById("productSize").value.trim(),
    color:document.getElementById("productColor").value.trim(),
    design:document.getElementById("productDesign").value.trim(),
    shoeNumber:document.getElementById("shoeNumber").value.trim(),
    weight:document.getElementById("productWeight").value.trim(),
    otherDetails:document.getElementById("productOther").value.trim(),
+
    imageBase64:productPhotoBase64,
+
    active:true,
    createdAt:serverTimestamp()
   });
 
   resetProductForm();
+
   alert("પ્રોડક્ટ ઉમેરાઈ ગઈ");
- }catch(e){alert("Error: "+e.message);}
+
+ }catch(e){
+  alert("Error: "+e.message);
+ }
 };
 
+/* RENDER PRODUCTS */
+
 function renderProducts(){
+
  const box=document.getElementById("productsList");
- if(!products.length){box.textContent="હજુ કોઈ પ્રોડક્ટ નથી";return;}
+
+ if(!products.length){
+  box.textContent="હજુ કોઈ પ્રોડક્ટ નથી";
+  return;
+ }
+
  box.innerHTML="";
+
  products.forEach(p=>{
+
   const div=document.createElement("div");
   div.className="item";
+
   const img=document.createElement("img");
   img.src=p.imageBase64||p.imageUrl||"";
   img.alt="Product";
+
   const info=document.createElement("div");
+
   info.innerHTML="<b></b><br><span></span><br><span></span><br><span></span><br><span></span>";
+
   info.querySelector("b").textContent=p.name||"";
+
   info.querySelectorAll("span")[0].textContent="દુકાન: "+(p.shopName||"");
-  info.querySelectorAll("span")[1].textContent="ભાવ: ₹"+(p.price??"")+" / "+(p.unit||"");
-  info.querySelectorAll("span")[2].textContent="પ્રકાર: "+(p.categoryType||"other")+
+
+  info.querySelectorAll("span")[1].textContent=
+   "ભાવ: ₹"+(p.price??"")+" / "+(p.unit||"");
+
+  info.querySelectorAll("span")[2].textContent=
+   "પ્રકાર: "+(p.categoryType||"other")+
    " | વજન: "+(p.stepGrams||0)+" ગ્રામ | નંગ: "+(p.stepPieces||0);
-  info.querySelectorAll("span")[3].textContent="કેટેગરી: "+(p.category||"")+
+
+  info.querySelectorAll("span")[3].textContent=
+   "કેટેગરી: "+(p.category||"")+
    (p.subcategory?" - "+p.subcategory:"");
+
   const row=document.createElement("div");
   row.className="row";
+
   const edit=document.createElement("button");
   edit.className="edit";
   edit.textContent="Edit";
   edit.onclick=()=>editProduct(p);
+
   const del=document.createElement("button");
   del.className="danger";
   del.textContent="Delete";
+
   del.onclick=async()=>{
    if(confirm("આ પ્રોડક્ટ Delete કરવી છે?")){
-    try{await deleteDoc(doc(db,"products",p.id));}
-    catch(e){alert(e.message);}
+    try{
+     await deleteDoc(doc(db,"products",p.id));
+    }catch(e){
+     alert(e.message);
+    }
    }
   };
+
   row.append(edit,del);
   div.append(img,info,row);
   box.appendChild(div);
  });
 }
 
+/* EDIT PRODUCT */
+
 async function editProduct(p){
+
  const name=prompt("પ્રોડક્ટનું નામ",p.name||"");
  if(name===null)return;
+
  const price=prompt("એક વખતના માપનો ભાવ",String(p.price??""));
  if(price===null)return;
+
  const unit=prompt("એક વખતનું માપ",p.unit||"");
  if(unit===null)return;
+
  const category=prompt("મુખ્ય કેટેગરી",p.category||"");
  if(category===null)return;
+
  const subcategory=prompt("Sub-category",p.subcategory||"");
  if(subcategory===null)return;
+
  const type=prompt("પ્રકાર લખો: fruit / vegetable / other",p.categoryType||"other");
  if(type===null)return;
+
  if(!["fruit","vegetable","other"].includes(type.trim())){
-  alert("પ્રકાર fruit, vegetable અથવા other હોવો જોઈએ");return;
+  alert("પ્રકાર fruit, vegetable અથવા other હોવો જોઈએ");
+  return;
  }
+
  const grams=prompt("એક વખતનું વજન ગ્રામમાં",String(p.stepGrams??0));
  if(grams===null)return;
+
  const pieces=prompt("એક વખતમાં કેટલા નંગ?",String(p.stepPieces??0));
  if(pieces===null)return;
+
  const size=prompt("Size",p.size||"");
  if(size===null)return;
+
  const color=prompt("Colour",p.color||"");
  if(color===null)return;
+
  const design=prompt("Design",p.design||"");
  if(design===null)return;
+
  const shoeNumber=prompt("Shoe Number",p.shoeNumber||"");
  if(shoeNumber===null)return;
 
  const numericPrice=Number(price);
  const numericGrams=Number(grams);
  const numericPieces=Number(pieces);
+
  if(!Number.isFinite(numericPrice)||numericPrice<=0||
     !Number.isFinite(numericGrams)||numericGrams<0||
     !Number.isFinite(numericPieces)||numericPieces<0){
-  alert("ભાવ, વજન અને નંગ યોગ્ય નાખો");return;
+
+  alert("ભાવ, વજન અને નંગ યોગ્ય નાખો");
+  return;
  }
+
  if(type.trim()!=="other" && numericGrams<=0){
-  alert("ફળ અને શાકભાજીનું વજન 0 કરતાં વધારે હોવું જોઈએ");return;
+  alert("ફળ અને શાકભાજીનું વજન 0 કરતાં વધારે હોવું જોઈએ");
+  return;
  }
 
  const shop=shops.find(s=>s.id===p.shopId);
+
  try{
+
   await updateDoc(doc(db,"products",p.id),{
+
    name:name.trim(),
    price:numericPrice,
    unit:unit.trim(),
@@ -601,15 +884,22 @@ async function editProduct(p){
    categoryType:type.trim(),
    stepGrams:numericGrams,
    stepPieces:numericPieces,
+
    size:size.trim(),
    color:color.trim(),
    design:design.trim(),
    shoeNumber:shoeNumber.trim(),
+
    shopName:shop?.name||p.shopName||""
   });
+
   alert("પ્રોડક્ટ અપડેટ થઈ ગઈ");
- }catch(e){alert("Update Error: "+e.message);}
+
+ }catch(e){
+  alert("Update Error: "+e.message);
+ }
 }
+
 </script>
 </body>
 </html>
