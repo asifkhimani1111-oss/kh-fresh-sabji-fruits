@@ -51,15 +51,10 @@
             </div>
 
             <div id="storeManageArea" class="hidden space-y-4 border-t pt-3">
-                <!-- Status & Slab Info -->
+                <!-- Total Products Info -->
                 <div class="flex justify-between items-center text-xs bg-amber-50 p-2.5 rounded border border-amber-200">
                     <div>
-                        <span>સ્થિતિ: <b id="displayStatus" class="text-green-600">Active</b></span> | 
-                        <span>પ્રોડક્ટ્સ: <b id="displayProdCount">0</b></span>
-                    </div>
-                    <div class="space-x-1">
-                        <button onclick="toggleStoreStatus(true)" class="bg-green-600 text-white text-[10px] px-2 py-1 rounded font-bold">ચાલુ કરો</button>
-                        <button onclick="toggleStoreStatus(false)" class="bg-red-600 text-white text-[10px] px-2 py-1 rounded font-bold">બંધ કરો</button>
+                        <span>કુલ પ્રોડક્ટ્સ: <b id="displayProdCount" class="text-pink-600">0</b></span>
                     </div>
                 </div>
 
@@ -159,7 +154,7 @@
         }
 
         function saveStoreObj(id, name, phone, banner) {
-            let newStore = { id, name, phone, banner, status: 'active', products: [] };
+            let newStore = { id, name, phone, banner, products: [] };
             stores.push(newStore);
             localStorage.setItem('kh_all_stores', JSON.stringify(stores));
             alert('નવી દુકાન સફળતાપૂર્વક ઉમેરાઈ ગઈ!');
@@ -183,8 +178,6 @@
         function renderStoreDetails() {
             let s = stores.find(item => item.id === currentStoreId);
             if (!s) return;
-            document.getElementById('displayStatus').innerText = (s.status === 'active' ? 'Active (ચાલુ)' : 'Inactive (બંધ)');
-            document.getElementById('displayStatus').className = (s.status === 'active' ? 'text-green-600 font-bold' : 'text-red-600 font-bold');
             document.getElementById('displayProdCount').innerText = s.products.length;
 
             let list = document.getElementById('productList');
@@ -207,15 +200,6 @@
                     </div>
                 `;
             });
-        }
-
-        function toggleStoreStatus(isActive) {
-            let s = stores.find(item => item.id === currentStoreId);
-            if (s) {
-                s.status = isActive ? 'active' : 'inactive';
-                localStorage.setItem('kh_all_stores', JSON.stringify(stores));
-                renderStoreDetails();
-            }
         }
 
         function addProduct(e) {
@@ -246,7 +230,7 @@
                 localStorage.setItem('kh_all_stores', JSON.stringify(stores));
                 document.getElementById('productForm').reset();
                 btn.disabled = false;
-                renderStoreDetails();
+                    renderStoreDetails();
             }
         }
 
@@ -263,4 +247,3 @@
     </script>
 </body>
 </html>
-
