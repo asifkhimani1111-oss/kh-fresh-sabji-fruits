@@ -1,227 +1,484 @@
+
 <!DOCTYPE html>
 <html lang="gu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K.H Fresh - Master Multi-Store Admin</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;500;600;700&display=swap');
-        body { font-family: 'Noto Sans Gujarati', sans-serif; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K.H Fresh & Fashion Admin</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#172033}
+header{background:#172554;color:white;padding:17px;text-align:center}
+main{max-width:950px;margin:auto;padding:14px}
+.card{background:white;padding:16px;margin:13px 0;border-radius:13px;box-shadow:0 2px 9px #0001}
+input,select,textarea,button{width:100%;padding:12px;margin:6px 0;border:1px solid #cbd5e1;border-radius:8px;font-size:15px}
+button{background:#2563eb;color:white;border:0;font-weight:bold;cursor:pointer}
+.red{background:#dc2626}.green{background:#15803d}.gray{background:#475569}
+.item{border:1px solid #ddd;padding:12px;border-radius:10px;margin:10px 0}
+.item img{width:85px;height:85px;object-fit:cover;border-radius:8px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
+.small{font-size:13px;color:#64748b}
+.hidden{display:none}
+h2{font-size:19px}
+</style>
 </head>
-<body class="bg-gray-100 text-gray-800 p-3 md:p-6">
+<body>
 
-    <div class="max-w-3xl mx-auto bg-white p-5 rounded-2xl shadow-md space-y-6">
-        <h2 class="text-xl font-bold text-pink-600 border-b pb-2 flex justify-between items-center">
-            <span><i class="fa-solid fa-store"></i> Master Admin - Badhi Dukano Ekaj Page Upar</span>
-        </h2>
+<header>
+<h2>🛍️ K.H Fresh & Fashion</h2>
+Admin Panel
+</header>
 
-        <!-- Section 1: Add New Store -->
-        <div class="bg-pink-50 border border-pink-200 p-4 rounded-xl space-y-3">
-            <h3 class="font-bold text-sm text-pink-950"><i class="fa-solid fa-plus-circle"></i> નવી દુકાન ઉમેરો:</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-bold mb-1 text-gray-600">દુકાનનું નામ:</label>
-                    <input type="text" id="newStoreName" class="w-full border p-2 rounded text-sm bg-white" placeholder="દા.ત. Ayan SuperStore">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold mb-1 text-gray-600">WhatsApp નંબર (ઓર્ડર માટે):</label>
-                    <input type="text" id="newStorePhone" class="w-full border p-2 rounded text-sm bg-white" placeholder="9426852334">
-                </div>
-            </div>
-            <div>
-                <label class="block text-xs font-bold mb-1 text-gray-600">દુકાનનો મોલ બેનર ફોટો (Gallery/Camera):</label>
-                <input type="file" id="newStoreBanner" accept="image/*" class="w-full border p-2 rounded text-sm bg-white">
-            </div>
-            <button onclick="createNewStore()" class="w-full bg-pink-600 text-white font-bold py-2 rounded-lg text-xs shadow hover:bg-pink-700">નવી દુકાન સેવ કરો</button>
-        </div>
+<main>
 
-        <!-- Section 2: All Stores List & Products Management -->
-        <div class="space-y-4">
-            <h3 class="font-bold text-sm text-gray-800"><i class="fa-solid fa-list"></i> બધી દુકાનો અને પ્રોડક્ટ્સ યાદી:</h3>
-            <div id="allStoresContainer" class="space-y-6">
-                <!-- Dynamically loaded stores list -->
-            </div>
-        </div>
-    </div>
+<section id="loginBox" class="card">
+<h2>Admin Login</h2>
+<input id="email" type="email" placeholder="Admin Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p id="loginMsg" class="small"></p>
+</section>
 
-    <script>
-        let stores = JSON.parse(localStorage.getItem('kh_all_stores')) || [];
+<section id="panel" class="hidden">
 
-        function compressImage(file, maxWidth, maxHeight, quality, callback) {
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                let img = new Image();
-                img.onload = function() {
-                    let canvas = document.createElement('canvas');
-                    let width = img.width, height = img.height;
-                    if (width > height) {
-                        if (width > maxWidth) { height *= maxWidth / width; width = maxWidth; }
-                    } else {
-                        if (height > maxHeight) { width *= maxHeight / height; height = maxHeight; }
-                    }
-                    canvas.width = width; canvas.height = height;
-                    let ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    callback(canvas.toDataURL('image/jpeg', quality));
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
+<div class="card">
+<div class="row">
+<h2>Admin Dashboard</h2>
+<button class="red" onclick="logout()">Logout</button>
+</div>
+<p id="adminInfo" class="small"></p>
+</div>
 
-        function createNewStore() {
-            let name = document.getElementById('newStoreName').value.trim();
-            let phone = document.getElementById('newStorePhone').value.trim();
-            let bannerInput = document.getElementById('newStoreBanner');
+<div class="card">
+<h2>🏪 નવી દુકાન ઉમેરો</h2>
+<input id="shopName" placeholder="દુકાનનું નામ">
+<input id="owner" placeholder="માલિકનું નામ">
+<input id="shopPhone" placeholder="મોબાઇલ / WhatsApp નંબર">
+<input id="area" placeholder="વિસ્તાર / ગામ">
+<textarea id="address" placeholder="પૂરું સરનામું"></textarea>
+<label>દુકાનનો ફોટો</label>
+<input id="shopPhoto" type="file" accept="image/*">
+<img id="shopPreview" style="width:100px;display:none;border-radius:10px">
+<button onclick="addShop()">દુકાન ઉમેરો</button>
+<p id="shopMsg" class="small"></p>
+</div>
 
-            if (!name || !phone) {
-                alert('દુકાનનું નામ અને નંબર ભરવો ફરજિયાત છે!');
-                return;
-            }
+<div class="card">
+<h2>📦 નવી પ્રોડક્ટ ઉમેરો</h2>
+<select id="productShop"><option value="">દુકાન પસંદ કરો</option></select>
+<input id="productName" placeholder="પ્રોડક્ટનું નામ">
+<select id="category">
+<option value="Fruits & Vegetables">ફળો અને શાકભાજી</option>
+<option value="Grocery">કરિયાણું</option>
+<option value="Men">પુરુષોના કપડાં</option>
+<option value="Women">મહિલાઓના કપડાં</option>
+<option value="Kids">બાળકોના કપડાં</option>
+<option value="Footwear">ફૂટવેર</option>
+<option value="Beauty">બ્યુટી અને પર્સનલ કેર</option>
+<option value="Home">ઘરવખરી</option>
+<option value="Electronics">ઇલેક્ટ્રોનિક્સ</option>
+<option value="Other">અન્ય</option>
+</select>
+<input id="subcategory" placeholder="સબ કેટેગરી">
+<input id="price" type="number" min="0" placeholder="ભાવ ₹">
+<select id="unit">
+<option value="250gm">250 ગ્રામ</option>
+<option value="500gm">500 ગ્રામ</option>
+<option value="1kg">1 કિલો</option>
+<option value="2kg">2 કિલો</option>
+<option value="piece">નંગ</option>
+<option value="dozen">ડઝન</option>
+<option value="packet">પેકેટ</option>
+<option value="liter">લિટર</option>
+<option value="meter">મીટર</option>
+<option value="set">સેટ</option>
+<option value="box">બોક્સ</option>
+<option value="custom">કસ્ટમ</option>
+</select>
+<input id="weight" placeholder="વજન / માપ">
+<input id="size" placeholder="સાઇઝ: S, M, L, XL, XXL">
+<input id="color" placeholder="રંગ">
+<input id="shoeNumber" placeholder="ફૂટવેર નંબર">
+<input id="design" placeholder="ડિઝાઇન / મોડેલ">
+<input id="otherDetails" placeholder="બીજી માહિતી">
+<label>પ્રોડક્ટનો ફોટો</label>
+<input id="productPhoto" type="file" accept="image/*">
+<img id="productPreview" style="width:100px;display:none;border-radius:10px">
+<button onclick="addProduct()">પ્રોડક્ટ ઉમેરો</button>
+<p id="productMsg" class="small"></p>
+</div>
 
-            let storeId = 'store_' + Date.now();
-            let defaultBanner = 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1000';
+<div class="card">
+<h2>🏪 દુકાનોનું સંચાલન</h2>
+<div id="shopsList">લોડ થઈ રહ્યું છે...</div>
+</div>
 
-            if (bannerInput.files && bannerInput.files[0]) {
-                compressImage(bannerInput.files[0], 800, 400, 0.7, function(compressedUrl) {
-                    saveStoreObj(storeId, name, phone, compressedUrl);
-                });
-            } else {
-                saveStoreObj(storeId, name, phone, defaultBanner);
-            }
-        }
+<div class="card">
+<h2>🛍️ પ્રોડક્ટ્સનું સંચાલન</h2>
+<div id="productsList">લોડ થઈ રહ્યું છે...</div>
+</div>
 
-        function saveStoreObj(id, name, phone, banner) {
-            let newStore = { id, name, phone, banner, products: [] };
-            stores.push(newStore);
-            localStorage.setItem('kh_all_stores', JSON.stringify(stores));
-            alert('નવી દુકાન સફળતાપૂર્વક ઉમેરાઈ ગઈ!');
-            document.getElementById('newStoreName').value = '';
-            document.getElementById('newStorePhone').value = '';
-            document.getElementById('newStoreBanner').value = '';
-            renderAllStores();
-        }
+<div class="card">
+<h2>🧾 ઓર્ડર</h2>
+<div id="ordersList">લોડ થઈ રહ્યા છે...</div>
+</div>
 
-        function renderAllStores() {
-            let container = document.getElementById('allStoresContainer');
-            container.innerHTML = '';
+</section>
+</main>
 
-            if (stores.length === 0) {
-                container.innerHTML = `<p class="text-center text-gray-500 py-4 text-xs bg-gray-50 rounded-xl">હજુ સુધી કોઈ દુકાન ઉમેરી નથી.</p>`;
-                return;
-            }
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-            stores.forEach((s, storeIndex) => {
-                let productsHTML = '';
-                if (s.products && s.products.length > 0) {
-                    s.products.forEach((p, pIndex) => {
-                        productsHTML += `
-                            <div class="flex justify-between items-center bg-white p-2 rounded border shadow-sm text-xs">
-                                <div class="flex items-center space-x-2">
-                                    <img src="${p.image}" class="w-8 h-8 object-cover rounded">
-                                    <div>
-                                        <p class="font-bold">${p.name}</p>
-                                        <p class="text-gray-500">₹${p.price} | (${p.category})</p>
-                                    </div>
-                                </div>
-                                <button onclick="deleteProduct('${s.id}', ${p.id})" class="text-red-600 font-bold px-2 py-1 bg-gray-50 border rounded">ડિલીટ</button>
-                            </div>
-                        `;
-                    });
-                } else {
-                    productsHTML = `<p class="text-gray-400 text-xs text-center py-2">આ દુકાનમાં કોઈ પ્રોડક્ટ નથી.</p>`;
-                }
+<script>
+const firebaseConfig = {
+ apiKey: "AIzaSyB_9gcc4UHtrIHeASd8txglLZ4kkc_clQU",
+ authDomain: "kh-fresh-fashion.firebaseapp.com",
+ projectId: "kh-fresh-fashion",
+ storageBucket: "kh-fresh-fashion.firebasestorage.app",
+ messagingSenderId: "1013749791487",
+ appId: "1:1013749791487:web:3b1af0eb4f7497a30feaca"
+};
 
-                container.innerHTML += `
-                    <div class="bg-gray-50 border p-4 rounded-xl space-y-3 shadow-sm">
-                        <div class="flex justify-between items-center border-b pb-2">
-                            <div>
-                                <h4 class="font-bold text-base text-pink-600">${s.name}</h4>
-                                <p class="text-xs text-gray-500">WhatsApp: ${s.phone}</p>
-                            </div>
-                            <button onclick="deleteStore('${s.id}')" class="bg-red-50 text-red-600 border border-red-200 px-3 py-1 rounded text-xs font-bold shadow-sm">દુકાન ડિલીટ કરો</button>
-                        </div>
+firebase.initializeApp(firebaseConfig);
 
-                        <!-- Add Product Form for this store -->
-                        <form onsubmit="addProduct(event, '${s.id}')" class="space-y-2 bg-white p-3 rounded-lg border">
-                            <h5 class="font-bold text-xs text-gray-700">આ દુકાનમાં નવી પ્રોડક્ટ ઉમેરો:</h5>
-                            <input type="text" id="pName_${s.id}" required class="w-full border p-1.5 rounded text-xs" placeholder="પ્રોડક્ટનું નામ (દા.ત. Apple)">
-                            <div class="grid grid-cols-2 gap-2">
-                                <select id="pCat_${s.id}" class="border p-1.5 rounded text-xs">
-                                    <option value="veg_fruit">Vegetables & Fruits</option>
-                                    <option value="men">Men Clothing</option>
-                                    <option value="women">Women Clothing</option>
-                                    <option value="kids">Kids Clothing</option>
-                                    <option value="footwear">Footwear</option>
-                                    <option value="grocery">Grocery & Staples</option>
-                                    <option value="beauty">Beauty & Personal Care</option>
-                                    <option value="home">Home & Kitchen</option>
-                                    <option value="electronics">Electronics</option>
-                                    <option value="other">Other Items</option>
-                                </select>
-                                <input type="number" id="pPrice_${s.id}" required class="border p-1.5 rounded text-xs" placeholder="ભાવ (₹)">
-                            </div>
-                            <input type="text" id="pSize_${s.id}" class="w-full border p-1.5 rounded text-xs" placeholder="સાઈઝ / વજન ઓપ્શન (દા.ત. 250g, 500g, 1 Kg)">
-                            <input type="file" id="pImage_${s.id}" accept="image/*" class="w-full border p-1.5 rounded text-xs bg-gray-50">
-                            <button type="submit" class="w-full bg-gray-800 text-white font-bold py-1.5 rounded text-xs shadow">પ્રોડક્ટ ઉમેરો</button>
-                        </form>
+const auth=firebase.auth();
+const db=firebase.firestore();
 
-                        <!-- Products List -->
-                        <div class="space-y-1.5 max-h-40 overflow-y-auto">
-                            ${productsHTML}
-                        </div>
-                    </div>
-                `;
-            });
-        }
+const ADMIN_EMAIL="asifkhimani1111@gmail.com";
+const ADMIN_UID="g5BmaKZp3QQ1FnXkYc6WIDBlRVn1";
 
-        function addProduct(e, storeId) {
-            e.preventDefault();
-            let s = stores.find(item => item.id === storeId);
-            if (!s) return;
+let shopsCache=[];
+let productsCache=[];
+let shopImage="";
+let productImage="";
 
-            let name = document.getElementById(`pName_${storeId}`).value.trim();
-            let category = document.getElementById(`pCat_${storeId}`).value;
-            let price = parseFloat(document.getElementById(`pPrice_${storeId}`).value);
-            let sizeOptions = document.getElementById(`pSize_${storeId}`).value.trim() || (category === 'veg_fruit' ? '250g, 500g, 1 Kg, 2 Kg' : 'Standard');
-            let fileInput = document.getElementById(`pImage_${storeId}`);
+function $(id){return document.getElementById(id)}
+function msg(id,text){$(id).textContent=text}
 
-            if (fileInput.files && fileInput.files[0]) {
-                compressImage(fileInput.files[0], 500, 500, 0.7, function(compressedUrl) {
-                    s.products.push({ id: Date.now(), category, name, price, sizeOptions, image: compressedUrl });
-                    localStorage.setItem('kh_all_stores', JSON.stringify(stores));
-                    renderAllStores();
-                });
-            } else {
-                let defaultImg = 'https://images.unsplash.com/photo-1582281298055-e2f38a520443?w=500';
-                s.products.push({ id: Date.now(), category, name, price, sizeOptions, image: defaultImg });
-                localStorage.setItem('kh_all_stores', JSON.stringify(stores));
-                renderAllStores();
-            }
-        }
+auth.onAuthStateChanged(async user=>{
+ if(user && user.email===ADMIN_EMAIL && user.uid===ADMIN_UID){
+  $("loginBox").classList.add("hidden");
+  $("panel").classList.remove("hidden");
+  $("adminInfo").textContent="Admin: "+user.email;
+  await loadAll();
+ }else{
+  $("panel").classList.add("hidden");
+  $("loginBox").classList.remove("hidden");
+  if(user) await auth.signOut();
+ }
+});
 
-        function deleteProduct(storeId, prodId) {
-            let s = stores.find(item => item.id === storeId);
-            if (s) {
-                s.products = s.products.filter(p => p.id !== prodId);
-                localStorage.setItem('kh_all_stores', JSON.stringify(stores));
-                renderAllStores();
-            }
-        }
+async function login(){
+ try{
+  await auth.signInWithEmailAndPassword(
+   $("email").value.trim(),
+   $("password").value
+  );
+  msg("loginMsg","Login થઈ રહ્યું છે...");
+ }catch(e){msg("loginMsg",e.message)}
+}
+async function logout(){await auth.signOut()}
 
-        function deleteStore(storeId) {
-            if (confirm('શું તમે ખરેખર આ દુકાન ડિલીટ કરવા માંગો છો?')) {
-                stores = stores.filter(s => s.id !== storeId);
-                localStorage.setItem('kh_all_stores', JSON.stringify(stores));
-                renderAllStores();
-            }
-        }
+function compressImage(file,maxKB=50){
+ return new Promise((resolve,reject)=>{
+  if(!file){resolve("");return}
+  if(!file.type.startsWith("image/")){
+   reject(new Error("યોગ્ય ફોટો પસંદ કરો"));return;
+  }
+  const reader=new FileReader();
+  reader.onerror=()=>reject(new Error("ફોટો વાંચી શકાયો નથી"));
+  reader.onload=()=>{
+   const img=new Image();
+   img.onerror=()=>reject(new Error("ફોટો ખોલી શકાયો નથી"));
+   img.onload=()=>{
+    let w=img.width,h=img.height;
+    const scale=Math.min(1,700/Math.max(w,h));
+    w=Math.round(w*scale);h=Math.round(h*scale);
+    const canvas=document.createElement("canvas");
+    canvas.width=w;canvas.height=h;
+    canvas.getContext("2d").drawImage(img,0,0,w,h);
+    let quality=.65;
+    let data=canvas.toDataURL("image/jpeg",quality);
+    while(data.length*0.75/1024>maxKB && quality>.25){
+     quality-=.08;
+     data=canvas.toDataURL("image/jpeg",quality);
+    }
+    resolve(data);
+   };
+   img.src=reader.result;
+  };
+  reader.readAsDataURL(file);
+ });
+}
 
-        renderAllStores();
-    </script>
+$("shopPhoto").addEventListener("change",async e=>{
+ try{
+  shopImage=await compressImage(e.target.files[0]);
+  $("shopPreview").src=shopImage;
+  $("shopPreview").style.display=shopImage?"block":"none";
+ }catch(err){msg("shopMsg",err.message)}
+});
+
+$("productPhoto").addEventListener("change",async e=>{
+ try{
+  productImage=await compressImage(e.target.files[0]);
+  $("productPreview").src=productImage;
+  $("productPreview").style.display=productImage?"block":"none";
+ }catch(err){msg("productMsg",err.message)}
+});
+
+async function addShop(){
+ try{
+  const name=$("shopName").value.trim();
+  if(!name)return msg("shopMsg","દુકાનનું નામ લખો");
+
+  await db.collection("shops").add({
+   name,
+   shopName:name,
+   owner:$("owner").value.trim(),
+   phone:$("shopPhone").value.trim(),
+   area:$("area").value.trim(),
+   address:$("address").value.trim(),
+   imageBase64:shopImage,
+   active:true,
+   paid:false,
+   subscriptionEndAt:null,
+   createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  ["shopName","owner","shopPhone","area","address"].forEach(id=>$(id).value="");
+  $("shopPhoto").value="";
+  $("shopPreview").style.display="none";
+  shopImage="";
+  msg("shopMsg","દુકાન ઉમેરાઈ ગઈ!");
+  await loadAll();
+ }catch(e){msg("shopMsg","ભૂલ: "+e.message)}
+}
+
+async function addProduct(){
+ try{
+  const shopId=$("productShop").value;
+  const name=$("productName").value.trim();
+  const price=Number($("price").value);
+  if(!shopId)return msg("productMsg","દુકાન પસંદ કરો");
+  if(!name)return msg("productMsg","પ્રોડક્ટનું નામ લખો");
+  if(!Number.isFinite(price)||price<0)return msg("productMsg","યોગ્ય ભાવ લખો");
+
+  const shop=shopsCache.find(s=>s.id===shopId);
+  const category=$("category").value;
+  const veg=category==="Fruits & Vegetables";
+
+  await db.collection("products").add({
+   shopId,
+   shopName:shop?.name||shop?.shopName||"",
+   name,
+   category,
+   categoryType:veg?"veg_fruit":"other",
+   subcategory:$("subcategory").value.trim(),
+   price,
+   unit:$("unit").value,
+   weight:$("weight").value.trim(),
+   size:$("size").value.trim(),
+   color:$("color").value.trim(),
+   shoeNumber:$("shoeNumber").value.trim(),
+   design:$("design").value.trim(),
+   otherDetails:$("otherDetails").value.trim(),
+   imageBase64:productImage,
+   stepGrams:veg?250:0,
+   stepPieces:1,
+   active:true,
+   createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  ["productName","subcategory","price","weight","size","color","shoeNumber","design","otherDetails"].forEach(id=>$(id).value="");
+  $("productPhoto").value="";
+  $("productPreview").style.display="none";
+  productImage="";
+  msg("productMsg","પ્રોડક્ટ ઉમેરાઈ ગઈ!");
+  await loadAll();
+ }catch(e){msg("productMsg","ભૂલ: "+e.message)}
+}
+
+async function loadAll(){
+ try{
+  const [s,p,o]=await Promise.all([
+   db.collection("shops").get(),
+   db.collection("products").get(),
+   db.collection("orders").get()
+  ]);
+  shopsCache=s.docs.map(d=>({id:d.id,...d.data()}));
+  productsCache=p.docs.map(d=>({id:d.id,...d.data()}));
+  renderShops();
+  renderProducts();
+  renderOrders(o.docs.map(d=>({id:d.id,...d.data()})));
+
+  $("productShop").innerHTML=
+   '<option value="">દુકાન પસંદ કરો</option>'+
+   shopsCache.map(s=>`<option value="${s.id}">${escapeHTML(s.name||s.shopName||"દુકાન")}</option>`).join("");
+ }catch(e){
+  $("shopsList").textContent="ડેટા લોડ કરવામાં ભૂલ: "+e.message;
+ }
+}
+
+function escapeHTML(v){
+ return String(v??"").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+function renderShops(){
+ $("shopsList").innerHTML=shopsCache.map(s=>{
+  const count=productsCache.filter(p=>p.shopId===s.id).length;
+  const fee=Math.max(1,Math.ceil(count/30))*60;
+  const photo=s.imageBase64||s.banner||"";
+  return `<div class="item">
+   <div class="row">
+   ${photo?`<img src="${photo}">`:""}
+   <div><b>${escapeHTML(s.name||s.shopName)}</b>
+   <div class="small">${escapeHTML(s.area||"")}</div>
+   <div class="small">મોબાઇલ: ${escapeHTML(s.phone||"")}</div>
+   <div class="small">પ્રોડક્ટ્સ: ${count} | 30 દિવસની ફી: ₹${fee}</div>
+   <div class="small">સ્થિતિ: ${s.active?"ચાલુ":"બંધ"} | ચુકવણી: ${s.paid?"Paid":"Pending"}</div>
+   </div></div>
+   <button class="green" onclick="activateShop('${s.id}')">રોકડા મળ્યા – 30 દિવસ ચાલુ કરો</button>
+   <button class="gray" onclick="toggleShop('${s.id}',${!s.active})">${s.active?"દુકાન બંધ કરો":"દુકાન ચાલુ કરો"}</button>
+   <button class="gray" onclick="editShop('${s.id}')">દુકાન Edit</button>
+   <button class="red" onclick="deleteShop('${s.id}')">દુકાન Delete</button>
+  </div>`;
+ }).join("")||"હજુ કોઈ દુકાન નથી";
+}
+
+function renderProducts(){
+ $("productsList").innerHTML=productsCache.map(p=>`
+  <div class="item">
+   <div class="row">
+   ${p.imageBase64?`<img src="${p.imageBase64}">`:""}
+   <div><b>${escapeHTML(p.name)}</b>
+   <div class="small">${escapeHTML(p.shopName||"")}</div>
+   <div>₹${Number(p.price)||0} / ${escapeHTML(p.unit||"")}</div>
+   <div class="small">${escapeHTML(p.category||"")}</div>
+   </div></div>
+   <button class="gray" onclick="editProduct('${p.id}')">Edit</button>
+   <button class="gray" onclick="toggleProduct('${p.id}',${!p.active})">${p.active===false?"ચાલુ કરો":"બંધ કરો"}</button>
+   <button class="red" onclick="deleteProduct('${p.id}')">Delete</button>
+  </div>`).join("")||"હજુ કોઈ પ્રોડક્ટ નથી";
+}
+
+function renderOrders(orders){
+ orders.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+ $("ordersList").innerHTML=orders.map(o=>{
+  const items=Array.isArray(o.items)?o.items:[];
+  return `<div class="item">
+   <b>ઓર્ડર: ${escapeHTML(o.id)}</b>
+   <div class="small">ગ્રાહક: ${escapeHTML(o.customerName||o.name||"")}</div>
+   <div class="small">ફોન: ${escapeHTML(o.phone||o.customerPhone||"")}</div>
+   <div class="small">સરનામું: ${escapeHTML(o.address||"")}</div>
+   <div class="small">સ્થિતિ: ${escapeHTML(o.status||"નવો")}</div>
+   <div>${items.map(i=>`<div>${escapeHTML(i.name||"વસ્તુ")} × ${escapeHTML(i.qty||i.quantity||1)}</div>`).join("")}</div>
+   <b>કુલ: ₹${Number(o.total||o.totalAmount||0)}</b>
+   <button class="green" onclick="setOrder('${o.id}','Confirmed')">Confirm</button>
+   <button class="gray" onclick="setOrder('${o.id}','Completed')">Completed</button>
+   <button class="red" onclick="setOrder('${o.id}','Rejected')">Reject</button>
+  </div>`;
+ }).join("")||"હજુ કોઈ ઓર્ડર નથી";
+}
+
+async function activateShop(id){
+ const count=productsCache.filter(p=>p.shopId===id).length;
+ if(!count)return alert("પહેલાં પ્રોડક્ટ ઉમેરો");
+ const fee=Math.ceil(count/30)*60;
+ if(!confirm(`${count} પ્રોડક્ટ માટે 30 દિવસની રોકડ ફી ₹${fee} મળી છે?`))return;
+ try{
+  const end=new Date();
+  end.setDate(end.getDate()+30);
+  await db.collection("shops").doc(id).update({
+   active:true,paid:true,
+   subscriptionEndAt:firebase.firestore.Timestamp.fromDate(end)
+  });
+  await loadAll();
+ }catch(e){alert(e.message)}
+}
+
+async function toggleShop(id,value){
+ try{
+  await db.collection("shops").doc(id).update({active:value});
+  await loadAll();
+ }catch(e){alert(e.message)}
+}
+
+async function editShop(id){
+ const s=shopsCache.find(x=>x.id===id);if(!s)return;
+ const name=prompt("દુકાનનું નામ",s.name||s.shopName||"");
+ if(name===null)return;
+ const phone=prompt("મોબાઇલ નંબર",s.phone||"");
+ if(phone===null)return;
+ const area=prompt("વિસ્તાર",s.area||"");
+ if(area===null)return;
+ const address=prompt("સરનામું",s.address||"");
+ if(address===null)return;
+ try{
+  await db.collection("shops").doc(id).update({name,shopName:name,phone,area,address});
+  await loadAll();
+ }catch(e){alert(e.message)}
+}
+
+async function deleteShop(id){
+ if(!confirm("દુકાન અને તેની બધી પ્રોડક્ટ્સ કાયમ માટે Delete કરવી છે?"))return;
+ try{
+  const batch=db.batch();
+  productsCache.filter(p=>p.shopId===id).forEach(p=>{
+   batch.delete(db.collection("products").doc(p.id));
+  });
+  batch.delete(db.collection("shops").doc(id));
+  await batch.commit();
+  await loadAll();
+ }catch(e){alert(e.message)}
+}
+
+async function editProduct(id){
+ const p=productsCache.find(x=>x.id===id);if(!p)return;
+ const name=prompt("પ્રોડક્ટનું નામ",p.name||"");
+ if(name===null)return;
+ const price=prompt("ભાવ",p.price??0);
+ if(price===null)return;
+ const unit=prompt("Unit",p.unit||"piece");
+ if(unit===null)return;
+ const size=prompt("Size",p.size||"");
+ if(size===null)return;
+ const color=prompt("Color",p.color||"");
+ if(color===null)return;
+ if(!Number.isFinite(Number(price))||Number(price)<0)return alert("યોગ્ય ભાવ લખો");
+ try{
+  await db.collection("products").doc(id).update({
+   name,price:Number(price),unit,size,color
+  });
+  await loadAll();
+ }catch(e){alert(e.message)}
+}
+
+async function toggleProduct(id,value){
+ try{
+  await db.collection("products").doc(id).update({active:value});
+  await loadAll();
+ }catch(e){alert(e.message)}
+}
+
+async function deleteProduct(id){
+ if(!confirm("આ પ્રોડક્ટ Delete કરવી છે?"))return;
+ try{
+  await db.collection("products").doc(id).delete();
+  await loadAll();
+ }catch(e){alert(e.message)}
+}
+
+async function setOrder(id,status){
+ try{
+  await db.collection("orders").doc(id).update({status});
+  await loadAll();
+ }catch(e){alert(e.message)}
+}
+</script>
 </body>
 </html>
