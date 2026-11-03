@@ -36,10 +36,10 @@
     <main class="max-w-7xl mx-auto px-2 md:px-4 py-4 space-y-6">
         <!-- Rules Notice -->
         <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-lg text-xs space-y-1 text-amber-900 font-medium shadow-sm">
-            <div><b>દુકાનનો સમય:</b> સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધી[span_3](start_span)[span_3](end_span)</div>
-            <div>⚠️ <b>ફ્રૂટ અને શાકભાજી નિયમ:</b> ૨૫૦g થી શરૂઆત, પરંતુ કુલ વજન ઓછામાં ઓછું <b>૨ કિલો (2 Kg)</b> હોવું ફરજિયાત છે[span_4](start_span)[span_4](end_span).</div>
+            <div><b>દુકાનનો સમય:</b> સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધી</div>
+            <div>⚠️ <b>ફ્રૂટ અને શાકભાજી નિયમ:</b> ૨૫૦g થી શરૂઆત, પરંતુ કુલ વજન ઓછામાં ઓછું <b>૨ કિલો (2 Kg)</b> હોવું ફરજિયાત છે.</div>
             <div>⚠️ <b>અન્ય વસ્તુઓ:</b> કુલ બિલ ઓછામાં ઓછું <b>₹૫૦૦</b> હોવું ફરજિયાત છે.</div>
-            <div class="text-red-600 font-bold">🚫 ઓર્ડર કેન્સલ નહીં થાય | 🚫 એક્સચેન્જ (બદલો) નહીં થાય[span_5](start_span)[span_5](end_span)</div>
+            <div class="text-red-600 font-bold">🚫 ઓર્ડર કેન્સલ નહીં થાય | 🚫 એક્સચેન્જ (બદલો) નહીં થાય</div>
         </div>
 
         <div id="noStoresMsg" class="hidden bg-white p-10 text-center rounded-xl shadow-sm">
@@ -58,11 +58,11 @@
             <div id="cartItemsList" class="space-y-2 mb-3 divide-y text-sm"></div>
 
             <div class="border-t pt-2 mb-3 space-y-1 text-xs bg-pink-50 p-2.5 rounded-lg">
-                <div class="flex justify-between" id="vegWeightRow">
+                <div class="flex justify-between">
                     <span>ફ્રૂટ/શાકભાજી કુલ વજન:</span>
                     <span id="cartTotalWeight" class="font-bold">0 Kg</span>
                 </div>
-                <div class="flex justify-between" id="otherAmountRow">
+                <div class="flex justify-between">
                     <span>અન્ય વસ્તુઓ કુલ બિલ:</span>
                     <span id="cartOtherAmount" class="font-bold">₹0</span>
                 </div>
@@ -104,14 +104,18 @@
                 <div class="bg-amber-50 p-3 rounded-lg border border-amber-200 space-y-1">
                     <p class="font-bold text-amber-900">સબ્સ્ક્રિપ્શન નિયમો:</p>
                     <p>• પ્રથમ મહિનો: <b>₹300</b> (1 થી 30 પ્રોડક્ટ્સ).</p>
-                    <p>• ત્યારબાદ: 1 થી 30 પ્રોડક્ટ્સના <b>₹60</b> અને 31+ પ્રોડક્ટ્સના <b>₹120</b> માસિક ભાડું[span_6](start_span)[span_6](end_span).</p>
+                    <p>• ત્યારબાદ: 1 થી 30 પ્રોડક્ટ્સના <b>₹60</b> અને 31+ પ્રોડક્ટ્સના <b>₹120</b> માસિક ભાડું.</p>
                 </div>
 
                 <div class="space-y-2 bg-gray-50 p-3 rounded-xl border">
-                    <h3 class="font-bold text-gray-800">નવી દુકાન રજીસ્ટર કરો અથવા લોગઈન કરો</h3>
+                    <h3 class="font-bold text-gray-800">દુકાન લોગઈન કરો અથવા રજીસ્ટર કરો</h3>
                     <input type="text" id="storeRegId" placeholder="દુકાન આઈડી (દા.ત. my_store)" class="w-full border p-2 rounded">
                     <input type="text" id="storeRegName" placeholder="દુકાનનું નામ" class="w-full border p-2 rounded">
                     <input type="text" id="storeRegPhone" placeholder="WhatsApp નંબર (91...)" class="w-full border p-2 rounded">
+                    <div>
+                        <label class="block font-bold text-gray-700 mb-1">દુકાનનો ફોટો (Gallery માંથી પસંદ કરો):</label>
+                        <input type="file" id="storeRegBannerFile" accept="image/*" class="w-full border p-1 rounded bg-white text-xs">
+                    </div>
                     <button onclick="registerStore()" class="w-full bg-pink-600 text-white font-bold py-2 rounded">દુકાન સેવ કરો</button>
                 </div>
 
@@ -122,21 +126,34 @@
                         <option value="veg_fruit">ફ્રૂટ કે શાકભાજી (250gm થી શરૂ, Min 2kg)</option>
                         <option value="general">અન્ય વસ્તુઓ (Min Bill ₹500)</option>
                     </select>
-                    <input type="number" id="prodPrice" placeholder="ભાવ (ફ્રૂટ/શાક માટે 1kg નો ભાવ, અન્ય માટે ફીixed ભાવ)" class="w-full border p-2 rounded">
-                    <input type="text" id="prodImage" placeholder="પ્રોડક્ટ ફોટો ઈમેજ URL" class="w-full border p-2 rounded">
+                    <input type="number" id="prodPrice" placeholder="ભાવ (ફ્રૂટ/શાક માટે 1kg નો ભાવ, અન્ય માટે ફિક્સ્ડ ભાવ)" class="w-full border p-2 rounded">
+                    <div>
+                        <label class="block font-bold text-gray-700 mb-1">પ્રોડક્ટનો ફોટો (Gallery માંથી પસંદ કરો):</label>
+                        <input type="file" id="prodImageFile" accept="image/*" class="w-full border p-1 rounded bg-white text-xs">
+                    </div>
                     <button onclick="addProductToStore()" class="w-full bg-green-600 text-white font-bold py-2 rounded">પ્રોડક્ટ ઉમેરો</button>
                     
                     <div id="sellerProductsList" class="space-y-1 mt-2"></div>
                 </div>
             </div>
 
-            <!-- Admin Tab -->
+            <!-- Admin Tab (Password Protected) -->
             <div id="adminTabContent" class="space-y-4 text-xs hidden">
-                <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                    <p class="font-bold text-blue-900">માસ્ટર એડમિન સિગ્નલ કંટ્રોલ:</p>
-                    <p>અહીંથી તમે UPI QR કે રોકડા (Cash) પેમેન્ટ મળ્યા પછી કોઈપણ દુકાનને 1-ક્લિકથી 30 દિવસ માટે એક્ટિવ કરી શકો છો.</p>
+                <div id="adminLoginBox" class="bg-gray-50 p-4 rounded-xl border space-y-2">
+                    <p class="font-bold text-gray-800">🔒 માસ્ટર એડમિન પાસવર્ડ નાખો:</p>
+                    <input type="password" id="adminPassInput" placeholder="એડમિન પાસવર્ડ (admin123)" class="w-full border p-2 rounded">
+                    <button onclick="verifyAdminPassword()" class="w-full bg-blue-600 text-white font-bold py-2 rounded">એડમિન લોગઈન કરો</button>
                 </div>
-                <div id="adminStoresList" class="space-y-3"></div>
+                <div id="adminDashboardBox" class="hidden space-y-3">
+                    <div class="bg-blue-50 p-3 rounded-lg border border-blue-200 flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-blue-900">માસ્ટર એડમિન સિગ્નલ કંટ્રોલ:</p>
+                            <p>કોઈપણ દુકાનને 1-ક્લિકથી 30 દિવસ માટે એક્ટિવ કરો.</p>
+                        </div>
+                        <button onclick="lockAdminPanel()" class="bg-red-500 text-white px-2 py-1 rounded text-[10px]">લોગઆઉટ</button>
+                    </div>
+                    <div id="adminStoresList" class="space-y-3"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -145,6 +162,7 @@
         let stores = JSON.parse(localStorage.getItem('kh_all_stores')) || [];
         let currentActiveStoreId = localStorage.getItem('kh_current_store_id') || '';
         let cart = [];
+        let isAdminLoggedIn = false;
 
         function renderAllStoresGrid() {
             let container = document.getElementById('allStoresGrid');
@@ -357,33 +375,75 @@
                 document.getElementById('adminTabContent').classList.remove('hidden');
                 document.getElementById('tabAdminBtn').className = "bg-pink-600 text-white px-3 py-1.5 rounded text-xs font-bold";
                 document.getElementById('tabSellerBtn').className = "bg-gray-200 text-gray-800 px-3 py-1.5 rounded text-xs font-bold";
-                renderAdminPanel();
+                
+                if(isAdminLoggedIn) {
+                    document.getElementById('adminLoginBox').classList.add('hidden');
+                    document.getElementById('adminDashboardBox').classList.remove('hidden');
+                    renderAdminPanel();
+                } else {
+                    document.getElementById('adminLoginBox').classList.remove('hidden');
+                    document.getElementById('adminDashboardBox').classList.add('hidden');
+                }
             }
+        }
+
+        function verifyAdminPassword() {
+            let pass = document.getElementById('adminPassInput').value.trim();
+            if(pass === 'admin123') {
+                isAdminLoggedIn = true;
+                document.getElementById('adminLoginBox').classList.add('hidden');
+                document.getElementById('adminDashboardBox').classList.remove('hidden');
+                renderAdminPanel();
+            } else {
+                alert('❌ ખોટો પાસવર્ડ! કૃપા કરીને સાચો પાસવર્ડ નાખો.');
+            }
+        }
+
+        function lockAdminPanel() {
+            isAdminLoggedIn = false;
+            document.getElementById('adminPassInput').value = '';
+            document.getElementById('adminLoginBox').classList.remove('hidden');
+            document.getElementById('adminDashboardBox').classList.add('hidden');
         }
 
         function registerStore() {
             let id = document.getElementById('storeRegId').value.trim();
             let name = document.getElementById('storeRegName').value.trim();
             let phone = document.getElementById('storeRegPhone').value.trim();
+            let bannerFileElem = document.getElementById('storeRegBannerFile');
 
             if(!id || !name || !phone) {
-                alert('કૃપા કરીને બધી વિગતો ભરો.');
+                alert('કૃપા કરીને દુકાન આઈડી, નામ અને નંબર ભરો.');
                 return;
             }
 
             let existing = stores.find(s => s.id === id);
             let expiry = new Date();
-            expiry.setDate(expiry.getDate() + 30); // 30 Days Free/Paid trial
+            expiry.setDate(expiry.getDate() + 30);
 
+            if(bannerFileElem.files && bannerFileElem.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    saveStoreData(id, name, phone, e.target.result, expiry, existing);
+                };
+                reader.readAsDataURL(bannerFileElem.files[0]);
+            } else {
+                let defaultBanner = existing ? existing.banner : 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1000';
+                saveStoreData(id, name, phone, defaultBanner, expiry, existing);
+            }
+        }
+
+        function saveStoreData(id, name, phone, bannerUrl, expiry, existing) {
             if(existing) {
                 existing.name = name;
                 existing.phone = phone;
+                existing.banner = bannerUrl;
             } else {
                 stores.push({
                     id: id,
                     name: name,
                     phone: phone,
-                    banner: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1000',
+                    banner: bannerUrl,
                     expiryDate: expiry.toISOString(),
                     products: []
                 });
@@ -407,25 +467,37 @@
             let name = document.getElementById('prodName').value.trim();
             let category = document.getElementById('prodCategory').value;
             let price = parseFloat(document.getElementById('prodPrice').value);
-            let image = document.getElementById('prodImage').value.trim();
+            let imageFileElem = document.getElementById('prodImageFile');
 
             if(!name || isNaN(price)) {
                 alert('પ્રોડક્ટનું નામ અને સાચો ભાવ લખો.');
                 return;
             }
 
-            s.products.push({
+            if(imageFileElem.files && imageFileElem.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    saveProductData(s, name, category, price, e.target.result);
+                };
+                reader.readAsDataURL(imageFileElem.files[0]);
+            } else {
+                saveProductData(s, name, category, price, 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=500');
+            }
+        }
+
+        function saveProductData(store, name, category, price, imageUrl) {
+            store.products.push({
                 id: Date.now(),
                 name: name,
                 category: category,
                 price: price,
-                image: image
+                image: imageUrl
             });
 
             localStorage.setItem('kh_all_stores', JSON.stringify(stores));
             document.getElementById('prodName').value = '';
             document.getElementById('prodPrice').value = '';
-            document.getElementById('prodImage').value = '';
+            document.getElementById('prodImageFile').value = '';
             renderSellerProducts();
             renderAllStoresGrid();
             alert('પ્રોડક્ટ ઉમેરાઈ ગઈ!');
@@ -437,10 +509,10 @@
             if(!s || !s.products) { list.innerHTML = ''; return; }
 
             list.innerHTML = `<h4 class="font-bold mt-2">ઉમેરેલી પ્રોડક્ટ્સ (${s.products.length}):</h4>`;
-            s.products.forEach((p, idx) => {
+            s.products.forEach((p) => {
                 list.innerHTML += `
                     <div class="flex justify-between items-center bg-gray-50 p-1.5 rounded border text-xs">
-                        <span>${p.name} - ₹${p.price} (${p.category})</span>
+                        <span>${p.name} - ₹${p.price} (${p.category === 'veg_fruit' ? 'ફ્રૂટ/શાક' : 'અન્ય'})</span>
                         <button onclick="deleteProduct(${p.id})" class="text-red-500 font-bold">ડિલીટ</button>
                     </div>
                 `;
@@ -504,7 +576,7 @@
 
             let hours = new Date().getHours();
             if(hours < 9 || hours >= 18) {
-                alertBox.innerText = '❌ દુકાનનો ઓર્ડર લેવાનો સમય સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધીનો છે[span_7](start_span)[span_7](end_span).';
+                alertBox.innerText = '❌ દુકાનનો ઓર્ડર લેવાનો સમય સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધીનો છે.';
                 alertBox.classList.remove('hidden');
                 return;
             }
@@ -522,14 +594,12 @@
                 }
             });
 
-            // Rule 1: Fruit/Veg minimum 2 Kg check
             if(hasVeg && totalVegWeight < 2.0) {
-                alertBox.innerText = `❌ ફ્રૂટ/શાકભાજી માટે કુલ વજન ઓછામાં ઓછું ૨ Kg હોવું જરૂરી છે[span_8](start_span)[span_8](end_span)! હાલનું વજન: ${totalVegWeight.toFixed(2)} Kg`;
+                alertBox.innerText = `❌ ફ્રૂટ/શાકભાજી માટે કુલ વજન ઓછામાં ઓછું ૨ Kg હોવું જરૂરી છે! હાલનું વજન: ${totalVegWeight.toFixed(2)} Kg`;
                 alertBox.classList.remove('hidden');
                 return;
             }
 
-            // Rule 2: Other items minimum ₹500 bill check
             if(hasOther && otherAmount < 500) {
                 alertBox.innerText = `❌ અન્ય વસ્તુઓ માટે કુલ બિલ ઓછામાં ઓછું ₹૫૦૦ હોવું જરૂરી છે! હાલનું બિલ: ₹${otherAmount.toFixed(0)}`;
                 alertBox.classList.remove('hidden');
@@ -560,7 +630,7 @@
             if(hasVeg) msg += `\n⚖️ ફ્રૂટ/શાકભાજી કુલ વજન: ${totalVegWeight.toFixed(2)} Kg`;
             if(hasOther) msg += `\n📦 અન્ય વસ્તુઓ બિલ: ₹${otherAmount.toFixed(0)}`;
             msg += `\n💰 *કુલ બિલ રકમ: ₹${totalBill.toFixed(0)}*\n\n`;
-            msg += `📌 શરતો: ઓર્ડર કેન્સલ કે એક્સચેન્જ થશે નહીં[span_9](start_span)[span_9](end_span).`;
+            msg += `📌 શરતો: ઓર્ડર કેન્સલ કે એક્સચેન્જ થશે નહીં.`;
 
             let url = `https://wa.me/${targetStorePhone}?text=${encodeURIComponent(msg)}`;
             window.open(url, '_blank');
