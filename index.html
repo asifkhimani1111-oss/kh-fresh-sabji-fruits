@@ -38,56 +38,64 @@
     <!-- Main Container -->
     <main class="max-w-7xl mx-auto px-2 md:px-4 py-4">
 
-        <!-- Store Banner / Mall Feeling Photo -->
-        <div class="mb-4 bg-white rounded-2xl shadow-md overflow-hidden border">
-            <div class="relative h-48 md:h-64 bg-gray-200">
-                <img id="storeBannerImg" src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=1000" alt="Store Banner" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-4">
-                    <div class="text-white">
-                        <span class="bg-pink-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Verified SuperStore</span>
-                        <h2 id="bannerStoreName" class="text-xl md:text-2xl font-bold mt-1">K.H Fresh & Mall</h2>
-                        <p class="text-xs text-gray-200">તમારી મનપસંદ દુકાન હવે ઓનલાઈન - મોલ જેવી સુવિધા સાથે!</p>
+        <!-- Store Closed / Inactive Notice -->
+        <div id="storeClosedMsg" class="hidden mb-4 bg-red-100 border-l-4 border-red-500 p-4 rounded-lg text-center">
+            <h2 class="text-red-700 font-bold text-base">⚠️ આ દુકાન હાલમાં બંધ (Inactive) છે.</h2>
+            <p class="text-xs text-red-600 mt-1">માસિક સબ્સ્ક્રિપ્શન બાકી હોવાથી દુકાન અસ્થાયી રૂપે બંધ રાખવામાં આવી છે.</p>
+        </div>
+
+        <div id="activeStoreContent">
+            <!-- Store Banner -->
+            <div class="mb-4 bg-white rounded-2xl shadow-md overflow-hidden border">
+                <div class="relative h-48 md:h-64 bg-gray-200">
+                    <img id="storeBannerImg" src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=1000" alt="Store Banner" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-4">
+                        <div class="text-white">
+                            <span class="bg-pink-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Verified SuperStore</span>
+                            <h2 id="bannerStoreName" class="text-xl md:text-2xl font-bold mt-1">K.H Fresh & Mall</h2>
+                            <p class="text-xs text-gray-200">તમારી મનપસંદ દુકાન હવે ઓનલાઈન - મોલ જેવી સુવિધા સાથે!</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Notice Banner -->
-        <div class="mb-4 bg-amber-50 border-l-4 border-amber-500 p-3 rounded-lg shadow-sm text-xs md:text-sm text-amber-900 font-medium space-y-1">
-            <div class="flex items-center space-x-2">
-                <i class="fa-regular fa-clock text-amber-600 font-bold"></i>
-                <span><b>દુકાનનો સમય:</b> સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધી</span>
-            </div>
-            <div>⚠️ <b>શાકભાજી / ફ્રૂટ નિયમ:</b> ૨૫૦ ગ્રામથી શરૂઆત (૧ કિલોના ભાવ પ્રમાણે આપોઆપ રકમ ગણાશે), પરંતુ કુલ વજન ઓછામાં ઓછું <b>૨ કિલો (2 Kg)</b> હોવું ફરજિયાત છે.</div>
-            <div>⚠️ <b>અન્ય વસ્તુઓનો નિયમ:</b> કલર, સાઈઝ તથા નંગ મુજબ પસંદગી અને કુલ બિલ ઓછામાં ઓછું <b>₹૫૦૦</b> હોવું જોઈએ.</div>
-            <div class="text-red-600 font-bold">🚫 ઓર્ડર કેન્સલ નહીં થાય | 🚫 એક્સચેન્જ (બદલો) નહીં થાય.</div>
-        </div>
-
-        <!-- CUSTOMER VIEW -->
-        <div id="customerView">
-            <div class="mb-4 bg-white p-3 rounded-xl shadow-sm">
-                <div class="relative mb-3">
-                    <input type="text" id="searchBox" onkeyup="filterProducts()" placeholder="પ્રોડક્ટ અથવા કેટેગરી શોધો..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400"></i>
+            <!-- Notice Banner -->
+            <div class="mb-4 bg-amber-50 border-l-4 border-amber-500 p-3 rounded-lg shadow-sm text-xs md:text-sm text-amber-900 font-medium space-y-1">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-regular fa-clock text-amber-600 font-bold"></i>
+                    <span><b>દુકાનનો સમય:</b> સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધી</span>
                 </div>
-                <!-- All Categories Scrollable Pills -->
-                <div class="flex space-x-2 overflow-x-auto pb-1 text-xs">
-                    <button onclick="filterCategory('all')" class="category-btn bg-pink-600 text-white px-4 py-1.5 rounded-full font-semibold whitespace-nowrap shadow-sm">All Items</button>
-                    <button onclick="filterCategory('veg_fruit')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Vegetables & Fruits</button>
-                    <button onclick="filterCategory('men')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Men Clothing</button>
-                    <button onclick="filterCategory('women')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Women Clothing</button>
-                    <button onclick="filterCategory('kids')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Kids Clothing</button>
-                    <button onclick="filterCategory('footwear')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Footwear</button>
-                    <button onclick="filterCategory('grocery')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Grocery & Staples</button>
-                    <button onclick="filterCategory('beauty')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Beauty & Personal Care</button>
-                    <button onclick="filterCategory('home')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Home & Kitchen</button>
-                    <button onclick="filterCategory('electronics')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Electronics</button>
-                    <button onclick="filterCategory('other')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Other Items</button>
-                </div>
+                <div>⚠️ <b>શાકભાજી / ફ્રૂટ નિયમ:</b> ૨૫૦ ગ્રામથી શરૂઆત (૧ કિલોના ભાવ પ્રમાણે આપોઆપ રકમ ગણાશે), પરંતુ કુલ વજન ઓછામાં ઓછું <b>૨ કિલો (2 Kg)</b> હોવું ફરજિયાત છે.</div>
+                <div>⚠️ <b>અન્ય વસ્તુઓનો નિયમ:</b> કલર, સાઈઝ તથા નંગ મુજબ પસંદગી અને કુલ બિલ ઓછામાં ઓછું <b>₹૫૦૦</b> હોવું જોઈએ.</div>
+                <div class="text-red-600 font-bold">🚫 ઓર્ડર કેન્સલ નહીં થાય | 🚫 એક્સચેન્જ (બદલો) નહીં થાય.</div>
             </div>
 
-            <!-- Product Grid -->
-            <div id="productGrid" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+            <!-- CUSTOMER VIEW -->
+            <div id="customerView">
+                <div class="mb-4 bg-white p-3 rounded-xl shadow-sm">
+                    <div class="relative mb-3">
+                        <input type="text" id="searchBox" onkeyup="filterProducts()" placeholder="પ્રોડક્ટ અથવા કેટેગરી શોધો..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <!-- All Categories Scrollable Pills -->
+                    <div class="flex space-x-2 overflow-x-auto pb-1 text-xs">
+                        <button onclick="filterCategory('all')" class="category-btn bg-pink-600 text-white px-4 py-1.5 rounded-full font-semibold whitespace-nowrap shadow-sm">All Items</button>
+                        <button onclick="filterCategory('veg_fruit')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Vegetables & Fruits</button>
+                        <button onclick="filterCategory('men')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Men Clothing</button>
+                        <button onclick="filterCategory('women')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Women Clothing</button>
+                        <button onclick="filterCategory('kids')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Kids Clothing</button>
+                        <button onclick="filterCategory('footwear')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Footwear</button>
+                        <button onclick="filterCategory('grocery')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Grocery & Staples</button>
+                        <button onclick="filterCategory('beauty')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Beauty & Personal Care</button>
+                        <button onclick="filterCategory('home')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Home & Kitchen</button>
+                        <button onclick="filterCategory('electronics')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Electronics</button>
+                        <button onclick="filterCategory('other')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Other Items</button>
+                    </div>
+                </div>
+
+                <!-- Product Grid -->
+                <div id="productGrid" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+            </div>
         </div>
 
     </main>
@@ -133,15 +141,30 @@
 
     <!-- JavaScript -->
     <script>
-        let products = JSON.parse(localStorage.getItem('kh_products')) || [
-            { id: 1, category: 'veg_fruit', name: 'Apple (સફરજન)', price: 100, originalPrice: 130, sizeOptions: '250g, 500g, 1 Kg, 2 Kg', image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=500' },
-            { id: 2, category: 'women', name: 'Cotton Printed Kurti', price: 350, originalPrice: 500, sizeOptions: 'Red - M Size, Blue - L Size, XL Size', image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500' }
+        // Extract store ID from URL parameter ?store=9426852334
+        const urlParams = new URLSearchParams(window.location.search);
+        let storeId = urlParams.get('store') || 'default';
+
+        let storeSettings = JSON.parse(localStorage.getItem(`kh_settings_${storeId}`)) || {
+            name: 'K.H Fresh',
+            whatsapp: '919876543210',
+            banner: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1000',
+            status: 'active'
+        };
+
+        if (storeSettings.status === 'inactive') {
+            document.getElementById('storeClosedMsg').classList.remove('hidden');
+            document.getElementById('activeStoreContent').classList.add('hidden');
+        }
+
+        let products = JSON.parse(localStorage.getItem(`kh_products_${storeId}`)) || [
+            { id: 1, category: 'veg_fruit', name: 'Apple (સફરજન)', price: 100, originalPrice: 130, sizeOptions: '250g, 500g, 1 Kg, 2 Kg', image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=500' }
         ];
 
         let cart = [];
-        let whatsappNum = localStorage.getItem('kh_whatsapp') || '919876543210';
-        let storeName = localStorage.getItem('kh_storename') || 'K.H Fresh';
-        let storeBanner = localStorage.getItem('kh_banner') || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1000';
+        let whatsappNum = storeSettings.whatsapp;
+        let storeName = storeSettings.name;
+        let storeBanner = storeSettings.banner;
         let currentFilter = 'all';
 
         document.getElementById('storeTitle').innerText = storeName;
