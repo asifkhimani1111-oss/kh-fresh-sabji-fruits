@@ -44,9 +44,9 @@
                 <i class="fa-regular fa-clock text-amber-600 font-bold"></i>
                 <span><b>દુકાનનો સમય:</b> સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધી</span>
             </div>
-            <div>⚠️ <b>શાકભાજી / ફ્રૂટ નિયમ:</b> ૨૫૦ ગ્રામથી શરૂઆત (૧ કિલોના ભાવ પ્રમાણે આપોઆપ ગણાશે), પરંતુ કુલ વજન ઓછામાં ઓછું <b>૨ કિલો (2 Kg)</b> હોવું ફરજિયાત છે.</div>
-            <div>⚠️ <b>અન્ય વસ્તુઓનો નિયમ:</b> ૧, ૨, ૩ નંગ મુજબ પસંદગી, અને કુલ બિલ ઓછામાં ઓછું <b>₹૫૦૦</b> હોવું જોઈએ.</div>
-            <div class="text-red-600 font-bold">🚫 ઓર્ડર કેન્સલ નહીં થાય | 🚫 એક્સચેન્જ (બદલો) નહીં થાય.</div>
+            <div>⚠️ <b>શાકભાજી / ફ્રૂટ નિયમ:</b> ૨૫૦ ગ્રામથી શરૂઆત, પરંતુ કુલ વજન ઓછામાં ઓછું <b>૨ કિલો (2 Kg)</b> હોવું ફરજિયાત છે[span_0](start_span)[span_0](end_span).</div>
+            <div>⚠️ <b>અન્ય વસ્તુઓનો નિયમ:</b> કુલ બિલ ઓછામાં ઓછું <b>₹૫૦૦</b> હોવું જોઈએ[span_1](start_span)[span_1](end_span).</div>
+            <div class="text-red-600 font-bold">🚫 ઓર્ડર કેન્સલ નહીં થાય | 🚫 એક્સચેન્જ (બદલો) નહીં થાય[span_2](start_span)[span_2](end_span)[span_3](start_span)[span_3](end_span).</div>
         </div>
 
         <!-- CUSTOMER VIEW -->
@@ -107,6 +107,7 @@
                 </div>
             </div>
 
+            <!-- Validation Error Alert -->
             <div id="validationMsg" class="hidden text-xs bg-red-100 border border-red-400 text-red-700 p-2 rounded-lg mb-3 font-semibold"></div>
 
             <div class="space-y-2 bg-gray-50 p-3 rounded-xl text-xs">
@@ -117,7 +118,7 @@
             </div>
 
             <div class="text-[10px] text-red-500 font-bold mt-2 text-center">
-                * નોંધ: ઓર્ડર કેન્સલ કે એક્સચેન્જ થશે નહીં.
+                * નોંધ: ઓર્ડર કેન્સલ કે એક્સચેન્જ થશે નહીં[span_4](start_span)[span_4](end_span)[span_5](start_span)[span_5](end_span).
             </div>
 
             <button onclick="sendOrderWhatsApp()" class="w-full mt-3 bg-green-600 text-white font-bold py-2.5 rounded-xl hover:bg-green-700 flex justify-center items-center space-x-2 shadow text-sm">
@@ -159,11 +160,9 @@
 
             let val = parseFloat(selectElem.value);
             if(p.category === 'veg_fruit') {
-                // val is weight in kg (0.25, 0.5, 1, 2)
                 let calculatedPrice = p.price * val;
                 priceElem.innerText = `₹${calculatedPrice.toFixed(0)}`;
             } else {
-                // val is quantity (1, 2, 3)
                 let calculatedPrice = p.price * val;
                 priceElem.innerText = `₹${calculatedPrice.toFixed(0)}`;
             }
@@ -185,7 +184,7 @@
 
             filtered.forEach(p => {
                 let isVeg = (p.category === 'veg_fruit');
-                let initialPrice = isVeg ? (p.price * 0.25) : p.price; // Default 250g price for veg
+                let initialPrice = isVeg ? (p.price * 0.25) : p.price;
                 let discount = p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0;
 
                 let selectHTML = '';
@@ -254,7 +253,7 @@
             let weightVal = 0;
 
             if(isVeg) {
-                weightVal = val; // 0.25, 0.5, 1.0, 2.0
+                weightVal = val;
                 itemPrice = prod.price * val;
                 displayLabel = (val * 1000) >= 1000 ? `${val} Kg` : `${val * 1000}g`;
             } else {
@@ -308,6 +307,7 @@
         function openCart() {
             let list = document.getElementById('cartItemsList');
             list.innerHTML = '';
+            document.getElementById('validationMsg').classList.add('hidden'); // Clear error on open
             
             if(cart.length === 0) {
                 list.innerHTML = `<p class="text-center text-gray-500 py-4 text-xs">તમારું કાર્ટ ખાલી છે.</p>`;
@@ -363,6 +363,7 @@
             let { totalBill, totalVegWeight, hasOtherItems } = calculateCart();
             let hasVeg = cart.some(i => i.isVeg);
 
+            // Strict Validation Check
             if(hasVeg && totalVegWeight < 2.0) {
                 alertBox.innerText = `❌ શાકભાજી/ફ્રૂટ માટે કુલ વજન ઓછામાં ઓછું ૨ Kg હોવું જરૂરી છે. હાલનું કુલ વજન: ${totalVegWeight.toFixed(2)} Kg છે.`;
                 alertBox.classList.remove('hidden');
@@ -400,7 +401,7 @@
                 msg += `\n⚖️ *કુલ વજન (Veg/Fruit):* ${totalVegWeight.toFixed(2)} Kg`;
             }
             msg += `\n💰 *કુલ બિલ રકમ: ₹${totalBill.toFixed(0)}*\n\n`;
-            msg += `📌 *શરતો:* ઓર્ડર કેન્સલ થશે નહીં | એક્સચેન્જ થશે નહીં.`;
+            msg += `📌 *શરતો:* ઓર્ડર કેન્સલ થશે નહીં | એક્સચેન્જ થશે નહીં[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span).`;
 
             let url = `https://wa.me/${whatsappNum}?text=${encodeURIComponent(msg)}`;
             window.open(url, '_blank');
