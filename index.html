@@ -53,14 +53,22 @@
         <div id="customerView">
             <div class="mb-4 bg-white p-3 rounded-xl shadow-sm">
                 <div class="relative mb-3">
-                    <input type="text" id="searchBox" onkeyup="filterProducts()" placeholder="પ્રોડક્ટ અથવા શાકભાજી/ફ્રૂટ શોધો..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500">
+                    <input type="text" id="searchBox" onkeyup="filterProducts()" placeholder="પ્રોડક્ટ અથવા કેટેગરી શોધો..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400"></i>
                 </div>
-                <!-- 2 Category Pills Only -->
+                <!-- All Categories Scrollable Pills -->
                 <div class="flex space-x-2 overflow-x-auto pb-1 text-xs">
                     <button onclick="filterCategory('all')" class="category-btn bg-pink-600 text-white px-4 py-1.5 rounded-full font-semibold whitespace-nowrap shadow-sm">All Items</button>
                     <button onclick="filterCategory('veg_fruit')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Vegetables & Fruits</button>
-                    <button onclick="filterCategory('other')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Fashion & Other Items</button>
+                    <button onclick="filterCategory('men')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Men Clothing</button>
+                    <button onclick="filterCategory('women')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Women Clothing</button>
+                    <button onclick="filterCategory('kids')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Kids Clothing</button>
+                    <button onclick="filterCategory('footwear')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Footwear</button>
+                    <button onclick="filterCategory('grocery')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Grocery & Staples</button>
+                    <button onclick="filterCategory('beauty')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Beauty & Personal Care</button>
+                    <button onclick="filterCategory('home')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Home & Kitchen</button>
+                    <button onclick="filterCategory('electronics')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Electronics</button>
+                    <button onclick="filterCategory('other')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Other Items</button>
                 </div>
             </div>
 
@@ -123,7 +131,7 @@
     <script>
         let products = JSON.parse(localStorage.getItem('kh_products')) || [
             { id: 1, category: 'veg_fruit', name: 'Fresh Red Tomatoes (તાજા ટમેટા)', price: 40, originalPrice: 60, size: '1 Kg', weightKg: 1.0, rating: 4.8, reviews: 142, image: 'https://images.unsplash.com/photo-1582281298055-e2f38a520443?w=500' },
-            { id: 2, category: 'other', name: 'Women Cotton Floral Printed Kurti', price: 349, originalPrice: 799, size: 'M', weightKg: 0, rating: 4.5, reviews: 89, image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500' }
+            { id: 2, category: 'women', name: 'Women Cotton Floral Printed Kurti', price: 349, originalPrice: 799, size: 'M', weightKg: 0, rating: 4.5, reviews: 89, image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500' }
         ];
 
         let cart = [];
