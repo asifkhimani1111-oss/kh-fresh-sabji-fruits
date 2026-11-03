@@ -32,14 +32,22 @@
         <form id="productForm" onsubmit="addProduct(event)" class="space-y-3">
             <div>
                 <label class="block text-xs font-bold mb-1 text-gray-600">પ્રોડક્ટનું નામ:</label>
-                <input type="text" id="pName" required class="w-full border p-2 rounded text-sm" placeholder="દા.ત. તાજા ટમેટા / શર્ટ">
+                <input type="text" id="pName" required class="w-full border p-2 rounded text-sm" placeholder="દા.ત. તાજા ટમેટા / શર્ટ / ચંપલ">
             </div>
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-xs font-bold mb-1 text-gray-600">કેટેગરી (ફક્ત ૨ વિકલ્પો):</label>
+                    <label class="block text-xs font-bold mb-1 text-gray-600">કેટેગરી પસંદ કરો:</label>
                     <select id="pCategory" class="w-full border p-2 rounded text-sm">
                         <option value="veg_fruit">Vegetables & Fruits</option>
-                        <option value="other">Fashion & Other Items</option>
+                        <option value="men">Men Clothing</option>
+                        <option value="women">Women Clothing</option>
+                        <option value="kids">Kids Clothing</option>
+                        <option value="footwear">Footwear</option>
+                        <option value="grocery">Grocery & Staples</option>
+                        <option value="beauty">Beauty & Personal Care</option>
+                        <option value="home">Home & Kitchen</option>
+                        <option value="electronics">Electronics</option>
+                        <option value="other">Other Items</option>
                     </select>
                 </div>
                 <div>
@@ -152,4 +160,3 @@
     </script>
 </body>
 </html>
-
