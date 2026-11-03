@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K.H Fresh - Admin Panel</title>
+    <title>K.H Fresh - Admin & Seller Panel</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,12 +14,34 @@
 </head>
 <body class="bg-gray-100 text-gray-800 p-4">
 
-    <div class="max-w-xl mx-auto bg-white p-5 rounded-2xl shadow-md">
-        <h2 class="text-xl font-bold text-pink-600 mb-4 border-b pb-2"><i class="fa-solid fa-gear"></i> Seller Mall & Store Settings</h2>
+    <div class="max-w-xl mx-auto bg-white p-5 rounded-2xl shadow-md space-y-6">
+        <h2 class="text-xl font-bold text-pink-600 border-b pb-2"><i class="fa-solid fa-gear"></i> Master Admin & Seller Control</h2>
+
+        <!-- Admin Master Control Switch (Cash Subscription Management) -->
+        <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-xl space-y-3">
+            <h3 class="font-bold text-sm text-indigo-950"><i class="fa-solid fa-shield-halved"></i> દુકાન લાઈવ/બંધ કંટ્રોલ (Admin Switch):</h3>
+            <p class="text-xs text-gray-600">રોકડ ચાર્જ (₹૩૦૦ લાઈફટાઈમ + ₹૬૦ માસિક સ્લેબ મુજબ) મળ્યા પછી અહીંથી દુકાન ચાલુ કે બંધ કરો:</p>
+            <div class="flex items-center space-x-3 pt-1">
+                <button onclick="setStoreStatus('active')" id="btnActive" class="flex-1 py-2 rounded-lg font-bold text-xs bg-green-600 text-white shadow">દુકાન ચાલુ (Active)</button>
+                <button onclick="setStoreStatus('inactive')" id="btnInactive" class="flex-1 py-2 rounded-lg font-bold text-xs bg-gray-300 text-gray-700 shadow">દુકાન બંધ (Inactive)</button>
+            </div>
+            <div id="statusInfo" class="text-xs font-semibold text-center text-green-700 pt-1"></div>
+        </div>
+
+        <!-- Product Count & Slab Calculation (₹60 per 30 products) -->
+        <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl flex justify-between items-center text-xs font-semibold text-amber-900">
+            <div>
+                <span>કુલ પ્રોડક્ટ્સ: <strong id="totalProdCount">0</strong></span><br>
+                <span>ગણતરી માસિક સ્લેબ: <strong id="calculatedSlab">₹60</strong></span>
+            </div>
+            <div class="text-[10px] text-gray-500 text-right">
+                (૧ થી ૩૦ પ્રોડક્ટ = ₹૬૦<br>૩૧ થી ૬૦ પ્રોડક્ટ = ₹૧૨૦)
+            </div>
+        </div>
         
         <!-- Store Settings Form -->
-        <div class="space-y-3 mb-6 bg-gray-50 p-3 rounded-xl border">
-            <h3 class="font-bold text-xs text-gray-700">ડુકાન અને બેનર સેટિંગ્સ:</h3>
+        <div class="space-y-3 bg-gray-50 p-3 rounded-xl border">
+            <h3 class="font-bold text-xs text-gray-700">દુકાન અને બેનર સેટિંગ્સ:</h3>
             <div>
                 <label class="block text-xs font-bold mb-1 text-gray-600">દુકાનનું નામ:</label>
                 <input type="text" id="inputStoreName" class="w-full border p-2 rounded text-sm" placeholder="K.H Fresh">
@@ -35,11 +57,11 @@
             <button onclick="saveStoreSettings()" class="w-full bg-gray-800 text-white font-bold py-2 rounded-lg text-xs shadow">દુકાન સેટિંગ્સ સેવ કરો</button>
         </div>
 
-        <h3 class="text-base font-bold mb-3 text-gray-800 border-t pt-3">નવી પ્રોડક્ટ ઉમેરો:</h3>
+        <h3 class="text-base font-bold text-gray-800 border-t pt-3">નવી પ્રોડક્ટ ઉમેરો:</h3>
         <form id="productForm" onsubmit="addProduct(event)" class="space-y-3">
             <div>
                 <label class="block text-xs font-bold mb-1 text-gray-600">પ્રોડક્ટનું નામ:</label>
-                <input type="text" id="pName" required class="w-full border p-2 rounded text-sm" placeholder="દા.ત. તાજા ટમેટા / શર્ટ / કરિયાણું">
+                <input type="text" id="pName" required class="w-full border p-2 rounded text-sm" placeholder="દા.ત. તાજા ટમેટા / શર્ટ / ચંપલ">
             </div>
             <div class="grid grid-cols-2 gap-3">
                 <div>
@@ -59,8 +81,12 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold mb-1 text-gray-600">ભાવ (₹):</label>
-                    <input type="number" id="pPrice" required class="w-full border p-2 rounded text-sm" placeholder="₹ ભાવ">
+                    <input type="number" id="pPrice" required class="w-full border p-2 rounded text-sm" placeholder="₹ ૧ કિલોનો અથવા ૧ નંગનો ભાવ">
                 </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1 text-gray-600">ઓપ્શન / કલર / સાઈઝ (અલ્પવિરામ (,) કરીને લખો):</label>
+                <input type="text" id="pSizeOptions" class="w-full border p-2 rounded text-sm" placeholder="દા.ત. Red - M Size, Blue - L Size અથવા શાકભાજી માટે: 250g, 500g, 1 Kg, 2 Kg">
             </div>
             <div>
                 <label class="block text-xs font-bold mb-1 text-gray-600">પ્રોડક્ટ ફોટો અપલોડ કરો (Gallery/Camera):</label>
@@ -81,9 +107,45 @@
         let whatsappNum = localStorage.getItem('kh_whatsapp') || '919876543210';
         let storeName = localStorage.getItem('kh_storename') || 'K.H Fresh';
         let storeBanner = localStorage.getItem('kh_banner') || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1000';
+        let storeStatus = localStorage.getItem('kh_store_status') !== 'inactive';
 
         document.getElementById('whatsappNumber').value = whatsappNum;
         document.getElementById('inputStoreName').value = storeName;
+        updateStatusButtons();
+        updateSlabInfo();
+
+        function setStoreStatus(status) {
+            storeStatus = (status === 'active');
+            localStorage.setItem('kh_store_status', status);
+            updateStatusButtons();
+            alert(storeStatus ? 'દુકાન ગ્રાહકો માટે ચાલુ (Active) કરી દેવામાં આવી છે!' : 'દુકાન ગ્રાહકો માટે બંધ (Inactive) કરી દેવામાં આવી છે!');
+        }
+
+        function updateStatusButtons() {
+            let bActive = document.getElementById('btnActive');
+            let bInactive = document.getElementById('btnInactive');
+            let info = document.getElementById('statusInfo');
+            if (storeStatus) {
+                bActive.className = "flex-1 py-2 rounded-lg font-bold text-xs bg-green-600 text-white shadow";
+                bInactive.className = "flex-1 py-2 rounded-lg font-bold text-xs bg-gray-200 text-gray-700 shadow";
+                info.innerText = "સ્થિતિ: દુકાન હાલ લાઈવ અને ચાલુ છે.";
+                info.className = "text-xs font-semibold text-center text-green-700 pt-1";
+            } else {
+                bActive.className = "flex-1 py-2 rounded-lg font-bold text-xs bg-gray-200 text-gray-700 shadow";
+                bInactive.className = "flex-1 py-2 rounded-lg font-bold text-xs bg-red-600 text-white shadow";
+                info.innerText = "સ્થિતિ: દુકાન બંધ છે (ગ્રાહકોને બંધ દેખાશે).";
+                info.className = "text-xs font-semibold text-center text-red-600 pt-1";
+            }
+        }
+
+        function updateSlabInfo() {
+            let count = products.length;
+            document.getElementById('totalProdCount').innerText = count;
+            let slabs = Math.ceil(count / 30);
+            if(slabs < 1) slabs = 1;
+            let totalCharge = slabs * 60;
+            document.getElementById('calculatedSlab').innerText = `₹${totalCharge} (${slabs * 30} પ્રોડક્ટ સુધી)`;
+        }
 
         function saveStoreSettings() {
             whatsappNum = document.getElementById('whatsappNumber').value;
@@ -112,29 +174,31 @@
             let name = document.getElementById('pName').value;
             let category = document.getElementById('pCategory').value;
             let price = parseFloat(document.getElementById('pPrice').value);
+            let sizeOptions = document.getElementById('pSizeOptions').value || (category === 'veg_fruit' ? '250g, 500g, 1 Kg, 2 Kg' : 'Standard');
             let fileInput = document.getElementById('pImageFile');
 
             if (fileInput.files && fileInput.files[0]) {
                 let reader = new FileReader();
                 reader.onload = function(e) {
                     let image = e.target.result;
-                    saveNewProduct(name, category, price, image);
+                    saveNewProduct(name, category, price, sizeOptions, image);
                 }
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
                 let image = 'https://images.unsplash.com/photo-1582281298055-e2f38a520443?w=500';
-                saveNewProduct(name, category, price, image);
+                saveNewProduct(name, category, price, sizeOptions, image);
             }
         }
 
-        function saveNewProduct(name, category, price, image) {
-            let newP = { id: Date.now(), category, name, price, originalPrice: Math.round(price * 1.3), image };
+        function saveNewProduct(name, category, price, sizeOptions, image) {
+            let newP = { id: Date.now(), category, name, price, originalPrice: Math.round(price * 1.3), sizeOptions, image };
             products.push(newP);
             localStorage.setItem('kh_products', JSON.stringify(products));
 
             alert('પ્રોડક્ટ સફળતાપૂર્વક ઉમેરાઈ ગઈ!');
             document.getElementById('productForm').reset();
             renderSellerProducts();
+            updateSlabInfo();
         }
 
         function renderSellerProducts() {
@@ -164,6 +228,7 @@
             products = products.filter(p => p.id !== id);
             localStorage.setItem('kh_products', JSON.stringify(products));
             renderSellerProducts();
+            updateSlabInfo();
         }
 
         renderSellerProducts();
