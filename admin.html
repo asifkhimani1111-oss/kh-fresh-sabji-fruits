@@ -15,24 +15,31 @@
 <body class="bg-gray-100 text-gray-800 p-4">
 
     <div class="max-w-xl mx-auto bg-white p-5 rounded-2xl shadow-md">
-        <h2 class="text-xl font-bold text-pink-600 mb-4 border-b pb-2"><i class="fa-solid fa-gear"></i> Seller Panel (દુકાન સેટિંગ્સ)</h2>
+        <h2 class="text-xl font-bold text-pink-600 mb-4 border-b pb-2"><i class="fa-solid fa-gear"></i> Seller Mall & Store Settings</h2>
         
-        <div class="mb-3">
-            <label class="block text-xs font-bold mb-1 text-gray-600">WhatsApp નંબર (દા.ત. 919876543210):</label>
-            <input type="text" id="whatsappNumber" class="w-full border p-2 rounded-lg text-sm" placeholder="919876543210">
+        <!-- Store Settings Form -->
+        <div class="space-y-3 mb-6 bg-gray-50 p-3 rounded-xl border">
+            <h3 class="font-bold text-xs text-gray-700">ડુકાન અને બેનર સેટિંગ્સ:</h3>
+            <div>
+                <label class="block text-xs font-bold mb-1 text-gray-600">દુકાનનું નામ:</label>
+                <input type="text" id="inputStoreName" class="w-full border p-2 rounded text-sm" placeholder="K.H Fresh">
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1 text-gray-600">WhatsApp નંબર (દા.ત. 919876543210):</label>
+                <input type="text" id="whatsappNumber" class="w-full border p-2 rounded text-sm" placeholder="919876543210">
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1 text-gray-600">દુકાનનો મોલ બેનર ફોટો (Gallery/Camera):</label>
+                <input type="file" id="storeBannerFile" accept="image/*" class="w-full border p-2 rounded text-sm bg-white">
+            </div>
+            <button onclick="saveStoreSettings()" class="w-full bg-gray-800 text-white font-bold py-2 rounded-lg text-xs shadow">દુકાન સેટિંગ્સ સેવ કરો</button>
         </div>
-
-        <div class="mb-4">
-            <label class="block text-xs font-bold mb-1 text-gray-600">દુકાનનું નામ:</label>
-            <input type="text" id="inputStoreName" class="w-full border p-2 rounded-lg text-sm" placeholder="K.H Fresh">
-        </div>
-        <button onclick="saveStoreSettings()" class="w-full bg-gray-800 text-white font-bold py-2 rounded-lg text-xs mb-6 shadow">સેટિંગ્સ સેવ કરો</button>
 
         <h3 class="text-base font-bold mb-3 text-gray-800 border-t pt-3">નવી પ્રોડક્ટ ઉમેરો:</h3>
         <form id="productForm" onsubmit="addProduct(event)" class="space-y-3">
             <div>
                 <label class="block text-xs font-bold mb-1 text-gray-600">પ્રોડક્ટનું નામ:</label>
-                <input type="text" id="pName" required class="w-full border p-2 rounded text-sm" placeholder="દા.ત. તાજા ટમેટા / શર્ટ / ચંપલ">
+                <input type="text" id="pName" required class="w-full border p-2 rounded text-sm" placeholder="દા.ત. તાજા ટમેટા / શર્ટ / કરિયાણું">
             </div>
             <div class="grid grid-cols-2 gap-3">
                 <div>
@@ -55,18 +62,8 @@
                     <input type="number" id="pPrice" required class="w-full border p-2 rounded text-sm" placeholder="₹ ભાવ">
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-bold mb-1 text-gray-600">માપ/વજન વિકલ્પ:</label>
-                    <input type="text" id="pSize" required class="w-full border p-2 rounded text-sm" placeholder="દા.ત. 1 Kg અથવા M Size">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold mb-1 text-gray-600">વજન ગ્રામમાં (શાકભાજી માટે):</label>
-                    <input type="number" step="0.1" id="pWeightKg" class="w-full border p-2 rounded text-sm" placeholder="દા.ત. 0.2 અથવા 1.0">
-                </div>
-            </div>
             <div>
-                <label class="block text-xs font-bold mb-1 text-gray-600">ફોટો અપલોડ કરો (Gallery/Camera):</label>
+                <label class="block text-xs font-bold mb-1 text-gray-600">પ્રોડક્ટ ફોટો અપલોડ કરો (Gallery/Camera):</label>
                 <input type="file" id="pImageFile" accept="image/*" class="w-full border p-2 rounded text-sm bg-gray-50">
             </div>
             <button type="submit" class="w-full bg-pink-600 text-white font-bold py-2.5 rounded-lg hover:bg-pink-700 shadow text-sm">પ્રોડક્ટ ઉમેરો</button>
@@ -83,6 +80,7 @@
         let products = JSON.parse(localStorage.getItem('kh_products')) || [];
         let whatsappNum = localStorage.getItem('kh_whatsapp') || '919876543210';
         let storeName = localStorage.getItem('kh_storename') || 'K.H Fresh';
+        let storeBanner = localStorage.getItem('kh_banner') || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1000';
 
         document.getElementById('whatsappNumber').value = whatsappNum;
         document.getElementById('inputStoreName').value = storeName;
@@ -90,9 +88,23 @@
         function saveStoreSettings() {
             whatsappNum = document.getElementById('whatsappNumber').value;
             storeName = document.getElementById('inputStoreName').value;
-            localStorage.setItem('kh_whatsapp', whatsappNum);
-            localStorage.setItem('kh_storename', storeName);
-            alert('સેટિંગ્સ સેવ થઈ ગઈ!');
+            let bannerInput = document.getElementById('storeBannerFile');
+
+            if (bannerInput.files && bannerInput.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    storeBanner = e.target.result;
+                    localStorage.setItem('kh_banner', storeBanner);
+                    localStorage.setItem('kh_whatsapp', whatsappNum);
+                    localStorage.setItem('kh_storename', storeName);
+                    alert('દુકાન અને બેનર સેટિંગ્સ સેવ થઈ ગઈ!');
+                }
+                reader.readAsDataURL(bannerInput.files[0]);
+            } else {
+                localStorage.setItem('kh_whatsapp', whatsappNum);
+                localStorage.setItem('kh_storename', storeName);
+                alert('સેટિંગ્સ સેવ થઈ ગઈ!');
+            }
         }
 
         function addProduct(e) {
@@ -100,25 +112,23 @@
             let name = document.getElementById('pName').value;
             let category = document.getElementById('pCategory').value;
             let price = parseFloat(document.getElementById('pPrice').value);
-            let size = document.getElementById('pSize').value;
-            let weightKg = parseFloat(document.getElementById('pWeightKg').value) || 0;
             let fileInput = document.getElementById('pImageFile');
 
             if (fileInput.files && fileInput.files[0]) {
                 let reader = new FileReader();
                 reader.onload = function(e) {
                     let image = e.target.result;
-                    saveNewProduct(name, category, price, size, weightKg, image);
+                    saveNewProduct(name, category, price, image);
                 }
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
                 let image = 'https://images.unsplash.com/photo-1582281298055-e2f38a520443?w=500';
-                saveNewProduct(name, category, price, size, weightKg, image);
+                saveNewProduct(name, category, price, image);
             }
         }
 
-        function saveNewProduct(name, category, price, size, weightKg, image) {
-            let newP = { id: Date.now(), category, name, price, originalPrice: Math.round(price * 1.3), size, weightKg, rating: 4.7, reviews: 10, image };
+        function saveNewProduct(name, category, price, image) {
+            let newP = { id: Date.now(), category, name, price, originalPrice: Math.round(price * 1.3), image };
             products.push(newP);
             localStorage.setItem('kh_products', JSON.stringify(products));
 
@@ -141,7 +151,7 @@
                             <img src="${p.image}" class="w-8 h-8 object-cover rounded">
                             <div>
                                 <p class="font-bold">${p.name}</p>
-                                <p class="text-gray-500">₹${p.price} | ${p.size}</p>
+                                <p class="text-gray-500">₹${p.price} | (${p.category})</p>
                             </div>
                         </div>
                         <button onclick="deleteProduct(${p.id})" class="text-red-600 font-bold px-2 py-1 bg-white border rounded shadow-sm">ડિલીટ</button>
