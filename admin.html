@@ -14,14 +14,14 @@
 </head>
 <body class="bg-gray-100 text-gray-800 p-3 md:p-6">
 
-    <div class="max-w-2xl mx-auto bg-white p-5 rounded-2xl shadow-md space-y-6">
+    <div class="max-w-3xl mx-auto bg-white p-5 rounded-2xl shadow-md space-y-6">
         <h2 class="text-xl font-bold text-pink-600 border-b pb-2 flex justify-between items-center">
-            <span><i class="fa-solid fa-store"></i> માસ્ટર દુકાન એડમિન પેનલ</span>
+            <span><i class="fa-solid fa-store"></i> Master Admin - Badhi Dukano Ekaj Page Upar</span>
         </h2>
 
         <!-- Section 1: Add New Store -->
         <div class="bg-pink-50 border border-pink-200 p-4 rounded-xl space-y-3">
-            <h3 class="font-bold text-sm text-pink-950"><i class="fa-solid fa-plus-circle"></i> ૧. નવી દુકાન ઉમેરો:</h3>
+            <h3 class="font-bold text-sm text-pink-950"><i class="fa-solid fa-plus-circle"></i> નવી દુકાન ઉમેરો:</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                     <label class="block text-xs font-bold mb-1 text-gray-600">દુકાનનું નામ:</label>
@@ -39,67 +39,17 @@
             <button onclick="createNewStore()" class="w-full bg-pink-600 text-white font-bold py-2 rounded-lg text-xs shadow hover:bg-pink-700">નવી દુકાન સેવ કરો</button>
         </div>
 
-        <!-- Section 2: Manage Store & Add Products -->
-        <div class="bg-gray-50 border p-4 rounded-xl space-y-4">
-            <h3 class="font-bold text-sm text-gray-800"><i class="fa-solid fa-boxes-stacked"></i> ૨. દુકાન પસંદ કરો અને પ્રોડક્ટ ઉમેરો:</h3>
-            
-            <div>
-                <label class="block text-xs font-bold mb-1 text-gray-600">કઈ દુકાનમાં કામ કરવું છે તે પસંદ કરો:</label>
-                <select id="selectStore" onchange="switchStore()" class="w-full border p-2 rounded text-sm font-bold bg-white text-pink-600">
-                    <!-- Stores options will load dynamically -->
-                </select>
-            </div>
-
-            <div id="storeManageArea" class="hidden space-y-4 border-t pt-3">
-                <!-- Total Products Info -->
-                <div class="flex justify-between items-center text-xs bg-amber-50 p-2.5 rounded border border-amber-200">
-                    <div>
-                        <span>કુલ પ્રોડક્ટ્સ: <b id="displayProdCount" class="text-pink-600">0</b></span>
-                    </div>
-                </div>
-
-                <!-- Add Product Form -->
-                <form id="productForm" onsubmit="addProduct(event)" class="space-y-3 bg-white p-3 rounded-lg border">
-                    <h4 class="font-bold text-xs text-gray-700">આ દુકાનમાં નવી પ્રોડક્ટ ઉમેરો:</h4>
-                    <div>
-                        <input type="text" id="pName" required class="w-full border p-2 rounded text-sm" placeholder="પ્રોડક્ટનું નામ (દા.ત. Banana / Shirt)">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <select id="pCategory" class="border p-2 rounded text-sm">
-                            <option value="veg_fruit">Vegetables & Fruits</option>
-                            <option value="men">Men Clothing</option>
-                            <option value="women">Women Clothing</option>
-                            <option value="kids">Kids Clothing</option>
-                            <option value="footwear">Footwear</option>
-                            <option value="grocery">Grocery & Staples</option>
-                            <option value="beauty">Beauty & Personal Care</option>
-                            <option value="home">Home & Kitchen</option>
-                            <option value="electronics">Electronics</option>
-                            <option value="other">Other Items</option>
-                        </select>
-                        <input type="number" id="pPrice" required class="border p-2 rounded text-sm" placeholder="ભાવ (₹)">
-                    </div>
-                    <div>
-                        <input type="text" id="pSizeOptions" class="w-full border p-2 rounded text-sm" placeholder="સાઈઝ / કલર / વજન ઓપ્શન (દા.ત. 250g, 500g, 1 Kg)">
-                    </div>
-                    <div>
-                        <input type="file" id="pImageFile" accept="image/*" class="w-full border p-2 rounded text-sm bg-gray-50">
-                    </div>
-                    <button type="submit" id="btnSubmitProd" class="w-full bg-pink-600 text-white font-bold py-2 rounded-lg text-xs shadow">પ્રોડક્ટ ઉમેરો</button>
-                </form>
-
-                <!-- Product List -->
-                <div>
-                    <h4 class="font-bold text-xs mb-2">પસંદ કરેલી દુકાનની પ્રોડક્ટ્સ:</h4>
-                    <div id="productList" class="space-y-2 max-h-48 overflow-y-auto border p-2 rounded text-xs bg-white"></div>
-                </div>
+        <!-- Section 2: All Stores List & Products Management -->
+        <div class="space-y-4">
+            <h3 class="font-bold text-sm text-gray-800"><i class="fa-solid fa-list"></i> બધી દુકાનો અને પ્રોડક્ટ્સ યાદી:</h3>
+            <div id="allStoresContainer" class="space-y-6">
+                <!-- Dynamically loaded stores list -->
             </div>
         </div>
     </div>
 
     <script>
         let stores = JSON.parse(localStorage.getItem('kh_all_stores')) || [];
-        let currentStoreId = null;
 
         function compressImage(file, maxWidth, maxHeight, quality, callback) {
             let reader = new FileReader();
@@ -121,14 +71,6 @@
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
-        }
-
-        function renderStoreDropdown() {
-            let select = document.getElementById('selectStore');
-            select.innerHTML = '<option value="">-- દુકાન પસંદ કરો --</option>';
-            stores.forEach(s => {
-                select.innerHTML += `<option value="${s.id}">${s.name} (${s.phone})</option>`;
-            });
         }
 
         function createNewStore() {
@@ -161,89 +103,125 @@
             document.getElementById('newStoreName').value = '';
             document.getElementById('newStorePhone').value = '';
             document.getElementById('newStoreBanner').value = '';
-            renderStoreDropdown();
+            renderAllStores();
         }
 
-        function switchStore() {
-            let selectedId = document.getElementById('selectStore').value;
-            if (!selectedId) {
-                document.getElementById('storeManageArea').classList.add('hidden');
+        function renderAllStores() {
+            let container = document.getElementById('allStoresContainer');
+            container.innerHTML = '';
+
+            if (stores.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-500 py-4 text-xs bg-gray-50 rounded-xl">હજુ સુધી કોઈ દુકાન ઉમેરી નથી.</p>`;
                 return;
             }
-            currentStoreId = selectedId;
-            document.getElementById('storeManageArea').classList.remove('hidden');
-            renderStoreDetails();
-        }
 
-        function renderStoreDetails() {
-            let s = stores.find(item => item.id === currentStoreId);
-            if (!s) return;
-            document.getElementById('displayProdCount').innerText = s.products.length;
-
-            let list = document.getElementById('productList');
-            list.innerHTML = '';
-            if (s.products.length === 0) {
-                list.innerHTML = `<p class="text-center text-gray-500 py-2">કોઈ પ્રોડક્ટ નથી.</p>`;
-                return;
-            }
-            s.products.forEach(p => {
-                list.innerHTML += `
-                    <div class="flex justify-between items-center bg-gray-50 p-2 rounded border">
-                        <div class="flex items-center space-x-2">
-                            <img src="${p.image}" class="w-8 h-8 object-cover rounded">
-                            <div>
-                                <p class="font-bold">${p.name}</p>
-                                <p class="text-gray-500">₹${p.price} | (${p.category})</p>
+            stores.forEach((s, storeIndex) => {
+                let productsHTML = '';
+                if (s.products && s.products.length > 0) {
+                    s.products.forEach((p, pIndex) => {
+                        productsHTML += `
+                            <div class="flex justify-between items-center bg-white p-2 rounded border shadow-sm text-xs">
+                                <div class="flex items-center space-x-2">
+                                    <img src="${p.image}" class="w-8 h-8 object-cover rounded">
+                                    <div>
+                                        <p class="font-bold">${p.name}</p>
+                                        <p class="text-gray-500">₹${p.price} | (${p.category})</p>
+                                    </div>
+                                </div>
+                                <button onclick="deleteProduct('${s.id}', ${p.id})" class="text-red-600 font-bold px-2 py-1 bg-gray-50 border rounded">ડિલીટ</button>
                             </div>
+                        `;
+                    });
+                } else {
+                    productsHTML = `<p class="text-gray-400 text-xs text-center py-2">આ દુકાનમાં કોઈ પ્રોડક્ટ નથી.</p>`;
+                }
+
+                container.innerHTML += `
+                    <div class="bg-gray-50 border p-4 rounded-xl space-y-3 shadow-sm">
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <div>
+                                <h4 class="font-bold text-base text-pink-600">${s.name}</h4>
+                                <p class="text-xs text-gray-500">WhatsApp: ${s.phone}</p>
+                            </div>
+                            <button onclick="deleteStore('${s.id}')" class="bg-red-50 text-red-600 border border-red-200 px-3 py-1 rounded text-xs font-bold shadow-sm">દુકાન ડિલીટ કરો</button>
                         </div>
-                        <button onclick="deleteProduct(${p.id})" class="text-red-600 font-bold px-2 py-1 bg-white border rounded">ડિલીટ</button>
+
+                        <!-- Add Product Form for this store -->
+                        <form onsubmit="addProduct(event, '${s.id}')" class="space-y-2 bg-white p-3 rounded-lg border">
+                            <h5 class="font-bold text-xs text-gray-700">આ દુકાનમાં નવી પ્રોડક્ટ ઉમેરો:</h5>
+                            <input type="text" id="pName_${s.id}" required class="w-full border p-1.5 rounded text-xs" placeholder="પ્રોડક્ટનું નામ (દા.ત. Apple)">
+                            <div class="grid grid-cols-2 gap-2">
+                                <select id="pCat_${s.id}" class="border p-1.5 rounded text-xs">
+                                    <option value="veg_fruit">Vegetables & Fruits</option>
+                                    <option value="men">Men Clothing</option>
+                                    <option value="women">Women Clothing</option>
+                                    <option value="kids">Kids Clothing</option>
+                                    <option value="footwear">Footwear</option>
+                                    <option value="grocery">Grocery & Staples</option>
+                                    <option value="beauty">Beauty & Personal Care</option>
+                                    <option value="home">Home & Kitchen</option>
+                                    <option value="electronics">Electronics</option>
+                                    <option value="other">Other Items</option>
+                                </select>
+                                <input type="number" id="pPrice_${s.id}" required class="border p-1.5 rounded text-xs" placeholder="ભાવ (₹)">
+                            </div>
+                            <input type="text" id="pSize_${s.id}" class="w-full border p-1.5 rounded text-xs" placeholder="સાઈઝ / વજન ઓપ્શન (દા.ત. 250g, 500g, 1 Kg)">
+                            <input type="file" id="pImage_${s.id}" accept="image/*" class="w-full border p-1.5 rounded text-xs bg-gray-50">
+                            <button type="submit" class="w-full bg-gray-800 text-white font-bold py-1.5 rounded text-xs shadow">પ્રોડક્ટ ઉમેરો</button>
+                        </form>
+
+                        <!-- Products List -->
+                        <div class="space-y-1.5 max-h-40 overflow-y-auto">
+                            ${productsHTML}
+                        </div>
                     </div>
                 `;
             });
         }
 
-        function addProduct(e) {
+        function addProduct(e, storeId) {
             e.preventDefault();
-            let s = stores.find(item => item.id === currentStoreId);
+            let s = stores.find(item => item.id === storeId);
             if (!s) return;
 
-            let name = document.getElementById('pName').value.trim();
-            let category = document.getElementById('pCategory').value;
-            let price = parseFloat(document.getElementById('pPrice').value);
-            let sizeOptions = document.getElementById('pSizeOptions').value.trim() || (category === 'veg_fruit' ? '250g, 500g, 1 Kg, 2 Kg' : 'Standard');
-            let fileInput = document.getElementById('pImageFile');
-
-            let btn = document.getElementById('btnSubmitProd');
-            btn.disabled = true;
+            let name = document.getElementById(`pName_${storeId}`).value.trim();
+            let category = document.getElementById(`pCat_${storeId}`).value;
+            let price = parseFloat(document.getElementById(`pPrice_${storeId}`).value);
+            let sizeOptions = document.getElementById(`pSize_${storeId}`).value.trim() || (category === 'veg_fruit' ? '250g, 500g, 1 Kg, 2 Kg' : 'Standard');
+            let fileInput = document.getElementById(`pImage_${storeId}`);
 
             if (fileInput.files && fileInput.files[0]) {
                 compressImage(fileInput.files[0], 500, 500, 0.7, function(compressedUrl) {
                     s.products.push({ id: Date.now(), category, name, price, sizeOptions, image: compressedUrl });
                     localStorage.setItem('kh_all_stores', JSON.stringify(stores));
-                    document.getElementById('productForm').reset();
-                    btn.disabled = false;
-                    renderStoreDetails();
+                    renderAllStores();
                 });
             } else {
                 let defaultImg = 'https://images.unsplash.com/photo-1582281298055-e2f38a520443?w=500';
                 s.products.push({ id: Date.now(), category, name, price, sizeOptions, image: defaultImg });
                 localStorage.setItem('kh_all_stores', JSON.stringify(stores));
-                document.getElementById('productForm').reset();
-                btn.disabled = false;
-                    renderStoreDetails();
+                renderAllStores();
             }
         }
 
-        function deleteProduct(prodId) {
-            let s = stores.find(item => item.id === currentStoreId);
+        function deleteProduct(storeId, prodId) {
+            let s = stores.find(item => item.id === storeId);
             if (s) {
                 s.products = s.products.filter(p => p.id !== prodId);
                 localStorage.setItem('kh_all_stores', JSON.stringify(stores));
-                renderStoreDetails();
+                renderAllStores();
             }
         }
 
-        renderStoreDropdown();
+        function deleteStore(storeId) {
+            if (confirm('શું તમે ખરેખર આ દુકાન ડિલીટ કરવા માંગો છો?')) {
+                stores = stores.filter(s => s.id !== storeId);
+                localStorage.setItem('kh_all_stores', JSON.stringify(stores));
+                renderAllStores();
+            }
+        }
+
+        renderAllStores();
     </script>
 </body>
 </html>
