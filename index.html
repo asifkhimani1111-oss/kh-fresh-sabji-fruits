@@ -23,8 +23,8 @@
                     <p class="text-xs text-gray-500">બધી જ દુકાનો એકસાથે</p>
                 </div>
             </div>
-            <div class="flex items-center space-x-4">
-                <button onclick="openSellerModal()" class="text-xs bg-gray-800 text-white px-3 py-1.5 rounded-lg font-bold shadow hover:bg-black">દુકાનદાર / એડમિન</button>
+            <div class="flex items-center space-x-3">
+                <button onclick="openSellerModal()" class="text-xs bg-gray-800 text-white px-3 py-1.5 rounded-lg font-bold shadow hover:bg-black"><i class="fa-solid fa-store"></i> દુકાનદાર / એડમિન</button>
                 <div class="relative cursor-pointer text-gray-700 hover:text-pink-600" onclick="openCart()">
                     <i class="fa-solid fa-cart-shopping text-2xl"></i>
                     <span id="cartCount" class="absolute -top-2 -right-2 bg-pink-600 text-white font-bold text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
@@ -36,13 +36,14 @@
     <main class="max-w-7xl mx-auto px-2 md:px-4 py-4 space-y-6">
         <!-- Rules Notice -->
         <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-lg text-xs space-y-1 text-amber-900 font-medium shadow-sm">
-            <div><b>દુકાનનો સમય:</b> સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધી</div>
-            <div>⚠️ <b>ફ્રૂટ અને શાકભાજી નિયમ:</b> ૨૫૦g થી શરૂઆત, પરંતુ કુલ વજન ઓછામાં ઓછું <b>૨ કિલો (2 Kg)</b> હોવું ફરજિયાત છે.</div>
-            <div class="text-red-600 font-bold">🚫 ઓર્ડર કેન્સલ નહીં થાય | 🚫 એક્સચેન્જ (બદલો) નહીં થાય</div>
+            <div><b>દુકાનનો સમય:</b> સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધી[span_3](start_span)[span_3](end_span)</div>
+            <div>⚠️ <b>ફ્રૂટ અને શાકભાજી નિયમ:</b> ૨૫૦g થી શરૂઆત, પરંતુ કુલ વજન ઓછામાં ઓછું <b>૨ કિલો (2 Kg)</b> હોવું ફરજિયાત છે[span_4](start_span)[span_4](end_span).</div>
+            <div>⚠️ <b>અન્ય વસ્તુઓ:</b> કુલ બિલ ઓછામાં ઓછું <b>₹૫૦૦</b> હોવું ફરજિયાત છે.</div>
+            <div class="text-red-600 font-bold">🚫 ઓર્ડર કેન્સલ નહીં થાય | 🚫 એક્સચેન્જ (બદલો) નહીં થાય[span_5](start_span)[span_5](end_span)</div>
         </div>
 
         <div id="noStoresMsg" class="hidden bg-white p-10 text-center rounded-xl shadow-sm">
-            <p class="text-gray-500 text-sm">હાલમાં કોઈ દુકાન ઉપલબ્ધ નથી.</p>
+            <p class="text-gray-500 text-sm">હાલમાં કોઈ સક્રિય દુકાન ઉપલબ્ધ નથી.</p>
         </div>
 
         <div id="allStoresGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
@@ -57,9 +58,13 @@
             <div id="cartItemsList" class="space-y-2 mb-3 divide-y text-sm"></div>
 
             <div class="border-t pt-2 mb-3 space-y-1 text-xs bg-pink-50 p-2.5 rounded-lg">
-                <div class="flex justify-between">
-                    <span>કુલ વજન (Weight):</span>
+                <div class="flex justify-between" id="vegWeightRow">
+                    <span>ફ્રૂટ/શાકભાજી કુલ વજન:</span>
                     <span id="cartTotalWeight" class="font-bold">0 Kg</span>
+                </div>
+                <div class="flex justify-between" id="otherAmountRow">
+                    <span>અન્ય વસ્તુઓ કુલ બિલ:</span>
+                    <span id="cartOtherAmount" class="font-bold">₹0</span>
                 </div>
                 <div class="flex justify-between text-sm font-bold text-gray-900 border-t pt-1">
                     <span>કુલ બિલ (Total):</span>
@@ -83,80 +88,116 @@
         </div>
     </div>
 
-    <!-- Seller / Admin Portal Modal (Dummy placeholder for full system) -->
+    <!-- Seller / Admin Portal Modal -->
     <div id="sellerModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
-        <div class="bg-white w-full max-w-lg p-6 rounded-2xl shadow-xl relative max-h-[90vh] overflow-y-auto">
+        <div class="bg-white w-full max-w-2xl p-5 rounded-2xl shadow-xl relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeSellerModal()" class="absolute top-4 right-4 text-lg text-gray-500 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
-            <h2 class="text-lg font-bold mb-4 text-pink-600">દુકાનદાર ડેશબોર્ડ & સબ્સ્ક્રિપ્શન</h2>
-            <p class="text-xs text-gray-600 mb-4">અહીંથી તમે તમારી પ્રોડક્ટ્સ ઉમેરી શકો છો અને ₹300 / ₹60 / ₹120 નું સબ્સ્ક્રિપ્શન (UPI QR અથવા રોકડા) મેનેજ કરી શકો છો.</p>
-            <div class="bg-amber-50 p-3 rounded-lg text-xs text-amber-800 mb-4">
-                <b>યાદ રાખો:</b> પ્રથમ મહિનો ₹300 (1-30 પ્રોડક્ટ્સ). ત્યારબાદ 1 થી 30 પ્રોડક્ટ્સના ₹60 અને 31 કે તેથી વધુ પ્રોડક્ટ્સના ₹120 માસિક ભાડું લાગુ પડે છે.
+            <h2 class="text-lg font-bold mb-3 text-pink-600"><i class="fa-solid fa-store"></i> દુકાનદાર ડેશબોર્ડ & એડમિન પેનલ</h2>
+            
+            <div class="flex space-x-2 border-b pb-2 mb-3">
+                <button onclick="switchTab('seller')" id="tabSellerBtn" class="bg-pink-600 text-white px-3 py-1.5 rounded text-xs font-bold">દુકાનદાર ડેશબોર્ડ</button>
+                <button onclick="switchTab('admin')" id="tabAdminBtn" class="bg-gray-200 text-gray-800 px-3 py-1.5 rounded text-xs font-bold">માસ્ટર એડમિન પેનલ</button>
             </div>
-            <button onclick="closeSellerModal()" class="w-full bg-gray-800 text-white py-2 rounded-lg text-xs font-bold">બંધ કરો</button>
+
+            <!-- Seller Tab -->
+            <div id="sellerTabContent" class="space-y-4 text-xs">
+                <div class="bg-amber-50 p-3 rounded-lg border border-amber-200 space-y-1">
+                    <p class="font-bold text-amber-900">સબ્સ્ક્રિપ્શન નિયમો:</p>
+                    <p>• પ્રથમ મહિનો: <b>₹300</b> (1 થી 30 પ્રોડક્ટ્સ).</p>
+                    <p>• ત્યારબાદ: 1 થી 30 પ્રોડક્ટ્સના <b>₹60</b> અને 31+ પ્રોડક્ટ્સના <b>₹120</b> માસિક ભાડું[span_6](start_span)[span_6](end_span).</p>
+                </div>
+
+                <div class="space-y-2 bg-gray-50 p-3 rounded-xl border">
+                    <h3 class="font-bold text-gray-800">નવી દુકાન રજીસ્ટર કરો અથવા લોગઈન કરો</h3>
+                    <input type="text" id="storeRegId" placeholder="દુકાન આઈડી (દા.ત. my_store)" class="w-full border p-2 rounded">
+                    <input type="text" id="storeRegName" placeholder="દુકાનનું નામ" class="w-full border p-2 rounded">
+                    <input type="text" id="storeRegPhone" placeholder="WhatsApp નંબર (91...)" class="w-full border p-2 rounded">
+                    <button onclick="registerStore()" class="w-full bg-pink-600 text-white font-bold py-2 rounded">દુકાન સેવ કરો</button>
+                </div>
+
+                <div id="storeManageSection" class="hidden space-y-3 border-t pt-3">
+                    <h3 class="font-bold text-pink-600 text-sm">પ્રોડક્ટ ઉમેરો</h3>
+                    <input type="text" id="prodName" placeholder="પ્રોડક્ટનું નામ (દા.ત. કેળા / બિસ્કીટ)" class="w-full border p-2 rounded">
+                    <select id="prodCategory" class="w-full border p-2 rounded">
+                        <option value="veg_fruit">ફ્રૂટ કે શાકભાજી (250gm થી શરૂ, Min 2kg)</option>
+                        <option value="general">અન્ય વસ્તુઓ (Min Bill ₹500)</option>
+                    </select>
+                    <input type="number" id="prodPrice" placeholder="ભાવ (ફ્રૂટ/શાક માટે 1kg નો ભાવ, અન્ય માટે ફીixed ભાવ)" class="w-full border p-2 rounded">
+                    <input type="text" id="prodImage" placeholder="પ્રોડક્ટ ફોટો ઈમેજ URL" class="w-full border p-2 rounded">
+                    <button onclick="addProductToStore()" class="w-full bg-green-600 text-white font-bold py-2 rounded">પ્રોડક્ટ ઉમેરો</button>
+                    
+                    <div id="sellerProductsList" class="space-y-1 mt-2"></div>
+                </div>
+            </div>
+
+            <!-- Admin Tab -->
+            <div id="adminTabContent" class="space-y-4 text-xs hidden">
+                <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                    <p class="font-bold text-blue-900">માસ્ટર એડમિન સિગ્નલ કંટ્રોલ:</p>
+                    <p>અહીંથી તમે UPI QR કે રોકડા (Cash) પેમેન્ટ મળ્યા પછી કોઈપણ દુકાનને 1-ક્લિકથી 30 દિવસ માટે એક્ટિવ કરી શકો છો.</p>
+                </div>
+                <div id="adminStoresList" class="space-y-3"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Sample store data with fruit & vegetables starting from 250g
-        let stores = JSON.parse(localStorage.getItem('kh_all_stores')) || [
-            {
-                id: 'store_1',
-                name: 'K.H Fresh Fruits & Sabji',
-                phone: '919898989898',
-                banner: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1000',
-                products: [
-                    { id: 1, name: 'તાજા ટામેટા (Tomato)', price: 60, image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500' },
-                    { id: 2, name: 'કેળા (Banana)', price: 50, image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=500' }
-                ]
-            }
-        ];
+        let stores = JSON.parse(localStorage.getItem('kh_all_stores')) || [];
+        let currentActiveStoreId = localStorage.getItem('kh_current_store_id') || '';
         let cart = [];
 
         function renderAllStoresGrid() {
             let container = document.getElementById('allStoresGrid');
             container.innerHTML = '';
 
-            if (stores.length === 0) {
+            let activeStores = stores.filter(s => new Date(s.expiryDate || Date.now()) > new Date());
+
+            if (activeStores.length === 0) {
                 document.getElementById('noStoresMsg').classList.remove('hidden');
                 return;
             }
+            document.getElementById('noStoresMsg').classList.add('hidden');
 
-            stores.forEach(store => {
+            activeStores.forEach(store => {
                 let productsHTML = '';
-                store.products.forEach(p => {
-                    let initialPrice = p.price * 0.25; // 250g price
-                    // Fruit/Veg options starting from 250g up to 5 Kg
-                    let opts = ['250g', '500g', '1 Kg', '2 Kg', '3 Kg', '5 Kg'];
+                if(!store.products || store.products.length === 0) {
+                    productsHTML = `<p class="col-span-full text-center text-gray-400 py-4 text-xs">આ દુકાનમાં હજુ કોઈ પ્રોડક્ટ નથી.</p>`;
+                } else {
+                    store.products.forEach(p => {
+                        let isVeg = (p.category === 'veg_fruit');
+                        let opts = isVeg ? ['250g', '500g', '1 Kg', '2 Kg', '3 Kg', '5 Kg'] : ['1 Pcs', '2 Pcs', '1 Unit', '2 Unit', '5 Unit'];
+                        let initialPrice = isVeg ? (p.price * 0.25) : p.price;
 
-                    let selectHTML = `<select id="size_${store.id}_${p.id}" onchange="updateCardPrice('${store.id}', ${p.id})" class="w-full text-xs border rounded p-1 bg-gray-50">`;
-                    opts.forEach(o => { selectHTML += `<option value="${o}">${o}</option>`; });
-                    selectHTML += `</select>`;
+                        let selectHTML = `<select id="size_${store.id}_${p.id}" onchange="updateCardPrice('${store.id}', ${p.id}, ${isVeg})" class="w-full text-xs border rounded p-1 bg-gray-50">`;
+                        opts.forEach(o => { selectHTML += `<option value="${o}">${o}</option>`; });
+                        selectHTML += `</select>`;
 
-                    productsHTML += `
-                        <div class="bg-white rounded-lg shadow-sm overflow-hidden border flex flex-col justify-between">
-                            <div>
-                                <img src="${p.image}" class="w-full h-28 object-cover">
-                                <div class="p-2">
-                                    <h3 class="font-bold text-xs text-gray-800 line-clamp-1">${p.name}</h3>
-                                    <div class="flex items-center space-x-1 mt-0.5">
-                                        <span id="price_display_${store.id}_${p.id}" class="text-pink-600 font-bold text-xs">₹${initialPrice.toFixed(0)}</span>
-                                        <span class="text-gray-400 text-[9px]">(1kg ₹${p.price})</span>
+                        productsHTML += `
+                            <div class="bg-white rounded-lg shadow-sm overflow-hidden border flex flex-col justify-between">
+                                <div>
+                                    <img src="${p.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=500'}" class="w-full h-28 object-cover">
+                                    <div class="p-2">
+                                        <h3 class="font-bold text-xs text-gray-800 line-clamp-1">${p.name}</h3>
+                                        <div class="flex items-center space-x-1 mt-0.5">
+                                            <span id="price_display_${store.id}_${p.id}" class="text-pink-600 font-bold text-xs">₹${initialPrice.toFixed(0)}</span>
+                                            <span class="text-gray-400 text-[9px]">${isVeg ? '(1kg ₹'+p.price+')' : ''}</span>
+                                        </div>
+                                        <div class="mt-1.5">${selectHTML}</div>
                                     </div>
-                                    <div class="mt-1.5">${selectHTML}</div>
+                                </div>
+                                <div class="p-1.5 pt-0">
+                                    <button onclick="addToCart('${store.id}', ${p.id})" class="w-full bg-pink-600 hover:bg-pink-700 text-white text-[11px] font-bold py-1.5 rounded shadow">Add</button>
                                 </div>
                             </div>
-                            <div class="p-1.5 pt-0">
-                                <button onclick="addToCart('${store.id}', ${p.id})" class="w-full bg-pink-600 hover:bg-pink-700 text-white text-[11px] font-bold py-1.5 rounded shadow">Add</button>
-                            </div>
-                        </div>
-                    `;
-                });
+                        `;
+                    });
+                }
 
                 container.innerHTML += `
                     <div class="bg-white rounded-2xl shadow-md overflow-hidden border p-3 space-y-3 flex flex-col justify-between">
                         <div>
-                            <div class="relative h-32 bg-gray-200 rounded-xl overflow-hidden mb-3">
-                                <img src="${store.banner}" class="w-full h-full object-cover">
+                            <div class="relative h-28 bg-gray-200 rounded-xl overflow-hidden mb-3">
+                                <img src="${store.banner || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1000'}" class="w-full h-full object-cover">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-2.5">
                                     <div class="text-white">
                                         <span class="bg-pink-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">Store</span>
@@ -171,7 +212,7 @@
             });
         }
 
-        function updateCardPrice(storeId, prodId) {
+        function updateCardPrice(storeId, prodId, isVeg) {
             let store = stores.find(s => s.id === storeId);
             let p = store.products.find(item => item.id === prodId);
             let selectElem = document.getElementById(`size_${storeId}_${prodId}`);
@@ -180,37 +221,46 @@
 
             let val = selectElem.value;
             let multiplier = 0.25;
-            if(val === '500g') multiplier = 0.5;
-            else if(val === '1 Kg') multiplier = 1.0;
-            else if(val === '2 Kg') multiplier = 2.0;
-            else if(val === '3 Kg') multiplier = 3.0;
-            else if(val === '5 Kg') multiplier = 5.0;
-
-            let calculatedPrice = p.price * multiplier;
-            priceElem.innerText = `₹${calculatedPrice.toFixed(0)}`;
+            if(isVeg) {
+                if(val === '500g') multiplier = 0.5;
+                else if(val === '1 Kg') multiplier = 1.0;
+                else if(val === '2 Kg') multiplier = 2.0;
+                else if(val === '3 Kg') multiplier = 3.0;
+                else if(val === '5 Kg') multiplier = 5.0;
+            } else {
+                multiplier = parseFloat(val) || 1;
+            }
+            let calcPrice = p.price * multiplier;
+            priceElem.innerText = `₹${calcPrice.toFixed(0)}`;
         }
 
         function addToCart(storeId, prodId) {
             let store = stores.find(s => s.id === storeId);
             let prod = store.products.find(p => p.id === prodId);
-            let sizeSelect = document.getElementById(`size_${storeId}_${prodId}`);
-            let selectedOption = sizeSelect.value;
-            
-            let multiplier = 0.25, weightKg = 0.25;
-            if(selectedOption === '500g') { multiplier = 0.5; weightKg = 0.5; }
-            else if(selectedOption === '1 Kg') { multiplier = 1.0; weightKg = 1.0; }
-            else if(selectedOption === '2 Kg') { multiplier = 2.0; weightKg = 2.0; }
-            else if(selectedOption === '3 Kg') { multiplier = 3.0; weightKg = 3.0; }
-            else if(selectedOption === '5 Kg') { multiplier = 5.0; weightKg = 5.0; }
+            let isVeg = (prod.category === 'veg_fruit');
+            let selectElem = document.getElementById(`size_${storeId}_${prodId}`);
+            let val = selectElem.value;
 
-            let itemPrice = prod.price * multiplier;
+            let multiplier = 0.25, weightKg = 0, itemPrice = prod.price;
+            if(isVeg) {
+                if(val === '500g') { multiplier = 0.5; weightKg = 0.5; }
+                else if(val === '1 Kg') { multiplier = 1.0; weightKg = 1.0; }
+                else if(val === '2 Kg') { multiplier = 2.0; weightKg = 2.0; }
+                else if(val === '3 Kg') { multiplier = 3.0; weightKg = 3.0; }
+                else if(val === '5 Kg') { multiplier = 5.0; weightKg = 5.0; }
+                else { multiplier = 0.25; weightKg = 0.25; }
+                itemPrice = prod.price * multiplier;
+            } else {
+                multiplier = parseFloat(val) || 1;
+                itemPrice = prod.price * multiplier;
+            }
 
             if(cart.length > 0 && cart[0].storeId !== storeId) {
                 alert('⚠️ તમે એક સમયે એક જ દુકાનમાંથી ઓર્ડર કરી શકો છો!');
                 return;
             }
 
-            let existing = cart.find(item => item.storeId === storeId && item.id === prodId && item.displayLabel === selectedOption);
+            let existing = cart.find(item => item.storeId === storeId && item.id === prodId && item.displayLabel === val);
             if(existing) {
                 existing.qty += 1;
             } else {
@@ -219,15 +269,16 @@
                     storeName: store.name,
                     storePhone: store.phone,
                     ...prod,
-                    displayLabel: selectedOption,
+                    displayLabel: val,
                     qty: 1,
                     calculatedPrice: itemPrice,
-                    itemWeightKg: weightKg
+                    itemWeightKg: weightKg,
+                    isVeg: isVeg
                 });
             }
 
             updateCartCount();
-            alert(`${prod.name} (${selectedOption}) કાર્ટમાં ઉમેરાઈ ગયું!`);
+            alert(`${prod.name} (${val}) કાર્ટમાં ઉમેરાઈ ગયું!`);
         }
 
         function updateCartCount() {
@@ -243,15 +294,20 @@
                 list.innerHTML = `<p class="text-center text-gray-500 py-4 text-xs">તમારું કાર્ટ ખાલી છે.</p>`;
                 document.getElementById('cartTotalPrice').innerText = '₹0';
                 document.getElementById('cartTotalWeight').innerText = '0 Kg';
+                document.getElementById('cartOtherAmount').innerText = '₹0';
                 document.getElementById('cartModal').classList.remove('hidden');
                 return;
             }
 
-            let totalBill = 0, totalWeight = 0;
+            let totalBill = 0, totalVegWeight = 0, otherAmount = 0;
             cart.forEach((item, index) => {
                 let itemTotal = item.calculatedPrice * item.qty;
                 totalBill += itemTotal;
-                totalWeight += item.itemWeightKg * item.qty;
+                if(item.isVeg) {
+                    totalVegWeight += (item.itemWeightKg * item.qty);
+                } else {
+                    otherAmount += itemTotal;
+                }
 
                 list.innerHTML += `
                     <div class="flex justify-between items-center py-1.5 text-xs">
@@ -267,15 +323,178 @@
             });
 
             document.getElementById('cartTotalPrice').innerText = '₹' + totalBill.toFixed(0);
-            document.getElementById('cartTotalWeight').innerText = totalWeight.toFixed(2) + ' Kg';
+            document.getElementById('cartTotalWeight').innerText = totalVegWeight.toFixed(2) + ' Kg';
+            document.getElementById('cartOtherAmount').innerText = '₹' + otherAmount.toFixed(0);
             document.getElementById('cartModal').classList.remove('hidden');
         }
 
         function closeCart() { document.getElementById('cartModal').classList.add('hidden'); }
         function removeFromCart(index) { cart.splice(index, 1); updateCartCount(); openCart(); }
 
-        function openSellerModal() { document.getElementById('sellerModal').classList.remove('hidden'); }
+        function openSellerModal() {
+            document.getElementById('sellerModal').classList.remove('hidden');
+            if(currentActiveStoreId) {
+                document.getElementById('storeRegId').value = currentActiveStoreId;
+                let s = stores.find(x => x.id === currentActiveStoreId);
+                if(s) {
+                    document.getElementById('storeRegName').value = s.name;
+                    document.getElementById('storeRegPhone').value = s.phone;
+                    document.getElementById('storeManageSection').classList.remove('hidden');
+                    renderSellerProducts();
+                }
+            }
+        }
         function closeSellerModal() { document.getElementById('sellerModal').classList.add('hidden'); }
+
+        function switchTab(tab) {
+            if(tab === 'seller') {
+                document.getElementById('sellerTabContent').classList.remove('hidden');
+                document.getElementById('adminTabContent').classList.add('hidden');
+                document.getElementById('tabSellerBtn').className = "bg-pink-600 text-white px-3 py-1.5 rounded text-xs font-bold";
+                document.getElementById('tabAdminBtn').className = "bg-gray-200 text-gray-800 px-3 py-1.5 rounded text-xs font-bold";
+            } else {
+                document.getElementById('sellerTabContent').classList.add('hidden');
+                document.getElementById('adminTabContent').classList.remove('hidden');
+                document.getElementById('tabAdminBtn').className = "bg-pink-600 text-white px-3 py-1.5 rounded text-xs font-bold";
+                document.getElementById('tabSellerBtn').className = "bg-gray-200 text-gray-800 px-3 py-1.5 rounded text-xs font-bold";
+                renderAdminPanel();
+            }
+        }
+
+        function registerStore() {
+            let id = document.getElementById('storeRegId').value.trim();
+            let name = document.getElementById('storeRegName').value.trim();
+            let phone = document.getElementById('storeRegPhone').value.trim();
+
+            if(!id || !name || !phone) {
+                alert('કૃપા કરીને બધી વિગતો ભરો.');
+                return;
+            }
+
+            let existing = stores.find(s => s.id === id);
+            let expiry = new Date();
+            expiry.setDate(expiry.getDate() + 30); // 30 Days Free/Paid trial
+
+            if(existing) {
+                existing.name = name;
+                existing.phone = phone;
+            } else {
+                stores.push({
+                    id: id,
+                    name: name,
+                    phone: phone,
+                    banner: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1000',
+                    expiryDate: expiry.toISOString(),
+                    products: []
+                });
+            }
+
+            currentActiveStoreId = id;
+            localStorage.setItem('kh_current_store_id', id);
+            localStorage.setItem('kh_all_stores', JSON.stringify(stores));
+            
+            document.getElementById('storeManageSection').classList.remove('hidden');
+            renderSellerProducts();
+            alert('દુકાન સફળતાપૂર્વક રજીસ્ટર થઈ ગઈ!');
+            renderAllStoresGrid();
+        }
+
+        function addProductToStore() {
+            if(!currentActiveStoreId) { alert('પહેલા દુકાન રજીસ્ટર કરો.'); return; }
+            let s = stores.find(x => x.id === currentActiveStoreId);
+            if(!s) return;
+
+            let name = document.getElementById('prodName').value.trim();
+            let category = document.getElementById('prodCategory').value;
+            let price = parseFloat(document.getElementById('prodPrice').value);
+            let image = document.getElementById('prodImage').value.trim();
+
+            if(!name || isNaN(price)) {
+                alert('પ્રોડક્ટનું નામ અને સાચો ભાવ લખો.');
+                return;
+            }
+
+            s.products.push({
+                id: Date.now(),
+                name: name,
+                category: category,
+                price: price,
+                image: image
+            });
+
+            localStorage.setItem('kh_all_stores', JSON.stringify(stores));
+            document.getElementById('prodName').value = '';
+            document.getElementById('prodPrice').value = '';
+            document.getElementById('prodImage').value = '';
+            renderSellerProducts();
+            renderAllStoresGrid();
+            alert('પ્રોડક્ટ ઉમેરાઈ ગઈ!');
+        }
+
+        function renderSellerProducts() {
+            let s = stores.find(x => x.id === currentActiveStoreId);
+            let list = document.getElementById('sellerProductsList');
+            if(!s || !s.products) { list.innerHTML = ''; return; }
+
+            list.innerHTML = `<h4 class="font-bold mt-2">ઉમેરેલી પ્રોડક્ટ્સ (${s.products.length}):</h4>`;
+            s.products.forEach((p, idx) => {
+                list.innerHTML += `
+                    <div class="flex justify-between items-center bg-gray-50 p-1.5 rounded border text-xs">
+                        <span>${p.name} - ₹${p.price} (${p.category})</span>
+                        <button onclick="deleteProduct(${p.id})" class="text-red-500 font-bold">ડિલીટ</button>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteProduct(prodId) {
+            let s = stores.find(x => x.id === currentActiveStoreId);
+            if(!s) return;
+            s.products = s.products.filter(p => p.id !== prodId);
+            localStorage.setItem('kh_all_stores', JSON.stringify(stores));
+            renderSellerProducts();
+            renderAllStoresGrid();
+        }
+
+        function renderAdminPanel() {
+            let list = document.getElementById('adminStoresList');
+            list.innerHTML = '';
+
+            if(stores.length === 0) {
+                list.innerHTML = `<p class="text-gray-500">કોઈ દુકાન નોંધાયેલી નથી.</p>`;
+                return;
+            }
+
+            stores.forEach(s => {
+                let isExp = new Date(s.expiryDate || Date.now()) < new Date();
+                let prodCount = s.products ? s.products.length : 0;
+                let renewalFee = (prodCount <= 30) ? 60 : 120;
+
+                list.innerHTML += `
+                    <div class="bg-gray-50 p-3 rounded-lg border space-y-1">
+                        <div class="flex justify-between font-bold">
+                            <span>${s.name} (${s.id})</span>
+                            <span class="${isExp ? 'text-red-600' : 'text-green-600'}">${isExp ? 'એક્સપાયર થઈ ગઈ' : 'સક્રિય (Active)'}</span>
+                        </div>
+                        <p>પ્રોડક્ટ્સ: ${prodCount} | માસિક ભાડું: ₹${renewalFee}</p>
+                        <p class="text-[10px] text-gray-500">Expiry: ${new Date(s.expiryDate).toLocaleDateString()}</p>
+                        <button onclick="extendStore('${s.id}')" class="mt-1 bg-green-600 text-white px-3 py-1 rounded font-bold">૧-ક્લિક એક્ટિવ (+૩૦ દિવસ)</button>
+                    </div>
+                `;
+            });
+        }
+
+        function extendStore(storeId) {
+            let s = stores.find(x => x.id === storeId);
+            if(!s) return;
+            let d = new Date();
+            d.setDate(d.getDate() + 30);
+            s.expiryDate = d.toISOString();
+            localStorage.setItem('kh_all_stores', JSON.stringify(stores));
+            alert('દુકાન ૩૦ દિવસ માટે રી-એક્ટિવ થઈ ગઈ!');
+            renderAdminPanel();
+            renderAllStoresGrid();
+        }
 
         function sendOrderWhatsApp() {
             let alertBox = document.getElementById('validationMsg');
@@ -285,20 +504,34 @@
 
             let hours = new Date().getHours();
             if(hours < 9 || hours >= 18) {
-                alertBox.innerText = '❌ દુકાનનો ઓર્ડર લેવાનો સમય સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધીનો છે.';
+                alertBox.innerText = '❌ દુકાનનો ઓર્ડર લેવાનો સમય સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધીનો છે[span_7](start_span)[span_7](end_span).';
                 alertBox.classList.remove('hidden');
                 return;
             }
 
-            let totalBill = 0, totalWeight = 0;
+            let totalBill = 0, totalVegWeight = 0, otherAmount = 0, hasVeg = false, hasOther = false;
             cart.forEach(item => {
-                totalBill += (item.calculatedPrice * item.qty);
-                totalWeight += (item.itemWeightKg * item.qty);
+                let itemTotal = item.calculatedPrice * item.qty;
+                totalBill += itemTotal;
+                if(item.isVeg) {
+                    totalVegWeight += (item.itemWeightKg * item.qty);
+                    hasVeg = true;
+                } else {
+                    otherAmount += itemTotal;
+                    hasOther = true;
+                }
             });
 
-            // Minimum 2 Kg Rule check
-            if(totalWeight < 2.0) {
-                alertBox.innerText = `❌ ફ્રૂટ/શાકભાજી માટે કુલ વજન ઓછામાં ઓછું ૨ Kg હોવું જરૂરી છે! હાલનું કુલ વજન: ${totalWeight.toFixed(2)} Kg`;
+            // Rule 1: Fruit/Veg minimum 2 Kg check
+            if(hasVeg && totalVegWeight < 2.0) {
+                alertBox.innerText = `❌ ફ્રૂટ/શાકભાજી માટે કુલ વજન ઓછામાં ઓછું ૨ Kg હોવું જરૂરી છે[span_8](start_span)[span_8](end_span)! હાલનું વજન: ${totalVegWeight.toFixed(2)} Kg`;
+                alertBox.classList.remove('hidden');
+                return;
+            }
+
+            // Rule 2: Other items minimum ₹500 bill check
+            if(hasOther && otherAmount < 500) {
+                alertBox.innerText = `❌ અન્ય વસ્તુઓ માટે કુલ બિલ ઓછામાં ઓછું ₹૫૦૦ હોવું જરૂરી છે! હાલનું બિલ: ₹${otherAmount.toFixed(0)}`;
                 alertBox.classList.remove('hidden');
                 return;
             }
@@ -324,9 +557,10 @@
             cart.forEach(item => {
                 msg += `- ${item.name} (${item.displayLabel}) x ${item.qty} = ₹${(item.calculatedPrice * item.qty).toFixed(0)}\n`;
             });
-            msg += `\n⚖️ કુલ વજન: ${totalWeight.toFixed(2)} Kg`;
+            if(hasVeg) msg += `\n⚖️ ફ્રૂટ/શાકભાજી કુલ વજન: ${totalVegWeight.toFixed(2)} Kg`;
+            if(hasOther) msg += `\n📦 અન્ય વસ્તુઓ બિલ: ₹${otherAmount.toFixed(0)}`;
             msg += `\n💰 *કુલ બિલ રકમ: ₹${totalBill.toFixed(0)}*\n\n`;
-            msg += `📌 શરતો: ઓર્ડર કેન્સલ કે એક્સચેન્જ થશે નહીં.`;
+            msg += `📌 શરતો: ઓર્ડર કેન્સલ કે એક્સચેન્જ થશે નહીં[span_9](start_span)[span_9](end_span).`;
 
             let url = `https://wa.me/${targetStorePhone}?text=${encodeURIComponent(msg)}`;
             window.open(url, '_blank');
