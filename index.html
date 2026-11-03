@@ -44,8 +44,8 @@
                 <i class="fa-regular fa-clock text-amber-600 font-bold"></i>
                 <span><b>દુકાનનો સમય:</b> સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધી</span>
             </div>
-            <div>⚠️ <b>શાકભાજી / ફ્રૂટ નિયમ:</b> ૨૦૦ ગ્રામથી શરૂઆત, પરંતુ કુલ વજન ઓછામાં ઓછું <b>૨ કિલો (2 Kg)</b> હોવું ફરજિયાત છે.</div>
-            <div>⚠️ <b>અન્ય વસ્તુઓનો નિયમ:</b> કુલ બિલ ઓછામાં ઓછું <b>₹૫૦૦</b> હોવું જોઈએ.</div>
+            <div>⚠️ <b>શાકભાજી / ફ્રૂટ નિયમ:</b> ૨૫૦ ગ્રામથી શરૂઆત (૧ કિલોના ભાવ પ્રમાણે આપોઆપ ગણાશે), પરંતુ કુલ વજન ઓછામાં ઓછું <b>૨ કિલો (2 Kg)</b> હોવું ફરજિયાત છે.</div>
+            <div>⚠️ <b>અન્ય વસ્તુઓનો નિયમ:</b> ૧, ૨, ૩ નંગ મુજબ પસંદગી, અને કુલ બિલ ઓછામાં ઓછું <b>₹૫૦૦</b> હોવું જોઈએ.</div>
             <div class="text-red-600 font-bold">🚫 ઓર્ડર કેન્સલ નહીં થાય | 🚫 એક્સચેન્જ (બદલો) નહીં થાય.</div>
         </div>
 
@@ -56,7 +56,7 @@
                     <input type="text" id="searchBox" onkeyup="filterProducts()" placeholder="પ્રોડક્ટ અથવા કેટેગરી શોધો..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400"></i>
                 </div>
-                <!-- All Categories Scrollable Pills -->
+                <!-- Scrollable Category Pills -->
                 <div class="flex space-x-2 overflow-x-auto pb-1 text-xs">
                     <button onclick="filterCategory('all')" class="category-btn bg-pink-600 text-white px-4 py-1.5 rounded-full font-semibold whitespace-nowrap shadow-sm">All Items</button>
                     <button onclick="filterCategory('veg_fruit')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Vegetables & Fruits</button>
@@ -130,8 +130,8 @@
     <!-- JavaScript -->
     <script>
         let products = JSON.parse(localStorage.getItem('kh_products')) || [
-            { id: 1, category: 'veg_fruit', name: 'Fresh Red Tomatoes (તાજા ટમેટા)', price: 40, originalPrice: 60, size: '1 Kg', weightKg: 1.0, rating: 4.8, reviews: 142, image: 'https://images.unsplash.com/photo-1582281298055-e2f38a520443?w=500' },
-            { id: 2, category: 'women', name: 'Women Cotton Floral Printed Kurti', price: 349, originalPrice: 799, size: 'M', weightKg: 0, rating: 4.5, reviews: 89, image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500' }
+            { id: 1, category: 'veg_fruit', name: 'Apple (સફરજન)', price: 100, originalPrice: 130, size: '1 Kg', weightKg: 1.0, image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=500' },
+            { id: 2, category: 'women', name: 'Cotton Printed Kurti', price: 350, originalPrice: 500, size: 'M', weightKg: 0, image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500' }
         ];
 
         let cart = [];
@@ -150,6 +150,25 @@
             renderProducts(document.getElementById('searchBox').value);
         }
 
+        function updateCardPrice(id) {
+            let p = products.find(item => item.id === id);
+            let selectElem = document.getElementById(`size_${id}`);
+            let priceElem = document.getElementById(`price_display_${id}`);
+            
+            if(!selectElem || !priceElem) return;
+
+            let val = parseFloat(selectElem.value);
+            if(p.category === 'veg_fruit') {
+                // val is weight in kg (0.25, 0.5, 1, 2)
+                let calculatedPrice = p.price * val;
+                priceElem.innerText = `₹${calculatedPrice.toFixed(0)}`;
+            } else {
+                // val is quantity (1, 2, 3)
+                let calculatedPrice = p.price * val;
+                priceElem.innerText = `₹${calculatedPrice.toFixed(0)}`;
+            }
+        }
+
         function renderProducts(filterText = '') {
             const grid = document.getElementById('productGrid');
             grid.innerHTML = '';
@@ -165,7 +184,31 @@
             }
 
             filtered.forEach(p => {
+                let isVeg = (p.category === 'veg_fruit');
+                let initialPrice = isVeg ? (p.price * 0.25) : p.price; // Default 250g price for veg
                 let discount = p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0;
+
+                let selectHTML = '';
+                if(isVeg) {
+                    selectHTML = `
+                        <select id="size_${p.id}" onchange="updateCardPrice(${p.id})" class="w-full text-xs border rounded p-1 bg-gray-50">
+                            <option value="0.25" selected>250g (0.25 Kg)</option>
+                            <option value="0.5">500g (0.50 Kg)</option>
+                            <option value="1.0">1 Kg</option>
+                            <option value="2.0">2 Kg</option>
+                        </select>
+                    `;
+                } else {
+                    selectHTML = `
+                        <select id="size_${p.id}" onchange="updateCardPrice(${p.id})" class="w-full text-xs border rounded p-1 bg-gray-50">
+                            <option value="1" selected>1 નંગ (Piece)</option>
+                            <option value="2">2 નંગ (Piece)</option>
+                            <option value="3">3 નંગ (Piece)</option>
+                            <option value="5">5 નંગ (Piece)</option>
+                        </select>
+                    `;
+                }
+
                 grid.innerHTML += `
                     <div class="bg-white rounded-xl shadow-sm overflow-hidden border hover:shadow-md transition flex flex-col justify-between">
                         <div>
@@ -176,18 +219,12 @@
                             <div class="p-2.5">
                                 <h3 class="font-bold text-xs text-gray-800 line-clamp-1">${p.name}</h3>
                                 <div class="flex items-center space-x-1 mt-1">
-                                    <span class="text-pink-600 font-bold text-sm">₹${p.price}</span>
-                                    ${p.originalPrice ? `<span class="text-gray-400 text-[10px] line-through">₹${p.originalPrice}</span>` : ''}
-                                </div>
-                                <div class="flex items-center space-x-1 mt-1">
-                                    <span class="bg-green-700 text-white text-[10px] px-1.5 py-0.2 rounded font-bold">${p.rating || 4.5} <i class="fa-solid fa-star text-[8px]"></i></span>
-                                    <span class="text-gray-400 text-[10px]">(${p.reviews || 50})</span>
+                                    <span id="price_display_${p.id}" class="text-pink-600 font-bold text-sm">₹${initialPrice.toFixed(0)}</span>
+                                    <span class="text-gray-400 text-[10px]">${isVeg ? '(1kg ₹' + p.price + ')' : ''}</span>
                                 </div>
                                 <div class="mt-2">
-                                    <label class="text-[10px] text-gray-500 block mb-0.5 font-medium">Select Size/Weight:</label>
-                                    <select id="size_${p.id}" class="w-full text-xs border rounded p-1 bg-gray-50">
-                                        <option value="${p.size}">${p.size}</option>
-                                    </select>
+                                    <label class="text-[10px] text-gray-500 block mb-0.5 font-medium">${isVeg ? 'વજન પસંદ કરો:' : 'જથ્થો (નંગ) પસંદ કરો:'}</label>
+                                    ${selectHTML}
                                 </div>
                             </div>
                         </div>
@@ -208,16 +245,40 @@
 
         function addToCart(id) {
             let prod = products.find(p => p.id === id);
-            let selectedSize = document.getElementById(`size_${id}`).value;
-            let existing = cart.find(item => item.id === id && item.selectedSize === selectedSize);
+            let sizeSelect = document.getElementById(`size_${id}`);
+            let isVeg = (prod.category === 'veg_fruit');
+            
+            let val = parseFloat(sizeSelect.value);
+            let displayLabel = '';
+            let itemPrice = 0;
+            let weightVal = 0;
+
+            if(isVeg) {
+                weightVal = val; // 0.25, 0.5, 1.0, 2.0
+                itemPrice = prod.price * val;
+                displayLabel = (val * 1000) >= 1000 ? `${val} Kg` : `${val * 1000}g`;
+            } else {
+                weightVal = 0;
+                itemPrice = prod.price * val;
+                displayLabel = `${val} નંગ (Piece)`;
+            }
+
+            let existing = cart.find(item => item.id === id && item.displayLabel === displayLabel);
             
             if(existing) {
                 existing.qty += 1;
             } else {
-                cart.push({...prod, selectedSize, qty: 1});
+                cart.push({
+                    ...prod, 
+                    displayLabel: displayLabel, 
+                    qty: 1, 
+                    calculatedPrice: itemPrice, 
+                    itemWeightKg: weightVal,
+                    isVeg: isVeg
+                });
             }
             updateCartCount();
-            alert(prod.name + ' કાર્ટમાં ઉમેરાઈ ગયું!');
+            alert(`${prod.name} (${displayLabel}) - ₹${itemPrice.toFixed(0)} કાર્ટમાં ઉમેરાઈ ગયું!`);
         }
 
         function updateCartCount() {
@@ -231,10 +292,11 @@
             let hasOtherItems = false;
 
             cart.forEach(item => {
-                let itemTotal = item.price * item.qty;
+                let itemTotal = item.calculatedPrice * item.qty;
                 totalBill += itemTotal;
-                if(item.category === 'veg_fruit') {
-                    totalVegWeight += (item.weightKg || 0.2) * item.qty;
+
+                if(item.isVeg) {
+                    totalVegWeight += item.itemWeightKg * item.qty;
                 } else {
                     hasOtherItems = true;
                 }
@@ -256,15 +318,15 @@
             }
 
             cart.forEach((item, index) => {
-                let itemTotal = item.price * item.qty;
+                let itemTotal = item.calculatedPrice * item.qty;
                 list.innerHTML += `
                     <div class="flex justify-between items-center py-1.5">
                         <div>
                             <h4 class="font-bold text-xs">${item.name}</h4>
-                            <p class="text-[10px] text-gray-500">₹${item.price} x ${item.qty} (${item.selectedSize})</p>
+                            <p class="text-[10px] text-gray-500">₹${item.calculatedPrice.toFixed(0)} x ${item.qty} (${item.displayLabel})</p>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <span class="font-bold text-pink-600 text-xs">₹${itemTotal}</span>
+                            <span class="font-bold text-pink-600 text-xs">₹${itemTotal.toFixed(0)}</span>
                             <button onclick="removeFromCart(${index})" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
@@ -272,7 +334,7 @@
             });
 
             let { totalBill, totalVegWeight } = calculateCart();
-            document.getElementById('cartTotalPrice').innerText = '₹' + totalBill;
+            document.getElementById('cartTotalPrice').innerText = '₹' + totalBill.toFixed(0);
             document.getElementById('cartTotalWeight').innerText = totalVegWeight.toFixed(2) + ' Kg';
             document.getElementById('cartModal').classList.remove('hidden');
         }
@@ -299,16 +361,16 @@
             }
 
             let { totalBill, totalVegWeight, hasOtherItems } = calculateCart();
-            let hasVeg = cart.some(i => i.category === 'veg_fruit');
+            let hasVeg = cart.some(i => i.isVeg);
 
             if(hasVeg && totalVegWeight < 2.0) {
-                alertBox.innerText = `❌ શાકભાજી/ફ્રૂટ માટે કુલ વજન ઓછામાં ઓછું ૨ Kg હોવું જરૂરી છે. હાલનું વજન: ${totalVegWeight.toFixed(2)} Kg છે.`;
+                alertBox.innerText = `❌ શાકભાજી/ફ્રૂટ માટે કુલ વજન ઓછામાં ઓછું ૨ Kg હોવું જરૂરી છે. હાલનું કુલ વજન: ${totalVegWeight.toFixed(2)} Kg છે.`;
                 alertBox.classList.remove('hidden');
                 return;
             }
 
             if(hasOtherItems && totalBill < 500) {
-                alertBox.innerText = `❌ અન્ય વસ્તુઓ માટે કુલ બિલ ઓછામાં ઓછું ₹૫૦૦ હોવું જોઈએ. હાલનું બિલ: ₹${totalBill} છે.`;
+                alertBox.innerText = `❌ અન્ય વસ્તુઓ માટે કુલ બિલ ઓછામાં ઓછું ₹૫૦૦ હોવું જોઈએ. હાલનું બિલ: ₹${totalBill.toFixed(0)} છે.`;
                 alertBox.classList.remove('hidden');
                 return;
             }
@@ -330,14 +392,14 @@
             msg += `*આઈટમ્સ:* \n`;
 
             cart.forEach(item => {
-                let sub = item.price * item.qty;
-                msg += `- ${item.name} (${item.selectedSize}) x ${item.qty} = ₹${sub}\n`;
+                let itemTotal = item.calculatedPrice * item.qty;
+                msg += `- ${item.name} (${item.displayLabel}) x ${item.qty} = ₹${itemTotal.toFixed(0)}\n`;
             });
 
             if(hasVeg) {
                 msg += `\n⚖️ *કુલ વજન (Veg/Fruit):* ${totalVegWeight.toFixed(2)} Kg`;
             }
-            msg += `\n💰 *કુલ બિલ રકમ: ₹${totalBill}*\n\n`;
+            msg += `\n💰 *કુલ બિલ રકમ: ₹${totalBill.toFixed(0)}*\n\n`;
             msg += `📌 *શરતો:* ઓર્ડર કેન્સલ થશે નહીં | એક્સચેન્જ થશે નહીં.`;
 
             let url = `https://wa.me/${whatsappNum}?text=${encodeURIComponent(msg)}`;
@@ -348,4 +410,3 @@
     </script>
 </body>
 </html>
-
