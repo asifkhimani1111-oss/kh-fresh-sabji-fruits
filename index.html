@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K.H Fresh - Online Store</title>
+    <title>K.H Fresh - Online Mall</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,12 +18,12 @@
     <header class="bg-white shadow-sm sticky top-0 z-50 border-b">
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <div class="bg-pink-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow">
+                <div id="storeHeaderLogo" class="bg-pink-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow overflow-hidden">
                     KH
                 </div>
                 <div>
                     <h1 id="storeTitle" class="text-base font-bold text-gray-900 leading-tight">K.H Fresh</h1>
-                    <p class="text-xs text-gray-500">Direct WhatsApp Order & Best Quality</p>
+                    <p class="text-xs text-gray-500">Direct WhatsApp Order & Mall Experience</p>
                 </div>
             </div>
             <div class="flex items-center space-x-3">
@@ -38,15 +38,29 @@
     <!-- Main Container -->
     <main class="max-w-7xl mx-auto px-2 md:px-4 py-4">
 
+        <!-- Store Banner / Mall Feeling Photo -->
+        <div class="mb-4 bg-white rounded-2xl shadow-md overflow-hidden border">
+            <div class="relative h-48 md:h-64 bg-gray-200">
+                <img id="storeBannerImg" src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=1000" alt="Store Banner" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-4">
+                    <div class="text-white">
+                        <span class="bg-pink-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Verified SuperStore</span>
+                        <h2 id="bannerStoreName" class="text-xl md:text-2xl font-bold mt-1">K.H Fresh & Mall</h2>
+                        <p class="text-xs text-gray-200">તમારી મનપસંદ દુકાન હવે ઓનલાઈન - મોલ જેવી સુવિધા સાથે!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Notice Banner -->
         <div class="mb-4 bg-amber-50 border-l-4 border-amber-500 p-3 rounded-lg shadow-sm text-xs md:text-sm text-amber-900 font-medium space-y-1">
             <div class="flex items-center space-x-2">
                 <i class="fa-regular fa-clock text-amber-600 font-bold"></i>
                 <span><b>દુકાનનો સમય:</b> સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધી</span>
             </div>
-            <div>⚠️ <b>શાકભાજી / ફ્રૂટ નિયમ:</b> ૨૫૦ ગ્રામથી શરૂઆત, પરંતુ કુલ વજન ઓછામાં ઓછું <b>૨ કિલો (2 Kg)</b> હોવું ફરજિયાત છે[span_0](start_span)[span_0](end_span).</div>
-            <div>⚠️ <b>અન્ય વસ્તુઓનો નિયમ:</b> કુલ બિલ ઓછામાં ઓછું <b>₹૫૦૦</b> હોવું જોઈએ[span_1](start_span)[span_1](end_span).</div>
-            <div class="text-red-600 font-bold">🚫 ઓર્ડર કેન્સલ નહીં થાય | 🚫 એક્સચેન્જ (બદલો) નહીં થાય[span_2](start_span)[span_2](end_span)[span_3](start_span)[span_3](end_span).</div>
+            <div>⚠️ <b>શાકભાજી / ફ્રૂટ નિયમ:</b> ૨૫૦ ગ્રામથી શરૂઆત, પરંતુ કુલ વજન ઓછામાં ઓછું <b>૨ કિલો (2 Kg)</b> હોવું ફરજિયાત છે[span_2](start_span)[span_2](end_span).</div>
+            <div>⚠️ <b>અન્ય વસ્તુઓનો નિયમ:</b> ૧, ૨, ૩ નંગ મુજબ પસંદગી, અને કુલ બિલ ઓછામાં ઓછું <b>₹૫૦૦</b> હોવું જોઈએ[span_3](start_span)[span_3](end_span).</div>
+            <div class="text-red-600 font-bold">🚫 ઓર્ડર કેન્સલ નહીં થાય | 🚫 એક્સચેન્જ (બદલો) નહીં થાય[span_4](start_span)[span_4](end_span)[span_5](start_span)[span_5](end_span).</div>
         </div>
 
         <!-- CUSTOMER VIEW -->
@@ -56,7 +70,7 @@
                     <input type="text" id="searchBox" onkeyup="filterProducts()" placeholder="પ્રોડક્ટ અથવા કેટેગરી શોધો..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400"></i>
                 </div>
-                <!-- Scrollable Category Pills -->
+                <!-- All Categories Scrollable Pills -->
                 <div class="flex space-x-2 overflow-x-auto pb-1 text-xs">
                     <button onclick="filterCategory('all')" class="category-btn bg-pink-600 text-white px-4 py-1.5 rounded-full font-semibold whitespace-nowrap shadow-sm">All Items</button>
                     <button onclick="filterCategory('veg_fruit')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Vegetables & Fruits</button>
@@ -70,16 +84,6 @@
                     <button onclick="filterCategory('electronics')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Electronics</button>
                     <button onclick="filterCategory('other')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Other Items</button>
                 </div>
-            </div>
-
-            <!-- Promo Banner -->
-            <div class="mb-5 bg-gradient-to-r from-pink-600 to-purple-600 text-white p-4 rounded-2xl shadow-md flex justify-between items-center">
-                <div>
-                    <span class="bg-white text-pink-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Free Direct Delivery</span>
-                    <h2 class="text-base md:text-xl font-bold mt-1">Lowest Prices & Top Quality</h2>
-                    <p class="text-xs text-pink-100 mt-0.5">માપ અને વજન પસંદ કરો અને WhatsApp પર સીધો ઓર્ડર મોકલો!</p>
-                </div>
-                <i class="fa-solid fa-truck-fast text-3xl md:text-5xl opacity-80"></i>
             </div>
 
             <!-- Product Grid -->
@@ -107,7 +111,6 @@
                 </div>
             </div>
 
-            <!-- Validation Error Alert -->
             <div id="validationMsg" class="hidden text-xs bg-red-100 border border-red-400 text-red-700 p-2 rounded-lg mb-3 font-semibold"></div>
 
             <div class="space-y-2 bg-gray-50 p-3 rounded-xl text-xs">
@@ -118,7 +121,7 @@
             </div>
 
             <div class="text-[10px] text-red-500 font-bold mt-2 text-center">
-                * નોંધ: ઓર્ડર કેન્સલ કે એક્સચેન્જ થશે નહીં[span_4](start_span)[span_4](end_span)[span_5](start_span)[span_5](end_span).
+                * નોંધ: ઓર્ડર કેન્સલ કે એક્સચેન્જ થશે નહીં[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span).
             </div>
 
             <button onclick="sendOrderWhatsApp()" class="w-full mt-3 bg-green-600 text-white font-bold py-2.5 rounded-xl hover:bg-green-700 flex justify-center items-center space-x-2 shadow text-sm">
@@ -131,16 +134,19 @@
     <!-- JavaScript -->
     <script>
         let products = JSON.parse(localStorage.getItem('kh_products')) || [
-            { id: 1, category: 'veg_fruit', name: 'Apple (સફરજન)', price: 100, originalPrice: 130, size: '1 Kg', weightKg: 1.0, image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=500' },
-            { id: 2, category: 'women', name: 'Cotton Printed Kurti', price: 350, originalPrice: 500, size: 'M', weightKg: 0, image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500' }
+            { id: 1, category: 'veg_fruit', name: 'Apple (સફરજન)', price: 100, originalPrice: 130, image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=500' },
+            { id: 2, category: 'women', name: 'Cotton Printed Kurti', price: 350, originalPrice: 500, image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500' }
         ];
 
         let cart = [];
         let whatsappNum = localStorage.getItem('kh_whatsapp') || '919876543210';
         let storeName = localStorage.getItem('kh_storename') || 'K.H Fresh';
+        let storeBanner = localStorage.getItem('kh_banner') || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1000';
         let currentFilter = 'all';
 
         document.getElementById('storeTitle').innerText = storeName;
+        document.getElementById('bannerStoreName').innerText = storeName;
+        document.getElementById('storeBannerImg').src = storeBanner;
 
         function filterCategory(cat) {
             currentFilter = cat;
@@ -155,17 +161,10 @@
             let p = products.find(item => item.id === id);
             let selectElem = document.getElementById(`size_${id}`);
             let priceElem = document.getElementById(`price_display_${id}`);
-            
             if(!selectElem || !priceElem) return;
-
             let val = parseFloat(selectElem.value);
-            if(p.category === 'veg_fruit') {
-                let calculatedPrice = p.price * val;
-                priceElem.innerText = `₹${calculatedPrice.toFixed(0)}`;
-            } else {
-                let calculatedPrice = p.price * val;
-                priceElem.innerText = `₹${calculatedPrice.toFixed(0)}`;
-            }
+            let calculatedPrice = p.price * val;
+            priceElem.innerText = `₹${calculatedPrice.toFixed(0)}`;
         }
 
         function renderProducts(filterText = '') {
@@ -246,7 +245,6 @@
             let prod = products.find(p => p.id === id);
             let sizeSelect = document.getElementById(`size_${id}`);
             let isVeg = (prod.category === 'veg_fruit');
-            
             let val = parseFloat(sizeSelect.value);
             let displayLabel = '';
             let itemPrice = 0;
@@ -263,7 +261,6 @@
             }
 
             let existing = cart.find(item => item.id === id && item.displayLabel === displayLabel);
-            
             if(existing) {
                 existing.qty += 1;
             } else {
@@ -293,7 +290,6 @@
             cart.forEach(item => {
                 let itemTotal = item.calculatedPrice * item.qty;
                 totalBill += itemTotal;
-
                 if(item.isVeg) {
                     totalVegWeight += item.itemWeightKg * item.qty;
                 } else {
@@ -307,7 +303,7 @@
         function openCart() {
             let list = document.getElementById('cartItemsList');
             list.innerHTML = '';
-            document.getElementById('validationMsg').classList.add('hidden'); // Clear error on open
+            document.getElementById('validationMsg').classList.add('hidden');
             
             if(cart.length === 0) {
                 list.innerHTML = `<p class="text-center text-gray-500 py-4 text-xs">તમારું કાર્ટ ખાલી છે.</p>`;
@@ -363,7 +359,6 @@
             let { totalBill, totalVegWeight, hasOtherItems } = calculateCart();
             let hasVeg = cart.some(i => i.isVeg);
 
-            // Strict Validation Check
             if(hasVeg && totalVegWeight < 2.0) {
                 alertBox.innerText = `❌ શાકભાજી/ફ્રૂટ માટે કુલ વજન ઓછામાં ઓછું ૨ Kg હોવું જરૂરી છે. હાલનું કુલ વજન: ${totalVegWeight.toFixed(2)} Kg છે.`;
                 alertBox.classList.remove('hidden');
@@ -401,7 +396,7 @@
                 msg += `\n⚖️ *કુલ વજન (Veg/Fruit):* ${totalVegWeight.toFixed(2)} Kg`;
             }
             msg += `\n💰 *કુલ બિલ રકમ: ₹${totalBill.toFixed(0)}*\n\n`;
-            msg += `📌 *શરતો:* ઓર્ડર કેન્સલ થશે નહીં | એક્સચેન્જ થશે નહીં[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span).`;
+            msg += `📌 *શરતો:* ઓર્ડર કેન્સલ થશે નહીં | એક્સચેન્જ થશે નહીં[span_8](start_span)[span_8](end_span)[span_9](start_span)[span_9](end_span).`;
 
             let url = `https://wa.me/${whatsappNum}?text=${encodeURIComponent(msg)}`;
             window.open(url, '_blank');
