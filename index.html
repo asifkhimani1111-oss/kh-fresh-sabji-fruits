@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K.H Fresh - Multi Shop Mall</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;500;600;700&display=swap');
+        body { font-family: 'Noto Sans Gujarati', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Top Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 border-b">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-pink-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow">
+                    KH
+                </div>
+                <div>
+                    <h1 class="text-base font-bold text-gray-900 leading-tight">K.H Fresh Mall</h1>
+                    <p class="text-xs text-gray-500">ઓનલાઈન શોપિંગ મોલ</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <div class="relative cursor-pointer text-gray-700 hover:text-pink-600" onclick="openCart()">
+                    <i class="fa-solid fa-cart-shopping text-2xl"></i>
+                    <span id="cartCount" class="absolute -top-2 -right-2 bg-pink-600 text-white font-bold text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-2 md:px-4 py-4">
+
+        <!-- Store Selection Bar -->
+        <div class="mb-4 bg-white p-3 rounded-xl shadow-sm border">
+            <label class="block text-xs font-bold text-gray-700 mb-1"><i class="fa-solid fa-store text-pink-600"></i> દુકાન પસંદ કરો:</label>
+            <select id="userStoreSelect" onchange="loadUserStore()" class="w-full border p-2 rounded text-sm font-bold text-pink-600 bg-pink-50">
+                <!-- Dynamically loaded -->
+            </select>
+        </div>
+
+        <div id="noStoreMsg" class="hidden bg-white p-8 text-center rounded-xl shadow-sm">
+            <p class="text-gray-500 text-sm">હાલમાં કોઈ દુકાન ઉપલબ્ધ નથી.</p>
+        </div>
+
+        <div id="storeContent">
+            <!-- Store Banner -->
+            <div class="mb-4 bg-white rounded-2xl shadow-md overflow-hidden border">
+                <div class="relative h-48 md:h-64 bg-gray-200">
+                    <img id="storeBannerImg" src="" alt="Banner" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-4">
+                        <div class="text-white">
+                            <span class="bg-pink-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Verified SuperStore</span>
+                            <h2 id="bannerStoreName" class="text-xl md:text-2xl font-bold mt-1"></h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rules Notice -->
+            <div class="mb-4 bg-amber-50 border-l-4 border-amber-500 p-3 rounded-lg text-xs space-y-1">
+                <div><b>દુકાનનો સમય:</b> સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધી</div>
+                <div>⚠️ <b>શાકભાજી / ફ્રૂટ:</b> ૨૫૦g થી શરૂઆત, પરંતુ કુલ વજન ઓછામાં ઓછું <b>૨ કિલો (2 Kg)</b> હોવું જરૂરી છે.</div>
+                <div>⚠️ <b>અન્ય વસ્તુઓ:</b> કુલ બિલ ઓછામાં ઓછું <b>₹૫૦૦</b> હોવું જોઈએ.</div>
+                <div class="text-red-600 font-bold">🚫 ઓર્ડર કેન્સલ કે એક્સચેન્જ થશે નહીં.</div>
+            </div>
+
+            <!-- Product Grid -->
+            <div id="productGrid" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+        </div>
+
+    </main>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
+        <div class="bg-white w-full max-w-md p-5 rounded-2xl shadow-xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeCart()" class="absolute top-4 right-4 text-lg text-gray-500"><i class="fa-solid fa-xmark"></i></button>
+            <h2 class="text-lg font-bold mb-3 text-pink-600"><i class="fa-solid fa-cart-shopping"></i> તમારું કાર્ટ</h2>
+            
+            <div id="cartItemsList" class="space-y-2 mb-3 divide-y text-sm"></div>
+
+            <div class="border-t pt-2 mb-3 space-y-1 text-xs bg-pink-50 p-2.5 rounded-lg">
+                <div class="flex justify-between">
+                    <span>શાકભાજી/ફ્રૂટ વજન:</span>
+                    <span id="cartTotalWeight" class="font-bold">0 Kg</span>
+                </div>
+                <div class="flex justify-between text-sm font-bold border-t pt-1">
+                    <span>કુલ બિલ:</span>
+                    <span id="cartTotalPrice" class="text-pink-600">₹0</span>
+                </div>
+            </div>
+
+            <div id="validationMsg" class="hidden text-xs bg-red-100 border border-red-400 text-red-700 p-2 rounded-lg mb-3 font-semibold"></div>
+
+            <div class="space-y-2 bg-gray-50 p-3 rounded-xl text-xs">
+                <input type="text" id="custName" placeholder="તમારું નામ" class="w-full border p-2 rounded">
+                <input type="text" id="custPhone" placeholder="મોબાઈલ નંબર" class="w-full border p-2 rounded">
+                <textarea id="custAddress" placeholder="પૂર્ણ સરનામું" class="w-full border p-2 rounded"></textarea>
+            </div>
+
+            <button onclick="sendOrderWhatsApp()" class="w-full mt-3 bg-green-600 text-white font-bold py-2.5 rounded-xl flex justify-center items-center space-x-2 shadow text-sm">
+                <i class="fa-brands fa-whatsapp text-lg"></i>
+                <span>WhatsApp પર ઓર્ડર મોકલો</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let stores = JSON.parse(localStorage.getItem('kh_all_stores')) || [];
+        let currentStore = null;
+        let cart = [];
+
+        function initStoreDropdown() {
+            let select = document.getElementById('userStoreSelect');
+            select.innerHTML = '';
+            let activeStores = stores.filter(s => s.status === 'active');
+
+            if (activeStores.length === 0) {
+                document.getElementById('noStoreMsg').classList.remove('hidden');
+                document.getElementById('storeContent').classList.add('hidden');
+                return;
+            }
+
+            activeStores.forEach(s => {
+                select.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+            });
+
+            currentStore = activeStores[0];
+            loadUserStore();
+        }
+
+        function loadUserStore() {
+            let selectedId = document.getElementById('userStoreSelect').value;
+            currentStore = stores.find(s => s.id === selectedId);
+            if (!currentStore) return;
+
+            document.getElementById('bannerStoreName').innerText = currentStore.name;
+            document.getElementById('storeBannerImg').src = currentStore.banner;
+
+            cart = [];
+            updateCartCount();
+            renderProducts();
+        }
+
+        function renderProducts() {
+            let grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
+
+            if (currentStore.products.length === 0) {
+                grid.innerHTML = `<p class="col-span-full text-center text-gray-500 py-10 text-xs">આ દુકાનમાં હજુ કોઈ પ્રોડક્ટ ઉમેરી નથી.</p>`;
+                return;
+            }
+
+            currentStore.products.forEach(p => {
+                let isVeg = (p.category === 'veg_fruit');
+                let initialPrice = isVeg ? (p.price * 0.25) : p.price;
+                let opts = (p.sizeOptions || (isVeg ? '250g, 500g, 1 Kg, 2 Kg' : 'Standard')).split(',');
+                
+                let selectHTML = `<select id="size_${p.id}" onchange="updateCardPrice(${p.id})" class="w-full text-xs border rounded p-1 bg-gray-50">`;
+                opts.forEach(o => { selectHTML += `<option value="${o.trim()}">${o.trim()}</option>`; });
+                selectHTML += `</select>`;
+
+                grid.innerHTML += `
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden border flex flex-col justify-between">
+                        <div>
+                            <img src="${p.image}" class="w-full h-36 object-cover">
+                            <div class="p-2.5">
+                                <h3 class="font-bold text-xs text-gray-800 line-clamp-1">${p.name}</h3>
+                                <div class="flex items-center space-x-1 mt-1">
+                                    <span id="price_display_${p.id}" class="text-pink-600 font-bold text-sm">₹${initialPrice.toFixed(0)}</span>
+                                </div>
+                                <div class="mt-2">
+                                    <label class="text-[10px] text-gray-500 block mb-0.5">${isVeg ? 'વજન:' : 'ઓપ્શન:'}</label>
+                                    ${selectHTML}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-2 pt-0">
+                            <button onclick="addToCart(${p.id})" class="w-full bg-pink-600 text-white text-xs font-bold py-1.5 rounded-lg">Add to Cart</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function updateCardPrice(id) {
+            let p = currentStore.products.find(item => item.id === id);
+            let selectElem = document.getElementById(`size_${id}`);
+            let priceElem = document.getElementById(`price_display_${id}`);
+            if(!selectElem || !priceElem) return;
+
+            let selectedText = selectElem.value;
+            let calculatedPrice = p.price;
+
+            if(p.category === 'veg_fruit') {
+                if(selectedText.includes('250g')) calculatedPrice = p.price * 0.25;
+                else if(selectedText.includes('500g')) calculatedPrice = p.price * 0.5;
+                else if(selectedText.includes('1 Kg')) calculatedPrice = p.price * 1.0;
+                else if(selectedText.includes('2 Kg')) calculatedPrice = p.price * 2.0;
+            }
+            priceElem.innerText = `₹${calculatedPrice.toFixed(0)}`;
+        }
+
+        function addToCart(id) {
+            let prod = currentStore.products.find(p => p.id === id);
+            let sizeSelect = document.getElementById(`size_${id}`);
+            let isVeg = (prod.category === 'veg_fruit');
+            let selectedOption = sizeSelect.value;
+            let itemPrice = prod.price;
+            let weightVal = 0;
+
+            if(isVeg) {
+                if(selectedOption.includes('250g')) { itemPrice = prod.price * 0.25; weightVal = 0.25; }
+                else if(selectedOption.includes('500g')) { itemPrice = prod.price * 0.5; weightVal = 0.5; }
+                else if(selectedOption.includes('1 Kg')) { itemPrice = prod.price * 1.0; weightVal = 1.0; }
+                else if(selectedOption.includes('2 Kg')) { itemPrice = prod.price * 2.0; weightVal = 2.0; }
+            }
+
+            let existing = cart.find(item => item.id === id && item.displayLabel === selectedOption);
+            if(existing) { existing.qty += 1; } 
+            else { cart.push({ ...prod, displayLabel: selectedOption, qty: 1, calculatedPrice: itemPrice, itemWeightKg: weightVal, isVeg: isVeg }); }
+            
+            updateCartCount();
+            alert('કાર્ટમાં ઉમેરાઈ ગયું!');
+        }
+
+        function updateCartCount() {
+            document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+        }
+
+        function openCart() {
+            let list = document.getElementById('cartItemsList');
+            list.innerHTML = '';
+            document.getElementById('validationMsg').classList.add('hidden');
+
+            let totalBill = 0, totalVegWeight = 0;
+            cart.forEach((item, index) => {
+                let itemTotal = item.calculatedPrice * item.qty;
+                totalBill += itemTotal;
+                if(item.isVeg) totalVegWeight += item.itemWeightKg * item.qty;
+                list.innerHTML += `
+                    <div class="flex justify-between py-1">
+                        <div><b>${item.name}</b> (${item.displayLabel}) x ${item.qty}</div>
+                        <div>₹${itemTotal.toFixed(0)}</div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('cartTotalPrice').innerText = '₹' + totalBill.toFixed(0);
+            document.getElementById('cartTotalWeight').innerText = totalVegWeight.toFixed(2) + ' Kg';
+            document.getElementById('cartModal').classList.remove('hidden');
+        }
+
+        function closeCart() { document.getElementById('cartModal').classList.add('hidden'); }
+
+        function sendOrderWhatsApp() {
+            let alertBox = document.getElementById('validationMsg');
+            alertBox.classList.add('hidden');
+
+            let hours = new Date().getHours();
+            if(hours < 9 || hours >= 18) {
+                alertBox.innerText = '❌ દુકાનનો ઓર્ડર લેવાનો સમય સવારે ૯:૦૦ થી સાંજે ૬:૦૦ સુધીનો છે.';
+                alertBox.classList.remove('hidden');
+                return;
+            }
+
+            let totalBill = 0, totalVegWeight = 0, hasOther = false, hasVeg = false;
+            cart.forEach(item => {
+                totalBill += (item.calculatedPrice * item.qty);
+                if(item.isVeg) { totalVegWeight += (item.itemWeightKg * item.qty); hasVeg = true; }
+                else { hasOther = true; }
+            });
+
+            if(hasVeg && totalVegWeight < 2.0) {
+                alertBox.innerText = `❌ શાકભાજી માટે કુલ વજન ઓછામાં ઓછું ૨ Kg હોવું જરૂરી છે.`;
+                alertBox.classList.remove('hidden'); return;
+            }
+            if(hasOther && totalBill < 500) {
+                alertBox.innerText = `❌ અન્ય વસ્તુઓ માટે કુલ બિલ ઓછામાં ઓછું ₹૫૦૦ હોવું જોઈએ.`;
+                alertBox.classList.remove('hidden'); return;
+            }
+
+            let name = document.getElementById('custName').value.trim();
+            let phone = document.getElementById('custPhone').value.trim();
+            let address = document.getElementById('custAddress').value.trim();
+
+            if(!name || !phone || !address) {
+                alertBox.innerText = '❌ નામ, નંબર અને સરનામું ભરો.';
+                alertBox.classList.remove('hidden'); return;
+            }
+
+            let msg = `*🛒 નવો ઓર્ડર - ${currentStore.name}*\n\n👤 ગ્રાહક: ${name}\n📞 નંબર: ${phone}\n🏠 સરનામું: ${address}\n\n*આઈટમ્સ:*\n`;
+            cart.forEach(item => {
+                msg += `- ${item.name} (${item.displayLabel}) x ${item.qty} = ₹${(item.calculatedPrice * item.qty).toFixed(0)}\n`;
+            });
+            msg += `\n💰 *કુલ બિલ: ₹${totalBill.toFixed(0)}*`;
+
+            let url = `https://wa.me/${currentStore.phone}?text=${encodeURIComponent(msg)}`;
+            window.open(url, '_blank');
+        }
+
+        initStoreDropdown();
+    </script>
+</body>
+</html>
