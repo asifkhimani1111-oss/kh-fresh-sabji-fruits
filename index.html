@@ -38,56 +38,64 @@
     <!-- Main Container -->
     <main class="max-w-7xl mx-auto px-2 md:px-4 py-4">
 
-        <!-- Store Banner / Mall Feeling Photo -->
-        <div class="mb-4 bg-white rounded-2xl shadow-md overflow-hidden border">
-            <div class="relative h-48 md:h-64 bg-gray-200">
-                <img id="storeBannerImg" src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=1000" alt="Store Banner" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-4">
-                    <div class="text-white">
-                        <span class="bg-pink-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Verified SuperStore</span>
-                        <h2 id="bannerStoreName" class="text-xl md:text-2xl font-bold mt-1">K.H Fresh & Mall</h2>
-                        <p class="text-xs text-gray-200">તમારી મનપસંદ દુકાન હવે ઓનલાઈન - મોલ જેવી સુવિધા સાથે!</p>
+        <!-- Store Closed / Inactive Notice (If Admin Deactivated due to dues) -->
+        <div id="storeClosedMsg" class="hidden mb-4 bg-red-100 border-l-4 border-red-500 p-4 rounded-lg text-center">
+            <h2 class="text-red-700 font-bold text-base">⚠️ આ દુકાન હાલમાં બંધ (Inactive) છે.</h2>
+            <p class="text-xs text-red-600 mt-1">માસિક સબ્સ્ક્રિપ્શન અથવા ચાર્જ બાકી હોવાથી દુકાન અસ્થાયી રૂપે સ્થગિત કરવામાં આવી છે.</p>
+        </div>
+
+        <div id="activeStoreContent">
+            <!-- Store Banner / Mall Feeling Photo -->
+            <div class="mb-4 bg-white rounded-2xl shadow-md overflow-hidden border">
+                <div class="relative h-48 md:h-64 bg-gray-200">
+                    <img id="storeBannerImg" src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=1000" alt="Store Banner" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-4">
+                        <div class="text-white">
+                            <span class="bg-pink-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Verified SuperStore</span>
+                            <h2 id="bannerStoreName" class="text-xl md:text-2xl font-bold mt-1">K.H Fresh & Mall</h2>
+                            <p class="text-xs text-gray-200">તમારી મનપસંદ દુકાન હવે ઓનલાઈન - મોલ જેવી સુવિધા સાથે!</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Notice Banner -->
-        <div class="mb-4 bg-amber-50 border-l-4 border-amber-500 p-3 rounded-lg shadow-sm text-xs md:text-sm text-amber-900 font-medium space-y-1">
-            <div class="flex items-center space-x-2">
-                <i class="fa-regular fa-clock text-amber-600 font-bold"></i>
-                <span><b>દુકાનનો સમય:</b> સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધી</span>
-            </div>
-            <div>⚠️ <b>શાકભાજી / ફ્રૂટ નિયમ:</b> ૨૫૦ ગ્રામથી શરૂઆત, પરંતુ કુલ વજન ઓછામાં ઓછું <b>૨ કિલો (2 Kg)</b> હોવું ફરજિયાત છે[span_2](start_span)[span_2](end_span).</div>
-            <div>⚠️ <b>અન્ય વસ્તુઓનો નિયમ:</b> ૧, ૨, ૩ નંગ મુજબ પસંદગી, અને કુલ બિલ ઓછામાં ઓછું <b>₹૫૦૦</b> હોવું જોઈએ[span_3](start_span)[span_3](end_span).</div>
-            <div class="text-red-600 font-bold">🚫 ઓર્ડર કેન્સલ નહીં થાય | 🚫 એક્સચેન્જ (બદલો) નહીં થાય[span_4](start_span)[span_4](end_span)[span_5](start_span)[span_5](end_span).</div>
-        </div>
-
-        <!-- CUSTOMER VIEW -->
-        <div id="customerView">
-            <div class="mb-4 bg-white p-3 rounded-xl shadow-sm">
-                <div class="relative mb-3">
-                    <input type="text" id="searchBox" onkeyup="filterProducts()" placeholder="પ્રોડક્ટ અથવા કેટેગરી શોધો..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400"></i>
+            <!-- Notice Banner -->
+            <div class="mb-4 bg-amber-50 border-l-4 border-amber-500 p-3 rounded-lg shadow-sm text-xs md:text-sm text-amber-900 font-medium space-y-1">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-regular fa-clock text-amber-600 font-bold"></i>
+                    <span><b>દુકાનનો સમય:</b> સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધી</span>
                 </div>
-                <!-- All Categories Scrollable Pills -->
-                <div class="flex space-x-2 overflow-x-auto pb-1 text-xs">
-                    <button onclick="filterCategory('all')" class="category-btn bg-pink-600 text-white px-4 py-1.5 rounded-full font-semibold whitespace-nowrap shadow-sm">All Items</button>
-                    <button onclick="filterCategory('veg_fruit')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Vegetables & Fruits</button>
-                    <button onclick="filterCategory('men')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Men Clothing</button>
-                    <button onclick="filterCategory('women')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Women Clothing</button>
-                    <button onclick="filterCategory('kids')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Kids Clothing</button>
-                    <button onclick="filterCategory('footwear')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Footwear</button>
-                    <button onclick="filterCategory('grocery')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Grocery & Staples</button>
-                    <button onclick="filterCategory('beauty')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Beauty & Personal Care</button>
-                    <button onclick="filterCategory('home')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Home & Kitchen</button>
-                    <button onclick="filterCategory('electronics')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Electronics</button>
-                    <button onclick="filterCategory('other')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Other Items</button>
-                </div>
+                <div>⚠️ <b>શાકભાજી / ફ્રૂટ નિયમ:</b> ૨૫૦ ગ્રામથી શરૂઆત (૧ કિલોના ભાવ પ્રમાણે આપોઆપ રકમ ગણાશે), પરંતુ કુલ વજન ઓછામાં ઓછું <b>૨ કિલો (2 Kg)</b> હોવું ફરજિયાત છે.</div>
+                <div>⚠️ <b>અન્ય વસ્તુઓનો નિયમ:</b> કલર, સાઈઝ તથા નંગ મુજબ પસંદગી અને કુલ બિલ ઓછામાં ઓછું <b>₹૫૦૦</b> હોવું જોઈએ.</div>
+                <div class="text-red-600 font-bold">🚫 ઓર્ડર કેન્સલ નહીં થાય | 🚫 એક્સચેન્જ (બદલો) નહીં થાય.</div>
             </div>
 
-            <!-- Product Grid -->
-            <div id="productGrid" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+            <!-- CUSTOMER VIEW -->
+            <div id="customerView">
+                <div class="mb-4 bg-white p-3 rounded-xl shadow-sm">
+                    <div class="relative mb-3">
+                        <input type="text" id="searchBox" onkeyup="filterProducts()" placeholder="પ્રોડક્ટ અથવા કેટેગરી શોધો..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <!-- All Categories Scrollable Pills -->
+                    <div class="flex space-x-2 overflow-x-auto pb-1 text-xs">
+                        <button onclick="filterCategory('all')" class="category-btn bg-pink-600 text-white px-4 py-1.5 rounded-full font-semibold whitespace-nowrap shadow-sm">All Items</button>
+                        <button onclick="filterCategory('veg_fruit')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Vegetables & Fruits</button>
+                        <button onclick="filterCategory('men')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Men Clothing</button>
+                        <button onclick="filterCategory('women')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Women Clothing</button>
+                        <button onclick="filterCategory('kids')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Kids Clothing</button>
+                        <button onclick="filterCategory('footwear')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Footwear</button>
+                        <button onclick="filterCategory('grocery')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Grocery & Staples</button>
+                        <button onclick="filterCategory('beauty')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Beauty & Personal Care</button>
+                        <button onclick="filterCategory('home')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Home & Kitchen</button>
+                        <button onclick="filterCategory('electronics')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Electronics</button>
+                        <button onclick="filterCategory('other')" class="category-btn bg-gray-100 text-gray-700 px-4 py-1.5 rounded-full font-semibold whitespace-nowrap">Other Items</button>
+                    </div>
+                </div>
+
+                <!-- Product Grid -->
+                <div id="productGrid" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+            </div>
         </div>
 
     </main>
@@ -121,7 +129,7 @@
             </div>
 
             <div class="text-[10px] text-red-500 font-bold mt-2 text-center">
-                * નોંધ: ઓર્ડર કેન્સલ કે એક્સચેન્જ થશે નહીં[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span).
+                * નોંધ: ઓર્ડર કેન્સલ કે એક્સચેન્જ થશે નહીં.
             </div>
 
             <button onclick="sendOrderWhatsApp()" class="w-full mt-3 bg-green-600 text-white font-bold py-2.5 rounded-xl hover:bg-green-700 flex justify-center items-center space-x-2 shadow text-sm">
@@ -133,9 +141,14 @@
 
     <!-- JavaScript -->
     <script>
+        let storeStatus = localStorage.getItem('kh_store_status') !== 'inactive'; // Default active
+        if (!storeStatus) {
+            document.getElementById('storeClosedMsg').classList.remove('hidden');
+            document.getElementById('activeStoreContent').classList.add('hidden');
+        }
+
         let products = JSON.parse(localStorage.getItem('kh_products')) || [
-            { id: 1, category: 'veg_fruit', name: 'Apple (સફરજન)', price: 100, originalPrice: 130, image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=500' },
-            { id: 2, category: 'women', name: 'Cotton Printed Kurti', price: 350, originalPrice: 500, image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500' }
+            { id: 1, category: 'veg_fruit', name: 'Apple (સફરજન)', price: 100, originalPrice: 130, sizeOptions: '250g, 500g, 1 Kg, 2 Kg', image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=500' }
         ];
 
         let cart = [];
@@ -162,8 +175,16 @@
             let selectElem = document.getElementById(`size_${id}`);
             let priceElem = document.getElementById(`price_display_${id}`);
             if(!selectElem || !priceElem) return;
-            let val = parseFloat(selectElem.value);
-            let calculatedPrice = p.price * val;
+            
+            let selectedText = selectElem.value;
+            let calculatedPrice = p.price;
+
+            if(p.category === 'veg_fruit') {
+                if(selectedText.includes('250g')) calculatedPrice = p.price * 0.25;
+                else if(selectedText.includes('500g')) calculatedPrice = p.price * 0.5;
+                else if(selectedText.includes('1 Kg')) calculatedPrice = p.price * 1.0;
+                else if(selectedText.includes('2 Kg')) calculatedPrice = p.price * 2.0;
+            }
             priceElem.innerText = `₹${calculatedPrice.toFixed(0)}`;
         }
 
@@ -186,26 +207,12 @@
                 let initialPrice = isVeg ? (p.price * 0.25) : p.price;
                 let discount = p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0;
 
-                let selectHTML = '';
-                if(isVeg) {
-                    selectHTML = `
-                        <select id="size_${p.id}" onchange="updateCardPrice(${p.id})" class="w-full text-xs border rounded p-1 bg-gray-50">
-                            <option value="0.25" selected>250g (0.25 Kg)</option>
-                            <option value="0.5">500g (0.50 Kg)</option>
-                            <option value="1.0">1 Kg</option>
-                            <option value="2.0">2 Kg</option>
-                        </select>
-                    `;
-                } else {
-                    selectHTML = `
-                        <select id="size_${p.id}" onchange="updateCardPrice(${p.id})" class="w-full text-xs border rounded p-1 bg-gray-50">
-                            <option value="1" selected>1 નંગ (Piece)</option>
-                            <option value="2">2 નંગ (Piece)</option>
-                            <option value="3">3 નંગ (Piece)</option>
-                            <option value="5">5 નંગ (Piece)</option>
-                        </select>
-                    `;
-                }
+                let opts = (p.sizeOptions || (isVeg ? '250g, 500g, 1 Kg, 2 Kg' : 'Standard')).split(',');
+                let selectHTML = `<select id="size_${p.id}" onchange="updateCardPrice(${p.id})" class="w-full text-xs border rounded p-1 bg-gray-50">`;
+                opts.forEach(o => {
+                    selectHTML += `<option value="${o.trim()}">${o.trim()}</option>`;
+                });
+                selectHTML += `</select>`;
 
                 grid.innerHTML += `
                     <div class="bg-white rounded-xl shadow-sm overflow-hidden border hover:shadow-md transition flex flex-col justify-between">
@@ -221,7 +228,7 @@
                                     <span class="text-gray-400 text-[10px]">${isVeg ? '(1kg ₹' + p.price + ')' : ''}</span>
                                 </div>
                                 <div class="mt-2">
-                                    <label class="text-[10px] text-gray-500 block mb-0.5 font-medium">${isVeg ? 'વજન પસંદ કરો:' : 'જથ્થો (નંગ) પસંદ કરો:'}</label>
+                                    <label class="text-[10px] text-gray-500 block mb-0.5 font-medium">${isVeg ? 'વજન પસંદ કરો:' : 'Color / Size / Option:'}</label>
                                     ${selectHTML}
                                 </div>
                             </div>
@@ -245,28 +252,25 @@
             let prod = products.find(p => p.id === id);
             let sizeSelect = document.getElementById(`size_${id}`);
             let isVeg = (prod.category === 'veg_fruit');
-            let val = parseFloat(sizeSelect.value);
-            let displayLabel = '';
-            let itemPrice = 0;
+            let selectedOption = sizeSelect.value;
+            
+            let itemPrice = prod.price;
             let weightVal = 0;
 
             if(isVeg) {
-                weightVal = val;
-                itemPrice = prod.price * val;
-                displayLabel = (val * 1000) >= 1000 ? `${val} Kg` : `${val * 1000}g`;
-            } else {
-                weightVal = 0;
-                itemPrice = prod.price * val;
-                displayLabel = `${val} નંગ (Piece)`;
+                if(selectedOption.includes('250g')) { itemPrice = prod.price * 0.25; weightVal = 0.25; }
+                else if(selectedOption.includes('500g')) { itemPrice = prod.price * 0.5; weightVal = 0.5; }
+                else if(selectedOption.includes('1 Kg')) { itemPrice = prod.price * 1.0; weightVal = 1.0; }
+                else if(selectedOption.includes('2 Kg')) { itemPrice = prod.price * 2.0; weightVal = 2.0; }
             }
 
-            let existing = cart.find(item => item.id === id && item.displayLabel === displayLabel);
+            let existing = cart.find(item => item.id === id && item.displayLabel === selectedOption);
             if(existing) {
                 existing.qty += 1;
             } else {
                 cart.push({
                     ...prod, 
-                    displayLabel: displayLabel, 
+                    displayLabel: selectedOption, 
                     qty: 1, 
                     calculatedPrice: itemPrice, 
                     itemWeightKg: weightVal,
@@ -274,7 +278,7 @@
                 });
             }
             updateCartCount();
-            alert(`${prod.name} (${displayLabel}) - ₹${itemPrice.toFixed(0)} કાર્ટમાં ઉમેરાઈ ગયું!`);
+            alert(`${prod.name} (${selectedOption}) - ₹${itemPrice.toFixed(0)} કાર્ટમાં ઉમેરાઈ ગયું!`);
         }
 
         function updateCartCount() {
@@ -396,7 +400,7 @@
                 msg += `\n⚖️ *કુલ વજન (Veg/Fruit):* ${totalVegWeight.toFixed(2)} Kg`;
             }
             msg += `\n💰 *કુલ બિલ રકમ: ₹${totalBill.toFixed(0)}*\n\n`;
-            msg += `📌 *શરતો:* ઓર્ડર કેન્સલ થશે નહીં | એક્સચેન્જ થશે નહીં[span_8](start_span)[span_8](end_span)[span_9](start_span)[span_9](end_span).`;
+            msg += `📌 *શરતો:* ઓર્ડર કેન્સલ થશે નહીં | એક્સચેન્જ થશે નહીં.`;
 
             let url = `https://wa.me/${whatsappNum}?text=${encodeURIComponent(msg)}`;
             window.open(url, '_blank');
