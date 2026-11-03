@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>K.H Fresh Mall - Multi-Store Grid</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -18,15 +17,14 @@
     <header class="bg-white shadow-sm sticky top-0 z-50 border-b">
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <div class="bg-pink-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow">
-                    KH
-                </div>
+                <div class="bg-pink-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow">KH</div>
                 <div>
                     <h1 class="text-base font-bold text-gray-900 leading-tight">K.H Fresh Mall</h1>
                     <p class="text-xs text-gray-500">બધી જ દુકાનો એકસાથે</p>
                 </div>
             </div>
-            <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-4">
+                <button onclick="openSellerModal()" class="text-xs bg-gray-800 text-white px-3 py-1.5 rounded-lg font-bold shadow hover:bg-black">દુકાનદાર / એડમિન</button>
                 <div class="relative cursor-pointer text-gray-700 hover:text-pink-600" onclick="openCart()">
                     <i class="fa-solid fa-cart-shopping text-2xl"></i>
                     <span id="cartCount" class="absolute -top-2 -right-2 bg-pink-600 text-white font-bold text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
@@ -36,22 +34,18 @@
     </header>
 
     <main class="max-w-7xl mx-auto px-2 md:px-4 py-4 space-y-6">
-
         <!-- Rules Notice -->
         <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-lg text-xs space-y-1 text-amber-900 font-medium shadow-sm">
-            <div><b>દુકાનનો સમય:</b> સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધી[span_0](start_span)[span_0](end_span)</div>
-            <div>⚠️ <b>શાકભાજી / ફ્રૂટ નિયમ:</b> ૨૫૦g થી શરૂઆત, પરંતુ કુલ વજન ઓછામાં ઓછું <b>૨ કિલો (2 Kg)</b> હોવું ફરજિયાત છે[span_1](start_span)[span_1](end_span).</div>
-            <div>⚠️ <b>અન્ય વસ્તુઓ:</b> સાદી ગણતરી અને કુલ બિલ ઓછામાં ઓછું <b>₹૫૦૦</b> હોવું જોઈએ[span_2](start_span)[span_2](end_span).</div>
-            <div class="text-red-600 font-bold">🚫 ઓર્ડર કેન્સલ નહીં થાય | 🚫 એક્સચેન્જ (બદલો) નહીં થાય[span_3](start_span)[span_3](end_span)[span_4](start_span)[span_4](end_span).</div>
+            <div><b>દુકાનનો સમય:</b> સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધી</div>
+            <div>⚠️ <b>ફ્રૂટ અને શાકભાજી નિયમ:</b> ૨૫૦g થી શરૂઆત, પરંતુ કુલ વજન ઓછામાં ઓછું <b>૨ કિલો (2 Kg)</b> હોવું ફરજિયાત છે.</div>
+            <div class="text-red-600 font-bold">🚫 ઓર્ડર કેન્સલ નહીં થાય | 🚫 એક્સચેન્જ (બદલો) નહીં થાય</div>
         </div>
 
         <div id="noStoresMsg" class="hidden bg-white p-10 text-center rounded-xl shadow-sm">
             <p class="text-gray-500 text-sm">હાલમાં કોઈ દુકાન ઉપલબ્ધ નથી.</p>
         </div>
 
-        <!-- All Stores Grid Container (આડી અને ઊભી લાઈનમાં ગોઠવાયેલી દુકાનો) -->
         <div id="allStoresGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-
     </main>
 
     <!-- Cart Modal -->
@@ -63,8 +57,8 @@
             <div id="cartItemsList" class="space-y-2 mb-3 divide-y text-sm"></div>
 
             <div class="border-t pt-2 mb-3 space-y-1 text-xs bg-pink-50 p-2.5 rounded-lg">
-                <div class="flex justify-between" id="vegWeightRow">
-                    <span>શાકભાજી/ફ્રૂટ વજન:</span>
+                <div class="flex justify-between">
+                    <span>કુલ વજન (Weight):</span>
                     <span id="cartTotalWeight" class="font-bold">0 Kg</span>
                 </div>
                 <div class="flex justify-between text-sm font-bold text-gray-900 border-t pt-1">
@@ -89,9 +83,33 @@
         </div>
     </div>
 
-    <!-- JavaScript -->
+    <!-- Seller / Admin Portal Modal (Dummy placeholder for full system) -->
+    <div id="sellerModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
+        <div class="bg-white w-full max-w-lg p-6 rounded-2xl shadow-xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeSellerModal()" class="absolute top-4 right-4 text-lg text-gray-500 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
+            <h2 class="text-lg font-bold mb-4 text-pink-600">દુકાનદાર ડેશબોર્ડ & સબ્સ્ક્રિપ્શન</h2>
+            <p class="text-xs text-gray-600 mb-4">અહીંથી તમે તમારી પ્રોડક્ટ્સ ઉમેરી શકો છો અને ₹300 / ₹60 / ₹120 નું સબ્સ્ક્રિપ્શન (UPI QR અથવા રોકડા) મેનેજ કરી શકો છો.</p>
+            <div class="bg-amber-50 p-3 rounded-lg text-xs text-amber-800 mb-4">
+                <b>યાદ રાખો:</b> પ્રથમ મહિનો ₹300 (1-30 પ્રોડક્ટ્સ). ત્યારબાદ 1 થી 30 પ્રોડક્ટ્સના ₹60 અને 31 કે તેથી વધુ પ્રોડક્ટ્સના ₹120 માસિક ભાડું લાગુ પડે છે.
+            </div>
+            <button onclick="closeSellerModal()" class="w-full bg-gray-800 text-white py-2 rounded-lg text-xs font-bold">બંધ કરો</button>
+        </div>
+    </div>
+
     <script>
-        let stores = JSON.parse(localStorage.getItem('kh_all_stores')) || [];
+        // Sample store data with fruit & vegetables starting from 250g
+        let stores = JSON.parse(localStorage.getItem('kh_all_stores')) || [
+            {
+                id: 'store_1',
+                name: 'K.H Fresh Fruits & Sabji',
+                phone: '919898989898',
+                banner: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1000',
+                products: [
+                    { id: 1, name: 'તાજા ટામેટા (Tomato)', price: 60, image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500' },
+                    { id: 2, name: 'કેળા (Banana)', price: 50, image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=500' }
+                ]
+            }
+        ];
         let cart = [];
 
         function renderAllStoresGrid() {
@@ -105,47 +123,40 @@
 
             stores.forEach(store => {
                 let productsHTML = '';
-                if (!store.products || store.products.length === 0) {
-                    productsHTML = `<p class="col-span-full text-center text-gray-400 py-6 text-xs">આ દુકાનમાં હજુ કોઈ પ્રોડક્ટ નથી.</p>`;
-                } else {
-                    store.products.forEach(p => {
-                        let isVeg = (p.category === 'veg_fruit');
-                        let initialPrice = isVeg ? (p.price * 0.25) : p.price;
-                        let opts = (p.sizeOptions || (isVeg ? '250g, 500g, 1 Kg, 2 Kg' : '1, 2, 3, 4, 5')).split(',');
+                store.products.forEach(p => {
+                    let initialPrice = p.price * 0.25; // 250g price
+                    // Fruit/Veg options starting from 250g up to 5 Kg
+                    let opts = ['250g', '500g', '1 Kg', '2 Kg', '3 Kg', '5 Kg'];
 
-                        let selectHTML = `<select id="size_${store.id}_${p.id}" onchange="updateCardPrice('${store.id}', ${p.id})" class="w-full text-xs border rounded p-1 bg-gray-50">`;
-                        opts.forEach(o => { selectHTML += `<option value="${o.trim()}">${o.trim()}</option>`; });
-                        selectHTML += `</select>`;
+                    let selectHTML = `<select id="size_${store.id}_${p.id}" onchange="updateCardPrice('${store.id}', ${p.id})" class="w-full text-xs border rounded p-1 bg-gray-50">`;
+                    opts.forEach(o => { selectHTML += `<option value="${o}">${o}</option>`; });
+                    selectHTML += `</select>`;
 
-                        productsHTML += `
-                            <div class="bg-white rounded-lg shadow-sm overflow-hidden border flex flex-col justify-between">
-                                <div>
-                                    <img src="${p.image}" class="w-full h-28 object-cover">
-                                    <div class="p-2">
-                                        <h3 class="font-bold text-xs text-gray-800 line-clamp-1">${p.name}</h3>
-                                        <div class="flex items-center space-x-1 mt-0.5">
-                                            <span id="price_display_${store.id}_${p.id}" class="text-pink-600 font-bold text-xs">₹${initialPrice.toFixed(0)}</span>
-                                            <span class="text-gray-450 text-[9px]">${isVeg ? '(1kg ₹' + p.price + ')' : ''}</span>
-                                        </div>
-                                        <div class="mt-1.5">
-                                            ${selectHTML}
-                                        </div>
+                    productsHTML += `
+                        <div class="bg-white rounded-lg shadow-sm overflow-hidden border flex flex-col justify-between">
+                            <div>
+                                <img src="${p.image}" class="w-full h-28 object-cover">
+                                <div class="p-2">
+                                    <h3 class="font-bold text-xs text-gray-800 line-clamp-1">${p.name}</h3>
+                                    <div class="flex items-center space-x-1 mt-0.5">
+                                        <span id="price_display_${store.id}_${p.id}" class="text-pink-600 font-bold text-xs">₹${initialPrice.toFixed(0)}</span>
+                                        <span class="text-gray-400 text-[9px]">(1kg ₹${p.price})</span>
                                     </div>
-                                </div>
-                                <div class="p-1.5 pt-0">
-                                    <button onclick="addToCart('${store.id}', ${p.id})" class="w-full bg-pink-600 hover:bg-pink-700 text-white text-[11px] font-bold py-1.5 rounded shadow">Add</button>
+                                    <div class="mt-1.5">${selectHTML}</div>
                                 </div>
                             </div>
-                        `;
-                    });
-                }
+                            <div class="p-1.5 pt-0">
+                                <button onclick="addToCart('${store.id}', ${p.id})" class="w-full bg-pink-600 hover:bg-pink-700 text-white text-[11px] font-bold py-1.5 rounded shadow">Add</button>
+                            </div>
+                        </div>
+                    `;
+                });
 
                 container.innerHTML += `
                     <div class="bg-white rounded-2xl shadow-md overflow-hidden border p-3 space-y-3 flex flex-col justify-between">
                         <div>
-                            <!-- Store Banner & Header -->
                             <div class="relative h-32 bg-gray-200 rounded-xl overflow-hidden mb-3">
-                                <img src="${store.banner || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1000'}" class="w-full h-full object-cover">
+                                <img src="${store.banner}" class="w-full h-full object-cover">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-2.5">
                                     <div class="text-white">
                                         <span class="bg-pink-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">Store</span>
@@ -153,11 +164,7 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Store Products Grid (2 columns per store card) -->
-                            <div class="grid grid-cols-2 gap-2">
-                                ${productsHTML}
-                            </div>
+                            <div class="grid grid-cols-2 gap-2">${productsHTML}</div>
                         </div>
                     </div>
                 `;
@@ -171,18 +178,15 @@
             let priceElem = document.getElementById(`price_display_${storeId}_${prodId}`);
             if(!selectElem || !priceElem) return;
 
-            let selectedText = selectElem.value;
-            let calculatedPrice = p.price;
+            let val = selectElem.value;
+            let multiplier = 0.25;
+            if(val === '500g') multiplier = 0.5;
+            else if(val === '1 Kg') multiplier = 1.0;
+            else if(val === '2 Kg') multiplier = 2.0;
+            else if(val === '3 Kg') multiplier = 3.0;
+            else if(val === '5 Kg') multiplier = 5.0;
 
-            if(p.category === 'veg_fruit') {
-                if(selectedText.includes('250g')) calculatedPrice = p.price * 0.25;
-                else if(selectedText.includes('500g')) calculatedPrice = p.price * 0.5;
-                else if(selectedText.includes('1 Kg')) calculatedPrice = p.price * 1.0;
-                else if(selectedText.includes('2 Kg')) calculatedPrice = p.price * 2.0;
-            } else {
-                let qtyNum = parseFloat(selectedText) || 1;
-                calculatedPrice = p.price * qtyNum;
-            }
+            let calculatedPrice = p.price * multiplier;
             priceElem.innerText = `₹${calculatedPrice.toFixed(0)}`;
         }
 
@@ -190,20 +194,16 @@
             let store = stores.find(s => s.id === storeId);
             let prod = store.products.find(p => p.id === prodId);
             let sizeSelect = document.getElementById(`size_${storeId}_${prodId}`);
-            let isVeg = (prod.category === 'veg_fruit');
             let selectedOption = sizeSelect.value;
-            let itemPrice = prod.price;
-            let weightVal = 0;
+            
+            let multiplier = 0.25, weightKg = 0.25;
+            if(selectedOption === '500g') { multiplier = 0.5; weightKg = 0.5; }
+            else if(selectedOption === '1 Kg') { multiplier = 1.0; weightKg = 1.0; }
+            else if(selectedOption === '2 Kg') { multiplier = 2.0; weightKg = 2.0; }
+            else if(selectedOption === '3 Kg') { multiplier = 3.0; weightKg = 3.0; }
+            else if(selectedOption === '5 Kg') { multiplier = 5.0; weightKg = 5.0; }
 
-            if(isVeg) {
-                if(selectedOption.includes('250g')) { itemPrice = prod.price * 0.25; weightVal = 0.25; }
-                else if(selectedOption.includes('500g')) { itemPrice = prod.price * 0.5; weightVal = 0.5; }
-                else if(selectedOption.includes('1 Kg')) { itemPrice = prod.price * 1.0; weightVal = 1.0; }
-                else if(selectedOption.includes('2 Kg')) { itemPrice = prod.price * 2.0; weightVal = 2.0; }
-            } else {
-                let qtyNum = parseFloat(selectedOption) || 1;
-                itemPrice = prod.price * qtyNum;
-            }
+            let itemPrice = prod.price * multiplier;
 
             if(cart.length > 0 && cart[0].storeId !== storeId) {
                 alert('⚠️ તમે એક સમયે એક જ દુકાનમાંથી ઓર્ડર કરી શકો છો!');
@@ -212,8 +212,7 @@
 
             let existing = cart.find(item => item.storeId === storeId && item.id === prodId && item.displayLabel === selectedOption);
             if(existing) {
-                existing.qty += (isVeg ? 1 : 0);
-                if(!isVeg) existing.calculatedPrice = itemPrice;
+                existing.qty += 1;
             } else {
                 cart.push({
                     storeId: storeId,
@@ -223,8 +222,7 @@
                     displayLabel: selectedOption,
                     qty: 1,
                     calculatedPrice: itemPrice,
-                    itemWeightKg: weightVal,
-                    isVeg: isVeg
+                    itemWeightKg: weightKg
                 });
             }
 
@@ -249,17 +247,16 @@
                 return;
             }
 
-            let totalBill = 0, totalVegWeight = 0;
+            let totalBill = 0, totalWeight = 0;
             cart.forEach((item, index) => {
                 let itemTotal = item.calculatedPrice * item.qty;
                 totalBill += itemTotal;
-                if(item.isVeg) totalVegWeight += item.itemWeightKg * item.qty;
+                totalWeight += item.itemWeightKg * item.qty;
 
                 list.innerHTML += `
                     <div class="flex justify-between items-center py-1.5 text-xs">
                         <div>
                             <b>${item.name}</b> (${item.displayLabel}) x ${item.qty}
-                            <div class="text-[10px] text-gray-400">દુકાન: ${item.storeName}</div>
                         </div>
                         <div class="flex items-center space-x-2">
                             <span class="font-bold text-pink-600">₹${itemTotal.toFixed(0)}</span>
@@ -270,17 +267,15 @@
             });
 
             document.getElementById('cartTotalPrice').innerText = '₹' + totalBill.toFixed(0);
-            document.getElementById('cartTotalWeight').innerText = totalVegWeight.toFixed(2) + ' Kg';
+            document.getElementById('cartTotalWeight').innerText = totalWeight.toFixed(2) + ' Kg';
             document.getElementById('cartModal').classList.remove('hidden');
         }
 
         function closeCart() { document.getElementById('cartModal').classList.add('hidden'); }
+        function removeFromCart(index) { cart.splice(index, 1); updateCartCount(); openCart(); }
 
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCartCount();
-            openCart();
-        }
+        function openSellerModal() { document.getElementById('sellerModal').classList.remove('hidden'); }
+        function closeSellerModal() { document.getElementById('sellerModal').classList.add('hidden'); }
 
         function sendOrderWhatsApp() {
             let alertBox = document.getElementById('validationMsg');
@@ -290,34 +285,32 @@
 
             let hours = new Date().getHours();
             if(hours < 9 || hours >= 18) {
-                alertBox.innerText = '❌ દુકાનનો ઓર્ડર લેવાનો સમય સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધીનો છે[span_5](start_span)[span_5](end_span).';
+                alertBox.innerText = '❌ દુકાનનો ઓર્ડર લેવાનો સમય સવારે ૯:૦૦ થી સાંજે ૬:૦૦ વાગ્યા સુધીનો છે.';
                 alertBox.classList.remove('hidden');
                 return;
             }
 
-            let totalBill = 0, totalVegWeight = 0, hasOther = false, hasVeg = false;
+            let totalBill = 0, totalWeight = 0;
             cart.forEach(item => {
                 totalBill += (item.calculatedPrice * item.qty);
-                if(item.isVeg) { totalVegWeight += (item.itemWeightKg * item.qty); hasVeg = true; }
-                else { hasOther = true; }
+                totalWeight += (item.itemWeightKg * item.qty);
             });
 
-            if(hasVeg && totalVegWeight < 2.0) {
-                alertBox.innerText = `❌ શાકભાજી/ફ્રૂટ માટે કુલ વજન ઓછામાં ઓછું ૨ Kg હોવું જરૂરી છે[span_6](start_span)[span_6](end_span). હાલનું વજન: ${totalVegWeight.toFixed(2)} Kg`;
-                alertBox.classList.remove('hidden'); return;
-            }
-            if(hasOther && totalBill < 500) {
-                alertBox.innerText = `❌ અન્ય વસ્તુઓ માટે કુલ બિલ ઓછામાં ઓછું ₹૫૦૦ હોવું જોઈએ[span_7](start_span)[span_7](end_span). હાલનું બિલ: ₹${totalBill.toFixed(0)}`;
-                alertBox.classList.remove('hidden'); return;
+            // Minimum 2 Kg Rule check
+            if(totalWeight < 2.0) {
+                alertBox.innerText = `❌ ફ્રૂટ/શાકભાજી માટે કુલ વજન ઓછામાં ઓછું ૨ Kg હોવું જરૂરી છે! હાલનું કુલ વજન: ${totalWeight.toFixed(2)} Kg`;
+                alertBox.classList.remove('hidden');
+                return;
             }
 
             let name = document.getElementById('custName').value.trim();
             let phone = document.getElementById('custPhone').value.trim();
-            let address = document.getElementById('custAddress'.trim()).value.trim();
+            let address = document.getElementById('custAddress').value.trim();
 
             if(!name || !phone || !address) {
-                alertBox.innerText = '❌ કૃપા કરીને નામ, નંબર અને સરનામું ભરો.';
-                alertBox.classList.remove('hidden'); return;
+                alertBox.innerText = '❌ કૃપા કરીને તમારું નામ, નંબર અને સરનામું ભરો.';
+                alertBox.classList.remove('hidden');
+                return;
             }
 
             let targetStorePhone = cart[0].storePhone;
@@ -331,9 +324,9 @@
             cart.forEach(item => {
                 msg += `- ${item.name} (${item.displayLabel}) x ${item.qty} = ₹${(item.calculatedPrice * item.qty).toFixed(0)}\n`;
             });
-            if(hasVeg) { msg += `\n⚖️ કુલ વજન (Veg): ${totalVegWeight.toFixed(2)} Kg`; }
+            msg += `\n⚖️ કુલ વજન: ${totalWeight.toFixed(2)} Kg`;
             msg += `\n💰 *કુલ બિલ રકમ: ₹${totalBill.toFixed(0)}*\n\n`;
-            msg += `📌 શરતો: ઓર્ડર કેન્સલ કે એક્સચેન્જ થશે નહીં[span_8](start_span)[span_8](end_span)[span_9](start_span)[span_9](end_span).`;
+            msg += `📌 શરતો: ઓર્ડર કેન્સલ કે એક્સચેન્જ થશે નહીં.`;
 
             let url = `https://wa.me/${targetStorePhone}?text=${encodeURIComponent(msg)}`;
             window.open(url, '_blank');
