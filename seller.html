@@ -20,26 +20,24 @@
   </nav>
 
   <div class="container">
-    <!-- Shop Status Notice -->
     <div class="card mb-4 border-start border-4 border-success shadow-sm">
       <div class="card-body">
         <h5 class="card-title text-success fw-bold">દુકાન સ્ટેટસ: સક્રિય (Active)</h5>
-        <p class="mb-0 text-muted">તમારી દુકાનની વેલિડિટી <b>24 દિવસ</b> બાકી છે. (30 દિવસ પછી દુકાન ઓટોમેટિક બંધ થશે)</p>
+        <p class="mb-0 text-muted">વેલિડિટી: 30 દિવસ (એડમિન દ્વારા નિયંત્રિત). દર 30 દિવસે રીન્યુ કરાવવું.</p>
       </div>
     </div>
 
-    <!-- Add Product Form -->
     <div class="card shadow-sm p-3">
-      <h5 class="fw-bold mb-3" style="color: var(--meesho);">નવી પ્રોડક્ટ ઉમેરો</h5>
+      <h5 class="fw-bold mb-3" style="color: var(--meesho);">નવી પ્રોડક્ટ ઉમેરો (ડેટાબેઝમાં સેવ થશે)</h5>
       <form id="sellerAddForm">
         <div class="row g-3">
           <div class="col-md-6">
             <label class="form-label">પ્રોડક્ટનું નામ</label>
-            <input type="text" class="form-control" placeholder="જેમ કે: સફરજન / સાડી" required>
+            <input type="text" id="pName" class="form-control" placeholder="જેમ કે: તાજા ટામેટા / સાડી" required>
           </div>
           <div class="col-md-6">
             <label class="form-label">કેટેગરી પસંદ કરો</label>
-            <select class="form-select">
+            <select id="pCat" class="form-select">
               <option>🥦 ફળ અને શાકભાજી</option>
               <option>🌾 કરિયાણું (Grocery)</option>
               <option>👗 ફેશન અને કપડાં</option>
@@ -48,15 +46,15 @@
           </div>
           <div class="col-md-4">
             <label class="form-label">પ્રાઈસ (₹)</label>
-            <input type="number" class="form-control" placeholder="₹ રકમ" required>
+            <input type="number" id="pPrice" class="form-control" placeholder="₹ રકમ" required>
           </div>
           <div class="col-md-4">
-            <label class="form-label">માપતોલ / સાઇઝ</label>
-            <input type="text" class="form-control" placeholder="જેમ કે: Kg / Pcs / S, M, L, XL">
+            <label class="form-label">માપતોલ / યુનિટ</label>
+            <input type="text" id="pUnit" class="form-control" placeholder="Kg / Pcs / Set" required>
           </div>
           <div class="col-md-4">
-            <label class="form-label">કલર / પેટર્ન (જો હોય તો)</label>
-            <input type="text" class="form-control" placeholder="જેમ કે: લાલ, પ્રિન્ટેડ">
+            <label class="form-label">સાઇઝ / કલર / પેટર્ન</label>
+            <input type="text" id="pVariant" class="form-control" placeholder="જેમ કે: Red, L size">
           </div>
           <div class="col-12">
             <button type="submit" class="btn btn-meesho w-100 fw-bold">પ્રોડક્ટ પબ્લિશ કરો</button>
@@ -66,5 +64,40 @@
     </div>
   </div>
 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAwTd8T70ycHDhf2tGQa8sK7Kmxa5Rbr58",
+      authDomain: "kh-fresh-sabji-fruits-74b81.firebaseapp.com",
+      projectId: "kh-fresh-sabji-fruits-74b81",
+      storageBucket: "kh-fresh-sabji-fruits-74b81.firebasestorage.app",
+      messagingSenderId: "798281515398",
+      appId: "1:798281515398:web:d356b619b69a3cef43ac07"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    document.getElementById('sellerAddForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('pName').value;
+      const category = document.getElementById('pCat').value;
+      const price = document.getElementById('pPrice').value;
+      const unit = document.getElementById('pUnit').value;
+      const variant = document.getElementById('pVariant').value;
+
+      try {
+        await addDoc(collection(db, "products"), {
+          name, category, price, unit, variant, createdAt: new Date()
+        });
+        alert("✅ પ્રોડક્ટ સફળતાપૂર્વક ઉમેરાઈ ગઈ છે અને હવે ગ્રાહકોને લાઇવ દેખાશે!");
+        document.getElementById('sellerAddForm').reset();
+      } catch (err) {
+        alert("❌ એરર: પ્રોડક્ટ સેવ થઈ શકી નથી - " + err.message);
+      }
+    });
+  </script>
 </body>
 </html>
