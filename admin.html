@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K H Fresh - Admin</title>
+<style>
+body{font-family:Arial;background:#fff0f5;margin:0;padding:15px}
+header{background:#e91e63;color:white;padding:18px;border-radius:12px;text-align:center}
+.card{background:white;padding:16px;margin:15px 0;border-radius:12px;box-shadow:0 2px 8px #ddd}
+input,button{width:100%;padding:12px;margin:7px 0;box-sizing:border-box;border-radius:8px;border:1px solid #ddd;font-size:16px}
+button{background:#e91e63;color:white;border:0;font-weight:bold}
+h2{color:#c2185b}
+.note{color:#666;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+<h1>🌸 K H Fresh</h1>
+<h3>Admin Panel</h3>
+</header>
+
+<div class="card">
+<h2>દુકાન ઉમેરો</h2>
+<input id="shop" placeholder="દુકાનનું નામ">
+<input id="seller" placeholder="દુકાનદારનું નામ">
+<input id="phone" placeholder="મોબાઇલ નંબર">
+<button onclick="addShop()">દુકાન ઉમેરો</button>
+<div id="message"></div>
+</div>
+
+<div class="card">
+<h2>દુકાનની ફી</h2>
+<p>શરૂઆતની ફી: ₹300</p>
+<p>1 થી 30 પ્રોડક્ટ: ₹60 / મહિનો</p>
+<p>31 થી 60 પ્રોડક્ટ: ₹120 / મહિનો</p>
+<p>61 થી 90 પ્રોડક્ટ: ₹180 / મહિનો</p>
+<p>91 થી 120 પ્રોડક્ટ: ₹240 / મહિનો</p>
+<p>121 થી 150 પ્રોડક્ટ: ₹300 / મહિનો</p>
+<p class="note">દર 30 વધારાના પ્રોડક્ટ માટે ₹60 વધશે.</p>
+</div>
+
+<div class="card">
+<h2>દુકાનની યાદી</h2>
+<div id="shops">હજુ કોઈ દુકાન ઉમેરાઈ નથી.</div>
+</div>
+
+<script>
+function addShop(){
+ let shop=document.getElementById('shop').value.trim();
+ let seller=document.getElementById('seller').value.trim();
+ let phone=document.getElementById('phone').value.trim();
+ if(!shop||!seller||!phone){
+  alert('બધી માહિતી ભરો');
+  return;
+ }
+ let shops=JSON.parse(localStorage.getItem('khfresh_shops')||'[]');
+ shops.push({shop,seller,phone,active:true});
+ localStorage.setItem('khfresh_shops',JSON.stringify(shops));
+ document.getElementById('shop').value='';
+ document.getElementById('seller').value='';
+ document.getElementById('phone').value='';
+ showShops();
+}
+function showShops(){
+ let shops=JSON.parse(localStorage.getItem('khfresh_shops')||'[]');
+ document.getElementById('shops').innerHTML=shops.length?shops.map((s,i)=>
+ `<div style="border-bottom:1px solid #ddd;padding:10px">
+ <b>${s.shop}</b><br>${s.seller} - ${s.phone}<br>
+ સ્થિતિ: ${s.active?'ચાલુ':'બંધ'}
+ <button onclick="toggleShop(${i})">${s.active?'દુકાન બંધ કરો':'દુકાન ચાલુ કરો'}</button>
+ </div>`).join(''):'હજુ કોઈ દુકાન ઉમેરાઈ નથી.';
+}
+function toggleShop(i){
+ let shops=JSON.parse(localStorage.getItem('khfresh_shops')||'[]');
+ shops[i].active=!shops[i].active;
+ localStorage.setItem('khfresh_shops',JSON.stringify(shops));
+ showShops();
+}
+showShops();
+</script>
+</body>
+</html>
