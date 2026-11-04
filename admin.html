@@ -1,83 +1,78 @@
 <!DOCTYPE html>
 <html lang="gu">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>K H Fresh - Admin</title>
-<style>
-body{font-family:Arial;background:#fff0f5;margin:0;padding:15px}
-header{background:#e91e63;color:white;padding:18px;border-radius:12px;text-align:center}
-.card{background:white;padding:16px;margin:15px 0;border-radius:12px;box-shadow:0 2px 8px #ddd}
-input,button{width:100%;padding:12px;margin:7px 0;box-sizing:border-box;border-radius:8px;border:1px solid #ddd;font-size:16px}
-button{background:#e91e63;color:white;border:0;font-weight:bold}
-h2{color:#c2185b}
-.note{color:#666;font-size:13px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>K H Fresh - Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root { --meesho: #9F2089; }
+    .meesho-bg { background-color: var(--meesho); color: white; }
+  </style>
 </head>
-<body>
-<header>
-<h1>🌸 K H Fresh</h1>
-<h3>Admin Panel</h3>
-</header>
+<body class="bg-light">
 
-<div class="card">
-<h2>દુકાન ઉમેરો</h2>
-<input id="shop" placeholder="દુકાનનું નામ">
-<input id="seller" placeholder="દુકાનદારનું નામ">
-<input id="phone" placeholder="મોબાઇલ નંબર">
-<button onclick="addShop()">દુકાન ઉમેરો</button>
-<div id="message"></div>
-</div>
+  <nav class="navbar navbar-dark meesho-bg mb-4">
+    <div class="container">
+      <span class="navbar-brand fw-bold">👑 K H Fresh મુખ્ય એડમિન પેનલ</span>
+    </div>
+  </nav>
 
-<div class="card">
-<h2>દુકાનની ફી</h2>
-<p>શરૂઆતની ફી: ₹300</p>
-<p>1 થી 30 પ્રોડક્ટ: ₹60 / મહિનો</p>
-<p>31 થી 60 પ્રોડક્ટ: ₹120 / મહિનો</p>
-<p>61 થી 90 પ્રોડક્ટ: ₹180 / મહિનો</p>
-<p>91 થી 120 પ્રોડક્ટ: ₹240 / મહિનો</p>
-<p>121 થી 150 પ્રોડક્ટ: ₹300 / મહિનો</p>
-<p class="note">દર 30 વધારાના પ્રોડક્ટ માટે ₹60 વધશે.</p>
-</div>
+  <div class="container">
 
-<div class="card">
-<h2>દુકાનની યાદી</h2>
-<div id="shops">હજુ કોઈ દુકાન ઉમેરાઈ નથી.</div>
-</div>
+    <!-- Fee Rules Quick Card -->
+    <div class="card p-3 mb-4 border-0 shadow-sm bg-white">
+      <h6 class="fw-bold" style="color: var(--meesho);">📌 સેલર ફી અને સ્લેબ નિયમો:</h6>
+      <ul class="mb-0 text-muted small">
+        <li>શરૂઆતી એન્ટ્રી ફી: <b>₹300</b> (One Time)</li>
+        <li>1–30 પ્રોડક્ટ: <b>₹60/મહિનો</b> | 31–60: <b>₹120</b> | 61–90: <b>₹180</b> | 91–120: <b>₹240</b> | 121–150: <b>₹300</b></li>
+        <li>દર 30 દિવસે આપમેળે દુકાન બંધ થશે. પેમેન્ટ મળ્યા પછી અહીથી Renew બટનથી ચાલુ કરવી.</li>
+      </ul>
+    </div>
 
-<script>
-function addShop(){
- let shop=document.getElementById('shop').value.trim();
- let seller=document.getElementById('seller').value.trim();
- let phone=document.getElementById('phone').value.trim();
- if(!shop||!seller||!phone){
-  alert('બધી માહિતી ભરો');
-  return;
- }
- let shops=JSON.parse(localStorage.getItem('khfresh_shops')||'[]');
- shops.push({shop,seller,phone,active:true});
- localStorage.setItem('khfresh_shops',JSON.stringify(shops));
- document.getElementById('shop').value='';
- document.getElementById('seller').value='';
- document.getElementById('phone').value='';
- showShops();
-}
-function showShops(){
- let shops=JSON.parse(localStorage.getItem('khfresh_shops')||'[]');
- document.getElementById('shops').innerHTML=shops.length?shops.map((s,i)=>
- `<div style="border-bottom:1px solid #ddd;padding:10px">
- <b>${s.shop}</b><br>${s.seller} - ${s.phone}<br>
- સ્થિતિ: ${s.active?'ચાલુ':'બંધ'}
- <button onclick="toggleShop(${i})">${s.active?'દુકાન બંધ કરો':'દુકાન ચાલુ કરો'}</button>
- </div>`).join(''):'હજુ કોઈ દુકાન ઉમેરાઈ નથી.';
-}
-function toggleShop(i){
- let shops=JSON.parse(localStorage.getItem('khfresh_shops')||'[]');
- shops[i].active=!shops[i].active;
- localStorage.setItem('khfresh_shops',JSON.stringify(shops));
- showShops();
-}
-showShops();
-</script>
+    <!-- Shop List Table -->
+    <div class="card shadow-sm p-3">
+      <h5 class="fw-bold mb-3" style="color: var(--meesho);">નોંધાયેલ દુકાનદારો (Shops Management)</h5>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>દુકાનનું નામ</th>
+              <th>પ્રોડક્ટ્સ</th>
+              <th>ગણતરી ફી</th>
+              <th>બાકી દિવસો</th>
+              <th>સ્થિતિ</th>
+              <th>એક્શન</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>ગણેશ વેજિટેબલ્સ</b></td>
+              <td>22 પ્રોડક્ટ્સ</td>
+              <td><span class="badge bg-success">₹60 / મહિનો</span></td>
+              <td>12 દિવસ બાકી</td>
+              <td><span class="badge bg-success">ચાલુ</span></td>
+              <td>
+                <button class="btn btn-sm btn-danger">બંધ કરો</button>
+                <button class="btn btn-sm btn-outline-primary">+30 દિવસ લંબાવો</button>
+              </td>
+            </tr>
+            <tr class="table-danger">
+              <td><b>શ્રી રામ કરિયાણા ભંડાર</b></td>
+              <td>45 પ્રોડક્ટ્સ</td>
+              <td><span class="badge bg-warning text-dark">₹120 / મહિનો</span></td>
+              <td><span class="text-danger fw-bold">0 (પૂરું થયું)</span></td>
+              <td><span class="badge bg-danger">ઓટો-બ્લોક</span></td>
+              <td>
+                <button class="btn btn-sm btn-success">₹120 મળ્યા (ચાલુ કરો)</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
 </body>
 </html>
