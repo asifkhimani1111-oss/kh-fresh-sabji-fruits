@@ -19,18 +19,14 @@
   </nav>
 
   <div class="container">
-
-    <!-- Fee Rules Quick Card -->
     <div class="card p-3 mb-4 border-0 shadow-sm bg-white">
-      <h6 class="fw-bold" style="color: var(--meesho);">📌 સેલર ફી અને સ્લેબ નિયમો:</h6>
+      <h6 class="fw-bold" style="color: var(--meesho);">📌 એડમિન નિયમો અને સ્લેબ:</h6>
       <ul class="mb-0 text-muted small">
-        <li>શરૂઆતી એન્ટ્રી ફી: <b>₹300</b> (One Time)</li>
-        <li>1–30 પ્રોડક્ટ: <b>₹60/મહિનો</b> | 31–60: <b>₹120</b> | 61–90: <b>₹180</b> | 91–120: <b>₹240</b> | 121–150: <b>₹300</b></li>
-        <li>દર 30 દિવસે આપમેળે દુકાન બંધ થશે. પેમેન્ટ મળ્યા પછી અહીથી Renew બટનથી ચાલુ કરવી.</li>
+        <li>શરૂઆતી એન્ટ્રી ફી: <b>₹300</b> | માસિક સ્લેબ: 1-30 પ્રોડક્ટ (₹60), 31-60 (₹120), 61-90 (₹180), 91-120 (₹240), 121-150 (₹300).</li>
+        <li>દર ૩૦ દિવસે દુકાન આપમેળે બંધ થશે. પેમેન્ટ મળ્યા પછી નીચેથી રીન્યુ કરવી. જૂનો ડેટા સેફ રહેશે.</li>
       </ul>
     </div>
 
-    <!-- Shop List Table -->
     <div class="card shadow-sm p-3">
       <h5 class="fw-bold mb-3" style="color: var(--meesho);">નોંધાયેલ દુકાનદારો (Shops Management)</h5>
       <div class="table-responsive">
@@ -39,7 +35,7 @@
             <tr>
               <th>દુકાનનું નામ</th>
               <th>પ્રોડક્ટ્સ</th>
-              <th>ગણતરી ફી</th>
+              <th>માસિક ફી ગણતરી</th>
               <th>બાકી દિવસો</th>
               <th>સ્થિતિ</th>
               <th>એક્શન</th>
@@ -53,26 +49,24 @@
               <td>12 દિવસ બાકી</td>
               <td><span class="badge bg-success">ચાલુ</span></td>
               <td>
-                <button class="btn btn-sm btn-danger">બંધ કરો</button>
-                <button class="btn btn-sm btn-outline-primary">+30 દિવસ લંબાવો</button>
+                <button class="btn btn-sm btn-danger" onclick="alert('દુકાન બંધ કરવામાં આવી.')">બંધ કરો</button>
+                <button class="btn btn-sm btn-outline-primary" onclick="alert('વેલિડિટી ૩૦ દિવસ લંબાવવામાં આવી.')">+30 દિવસ રીન્યુ</button>
               </td>
             </tr>
             <tr class="table-danger">
               <td><b>શ્રી રામ કરિયાણા ભંડાર</b></td>
               <td>45 પ્રોડક્ટ્સ</td>
               <td><span class="badge bg-warning text-dark">₹120 / મહિનો</span></td>
-              <td><span class="text-danger fw-bold">0 (પૂરું થયું)</span></td>
+              <td><span class="text-danger fw-bold">0 (સમય પૂરો)</span></td>
               <td><span class="badge bg-danger">ઓટો-બ્લોક</span></td>
               <td>
-                <button class="btn btn-sm btn-success">₹120 મળ્યા (ચાલુ કરો)</button>
+                <button class="btn btn-sm btn-success" onclick="alert('પેમેન્ટ મળ્યું, દુકાન ૩૦ દિવસ માટે ફરી ચાલુ!')">₹120 મળ્યા (ચાલુ કરો)</button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
-
   </div>
-
 </body>
 </html>
