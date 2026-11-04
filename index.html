@@ -29,100 +29,112 @@
   </nav>
 
   <!-- Notice Bar -->
-  <div class="bg-dark text-white text-center py-1 fs-7" style="font-size: 13px;">
-    ⚠️ નોંધ: ઓર્ડર કેન્સલ કે એક્સચેન્જ થશે નહીં. (No Exchange / No Cancellation)
+  <div class="bg-dark text-white text-center py-1" style="font-size: 13px;">
+    ⚠️ નિયમ: શાકભાજી/ફળ (૨૦૦ ગ્રામ થી ૨ કિલો) | કરિયાણું (મિનિમમ ₹૫૦૦) | નો એક્સચેન્જ / નો કેન્સલેશન
   </div>
 
   <!-- Meesho Category Bar -->
   <div class="cat-bar container-fluid shadow-sm">
     <div class="cat-item">🥦 ફળ અને શાકભાજી</div>
     <div class="cat-item">🌾 કરિયાણું (Grocery)</div>
-    <div class="cat-item">👗 મહિલા ફેશન</div>
-    <div class="cat-item">👕 પુરુષ ફેશન</div>
-    <div class="cat-item">👶 બાળકોનું કલેક્શન</div>
-    <div class="cat-item">🏠 હોમ અને કિચન</div>
+    <div class="cat-item">👗 ફેશન અને કપડાં</div>
     <div class="cat-item">📱 ઇલેક્ટ્રોનિક્સ</div>
-    <div class="cat-item">💄 બ્યુટી & પર્સનલ કેર</div>
   </div>
 
-  <!-- Products Section -->
+  <!-- Products Live Dynamic Grid -->
   <div class="container my-4">
-    <h5 class="fw-bold mb-3" style="color: var(--meesho);">અમારા દુકાનદારોની નવી પ્રોડક્ટ્સ</h5>
-    <div class="row g-3" id="productGrid">
-      
-      <!-- Sample Vegetable Product -->
-      <div class="col-6 col-md-3">
-        <div class="product-card card p-2">
-          <img src="https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=300" class="card-img-top">
-          <div class="card-body p-2 d-flex flex-column justify-content-between">
-            <div>
-              <span class="badge badge-policy">🥦 શાકભાજી</span>
-              <h6 class="fw-bold mt-1 mb-1">તાજા બટાકા (Fresh Potato)</h6>
-              <div class="text-danger fw-bold">₹30 / કિલો</div>
-              <small class="text-muted d-block mt-1">નિયમ: મિનિમમ 200 ગ્રામ (0.2kg) - મેક્સિમમ 2kg</small>
-            </div>
-            <div class="mt-2">
-              <label class="form-label mb-1 text-muted fs-7">વજન સેટ કરો (Kg):</label>
-              <input type="number" step="0.1" value="0.5" class="form-control form-control-sm mb-2" id="vegQty">
-              <button class="btn btn-meesho btn-sm w-100" onclick="buyVeg(30)">ઓર્ડર કરો</button>
-            </div>
-          </div>
-        </div>
+    <h5 class="fw-bold mb-3" style="color: var(--meesho);">લાઇવ પ્રોડક્ટ્સ (દુકાનદારો દ્વારા ઉમેરાયેલ)</h5>
+    <div class="row g-3" id="liveProductGrid">
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="text-muted mt-2">પ્રોડક્ટ્સ લોડ થઈ રહી છે...</p>
       </div>
-
-      <!-- Sample Grocery Product -->
-      <div class="col-6 col-md-3">
-        <div class="product-card card p-2">
-          <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300" class="card-img-top">
-          <div class="card-body p-2 d-flex flex-column justify-content-between">
-            <div>
-              <span class="badge badge-policy">🌾 કરિયાણું</span>
-              <h6 class="fw-bold mt-1 mb-1">સુપર પ્રીમિયમ ચોખા</h6>
-              <div class="text-danger fw-bold">₹600 / 10kg બેગ</div>
-              <small class="text-muted d-block mt-1">નિયમ: મિનિમમ કરિયાણું ઓર્ડર ₹500</small>
-            </div>
-            <div class="mt-2">
-              <button class="btn btn-meesho btn-sm w-100" onclick="buyGrocery(600)">ઓર્ડર કરો</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
   </div>
 
-  <script>
-    // સમય ચકાસણી લોજિક (સવારે 9 થી સાંજે 6)
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAwTd8T70ycHDhf2tGQa8sK7Kmxa5Rbr58",
+      authDomain: "kh-fresh-sabji-fruits-74b81.firebaseapp.com",
+      projectId: "kh-fresh-sabji-fruits-74b81",
+      storageBucket: "kh-fresh-sabji-fruits-74b81.firebasestorage.app",
+      messagingSenderId: "798281515398",
+      appId: "1:798281515398:web:d356b619b69a3cef43ac07"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
     function isStoreOpen() {
-      const now = new Date();
-      const hours = now.getHours();
+      const hours = new Date().getHours();
       return hours >= 9 && hours < 18;
     }
 
-    function buyVeg(pricePerKg) {
-      if (!isStoreOpen()) {
-        alert("⚠️ દિલગીર છીએ! ઓર્ડરનો સમય પૂરો થઈ ગયો છે. સવારે 9:00 થી સાંજે 6:00 સુધી જ ઓર્ડર સ્વીકારાશે.");
-        return;
+    async function loadProducts() {
+      const grid = document.getElementById('liveProductGrid');
+      try {
+        const querySnapshot = await getDocs(collection(db, "products"));
+        if(querySnapshot.empty) {
+          grid.innerHTML = `<div class="col-12 text-center text-muted py-4">હજી સુધી કોઈ પ્રોડક્ટ ઉમેરાઈ નથી.</div>`;
+          return;
+        }
+        grid.innerHTML = "";
+        querySnapshot.forEach((doc) => {
+          const p = doc.data();
+          grid.innerHTML += `
+            <div class="col-6 col-md-3">
+              <div class="product-card card p-2">
+                <img src="${p.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=300'}" class="card-img-top">
+                <div class="card-body p-2 d-flex flex-column justify-content-between">
+                  <div>
+                    <span class="badge badge-policy">${p.category}</span>
+                    <h6 class="fw-bold mt-1 mb-1">${p.name}</h6>
+                    <div class="text-danger fw-bold">₹${p.price} / ${p.unit}</div>
+                    <small class="text-muted d-block mt-1">સાઇઝ/કલર: ${p.variant || 'સામાન્ય'}</small>
+                  </div>
+                  <div class="mt-2">
+                    <button class="btn btn-meesho btn-sm w-100" onclick="placeOrder('${p.name}', ${p.price}, '${p.category}')">ઓર્ડર કરો</button>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+        });
+      } catch (e) {
+        console.error(e);
       }
-      const qty = parseFloat(document.getElementById('vegQty').value);
-      if (isNaN(qty) || qty < 0.2 || qty > 2.0) {
-        alert("❌ નિયમ ભૂલ: ફળ અને શાકભાજીમાં લઘુત્તમ 200 ગ્રામ (0.2 kg) અને મહત્તમ 2 કિલો સુધી જ ઓર્ડર સ્વીકારાશે!");
-        return;
-      }
-      alert(`✅ ઓર્ડર સફળ! વજન: ${qty} kg | કુલ રકમ: ₹${qty * pricePerKg}`);
     }
 
-    function buyGrocery(amount) {
+    window.placeOrder = function(name, price, category) {
       if (!isStoreOpen()) {
-        alert("⚠️ દિલગીર છીએ! ઓર્ડરનો સમય પૂરો થઈ ગયો છે. સવારે 9:00 થી સાંજે 6:00 સુધી જ ઓર્ડર સ્વીકારાશે.");
+        alert("⚠️ દિલગીર છીએ! ઓર્ડરનો સમય સવારે 9:00 થી સાંજે 6:00 સુધીનો જ છે.");
         return;
       }
-      if (amount < 500) {
-        alert("❌ નિયમ ભૂલ: કરિયાણામાં ઓછામાં ઓછો ₹500 નો ઓર્ડર હોવો ફરજિયાત છે!");
-        return;
+      if(category.includes("શાકભાજી") || category.includes("ફળ")) {
+        let qty = prompt(`'${name}' માટે વજન દાખલ કરો (કિલોમાં, મિનિમમ 0.2 kg થી મહત્તમ 2 kg):`, "0.5");
+        qty = parseFloat(qty);
+        if (isNaN(qty) || qty < 0.2 || qty > 2.0) {
+          alert("❌ નિયમ ભૂલ: ફળ અને શાકભાજીમાં લઘુત્તમ 200 ગ્રામ (0.2 kg) અને મહત્તમ 2 કિલો સુધી જ ઓર્ડર માન્ય ગણાશે!");
+          return;
+        }
+        alert(`✅ ઓર્ડર સફળ! કુલ રકમ: ₹${qty * price}`);
+      } else if(category.includes("કરિયાણું")) {
+        let totalAmt = prompt(`'${name}' ની કુલ રકમ અથવા જથ્થો નાખો (કરિયાણામાં મિનિમમ ઓર્ડર ₹500 હોવો જરૂરી છે):`, "500");
+        totalAmt = parseFloat(totalAmt);
+        if(totalAmt < 500) {
+          alert("❌ નિયમ ભૂલ: કરિયાણામાં ઓછામાં ઓછો ₹500 નો ઓર્ડર હોવો ફરજિયાત છે!");
+          return;
+        }
+        alert(`✅ કરિયાણાનો ઓર્ડર સ્વીકારાયો! રકમ: ₹${totalAmt}`);
+      } else {
+        alert(`✅ ઓર્ડર સફળ! પ્રોડક્ટ: ${name} | પ્રાઈઝ: ₹${price}`);
       }
-      alert(`✅ કરિયાણાનો ઓર્ડર સ્વીકારાયો! રકમ: ₹${amount}`);
     }
+
+    loadProducts();
   </script>
 </body>
 </html>
