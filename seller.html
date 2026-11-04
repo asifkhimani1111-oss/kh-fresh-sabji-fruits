@@ -1,52 +1,70 @@
-
 <!DOCTYPE html>
 <html lang="gu">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>K H Fresh - Seller</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#fff8fb;font-family:Arial;color:#333}
-header{background:#e91e63;color:white;padding:18px;text-align:center;font-size:24px;font-weight:bold}
-main{max-width:650px;margin:auto;padding:15px}
-.card{background:white;padding:18px;border-radius:13px;margin:15px 0}
-input,textarea{width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px}
-button{background:#e91e63;color:white;border:0;padding:12px 18px;border-radius:8px}
-a{color:#ad1457;margin:8px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>K H Fresh - Seller Panel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root { --meesho: #9F2089; }
+    .meesho-bg { background-color: var(--meesho); color: white; }
+    .btn-meesho { background-color: var(--meesho); color: white; }
+  </style>
 </head>
-<body>
-<header>🌸 K H Fresh - Seller Panel</header>
-<main>
-<p><a href="index.html">ગ્રાહક પેનલ</a> | <a href="admin.html">એડમિન પેનલ</a></p>
-<div class="card">
-<h2>દુકાનદાર એકાઉન્ટ</h2>
-<input id="name" placeholder="દુકાનદારનું નામ">
-<input id="shop" placeholder="દુકાનનું નામ">
-<input id="phone" placeholder="મોબાઇલ નંબર">
-<input id="email" type="email" placeholder="ઈમેલ">
-<input id="password" type="password" placeholder="પાસવર્ડ">
-<button onclick="register()">એકાઉન્ટ બનાવો</button>
-</div>
-<div class="card">
-<h2>દુકાનમાં પ્રોડક્ટ ઉમેરો</h2>
-<input id="product" placeholder="પ્રોડક્ટનું નામ">
-<input id="price" type="number" placeholder="ભાવ">
-<input id="photo" type="file" accept="image/*">
-<button onclick="addProduct()">પ્રોડક્ટ ઉમેરો</button>
-<p id="message"></p>
-</div>
-</main>
-<script>
-function register(){
-document.getElementById('message').innerText=
-'સેલર એકાઉન્ટ માટે ડેટાબેઝ જોડાણ જરૂરી છે.';
-}
-function addProduct(){
-document.getElementById('message').innerText=
-'પ્રોડક્ટ સેવ કરવા માટે ડેટાબેઝ જોડાણ જરૂરી છે.';
-}
-</script>
+<body class="bg-light">
+
+  <nav class="navbar navbar-dark meesho-bg mb-4">
+    <div class="container">
+      <span class="navbar-brand fw-bold">🏪 K H Fresh સેલર પેનલ</span>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Shop Status Notice -->
+    <div class="card mb-4 border-start border-4 border-success shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title text-success fw-bold">દુકાન સ્ટેટસ: સક્રિય (Active)</h5>
+        <p class="mb-0 text-muted">તમારી દુકાનની વેલિડિટી <b>24 દિવસ</b> બાકી છે. (30 દિવસ પછી દુકાન ઓટોમેટિક બંધ થશે)</p>
+      </div>
+    </div>
+
+    <!-- Add Product Form -->
+    <div class="card shadow-sm p-3">
+      <h5 class="fw-bold mb-3" style="color: var(--meesho);">નવી પ્રોડક્ટ ઉમેરો</h5>
+      <form id="sellerAddForm">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">પ્રોડક્ટનું નામ</label>
+            <input type="text" class="form-control" placeholder="જેમ કે: સફરજન / સાડી" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">કેટેગરી પસંદ કરો</label>
+            <select class="form-select">
+              <option>🥦 ફળ અને શાકભાજી</option>
+              <option>🌾 કરિયાણું (Grocery)</option>
+              <option>👗 ફેશન અને કપડાં</option>
+              <option>📱 ઇલેક્ટ્રોનિક્સ</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">પ્રાઈસ (₹)</label>
+            <input type="number" class="form-control" placeholder="₹ રકમ" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">માપતોલ / સાઇઝ</label>
+            <input type="text" class="form-control" placeholder="જેમ કે: Kg / Pcs / S, M, L, XL">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">કલર / પેટર્ન (જો હોય તો)</label>
+            <input type="text" class="form-control" placeholder="જેમ કે: લાલ, પ્રિન્ટેડ">
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-meesho w-100 fw-bold">પ્રોડક્ટ પબ્લિશ કરો</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
 </body>
 </html>
