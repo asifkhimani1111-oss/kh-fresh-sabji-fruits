@@ -3,381 +3,264 @@
 <html lang="gu">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>K.H Fresh & Fashion</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f5f6fa;font-family:Arial,sans-serif;color:#172033}
-header{background:#172554;color:white;padding:17px;text-align:center}
-header h2{margin:0 0 7px}
-.notice{background:#fff7d6;color:#854d0e;padding:12px;margin:10px;border-radius:9px;font-size:13px;line-height:1.7}
-main{max-width:1000px;margin:auto;padding:10px}
-h3{font-size:18px}
-input,textarea,select,button{font:inherit;padding:11px;border-radius:8px;border:1px solid #cbd5e1}
-input,textarea,select{width:100%;margin:5px 0}
-button{background:#2563eb;color:white;border:0;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.5}
-.card{background:white;padding:13px;border-radius:12px;margin:10px 0;box-shadow:0 2px 8px #0001}
-.shopGrid,.productGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.shop,.product{background:white;border:1px solid #e2e8f0;border-radius:11px;padding:9px;overflow:hidden}
-.shop img{width:100%;height:110px;object-fit:cover;border-radius:8px}
-.product img{width:100%;height:145px;object-fit:cover;border-radius:8px}
-.product h4{margin:8px 0 5px;font-size:15px}
-.price{font-weight:bold;color:#15803d}
-.small{font-size:12px;color:#64748b}
-.row{display:flex;gap:8px;align-items:center}
-.row>*{flex:1}
-.qty{display:flex;gap:8px;align-items:center;margin-top:8px}
-.qty button{width:38px;padding:8px}
-.qty span{min-width:22px;text-align:center}
+body{margin:0;font-family:Arial;background:#f4f5f7;color:#222}
+header{background:#087a4b;color:white;padding:17px;text-align:center}
+main{max-width:1000px;margin:auto;padding:12px}
+.notice{background:#fff3cd;padding:12px;border-radius:9px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:12px}
+.card{background:white;border-radius:12px;padding:10px;box-shadow:0 1px 5px #ddd}
+.card img{width:100%;height:125px;object-fit:cover;border-radius:8px}
+button{background:#087a4b;color:white;border:0;border-radius:8px;padding:10px;cursor:pointer}
+input,textarea{width:100%;padding:11px;margin:5px 0;border:1px solid #ccc;border-radius:8px}
+.price{color:#087a4b;font-weight:bold}
+#cart{background:white;padding:13px;border-radius:12px;margin-top:15px}
 .hidden{display:none}
-#cartItems .item{border-bottom:1px solid #ddd;padding:9px 0}
-.total{font-size:19px;font-weight:bold}
-footer{text-align:center;color:#64748b;padding:20px;font-size:12px}
 </style>
 </head>
 <body>
-
 <header>
 <h2>🛍️ K.H Fresh & Fashion</h2>
 તમારા વિસ્તારની દુકાનો અને વસ્તુઓ એક જ જગ્યાએ
 </header>
 
+<main>
 <div class="notice">
-🕘 ઓર્ડરનો સમય: સવારે 9:00 થી સાંજે 6:00 સુધી.<br>
-🥬 ફળો અને શાકભાજીનો મિક્સ ઓર્ડર ઓછામાં ઓછો 2 કિલો.<br>
-🛒 અન્ય પ્રોડક્ટ્સનો ઓર્ડર ઓછામાં ઓછો ₹500.<br>
-🚚 2 કિમીથી વધુ અંતરે ડિલિવરી ચાર્જ અલગથી લાગી શકે છે.<br>
-ℹ️ ઓર્ડર કન્ફર્મ થયા પછી સામાન્ય કેન્સલેશન અને સામાન્ય એક્સચેન્જ ઉપલબ્ધ નથી. ખોટી, ખામીયુક્ત અથવા જણાવ્યા મુજબ ન હોય તેવી વસ્તુ માટે લાગુ ગ્રાહક અધિકારો યથાવત્ રહેશે.
+🕘 ઓર્ડરનો સમય: સવારે 9 થી સાંજે 6 વાગ્યા સુધી.<br>
+2 કિ.મી.થી વધુ અંતર માટે ડિલિવરી ચાર્જ અલગ હોઈ શકે છે.
 </div>
 
-<main>
+<h3>દુકાનો</h3>
+<div id="shops" class="grid">દુકાનો લોડ થઈ રહી છે...</div>
 
-<section class="card">
-<h3>🔎 પ્રોડક્ટ શોધો</h3>
-<input id="search" placeholder="વસ્તુનું નામ શોધો..." oninput="renderProducts()">
-<select id="categoryFilter" onchange="renderProducts()">
-<option value="">બધી કેટેગરી</option>
-<option>Fruits & Vegetables</option>
-<option>Grocery</option>
-<option>Men</option>
-<option>Women</option>
-<option>Kids</option>
-<option>Footwear</option>
-<option>Beauty</option>
-<option>Home</option>
-<option>Electronics</option>
-<option>Other</option>
-</select>
+<section id="store" class="hidden">
+<h3 id="shopTitle"></h3>
+<div id="shopRule" class="notice"></div>
+<div id="products" class="grid"></div>
 </section>
 
-<section class="card">
-<h3>🏪 તમારા વિસ્તારની દુકાનો</h3>
-<div id="shops" class="shopGrid">દુકાનો લોડ થઈ રહી છે...</div>
-</section>
+<div id="cart">
+<h3>🛒 તમારો ઓર્ડર</h3>
+<div id="cartItems">કોઈ વસ્તુ ઉમેરેલી નથી.</div>
+<h3 id="total">કુલ: ₹0</h3>
+<div id="ruleStatus"></div>
 
-<section class="card">
-<h3 id="productHeading">🛍️ પ્રોડક્ટ્સ</h3>
-<div id="products" class="productGrid">પ્રોડક્ટ્સ લોડ થઈ રહી છે...</div>
-</section>
-
-<section class="card">
-<h3>🛒 તમારો કાર્ટ</h3>
-<div id="cartItems">કાર્ટ ખાલી છે.</div>
-<p class="total" id="cartTotal">કુલ: ₹0</p>
-<p id="cartRules" class="small"></p>
-<button onclick="showCheckout()">ઓર્ડર આપો</button>
-</section>
-
-<section id="checkout" class="card hidden">
-<h3>📦 ઓર્ડર માટેની માહિતી</h3>
 <input id="customerName" placeholder="તમારું નામ">
-<input id="customerPhone" type="tel" placeholder="મોબાઇલ નંબર">
-<textarea id="customerAddress" placeholder="ઘરનું પૂરું સરનામું અને વિસ્તાર"></textarea>
-<button onclick="placeOrder()">ઓર્ડર કન્ફર્મ કરો</button>
-<p id="orderMsg" class="small"></p>
-</section>
+<input id="phone" placeholder="મોબાઇલ નંબર">
+<textarea id="address" placeholder="પૂરું સરનામું"></textarea>
 
+<button id="orderBtn" onclick="placeOrder()">ઓર્ડર આપો</button>
+<p class="notice">
+ઓર્ડર કન્ફર્મ થયા પછી સામાન્ય રીતે રદ કરી શકાશે નહીં. સામાન્ય એક્સચેન્જ ઉપલબ્ધ નથી. ખોટી કે ખામીયુક્ત વસ્તુ માટે લાગુ પડતા ગ્રાહક અધિકારો યથાવત્ રહેશે.
+</p>
+</div>
 </main>
-
-<footer>K.H Fresh & Fashion</footer>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
 <script>
 const firebaseConfig={
- apiKey:"AIzaSyB_9gcc4UHtrIHeASd8txglLZ4kkc_clQU",
- authDomain:"kh-fresh-fashion.firebaseapp.com",
- projectId:"kh-fresh-fashion",
- storageBucket:"kh-fresh-fashion.firebasestorage.app",
- messagingSenderId:"1013749791487",
- appId:"1:1013749791487:web:3b1af0eb4f7497a30feaca"
+apiKey:"AIzaSyB_9gcc4UHtrIHeASd8txglLZ4kkc_clQU",
+authDomain:"kh-fresh-fashion.firebaseapp.com",
+projectId:"kh-fresh-fashion",
+storageBucket:"kh-fresh-fashion.firebasestorage.app",
+messagingSenderId:"1013749791487",
+appId:"1:1013749791487:web:3b1af0eb4f7497a30feaca"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db=firebase.firestore();
 
-let shops=[];
-let products=[];
-let cart=[];
-let selectedShop=null;
+let shops=[],products=[],selectedShop=null,cart=[];
 
 const $=id=>document.getElementById(id);
 
-function esc(v){
- return String(v??"").replace(/[&<>"']/g,c=>({
-  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
- }[c]));
+function safe(s){
+return String(s||"").replace(/[&<>"']/g,c=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
 }
 
-function isShopOpen(s){
- if(s.active===false || s.paid!==true)return false;
- const expiry=s.subscriptionEndAt;
- if(!expiry)return false;
- const end=expiry.toDate?expiry.toDate():new Date(expiry);
- return Number.isFinite(end.getTime()) && end>Date.now();
+function shopRule(s){
+if(s.minimumRule==="veg_2kg")
+return "મિક્સ વસ્તુઓ મળીને ઓછામાં ઓછા 2 કિલો જરૂરી છે.";
+if(s.minimumRule==="amount_500")
+return "મિક્સ વસ્તુઓ મળીને ઓછામાં ઓછા ₹500 જરૂરી છે.";
+if(s.minimumRule==="custom"){
+return s.customType==="kg"
+? "ઓછામાં ઓછા "+s.customMinimum+" કિલો જરૂરી છે."
+: "ઓછામાં ઓછા ₹"+s.customMinimum+" જરૂરી છે.";
+}
+return "આ દુકાનમાં કોઈ લઘુત્તમ ઓર્ડર નિયમ નથી.";
 }
 
-function isProductOpen(p){
- return p.active!==false;
+function validateCart(){
+if(!selectedShop)return {ok:false,msg:"દુકાન પસંદ કરો."};
+
+let total=cart.reduce((a,x)=>a+x.price*x.qty,0);
+let weight=cart.reduce((a,x)=>a+x.qty*x.gramsPerUnit,0)/1000;
+let rule=selectedShop.minimumRule||"none";
+
+if(rule==="none")
+return {ok:true,msg:"કોઈ લઘુત્તમ નિયમ નથી."};
+
+if(rule==="veg_2kg")
+return {
+ok:weight>=2,
+msg:"હાલનું વજન "+weight.toFixed(2)+" કિલો. ઓછામાં ઓછા 2 કિલો જરૂરી."
+};
+
+if(rule==="amount_500")
+return {
+ok:total>=500,
+msg:"હાલ ₹"+total.toFixed(2)+". ઓછામાં ઓછા ₹500 જરૂરી."
+};
+
+if(rule==="custom"){
+let min=Number(selectedShop.customMinimum||0);
+if(selectedShop.customType==="kg")
+return {ok:weight>=min,msg:"હાલનું વજન "+weight.toFixed(2)+" કિલો. ઓછામાં ઓછા "+min+" કિલો જરૂરી."};
+return {ok:total>=min,msg:"હાલ ₹"+total.toFixed(2)+". ઓછામાં ઓછા ₹"+min+" જરૂરી."};
+}
+return {ok:true,msg:""};
 }
 
-async function loadData(){
- try{
-  const [s,p]=await Promise.all([
-   db.collection("shops").get(),
-   db.collection("products").get()
-  ]);
+async function load(){
+try{
+let a=await db.collection("shops").get();
+let b=await db.collection("products").get();
 
-  shops=s.docs.map(d=>({id:d.id,...d.data()})).filter(isShopOpen);
-  const activeShopIds=new Set(shops.map(s=>s.id));
+shops=a.docs.map(d=>({id:d.id,...d.data()})).filter(s=>{
+if(s.active===false||s.paid===false)return false;
+if(s.subscriptionEndAt?.toDate && s.subscriptionEndAt.toDate()<new Date())return false;
+return true;
+});
 
-  products=p.docs.map(d=>({id:d.id,...d.data()}))
-   .filter(p=>isProductOpen(p)&&activeShopIds.has(p.shopId));
+products=b.docs.map(d=>({id:d.id,...d.data()}))
+.filter(p=>p.active!==false);
 
-  renderShops();
-  renderProducts();
- }catch(e){
-  $("shops").textContent="દુકાનો લોડ થઈ શકી નથી. Firebase Rules તપાસો. "+e.message;
-  $("products").textContent="પ્રોડક્ટ્સ લોડ થઈ શક્યાં નથી.";
- }
+renderShops();
+}catch(e){
+$("shops").textContent="Firebase Rules તપાસો: "+e.message;
+}
 }
 
 function renderShops(){
- $("shops").innerHTML=shops.map(s=>{
-  const name=s.name||s.shopName||"દુકાન";
-  const photo=s.imageBase64||s.banner||"";
-  return `<div class="shop">
-   ${photo?`<img src="${photo}" alt="">`:""}
-   <b>${esc(name)}</b>
-   <div class="small">${esc(s.area||"")}</div>
-   <div class="small">${esc(s.address||"")}</div>
-   <button style="margin-top:8px" onclick="chooseShop('${s.id}')">દુકાન જુઓ</button>
-  </div>`;
- }).join("")||"હાલમાં કોઈ ચાલુ દુકાન ઉપલબ્ધ નથી.";
+$("shops").innerHTML=shops.map(s=>`
+<div class="card">
+<img src="${safe(s.imageBase64||s.imageUrl)}" onerror="this.style.display='none'">
+<h4>${safe(s.name||s.shopName)}</h4>
+<p>${safe(s.area)}</p>
+<p>${safe(shopRule(s))}</p>
+<button onclick="openShop('${s.id}')">દુકાન જુઓ</button>
+</div>`).join("")||"હાલ દુકાનો ઉપલબ્ધ નથી.";
 }
 
-function chooseShop(id){
- selectedShop=id;
- cart=[];
- $("productHeading").textContent="🛍️ "+(shops.find(s=>s.id===id)?.name||"દુકાન")+" ની વસ્તુઓ";
- renderProducts();
- renderCart();
- window.scrollTo({top:$("productHeading").offsetTop-20,behavior:"smooth"});
+function openShop(id){
+selectedShop=shops.find(s=>s.id===id);
+cart=[];
+$("store").classList.remove("hidden");
+$("shopTitle").textContent=selectedShop.name||selectedShop.shopName;
+$("shopRule").textContent=shopRule(selectedShop);
+
+let list=products.filter(p=>p.shopId===id);
+
+$("products").innerHTML=list.map(p=>`
+<div class="card">
+<img src="${safe(p.imageBase64||p.imageUrl)}" onerror="this.style.display='none'">
+<h4>${safe(p.name)}</h4>
+<p class="price">₹${Number(p.price||0)} / ${safe(p.unit||"નંગ")}</p>
+<p>${safe(p.size)} ${safe(p.color)} ${safe(p.shoeNumber)}</p>
+<input id="qty_${p.id}" type="number" min="0.01" step="${Number(p.step||1)}" value="${Number(p.step||1)}">
+<button onclick="add('${p.id}')">કાર્ટમાં ઉમેરો</button>
+</div>`).join("")||"વસ્તુઓ ઉપલબ્ધ નથી.";
+
+renderCart();
 }
 
-function categoryType(p){
- const c=String(p.category||"").toLowerCase();
- const t=String(p.categoryType||"").toLowerCase();
- return t==="veg_fruit" || c==="fruits & vegetables" ||
- c==="fruits" || c==="vegetables" || c==="ફળો અને શાકભાજી";
+function add(id){
+let p=products.find(x=>x.id===id);
+let qty=Number($("qty_"+id).value);
+if(!qty||qty<=0)return alert("યોગ્ય જથ્થો લખો.");
+
+let old=cart.find(x=>x.id===id);
+if(old)old.qty+=qty;
+else cart.push({
+id:p.id,name:p.name,price:Number(p.price||0),
+qty,unit:p.unit||"નંગ",
+gramsPerUnit:Number(p.gramsPerUnit||0)
+});
+renderCart();
 }
 
-function gramsPerStep(p){
- if(Number(p.stepGrams)>0)return Number(p.stepGrams);
- const unit=String(p.unit||"").toLowerCase();
- if(unit.includes("250"))return 250;
- if(unit.includes("500"))return 500;
- if(unit.includes("2kg")||unit.includes("2 kg"))return 2000;
- if(unit.includes("1kg")||unit.includes("1 kg")||unit==="kg")return 1000;
- return 250;
-}
-
-function renderProducts(){
- const term=$("search").value.trim().toLowerCase();
- const cat=$("categoryFilter").value;
- let list=products.filter(p=>{
-  const matchesShop=!selectedShop||p.shopId===selectedShop;
-  const matchesSearch=String(p.name||"").toLowerCase().includes(term);
-  const matchesCategory=!cat||p.category===cat;
-  return matchesShop&&matchesSearch&&matchesCategory;
- });
-
- $("products").innerHTML=list.map(p=>{
-  const photo=p.imageBase64||"";
-  return `<div class="product">
-   ${photo?`<img src="${photo}" alt="${esc(p.name)}">`:""}
-   <h4>${esc(p.name)}</h4>
-   <div class="price">₹${Number(p.price)||0} / ${esc(p.unit||"નંગ")}</div>
-   <div class="small">${esc(p.shopName||"")}</div>
-   ${p.size?`<div class="small">સાઇઝ: ${esc(p.size)}</div>`:""}
-   ${p.color?`<div class="small">રંગ: ${esc(p.color)}</div>`:""}
-   <button style="margin-top:8px" onclick="addToCart('${p.id}')">કાર્ટમાં ઉમેરો</button>
-  </div>`;
- }).join("")||"આ શોધમાં કોઈ પ્રોડક્ટ મળી નથી.";
-}
-
-function addToCart(id){
- const p=products.find(x=>x.id===id);
- if(!p)return;
-
- if(cart.length && cart[0].shopId!==p.shopId){
-  if(!confirm("કાર્ટમાં બીજી દુકાનની વસ્તુઓ છે. જૂનો કાર્ટ ખાલી કરીને નવી દુકાન ઉમેરવી છે?"))return;
-  cart=[];
- }
- selectedShop=p.shopId;
- let item=cart.find(x=>x.id===id);
- if(item)item.qty++;
- else cart.push({
-  id:p.id,shopId:p.shopId,name:p.name,
-  price:Number(p.price)||0,
-  unit:p.unit||"નંગ",
-  category:p.category||"",
-  isVeg:categoryType(p),
-  grams:categoryType(p)?gramsPerStep(p):0,
-  imageBase64:p.imageBase64||"",
-  qty:1
- });
- renderCart();
-}
-
-function changeQty(id,delta){
- const item=cart.find(x=>x.id===id);
- if(!item)return;
- item.qty+=delta;
- if(item.qty<=0)cart=cart.filter(x=>x.id!==id);
- renderCart();
-}
-
-function getTotal(){
- return cart.reduce((sum,i)=>sum+i.price*i.qty,0);
+function removeItem(id){
+cart=cart.filter(x=>x.id!==id);
+renderCart();
 }
 
 function renderCart(){
- if(!cart.length){
-  $("cartItems").textContent="કાર્ટ ખાલી છે.";
-  $("cartTotal").textContent="કુલ: ₹0";
-  $("cartRules").textContent="";
-  return;
- }
+let total=cart.reduce((a,x)=>a+x.price*x.qty,0);
+$("cartItems").innerHTML=cart.map(x=>`
+<div>
+${safe(x.name)} — ${x.qty} ${safe(x.unit)}
+₹${(x.price*x.qty).toFixed(2)}
+<button onclick="removeItem('${x.id}')">હટાવો</button>
+</div>`).join("")||"કોઈ વસ્તુ ઉમેરેલી નથી.";
 
- $("cartItems").innerHTML=cart.map(i=>`
-  <div class="item">
-   <b>${esc(i.name)}</b>
-   <div class="small">₹${i.price} × ${i.qty} (${esc(i.unit)})</div>
-   <div class="qty">
-    <button onclick="changeQty('${i.id}',-1)">−</button>
-    <span>${i.qty}</span>
-    <button onclick="changeQty('${i.id}',1)">+</button>
-    <b>₹${i.price*i.qty}</b>
-   </div>
-  </div>`).join("");
+$("total").textContent="કુલ: ₹"+total.toFixed(2);
 
- $("cartTotal").textContent="કુલ: ₹"+getTotal();
-
- const vegWeight=cart.filter(i=>i.isVeg).reduce((s,i)=>s+i.grams*i.qty,0);
- const otherTotal=cart.filter(i=>!i.isVeg).reduce((s,i)=>s+i.price*i.qty,0);
- let messages=[];
- if(vegWeight>0)messages.push("ફળો/શાકભાજીનું વજન: "+(vegWeight/1000).toFixed(2)+" kg (ઓછામાં ઓછું 2 kg)");
- if(otherTotal>0)messages.push("અન્ય વસ્તુઓનો સરવાળો: ₹"+otherTotal+" (ઓછામાં ઓછું ₹500)");
- $("cartRules").textContent=messages.join(" | ");
-}
-
-function showCheckout(){
- if(!cart.length)return alert("પહેલાં કાર્ટમાં વસ્તુ ઉમેરો");
- $("checkout").classList.remove("hidden");
- $("checkout").scrollIntoView({behavior:"smooth"});
-}
-
-function orderTimeAllowed(){
- const now=new Date();
- const mins=now.getHours()*60+now.getMinutes();
- return mins>=540 && mins<=1080;
+let v=validateCart();
+$("ruleStatus").textContent=v.msg;
+$("orderBtn").disabled=!cart.length||!v.ok;
 }
 
 async function placeOrder(){
- const name=$("customerName").value.trim();
- const phone=$("customerPhone").value.trim();
- const address=$("customerAddress").value.trim();
+let v=validateCart();
+if(!v.ok)return alert(v.msg);
 
- if(!cart.length)return alert("કાર્ટ ખાલી છે");
- if(!name||!phone||!address)return alert("બધી માહિતી ભરો");
- if(!/^[0-9]{10}$/.test(phone))return alert("10 આંકડાનો મોબાઇલ નંબર લખો");
- if(!orderTimeAllowed())return alert("ઓર્ડરનો સમય સવારે 9 થી સાંજે 6 વાગ્યા સુધી છે");
+let name=$("customerName").value.trim();
+let phone=$("phone").value.trim();
+let address=$("address").value.trim();
 
- const vegWeight=cart.filter(i=>i.isVeg).reduce((s,i)=>s+i.grams*i.qty,0);
- const otherTotal=cart.filter(i=>!i.isVeg).reduce((s,i)=>s+i.price*i.qty,0);
+if(!name||!phone||!address)
+return alert("નામ, મોબાઇલ અને સરનામું ભરો.");
 
- if(vegWeight>0 && vegWeight<2000)
-  return alert("ફળો અને શાકભાજીનો કુલ ઓર્ડર ઓછામાં ઓછો 2 કિલો હોવો જોઈએ");
- if(otherTotal>0 && otherTotal<500)
-  return alert("અન્ય પ્રોડક્ટ્સનો ઓર્ડર ઓછામાં ઓછો ₹500 હોવો જોઈએ");
+let now=new Date();
+let minutes=now.getHours()*60+now.getMinutes();
+if(minutes<540||minutes>1080)
+return alert("ઓર્ડરનો સમય સવારે 9 થી સાંજે 6 છે.");
 
- const shop=shops.find(s=>s.id===cart[0].shopId);
- if(!shop)return alert("આ દુકાન હાલમાં ઉપલબ્ધ નથી");
+if(!selectedShop.phone)
+return alert("દુકાનનો WhatsApp નંબર ઉપલબ્ધ નથી.");
 
- const orderItems=cart.map(i=>({
-  productId:i.id,
-  name:i.name,
-  price:i.price,
-  qty:i.qty,
-  unit:i.unit,
-  category:i.category,
-  lineTotal:i.price*i.qty
- }));
+let total=cart.reduce((a,x)=>a+x.price*x.qty,0);
+let order={
+shopId:selectedShop.id,
+shopName:selectedShop.name||selectedShop.shopName,
+customerName:name,phone,address,
+items:cart.map(x=>({...x,lineTotal:x.price*x.qty})),
+total,status:"New",
+createdAt:firebase.firestore.FieldValue.serverTimestamp()
+};
 
- const order={
-  shopId:shop.id,
-  shopName:shop.name||shop.shopName||"",
-  customerName:name,
-  phone,
-  address,
-  items:orderItems,
-  total:getTotal(),
-  status:"New",
-  createdAt:firebase.firestore.FieldValue.serverTimestamp()
- };
-
- $("orderMsg").textContent="ઓર્ડર મોકલાઈ રહ્યો છે...";
- try{
-  await db.collection("orders").add(order);
-
-  const digits=String(shop.phone||"").replace(/\D/g,"");
-  const textMessage=
-   "નમસ્તે "+(shop.name||shop.shopName||"દુકાન")+
-   "\nમારે ઓર્ડર આપવો છે.\n\n"+
-   "નામ: "+name+"\nમોબાઇલ: "+phone+
-   "\nસરનામું: "+address+"\n\n"+
-   orderItems.map(i=>i.name+" x "+i.qty+" "+i.unit+" = ₹"+i.lineTotal).join("\n")+
-   "\n\nકુલ: ₹"+order.total;
-
-  $("orderMsg").textContent="તમારો ઓર્ડર નોંધાઈ ગયો છે!";
-  cart=[];
-  renderCart();
-  $("checkout").classList.add("hidden");
-
-  if(digits.length>=10){
-   window.location.href="https://wa.me/"+digits+"?text="+encodeURIComponent(textMessage);
-  }else{
-   alert("ઓર્ડર નોંધાયો છે. દુકાનનો WhatsApp નંબર ઉપલબ્ધ નથી.");
-  }
- }catch(e){
-  $("orderMsg").textContent="ઓર્ડર થઈ શક્યો નથી: "+e.message;
- }
+try{
+await db.collection("orders").add(order);
+}catch(e){
+return alert("ઓર્ડર સાચવી શકાયો નથી: "+e.message);
 }
 
-loadData();
+let message=`નવો ઓર્ડર\nગ્રાહક: ${name}\nમોબાઇલ: ${phone}\nસરનામું: ${address}\n`+
+cart.map(x=>`${x.name} ${x.qty} ${x.unit} ₹${x.price*x.qty}`).join("\n")+
+`\nકુલ ₹${total}`;
+
+let number=String(selectedShop.phone).replace(/\D/g,"");
+window.location.href="https://wa.me/"+number+"?text="+encodeURIComponent(message);
+}
+
+load();
 </script>
 </body>
 </html>
