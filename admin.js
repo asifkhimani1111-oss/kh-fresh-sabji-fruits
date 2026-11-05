@@ -15,7 +15,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 // તમારા Adminનું Firebase UID
-const ADMIN_UID = "uFXdUEzRvaOYQ5IwGio6GRDzgSG";
+const ADMIN_UID = "uFXdUEzRvaOYQ5IwGio6GRDzgSG2";
 
 // HTML elements
 const adminLogin = document.getElementById("adminLogin");
