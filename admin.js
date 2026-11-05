@@ -1,182 +1,328 @@
 
-const STORAGE_KEY = "kh_fresh_fashion_data";
+import {
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
-const demoData = {
-  shops: [
-    {
-      id: "shop_demo",
-      name: "K.H Fresh Sabji & Fruits",
-      category: "ફળ અને શાકભાજી",
-      area: "Gadhada",
-      rule: "veg2kg",
-      approved: true,
-      image: ""
-    }
-  ],
-  products: [
-    {
-      id: "product_1",
-      shopId: "shop_demo",
-      name: "બટાકા",
-      price: 40,
-      unit: "kg",
-      image: ""
-    },
-    {
-      id: "product_2",
-      shopId: "shop_demo",
-      name: "ડુંગળી",
-      price: 50,
-      unit: "kg",
-      image: ""
-    },
-    {
-      id: "product_3",
-      shopId: "shop_demo",
-      name: "કેળા",
-      price: 60,
-      unit: "kg",
-      image: ""
-    }
-  ]
-};
+import {
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+  deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-function getData() {
+import { auth, db } from "./firebase.js";
+
+const loginSection = document.getElementById("adminLogin");
+const dashboard = document.getElementById("adminDashboard");
+const loginForm = document.getElementById("adminLoginForm");
+const message = document.getElementById("adminMessage");
+const welcome = document.getElementById("adminWelcome");
+const logoutButton = document.getElementById("adminLogout");
+
+const pendingArea = document.getElementById("pending");
+const allShopsArea = document.getElementById("allShops");
+const pendingProductsArea = document.getElementById("pendingProducts");
+const allProductsArea = document.getElementById("allProducts");
+
+let isAdmin = false;
+
+function showMessage(text, error = false) {
+  message.textContent = text;
+  message.style.color = error ? "red" : "green";
+}
+
+function makeButton(label, action) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = label;
+  button.addEventListener("click", action);
+  return button;
+}
+
+function makeShopCard(shop) {
+  const card = document.createElement("div");
+  const heading = document.createElement("h3");
+  const category = document.createElement("p");
+  const area = document.createElement("p");
+  const status = document.createElement("p");
+
+  heading.textContent = shop.name || "નામ નથી";
+  category.textContent = "કેટેગરી: " + (shop.category || "");
+  area.textContent = "વિસ્તાર: " + (shop.area || "");
+  status.textContent = shop.approved
+    ? "મંજૂર છે"
+    : "મંજૂરી બાકી છે";
+
+  card.append(heading, category, area, status);
+
+  if (!shop.approved) {
+    card.appendChild(
+      makeButton("દુકાન મંજૂર કરો", () => approveShop(shop.id))
+    );
+  }
+
+  card.appendChild(
+    makeButton("દુકાન ડિલીટ કરો", () => removeShop(shop.id))
+  );
+
+  return card;
+}
+
+function makeProductCard(product) {
+  const card = document.createElement("div");
+  const heading = document.createElement("h3");
+  const price = document.createElement("p");
+  const shop = document.createElement("p");
+  const status = document.createElement("p");
+
+  heading.textContent = product.name || "નામ નથી";
+  price.textContent =
+    "ભાવ: ₹" + product.price + " / " + (product.unit || "");
+  shop.textContent = "દુકાન ID: " + (product.shopId || "");
+  status.textContent = product.approved
+    ? "મંજૂર છે"
+    : "મંજૂરી બાકી છે";
+
+  card.append(heading, price, shop, status);
+
+  if (!product.approved) {
+    card.appendChild(
+      makeButton("વસ્તુ મંજૂર કરો", () => approveProduct(product.id))
+    );
+  }
+
+  card.appendChild(
+    makeButton("વસ્તુ ડિલીટ કરો", () => removeProduct(product.id))
+  );
+
+  return card;
+}
+
+// બધી દુકાનો અને વસ્તુઓ લાવો
+async function loadAdminData() {
+  if (!isAdmin) return;
+
+  pendingArea.textContent = "લોડ થઈ રહ્યું છે...";
+  allShopsArea.textContent = "લોડ થઈ રહ્યું છે...";
+  pendingProductsArea.textContent = "લોડ થઈ રહ્યું છે...";
+  allProductsArea.textContent = "લોડ થઈ રહ્યું છે...";
+
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const [shopSnapshot, productSnapshot] = await Promise.all([
+      getDocs(collection(db, "shops")),
+      getDocs(collection(db, "products"))
+    ]);
 
-    if (!saved) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(demoData));
-      return JSON.parse(JSON.stringify(demoData));
+    const shops = shopSnapshot.docs.map(item => ({
+      id: item.id,
+      ...item.data()
+    }));
+
+    const products = productSnapshot.docs.map(item => ({
+      id: item.id,
+      ...item.data()
+    }));
+
+    pendingArea.innerHTML = "";
+    allShopsArea.innerHTML = "";
+    pendingProductsArea.innerHTML = "";
+    allProductsArea.innerHTML = "";
+
+    const pendingShops = shops.filter(shop => shop.approved !== true);
+    const pendingProducts = products.filter(
+      product => product.approved !== true
+    );
+
+    if (pendingShops.length === 0) {
+      pendingArea.textContent = "કોઈ દુકાનની મંજૂરી બાકી નથી.";
     }
 
-    const data = JSON.parse(saved);
+    if (shops.length === 0) {
+      allShopsArea.textContent = "હજુ કોઈ દુકાન નથી.";
+    }
 
-    if (!Array.isArray(data.shops)) data.shops = [];
-    if (!Array.isArray(data.products)) data.products = [];
+    if (pendingProducts.length === 0) {
+      pendingProductsArea.textContent =
+        "કોઈ વસ્તુની મંજૂરી બાકી નથી.";
+    }
 
-    return data;
+    if (products.length === 0) {
+      allProductsArea.textContent = "હજુ કોઈ વસ્તુ નથી.";
+    }
+
+    pendingShops.forEach(shop => {
+      pendingArea.appendChild(makeShopCard(shop));
+    });
+
+    shops.forEach(shop => {
+      allShopsArea.appendChild(makeShopCard(shop));
+    });
+
+    pendingProducts.forEach(product => {
+      pendingProductsArea.appendChild(makeProductCard(product));
+    });
+
+    products.forEach(product => {
+      allProductsArea.appendChild(makeProductCard(product));
+    });
+
   } catch (error) {
-    console.error("Data error:", error);
-    return JSON.parse(JSON.stringify(demoData));
+    const errorText = "ડેટા લોડ થયો નથી: " + error.message;
+    pendingArea.textContent = errorText;
+    allShopsArea.textContent = errorText;
+    pendingProductsArea.textContent = errorText;
+    allProductsArea.textContent = errorText;
   }
 }
 
-function saveData(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+// દુકાન મંજૂર કરો
+async function approveShop(id) {
+  if (!isAdmin) return;
+
+  if (!confirm("શું આ દુકાન મંજૂર કરવી છે?")) return;
+
+  try {
+    await updateDoc(doc(db, "shops", id), {
+      approved: true
+    });
+
+    alert("દુકાન મંજૂર થઈ ગઈ.");
+    await loadAdminData();
+
+  } catch (error) {
+    alert("મંજૂરી થઈ નથી: " + error.message);
+  }
 }
 
-function safeText(value) {
-  return String(value ?? "").replace(/[&<>"']/g, function (char) {
-    return {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;"
-    }[char];
-  });
+// વસ્તુ મંજૂર કરો
+async function approveProduct(id) {
+  if (!isAdmin) return;
+
+  if (!confirm("શું આ વસ્તુ મંજૂર કરવી છે?")) return;
+
+  try {
+    await updateDoc(doc(db, "products", id), {
+      approved: true
+    });
+
+    alert("વસ્તુ મંજૂર થઈ ગઈ.");
+    await loadAdminData();
+
+  } catch (error) {
+    alert("મંજૂરી થઈ નથી: " + error.message);
+  }
 }
 
-function renderAdmin() {
-  const data = getData();
+// દુકાન ડિલીટ કરો
+async function removeShop(id) {
+  if (!isAdmin) return;
 
-  const pendingArea = document.getElementById("pendingShops");
-  const allArea = document.getElementById("allShops");
+  if (!confirm("શું આ દુકાન ડિલીટ કરવી છે?")) return;
 
-  if (!pendingArea || !allArea) return;
+  try {
+    const productsQuery = await getDocs(collection(db, "products"));
 
-  const pending = data.shops.filter(shop => !shop.approved);
+    const relatedProducts = productsQuery.docs.filter(
+      item => item.data().shopId === id
+    );
 
-  pendingArea.innerHTML = pending.length
-    ? pending.map(shop => `
-      <div class="shop-card">
-        <h3>${safeText(shop.name)}</h3>
-        <p>કેટેગરી: ${safeText(shop.category)}</p>
-        <p>વિસ્તાર: ${safeText(shop.area)}</p>
-        <span class="status pending">મંજૂરી બાકી</span>
-        <br>
-        <button class="approve-btn" onclick="approveShop('${safeText(shop.id)}')">
-          મંજૂરી આપો
-        </button>
-        <button class="delete-btn" onclick="deleteShop('${safeText(shop.id)}')">
-          ડિલીટ કરો
-        </button>
-      </div>
-    `).join("")
-    : "<p>કોઈ દુકાનની મંજૂરી બાકી નથી.</p>";
+    for (const item of relatedProducts) {
+      await deleteDoc(doc(db, "products", item.id));
+    }
 
-  allArea.innerHTML = data.shops.length
-    ? data.shops.map(shop => `
-      <div class="shop-card">
-        <h3>${safeText(shop.name)}</h3>
-        <p>કેટેગરી: ${safeText(shop.category)}</p>
-        <p>વિસ્તાર: ${safeText(shop.area)}</p>
-        <p>નિયમ: ${getRuleName(shop.rule)}</p>
-        <span class="status ${shop.approved ? "approved" : "pending"}">
-          ${shop.approved ? "મંજૂર" : "મંજૂરી બાકી"}
-        </span>
-        <br>
-        ${shop.approved
-          ? `<button onclick="changeShopStatus('${safeText(shop.id)}', false)">બંધ કરો</button>`
-          : `<button class="approve-btn" onclick="approveShop('${safeText(shop.id)}')">મંજૂરી આપો</button>`
-        }
-        <button class="delete-btn" onclick="deleteShop('${safeText(shop.id)}')">
-          ડિલીટ કરો
-        </button>
-      </div>
-    `).join("")
-    : "<p>હજુ કોઈ દુકાન ઉમેરાઈ નથી.</p>";
+    await deleteDoc(doc(db, "shops", id));
+
+    alert("દુકાન અને તેની વસ્તુઓ ડિલીટ થઈ ગઈ.");
+    await loadAdminData();
+
+  } catch (error) {
+    alert("ડિલીટ થઈ શક્યું નથી: " + error.message);
+  }
 }
 
-function getRuleName(rule) {
-  const rules = {
-    veg2kg: "ઓછામાં ઓછું 2 કિલો",
-    amount500: "ઓછામાં ઓછા ₹500",
-    none: "કોઈ મિનિમમ નથી",
-    custom: "કસ્ટમ નિયમ"
-  };
+// વસ્તુ ડિલીટ કરો
+async function removeProduct(id) {
+  if (!isAdmin) return;
 
-  return rules[rule] || "નિયમ નક્કી નથી";
+  if (!confirm("શું આ વસ્તુ ડિલીટ કરવી છે?")) return;
+
+  try {
+    await deleteDoc(doc(db, "products", id));
+
+    alert("વસ્તુ ડિલીટ થઈ ગઈ.");
+    await loadAdminData();
+
+  } catch (error) {
+    alert("ડિલીટ થઈ શક્યું નથી: " + error.message);
+  }
 }
 
-function approveShop(shopId) {
-  const data = getData();
-  const shop = data.shops.find(item => item.id === shopId);
-
-  if (!shop) return;
-
-  shop.approved = true;
-  saveData(data);
-  renderAdmin();
-  alert("દુકાનને મંજૂરી મળી ગઈ.");
-}
-
-function changeShopStatus(shopId, status) {
-  const data = getData();
-  const shop = data.shops.find(item => item.id === shopId);
-
-  if (!shop) return;
-
-  shop.approved = status;
-  saveData(data);
-  renderAdmin();
-}
-
-function deleteShop(shopId) {
-  if (!confirm("શું તમે આ દુકાન અને તેના બધા પ્રોડક્ટ ડિલીટ કરવા માંગો છો?")) {
+// Admin અધિકાર તપાસો
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    isAdmin = false;
+    loginSection.hidden = false;
+    dashboard.hidden = true;
     return;
   }
 
-  const data = getData();
+  try {
+    const token = await user.getIdTokenResult(true);
 
-  data.shops = data.shops.filter(shop => shop.id !== shopId);
-  data.products = data.products.filter(product => product.shopId !== shopId);
+    if (token.claims.admin !== true) {
+      isAdmin = false;
+      loginSection.hidden = false;
+      dashboard.hidden = true;
 
-  saveData(data);
-  renderAdmin();
+      showMessage(
+        "આ એકાઉન્ટને Admin અધિકાર મળ્યો નથી. સુરક્ષિત Admin સેટઅપ જરૂરી છે.",
+        true
+      );
 
-  alert("દુકાન ડિલીટ થઈ ગઈ.");
-}
+      return;
+    }
 
-document.addEventListener("DOMContentLoaded", renderAdmin);
+    isAdmin = true;
+    loginSection.hidden = true;
+    dashboard.hidden = false;
+    welcome.textContent = "Admin: " + user.email;
+
+    await loadAdminData();
+
+  } catch (error) {
+    isAdmin = false;
+    loginSection.hidden = false;
+    dashboard.hidden = true;
+    showMessage(error.message, true);
+  }
+});
+
+// Admin Login
+loginForm.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const email = document.getElementById("adminEmail").value.trim();
+  const password = document.getElementById("adminPassword").value;
+
+  try {
+    showMessage("લોગિન થઈ રહ્યું છે...");
+
+    await signInWithEmailAndPassword(auth, email, password);
+
+  } catch (error) {
+    showMessage("લોગિન થયું નથી: " + error.message, true);
+  }
+});
+
+// Logout
+logoutButton.addEventListener("click", async () => {
+  try {
+    isAdmin = false;
+    await signOut(auth);
+  } catch (error) {
+    alert("Logout થયું નથી: " + error.message);
+  }
+});
