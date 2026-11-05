@@ -1,0 +1,95 @@
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+header {
+  background: #14532d;
+  color: white;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+header h2 {
+  margin: 0;
+}
+
+header a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+main {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  color: #14532d;
+}
+
+section {
+  background: white;
+  padding: 20px;
+  margin: 18px 0;
+  border-radius: 13px;
+  border: 1px solid #e2e8f0;
+}
+
+form {
+  display: grid;
+  gap: 12px;
+}
+
+label {
+  font-weight: bold;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+button {
+  background: #15803d;
+  color: white;
+  border: none;
+  padding: 13px;
+  border-radius: 9px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #166534;
+}
+
+#sellerShops {
+  line-height: 2;
+}
+
+@media (max-width: 600px) {
+  header h2 {
+    font-size: 19px;
+  }
+
+  main {
+    padding: 12px;
+  }
+}
