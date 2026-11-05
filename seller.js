@@ -1,3 +1,6 @@
+
+import { auth, db } from "./firebase.js";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -16,278 +19,443 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-import { auth, db } from "./firebase.js";
-
-const authForm = document.getElementById("sellerAuthForm");
-const authMessage = document.getElementById("sellerAuthMessage");
-const authSection = document.getElementById("sellerAuth");
-const dashboard = document.getElementById("sellerDashboard");
-
-const shopForm = document.getElementById("shopForm");
-const productForm = document.getElementById("productForm");
-const myShop = document.getElementById("myShop");
-const sellerShops = document.getElementById("sellerShops");
-const sellerWelcome = document.getElementById("sellerWelcome");
-const logoutButton = document.getElementById("sellerLogout");
+const $ = (id) => document.getElementById(id);
 
 let currentUser = null;
 let myShops = [];
+let shopPhotoBase64 = "";
+let productPhotoBase64 = "";
 
-function showMessage(message, isError = false) {
-  authMessage.textContent = message;
-  authMessage.style.color = isError ? "red" : "green";
+const MAX_IMAGE_SIZE = 180 * 1024;
+
+// ફોટો નાનો કરીને JPEG Base64 બનાવવો
+async function compressImage(file) {
+  if (!file || !file.type.startsWith("image/")) {
+    throw new Error("કૃપા કરીને સાચો ફોટો પસંદ કરો.");
+  }
+
+  const imageUrl = URL.createObjectURL(file);
+
+  try {
+    const image = new Image();
+
+    await new Promise((resolve, reject) => {
+      image.onload = resolve;
+      image.onerror = () => reject(
+        new Error("ફોટો ખોલી શકાયો નથી.")
+      );
+      image.src = imageUrl;
+    });
+
+    const sizes = [640, 480, 360, 280];
+    const qualities = [0.65, 0.5, 0.4, 0.3];
+
+    for (const maxSize of sizes) {
+      const ratio = Math.min(
+        1,
+        maxSize / Math.max(image.width, image.height)
+      );
+
+      const width = Math.max(
+        1,
+        Math.round(image.width * ratio)
+      );
+
+      const height = Math.max(
+        1,
+        Math.round(image.height * ratio)
+      );
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+
+      const context = canvas.getContext("2d");
+
+      if (!context) {
+        throw new Error("ફોટો કમ્પ્રેસ થઈ શક્યો નથી.");
+      }
+
+      context.drawImage(image, 0, 0, width, height);
+
+      for (const quality of qualities) {
+        const blob = await new Promise((resolve) => {
+          canvas.toBlob(
+            resolve,
+            "image/jpeg",
+            quality
+          );
+        });
+
+        if (!blob) continue;
+
+        if (blob.size <= MAX_IMAGE_SIZE) {
+          const dataUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(
+              new Error("ફોટો વાંચી શકાયો નથી.")
+            );
+
+            reader.readAsDataURL(blob);
+          });
+
+          return dataUrl;
+        }
+      }
+    }
+
+    throw new Error(
+      "ફોટો હજી મોટો છે. કૃપા કરીને નાનો ફોટો પસંદ કરો."
+    );
+
+  } finally {
+    URL.revokeObjectURL(imageUrl);
+  }
 }
 
-function showDashboard(user) {
-  currentUser = user;
-  authSection.hidden = true;
-  dashboard.hidden = false;
+// ફોટો પસંદ કરતાં પ્રિવ્યૂ અને કમ્પ્રેશન
+async function preparePhoto(inputId, previewId, type) {
+  const file = $(inputId).files[0];
+  const preview = $(previewId);
 
-  sellerWelcome.textContent =
-    "લોગિન થયેલ ઈમેલ: " + user.email;
+  if (!file) {
+    if (type === "shop") shopPhotoBase64 = "";
+    if (type === "product") productPhotoBase64 = "";
 
-  loadSellerShops();
-}
-
-function showLogin() {
-  currentUser = null;
-  myShops = [];
-  authSection.hidden = false;
-  dashboard.hidden = true;
-  sellerShops.textContent = "";
-  myShop.innerHTML = "";
-}
-
-function getErrorMessage(error) {
-  const messages = {
-    "auth/email-already-in-use":
-      "આ ઈમેલથી એકાઉન્ટ પહેલેથી બનેલું છે.",
-    "auth/invalid-email":
-      "ઈમેલ સરનામું સાચું નથી.",
-    "auth/weak-password":
-      "પાસવર્ડ ઓછામાં ઓછા 6 અક્ષરનો હોવો જોઈએ.",
-    "auth/invalid-credential":
-      "ઈમેલ અથવા પાસવર્ડ ખોટો છે.",
-    "auth/network-request-failed":
-      "ઈન્ટરનેટ કનેક્શન તપાસો.",
-    "permission-denied":
-      "Firebase Rules અથવા પરવાનગી તપાસો."
-  };
-
-  return messages[error.code] ||
-    error.message ||
-    "કંઈક ભૂલ થઈ. ફરી પ્રયાસ કરો.";
-}
-
-// Registration અને Login
-authForm.addEventListener("submit", async function(event) {
-  event.preventDefault();
-
-  const action = event.submitter?.value || "login";
-  const name = document.getElementById("sellerName").value.trim();
-  const email = document.getElementById("sellerEmail").value.trim();
-  const password = document.getElementById("sellerPassword").value;
-
-  if (action === "register" && !name) {
-    showMessage("નવું એકાઉન્ટ બનાવવા તમારું નામ લખો.", true);
+    preview.hidden = true;
     return;
   }
 
   try {
-    showMessage("કૃપા કરીને રાહ જુઓ...");
+    preview.hidden = false;
+    preview.alt = "ફોટો તૈયાર થઈ રહ્યો છે...";
+    preview.removeAttribute("src");
 
-    if (action === "register") {
-      const result = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+    const compressed = await compressImage(file);
 
-      await setDoc(doc(db, "sellerProfiles", result.user.uid), {
-        name: name,
-        email: email,
-        createdAt: serverTimestamp()
-      });
+    preview.src = compressed;
+    preview.alt = "ફોટાનું પ્રિવ્યૂ";
 
-      showMessage("એકાઉન્ટ બની ગયું છે.");
-    } else {
-      await signInWithEmailAndPassword(auth, email, password);
-      showMessage("લોગિન સફળ થયું.");
+    if (type === "shop") {
+      shopPhotoBase64 = compressed;
     }
 
+    if (type === "product") {
+      productPhotoBase64 = compressed;
+    }
+
+    showMessage("ફોટો તૈયાર થઈ ગયો છે.");
+
   } catch (error) {
-    showMessage(getErrorMessage(error), true);
+    if (type === "shop") shopPhotoBase64 = "";
+    if (type === "product") productPhotoBase64 = "";
+
+    preview.hidden = true;
+    showMessage(error.message, true);
   }
+}
+
+function showMessage(message, isError = false) {
+  const element = $("sellerMessage");
+
+  if (!element) return;
+
+  element.textContent = message;
+  element.style.color = isError ? "red" : "green";
+}
+
+$("shopPhoto").addEventListener("change", () => {
+  preparePhoto(
+    "shopPhoto",
+    "shopPhotoPreview",
+    "shop"
+  );
 });
 
-// Login થયેલા સેલરને ઓળખો
-onAuthStateChanged(auth, function(user) {
-  if (user) {
-    showDashboard(user);
-  } else {
-    showLogin();
-  }
+$("productPhoto").addEventListener("change", () => {
+  preparePhoto(
+    "productPhoto",
+    "productPhotoPreview",
+    "product"
+  );
 });
 
-// સેલરની પોતાની દુકાનો લાવો
-async function loadSellerShops() {
-  if (!currentUser) return;
+// નવું Seller એકાઉન્ટ
+$("registerForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-  sellerShops.textContent = "દુકાનો લોડ થઈ રહી છે...";
-  myShop.innerHTML = "";
+  const name = $("sellerName").value.trim();
+  const email = $("sellerEmail").value.trim();
+  const password = $("sellerPassword").value;
+
+  if (!name || !email || !password) {
+    showMessage("બધી માહિતી ભરો.", true);
+    return;
+  }
 
   try {
-    const shopsQuery = query(
+    const result = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+    await setDoc(
+      doc(db, "sellerProfiles", result.user.uid),
+      {
+        name,
+        email,
+        createdAt: serverTimestamp()
+      }
+    );
+
+    showMessage("એકાઉન્ટ બની ગયું છે.");
+
+  } catch (error) {
+    showMessage(error.message, true);
+  }
+});
+
+// Seller Login
+$("loginForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      $("loginEmail").value.trim(),
+      $("loginPassword").value
+    );
+
+    showMessage("લોગિન સફળ થયું.");
+
+  } catch (error) {
+    showMessage(error.message, true);
+  }
+});
+
+// Logout
+$("logoutButton").addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+    showMessage("લોગઆઉટ થઈ ગયું.");
+  } catch (error) {
+    showMessage(error.message, true);
+  }
+});
+
+// Login સ્થિતિ તપાસવી
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+
+  $("authSection").hidden = !!user;
+  $("dashboard").hidden = !user;
+
+  if (user) {
+    $("sellerEmailDisplay").textContent = user.email || "";
+
+    await loadMyShops();
+  } else {
+    myShops = [];
+  }
+});
+
+// પોતાની દુકાનો લોડ કરવી
+async function loadMyShops() {
+  if (!currentUser) return;
+
+  try {
+    const q = query(
       collection(db, "shops"),
       where("ownerUid", "==", currentUser.uid)
     );
 
-    const snapshot = await getDocs(shopsQuery);
+    const snapshot = await getDocs(q);
 
-    myShops = snapshot.docs.map(item => ({
+    myShops = snapshot.docs.map((item) => ({
       id: item.id,
       ...item.data()
     }));
 
-    sellerShops.innerHTML = "";
-
-    if (myShops.length === 0) {
-      sellerShops.textContent = "હજુ કોઈ દુકાન ઉમેરેલી નથી.";
-    }
-
-    myShops.forEach(shop => {
-      const card = document.createElement("div");
-      const heading = document.createElement("h3");
-      const area = document.createElement("p");
-      const phone = document.createElement("p");
-      const status = document.createElement("p");
-
-      heading.textContent = shop.name;
-      area.textContent = "વિસ્તાર: " + shop.area;
-
-      phone.textContent = shop.whatsapp
-        ? "WhatsApp: +91 " + shop.whatsapp
-        : "WhatsApp નંબર ઉપલબ્ધ નથી.";
-
-      status.textContent = shop.approved
-        ? "દુકાન મંજૂર છે"
-        : "Adminની મંજૂરી બાકી છે";
-
-      card.append(heading, area, phone, status);
-      sellerShops.appendChild(card);
-
-      const option = document.createElement("option");
-      option.value = shop.id;
-      option.textContent = shop.name;
-      myShop.appendChild(option);
-    });
+    renderMyShops();
 
   } catch (error) {
-    sellerShops.textContent =
-      "દુકાનો લોડ થઈ શકી નથી: " + getErrorMessage(error);
+    showMessage(
+      "દુકાનો લોડ થઈ શકી નથી: " + error.message,
+      true
+    );
   }
 }
 
-// નવી દુકાન ઉમેરો
-shopForm.addEventListener("submit", async function(event) {
+// દુકાનો બતાવવી
+function renderMyShops() {
+  const list = $("sellerShops");
+  const select = $("myShop");
+
+  list.replaceChildren();
+
+  select.innerHTML =
+    '<option value="">દુકાન પસંદ કરો</option>';
+
+  myShops.forEach((shop) => {
+    const option = document.createElement("option");
+    option.value = shop.id;
+    option.textContent = shop.name;
+    select.appendChild(option);
+
+    const card = document.createElement("div");
+
+    const heading = document.createElement("h3");
+    heading.textContent = shop.name;
+
+    const area = document.createElement("p");
+    area.textContent = "વિસ્તાર: " + (shop.area || "");
+
+    const whatsapp = document.createElement("p");
+    whatsapp.textContent = shop.whatsapp
+      ? "WhatsApp: +91 " + shop.whatsapp
+      : "WhatsApp નંબર ઉપલબ્ધ નથી.";
+
+    const status = document.createElement("p");
+    status.textContent = shop.approved
+      ? "દુકાન મંજૂર છે"
+      : "Adminની મંજૂરી બાકી છે";
+
+    card.append(heading, area, whatsapp, status);
+
+    if (shop.photoBase64) {
+      const photo = document.createElement("img");
+      photo.src = shop.photoBase64;
+      photo.alt = shop.name;
+      photo.style.maxWidth = "140px";
+      photo.style.display = "block";
+      card.insertBefore(photo, heading);
+    }
+
+    list.appendChild(card);
+  });
+}
+
+// નવી દુકાન ઉમેરવી
+$("shopForm").addEventListener("submit", async (event) => {
   event.preventDefault();
 
   if (!currentUser) {
-    alert("પહેલા લોગિન કરો.");
+    showMessage("પહેલા લોગિન કરો.", true);
     return;
   }
 
-  const name = document.getElementById("shopName").value.trim();
-  const category = document.getElementById("shopCategory").value.trim();
-  const area = document.getElementById("shopArea").value.trim();
-  const rule = document.getElementById("shopRule").value;
-
-  const whatsappInput =
-    document.getElementById("shopWhatsapp");
-
-  const whatsapp = whatsappInput.value.trim();
+  const whatsapp = $("shopWhatsapp").value.trim();
 
   if (!/^[6-9][0-9]{9}$/.test(whatsapp)) {
-    alert("સાચો 10 અંકનો WhatsApp નંબર લખો.");
-    whatsappInput.focus();
+    showMessage(
+      "સાચો 10 અંકનો WhatsApp નંબર લખો.",
+      true
+    );
+    return;
+  }
+
+  if (
+    $("shopPhoto").files.length > 0 &&
+    !shopPhotoBase64
+  ) {
+    showMessage("દુકાનનો ફોટો તૈયાર થવા દો.", true);
     return;
   }
 
   try {
     await addDoc(collection(db, "shops"), {
       ownerUid: currentUser.uid,
-      name: name,
-      category: category,
-      area: area,
-      whatsapp: whatsapp,
-      rule: rule,
+      name: $("shopName").value.trim(),
+      category: $("shopCategory").value.trim(),
+      area: $("shopArea").value.trim(),
+      whatsapp,
+      rule: $("shopRule").value,
+      photoBase64: shopPhotoBase64,
       approved: false,
       createdAt: serverTimestamp()
     });
 
-    alert(
-      "દુકાન અને WhatsApp નંબર સફળતાપૂર્વક ઉમેરાયા. " +
-      "Adminની મંજૂરી પછી ગ્રાહકોને દેખાશે."
+    $("shopForm").reset();
+    $("shopPhotoPreview").hidden = true;
+    shopPhotoBase64 = "";
+
+    showMessage(
+      "દુકાન ઉમેરાઈ ગઈ. હવે Adminની મંજૂરીની રાહ જુઓ."
     );
 
-    shopForm.reset();
-    await loadSellerShops();
+    await loadMyShops();
 
   } catch (error) {
-    alert("દુકાન ઉમેરી શકાઈ નથી: " + getErrorMessage(error));
+    showMessage(
+      "દુકાન ઉમેરી શકાઈ નથી: " + error.message,
+      true
+    );
   }
 });
 
-// દુકાનમાં વસ્તુ ઉમેરો
-productForm.addEventListener("submit", async function(event) {
+// નવી વસ્તુ ઉમેરવી
+$("productForm").addEventListener("submit", async (event) => {
   event.preventDefault();
 
   if (!currentUser) {
-    alert("પહેલા લોગિન કરો.");
+    showMessage("પહેલા લોગિન કરો.", true);
     return;
   }
 
-  const shopId = myShop.value;
-  const shop = myShops.find(item => item.id === shopId);
-
-  if (!shop) {
-    alert("પહેલા તમારી દુકાન બનાવો.");
+  if (
+    $("productPhoto").files.length > 0 &&
+    !productPhotoBase64
+  ) {
+    showMessage("વસ્તુનો ફોટો તૈયાર થવા દો.", true);
     return;
   }
 
-  const name = document.getElementById("productName").value.trim();
-  const price = Number(document.getElementById("productPrice").value);
-  const unit = document.getElementById("productUnit").value.trim();
+  const shopId = $("myShop").value;
+  const selectedShop = myShops.find(
+    (shop) => shop.id === shopId
+  );
+
+  if (!selectedShop) {
+    showMessage("તમારી દુકાન પસંદ કરો.", true);
+    return;
+  }
+
+  const name = $("productName").value.trim();
+  const price = Number($("productPrice").value);
+  const unit = $("productUnit").value.trim();
 
   if (!name || !unit || !Number.isFinite(price) || price <= 0) {
-    alert("વસ્તુની સાચી માહિતી ભરો.");
+    showMessage("વસ્તુની સાચી માહિતી ભરો.", true);
     return;
   }
 
   try {
     await addDoc(collection(db, "products"), {
       ownerUid: currentUser.uid,
-      shopId: shopId,
-      name: name,
-      price: price,
-      unit: unit,
+      shopId,
+      name,
+      price,
+      unit,
+      photoBase64: productPhotoBase64,
       approved: false,
       createdAt: serverTimestamp()
     });
 
-    alert("વસ્તુ ઉમેરાઈ ગઈ છે.");
-    productForm.reset();
+    $("productForm").reset();
+    $("productPhotoPreview").hidden = true;
+    productPhotoBase64 = "";
+
+    showMessage(
+      "વસ્તુ ઉમેરાઈ ગઈ. હવે Adminની મંજૂરીની રાહ જુઓ."
+    );
 
   } catch (error) {
-    alert("વસ્તુ ઉમેરી શકાઈ નથી: " + getErrorMessage(error));
-  }
-});
-
-// Logout
-logoutButton.addEventListener("click", async function() {
-  try {
-    await signOut(auth);
-  } catch (error) {
-    alert("લોગઆઉટ થઈ શક્યું નથી: " + getErrorMessage(error));
+    showMessage(
+      "વસ્તુ ઉમેરી શકાઈ નથી: " + error.message,
+      true
+    );
   }
 });
