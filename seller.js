@@ -1,4 +1,3 @@
-
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -43,6 +42,7 @@ function showDashboard(user) {
   currentUser = user;
   authSection.hidden = true;
   dashboard.hidden = false;
+
   sellerWelcome.textContent =
     "લોગિન થયેલ ઈમેલ: " + user.email;
 
@@ -60,12 +60,18 @@ function showLogin() {
 
 function getErrorMessage(error) {
   const messages = {
-    "auth/email-already-in-use": "આ ઈમેલથી એકાઉન્ટ પહેલેથી બનેલું છે.",
-    "auth/invalid-email": "ઈમેલ સરનામું સાચું નથી.",
-    "auth/weak-password": "પાસવર્ડ ઓછામાં ઓછા 6 અક્ષરનો હોવો જોઈએ.",
-    "auth/invalid-credential": "ઈમેલ અથવા પાસવર્ડ ખોટો છે.",
-    "auth/network-request-failed": "ઈન્ટરનેટ કનેક્શન તપાસો.",
-    "permission-denied": "Firebase Firestore Rules હજુ સેટ કરવાની જરૂર છે."
+    "auth/email-already-in-use":
+      "આ ઈમેલથી એકાઉન્ટ પહેલેથી બનેલું છે.",
+    "auth/invalid-email":
+      "ઈમેલ સરનામું સાચું નથી.",
+    "auth/weak-password":
+      "પાસવર્ડ ઓછામાં ઓછા 6 અક્ષરનો હોવો જોઈએ.",
+    "auth/invalid-credential":
+      "ઈમેલ અથવા પાસવર્ડ ખોટો છે.",
+    "auth/network-request-failed":
+      "ઈન્ટરનેટ કનેક્શન તપાસો.",
+    "permission-denied":
+      "Firebase Rules અથવા પરવાનગી તપાસો."
   };
 
   return messages[error.code] ||
@@ -153,16 +159,21 @@ async function loadSellerShops() {
       const card = document.createElement("div");
       const heading = document.createElement("h3");
       const area = document.createElement("p");
+      const phone = document.createElement("p");
       const status = document.createElement("p");
 
       heading.textContent = shop.name;
       area.textContent = "વિસ્તાર: " + shop.area;
 
+      phone.textContent = shop.whatsapp
+        ? "WhatsApp: +91 " + shop.whatsapp
+        : "WhatsApp નંબર ઉપલબ્ધ નથી.";
+
       status.textContent = shop.approved
         ? "દુકાન મંજૂર છે"
         : "Adminની મંજૂરી બાકી છે";
 
-      card.append(heading, area, status);
+      card.append(heading, area, phone, status);
       sellerShops.appendChild(card);
 
       const option = document.createElement("option");
@@ -191,18 +202,34 @@ shopForm.addEventListener("submit", async function(event) {
   const area = document.getElementById("shopArea").value.trim();
   const rule = document.getElementById("shopRule").value;
 
+  const whatsappInput =
+    document.getElementById("shopWhatsapp");
+
+  const whatsapp = whatsappInput.value.trim();
+
+  if (!/^[6-9][0-9]{9}$/.test(whatsapp)) {
+    alert("સાચો 10 અંકનો WhatsApp નંબર લખો.");
+    whatsappInput.focus();
+    return;
+  }
+
   try {
     await addDoc(collection(db, "shops"), {
       ownerUid: currentUser.uid,
       name: name,
       category: category,
       area: area,
+      whatsapp: whatsapp,
       rule: rule,
       approved: false,
       createdAt: serverTimestamp()
     });
 
-    alert("દુકાન ઉમેરાઈ ગઈ છે. Adminની મંજૂરી પછી ગ્રાહકોને દેખાશે.");
+    alert(
+      "દુકાન અને WhatsApp નંબર સફળતાપૂર્વક ઉમેરાયા. " +
+      "Adminની મંજૂરી પછી ગ્રાહકોને દેખાશે."
+    );
+
     shopForm.reset();
     await loadSellerShops();
 
