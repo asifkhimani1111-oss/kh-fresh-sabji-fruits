@@ -1,0 +1,198 @@
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f6f9;
+  color: #222;
+}
+
+header {
+  background: #173f35;
+  color: white;
+  padding: 18px 15px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 23px;
+}
+
+header p {
+  margin: 7px 0 0;
+  font-size: 14px;
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px;
+  background: white;
+  border-bottom: 1px solid #ddd;
+}
+
+nav a {
+  text-decoration: none;
+  color: #173f35;
+  font-weight: bold;
+  padding: 9px 14px;
+  border-radius: 7px;
+  background: #e8f3ee;
+}
+
+main {
+  width: 100%;
+  max-width: 950px;
+  margin: 20px auto;
+  padding: 0 12px;
+}
+
+section,
+.card,
+.panel {
+  background: white;
+  padding: 18px;
+  margin-bottom: 18px;
+  border-radius: 12px;
+  box-shadow: 0 2px 9px rgba(0, 0, 0, 0.07);
+}
+
+h2 {
+  margin-top: 0;
+  color: #173f35;
+  font-size: 20px;
+}
+
+h3 {
+  color: #285b4d;
+}
+
+button {
+  border: none;
+  border-radius: 7px;
+  padding: 10px 15px;
+  margin: 5px 3px;
+  background: #176b4d;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.88;
+}
+
+button.danger,
+.delete-btn {
+  background: #c62828;
+}
+
+button.approve,
+.approve-btn {
+  background: #16834a;
+}
+
+button.edit,
+.edit-btn {
+  background: #1769aa;
+}
+
+input,
+select,
+textarea {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  padding: 11px;
+  margin: 8px 0 13px;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  font-size: 15px;
+  background: white;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.shop-card,
+.product-card,
+.admin-card {
+  border: 1px solid #e0e0e0;
+  padding: 14px;
+  margin: 12px 0;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.shop-card img,
+.product-card img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.status {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  background: #fff2cc;
+  color: #765500;
+}
+
+.status.approved {
+  background: #d9f5e3;
+  color: #176b35;
+}
+
+.status.pending {
+  background: #fff0d5;
+  color: #8a5200;
+}
+
+#pendingShops,
+#allShops,
+#shopList,
+#adminContent {
+  display: block;
+  width: 100%;
+}
+
+footer {
+  text-align: center;
+  color: #666;
+  padding: 20px 10px;
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 20px;
+  }
+
+  main {
+    margin-top: 12px;
+  }
+
+  section,
+  .card,
+  .panel {
+    padding: 13px;
+  }
+
+  button {
+    padding: 10px 12px;
+  }
+}
