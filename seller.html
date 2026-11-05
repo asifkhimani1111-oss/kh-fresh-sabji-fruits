@@ -9,122 +9,130 @@
 </head>
 <body>
 
-<header>
-  <h2>K.H Fresh & Fashion</h2>
-  <a href="index.html">Customer Page</a>
-</header>
+  <header>
+    <h2>K.H Fresh & Fashion</h2>
+    <a href="index.html">Customer Page</a>
+  </header>
 
-<main>
-  <h1>Seller Account</h1>
+  <main>
+    <h1>Seller Account</h1>
 
-  <section id="sellerAuth">
-    <h2>સેલર એકાઉન્ટ</h2>
-    <p>નવું એકાઉન્ટ બનાવો અથવા તમારા એકાઉન્ટમાં લોગિન કરો.</p>
-
-    <form id="sellerAuthForm">
-      <label for="sellerName">તમારું નામ (નવા એકાઉન્ટ માટે)</label>
-      <input id="sellerName" type="text" placeholder="તમારું નામ">
-
-      <label for="sellerEmail">ઈમેલ</label>
-      <input id="sellerEmail" type="email"
-        placeholder="તમારો ઈમેલ" required>
-
-      <label for="sellerPassword">પાસવર્ડ</label>
-      <input id="sellerPassword" type="password"
-        placeholder="પાસવર્ડ" minlength="6" required>
-
-      <button type="submit" name="action" value="register">
-        નવું એકાઉન્ટ બનાવો
-      </button>
-
-      <button type="submit" name="action" value="login">
-        લોગિન કરો
-      </button>
-    </form>
-    <p id="sellerAuthMessage"></p>
-  </section>
-
-  <div id="sellerDashboard" hidden>
-
-    <section>
+    <section id="authSection">
       <h2>તમારું એકાઉન્ટ</h2>
-      <p id="sellerWelcome"></p>
-      <button type="button" id="sellerLogout">લોગઆઉટ</button>
+
+      <form id="registerForm">
+        <h3>નવું એકાઉન્ટ બનાવો</h3>
+        <input id="sellerName" type="text" placeholder="તમારું નામ">
+        <input id="sellerEmail" type="email" placeholder="ઈમેલ">
+        <input id="sellerPassword" type="password" placeholder="પાસવર્ડ">
+        <button type="submit">રજિસ્ટર કરો</button>
+      </form>
+
+      <form id="loginForm">
+        <h3>લોગિન</h3>
+        <input id="loginEmail" type="email" placeholder="ઈમેલ" required>
+        <input id="loginPassword" type="password" placeholder="પાસવર્ડ" required>
+        <button type="submit">લોગિન કરો</button>
+      </form>
     </section>
 
-    <section>
+    <section id="dashboard" hidden>
+      <h2>તમારું એકાઉન્ટ</h2>
+      <p>લોગિન થયેલ ઈમેલ: <span id="sellerEmailDisplay"></span></p>
+      <button id="logoutButton" type="button">લોગઆઉટ</button>
+
+      <hr>
+
       <h2>નવી દુકાન બનાવો</h2>
 
       <form id="shopForm">
-        <label for="shopName">દુકાનનું નામ</label>
+        <label>દુકાનનું નામ</label>
         <input id="shopName" type="text" required>
 
-        <label for="shopCategory">કેટેગરી</label>
-        <input id="shopCategory" type="text"
-          placeholder="કરિયાણા, કપડાં, ફળો..." required>
+        <label>કેટેગરી</label>
+        <input id="shopCategory" type="text" required>
 
-        <label for="shopArea">ગામ / વિસ્તાર</label>
+        <label>ગામ / વિસ્તાર</label>
         <input id="shopArea" type="text" required>
 
-        <label for="shopWhatsapp">દુકાનનો WhatsApp નંબર</label>
-        <div>
-          <span>+91</span>
-          <input id="shopWhatsapp" type="tel"
-            inputmode="numeric"
-            maxlength="10"
-            pattern="[6-9][0-9]{9}"
-            placeholder="10 અંકનો મોબાઇલ નંબર"
-            required>
-        </div>
+        <label>દુકાનનો WhatsApp નંબર</label>
+        <input
+          id="shopWhatsapp"
+          type="tel"
+          inputmode="numeric"
+          maxlength="10"
+          pattern="[6-9][0-9]{9}"
+          placeholder="10 અંકનો નંબર"
+          required
+        >
 
-        <label for="shopRule">ઓર્ડર નિયમ</label>
+        <label>દુકાનનો ફોટો પસંદ કરો</label>
+        <input
+          id="shopPhoto"
+          type="file"
+          accept="image/*"
+        >
+        <img
+          id="shopPhotoPreview"
+          alt="દુકાનના ફોટાનું પ્રિવ્યૂ"
+          hidden
+          style="max-width:180px;display:block"
+        >
+
+        <label>ઓર્ડર નિયમ</label>
         <select id="shopRule" required>
-          <option value="veg2kg">
-            ફળો/શાકભાજી - ઓછામાં ઓછા 2 કિલો
-          </option>
-          <option value="amount500">
-            ઓછામાં ઓછા ₹500
-          </option>
-          <option value="none">
-            કોઈ મિનિમમ નહીં
-          </option>
+          <option value="veg2kg">ફળો/શાકભાજી - ઓછામાં ઓછા 2 કિલો</option>
+          <option value="amount500">ઓછામાં ઓછા ₹500</option>
+          <option value="none">કોઈ મિનિમમ નહીં</option>
         </select>
 
         <button type="submit">દુકાન ઉમેરો</button>
       </form>
-    </section>
 
-    <section>
+      <hr>
+
       <h2>વસ્તુ ઉમેરો</h2>
 
       <form id="productForm">
-        <label for="myShop">દુકાન પસંદ કરો</label>
-        <select id="myShop" required></select>
+        <label>દુકાન પસંદ કરો</label>
+        <select id="myShop" required>
+          <option value="">દુકાન પસંદ કરો</option>
+        </select>
 
-        <label for="productName">વસ્તુનું નામ</label>
+        <label>વસ્તુનું નામ</label>
         <input id="productName" type="text" required>
 
-        <label for="productPrice">ભાવ (₹)</label>
-        <input id="productPrice" type="number"
-          min="0.01" step="0.01" required>
+        <label>ભાવ (₹)</label>
+        <input id="productPrice" type="number" min="1" step="0.01" required>
 
-        <label for="productUnit">એકમ</label>
-        <input id="productUnit" type="text"
-          placeholder="કિલો, નંગ, પેકેટ" required>
+        <label>એકમ</label>
+        <input id="productUnit" type="text" placeholder="જેમ કે 1 kilo, 1 piece" required>
+
+        <label>વસ્તુનો ફોટો પસંદ કરો</label>
+        <input
+          id="productPhoto"
+          type="file"
+          accept="image/*"
+        >
+        <img
+          id="productPhotoPreview"
+          alt="વસ્તુના ફોટાનું પ્રિવ્યૂ"
+          hidden
+          style="max-width:180px;display:block"
+        >
 
         <button type="submit">વસ્તુ ઉમેરો</button>
       </form>
-    </section>
 
-    <section>
+      <hr>
+
       <h2>મારી દુકાનો</h2>
       <div id="sellerShops"></div>
+
+      <p id="sellerMessage"></p>
     </section>
+  </main>
 
-  </div>
-</main>
-
-<script type="module" src="seller.js"></script>
-
+  <script type="module" src="seller.js"></script>
 </body>
 </html>
