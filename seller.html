@@ -5,177 +5,163 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>K.H Fresh & Fashion - Seller</title>
   <link rel="stylesheet" href="seller.css">
-  <link href="https://fonts.googleapis.com/css2?family=Hind+Vadodara:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <header>
+  <header class="top-header">
     <h2>K.H Fresh & Fashion</h2>
-    <a href="index.html">Customer Page</a>
+    <nav>
+      <a href="index.html">Customer Page</a>
+      <a href="admin.html">Admin</a>
+    </nav>
   </header>
 
-  <main>
-    <h1>Seller Account</h1>
+  <main class="seller-container">
 
-    <!-- Authentication Section -->
-    <section id="authSection">
-      <h2>તમારું એકાઉન્ટ</h2>
+    <section id="authSection" class="seller-card">
+      <h2>Seller Account</h2>
 
-      <form id="registerForm">
-        <h3>નવું એકાઉન્ટ બનાવો</h3>
-        <input id="sellerName" type="text" placeholder="તમારું નામ" required>
-        <input id="sellerEmail" type="email" placeholder="ઈમેલ" required>
-        <input id="sellerPassword" type="password" placeholder="પાસવર્ડ" required>
-        <button type="submit">રજિસ્ટર કરો</button>
-      </form>
+      <div id="registerBox">
+        <h3>નવું સેલર એકાઉન્ટ બનાવો</h3>
 
-      <form id="loginForm">
-        <h3>લોગિન</h3>
-        <input id="loginEmail" type="email" placeholder="ઈમેલ" required>
-        <input id="loginPassword" type="password" placeholder="પાસવર્ડ" required>
-        <button type="submit">લોગિન કરો</button>
-      </form>
-    </section>
+        <label>તમારું નામ</label>
+        <input type="text" id="sellerName" placeholder="તમારું નામ">
 
-    <!-- Dashboard Section -->
-    <section id="dashboard" hidden>
-      <h2>તમારું એકાઉન્ટ</h2>
-      <p>લોગિન થયેલ ઈમેલ: <span id="sellerEmailDisplay"></span></p>
-      <button id="logoutButton" type="button" class="danger-btn">લોગઆઉટ</button>
+        <label>મોબાઇલ નંબર</label>
+        <input type="tel" id="sellerPhone" placeholder="મોબાઇલ નંબર">
+
+        <label>Email</label>
+        <input type="email" id="sellerEmail" placeholder="Email">
+
+        <label>Password</label>
+        <input type="password" id="sellerPassword" placeholder="ઓછામાં ઓછા 6 અક્ષર">
+
+        <button id="registerBtn">રજિસ્ટર કરો</button>
+      </div>
 
       <hr>
 
-      <h2>નવી દુકાન બનાવો</h2>
-      <form id="shopForm">
-        <label>દુકાનનું નામ</label>
-        <input id="shopName" type="text" required>
+      <div id="loginBox">
+        <h3>સેલર લોગિન</h3>
 
-        <label>કેટેગરી</label>
-        <input id="shopCategory" type="text" placeholder="જેમ કે ફળો, શાકભાજી, કપડાં..." required>
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="Email">
+
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Password">
+
+        <button id="loginBtn">લોગિન કરો</button>
+      </div>
+
+      <p id="authMessage" class="message"></p>
+    </section>
+
+    <section id="sellerDashboard" class="seller-card hidden">
+
+      <div class="dashboard-heading">
+        <div>
+          <h2>સેલર ડેશબોર્ડ</h2>
+          <p id="welcomeSeller"></p>
+        </div>
+        <button id="logoutBtn" class="logout-btn">લોગઆઉટ</button>
+      </div>
+
+      <hr>
+
+      <section id="shopFormSection">
+        <h3>તમારી દુકાનની માહિતી</h3>
+
+        <label>દુકાનનું નામ</label>
+        <input type="text" id="myShopName" placeholder="દુકાનનું નામ">
+
+        <label>માલિકનું નામ</label>
+        <input type="text" id="myShopOwner" placeholder="માલિકનું નામ">
 
         <label>ગામ / વિસ્તાર</label>
-        <input id="shopArea" type="text" required>
+        <input type="text" id="myShopArea" placeholder="ગામ અથવા વિસ્તાર">
 
-        <label>દુકાનનો WhatsApp નંબર</label>
-        <input id="shopWhatsapp" type="tel" inputmode="numeric" maxlength="10" pattern="[6-9][0-9]{9}" placeholder="10 અંકનો નંબર" required>
+        <label>મોબાઇલ નંબર</label>
+        <input type="tel" id="myShopPhone" placeholder="મોબાઇલ નંબર">
+
+        <label>WhatsApp નંબર</label>
+        <input type="tel" id="myShopWhatsapp" placeholder="WhatsApp નંબર">
 
         <label>દુકાનનો ફોટો પસંદ કરો</label>
-        <input id="shopPhoto" type="file" accept="image/*">
-        <img id="shopPhotoPreview" alt="દુકાનના ફોટાનું પ્રિવ્યૂ" hidden style="max-width:180px; display:block; margin-top:8px; border-radius:8px;">
+        <input type="file" id="myShopImage" accept="image/*">
+        <img id="shopImagePreview" class="image-preview hidden" alt="Shop preview">
 
-        <label>ઓર્ડર નિયમ</label>
-        <select id="shopRule" required>
-          <option value="veg2kg">ફળો/શાકભાજી - ઓછામાં ઓછા 2 કિલો</option>
+        <label>ઓર્ડરનો નિયમ</label>
+        <select id="myShopRule">
+          <option value="none">કોઈ લઘુત્તમ ઓર્ડર નહીં</option>
+          <option value="kg2">ઓછામાં ઓછા 2 કિલો</option>
           <option value="amount500">ઓછામાં ઓછા ₹500</option>
-          <option value="none">કોઈ મિનિમમ નહીં</option>
+          <option value="custom">કસ્ટમ નિયમ</option>
         </select>
 
-        <button type="submit">દુકાન ઉમેરો</button>
-      </form>
+        <label>કસ્ટમ લઘુત્તમ રકમ (₹)</label>
+        <input type="number" id="myShopMinimum" min="0" placeholder="જરૂર હોય તો રકમ લખો">
+
+        <button id="saveShopBtn">દુકાનની માહિતી સાચવો</button>
+      </section>
 
       <hr>
 
-      <h2>વસ્તુ ઉમેરો (માપતોલ સાથે)</h2>
-      <form id="productForm">
-        <label>દુકાન પસંદ કરો</label>
-        <select id="myShop" required>
-          <option value="">દુકાન પસંદ કરો</option>
-        </select>
+      <section id="productFormSection">
+        <h3>નવો પ્રોડક્ટ ઉમેરો</h3>
 
-        <label>વસ્તુનું નામ</label>
-        <input id="productName" type="text" placeholder="જેમ કે ટમેટા, સફરજન, શર્ટ..." required>
+        <label>પ્રોડક્ટનું નામ</label>
+        <input type="text" id="productName" placeholder="પ્રોડક્ટનું નામ">
 
-        <label>ભાવ (₹)</label>
-        <input id="productPrice" type="number" min="1" step="0.01" placeholder="વેચાણ કિંમત" required>
-
-        <label>મૂળ કિંમત (ઓપ્શનલ - Meesho સ્ટાઇલ ડિસ્કાઉન્ટ માટે)</label>
-        <input id="productOriginalPrice" type="number" min="1" step="0.01" placeholder="વધુ ભાવ (છેકો મારવા માટે)">
-
-        <label>માપતોલ / સાઈઝ (Unit)</label>
-        <select id="productUnit" required>
-          <option value="">માપતોલ પસંદ કરો</option>
-          <option value="1 કિલો">1 કિલો (1 Kg)</option>
-          <option value="500 ગ્રામ">500 ગ્રામ (500g)</option>
-          <option value="250 ગ્રામ">250 ગ્રામ (250g)</option>
-          <option value="1 લીટર">1 લીટર (1 Liter)</option>
-          <option value="500 મિલી">500 મિલી (500 ml)</option>
-          <option value="1 નંગ">1 નંગ (1 Piece)</option>
-          <option value="1 ડઝન">1 ડઝન (12 Pieces)</option>
-          <option value="1 પેકેટ">1 પેકેટ (1 Packet)</option>
-          <option value="1 જોડી">1 જોડી (1 Pair)</option>
-          <option value="S Size">S Size (Small)</option>
-          <option value="M Size">M Size (Medium)</option>
-          <option value="L Size">L Size (Large)</option>
-          <option value="XL Size">XL Size (Extra Large)</option>
-          <option value="XXL Size">XXL Size (Double Large)</option>
-        </select>
-
-        <label>વસ્તુનો ફોટો પસંદ કરો</label>
-        <input id="productPhoto" type="file" accept="image/*">
-        <img id="productPhotoPreview" alt="વસ્તુના ફોટાનું પ્રિવ્યૂ" hidden style="max-width:180px; display:block; margin-top:8px; border-radius:8px;">
-
-        <button type="submit">વસ્તુ ઉમેરો</button>
-      </form>
-
-      <!-- Edit Shop Form -->
-      <form id="editShopForm" hidden style="background: #fff8f8; padding: 15px; border-radius: 8px; margin-top: 15px;">
-        <h3>દુકાનની માહિતીમાં ફેરફાર</h3>
-        <input id="editShopId" type="hidden">
-        
-        <label>દુકાનનું નામ</label>
-        <input id="editShopName" type="text" required>
-        
         <label>કેટેગરી</label>
-        <input id="editShopCategory" type="text" required>
-        
-        <label>ગામ / વિસ્તાર</label>
-        <input id="editShopArea" type="text" required>
-        
-        <label>WhatsApp નંબર</label>
-        <input id="editShopWhatsapp" type="tel" inputmode="numeric" maxlength="10" pattern="[6-9][0-9]{9}" required>
-        
-        <label>ઓર્ડર નિયમ</label>
-        <select id="editShopRule" required>
-          <option value="veg2kg">ફળો/શાકભાજી - ઓછામાં ઓછા 2 કિલો</option>
-          <option value="amount500">ઓછામાં ઓછા ₹500</option>
-          <option value="none">કોઈ મિનિમમ નહીં</option>
+        <input type="text" id="productCategory" placeholder="ફળ, શાકભાજી, કરિયાણા વગેરે">
+
+        <label>કિંમત (₹)</label>
+        <input type="number" id="productPrice" min="0" placeholder="કિંમત">
+
+        <label>એકમ</label>
+        <select id="productUnit">
+          <option value="kg">કિલો</option>
+          <option value="g">ગ્રામ</option>
+          <option value="liter">લિટર</option>
+          <option value="ml">મિલીલીટર</option>
+          <option value="meter">મીટર</option>
+          <option value="inch">ઇંચ</option>
+          <option value="piece">નંગ</option>
+          <option value="pack">પેકેટ</option>
+          <option value="size">સાઇઝ</option>
+          <option value="custom">અન્ય</option>
         </select>
 
-        <button type="submit">અપડેટ સેવ કરો</button>
-        <button id="cancelShopEdit" type="button" style="background: #666;">રદ કરો</button>
-      </form>
+        <label>પ્રોડક્ટનો ફોટો પસંદ કરો</label>
+        <input type="file" id="productImage" accept="image/*">
+        <img id="productImagePreview" class="image-preview hidden" alt="Product preview">
 
-      <!-- Edit Product Form -->
-      <form id="editProductForm" hidden style="background: #fff8f8; padding: 15px; border-radius: 8px; margin-top: 15px;">
-        <h3>વસ્તુમાં ફેરફાર</h3>
-        <input id="editProductId" type="hidden">
-        
-        <label>વસ્તુનું નામ</label>
-        <input id="editProductName" type="text" required>
-        
-        <label>ભાવ (₹)</label>
-        <input id="editProductPrice" type="number" min="1" step="0.01" required>
-        
-        <label>એકમ / માપતોલ</label>
-        <input id="editProductUnit" type="text" required>
-
-        <button type="submit">વસ્તુ અપડેટ કરો</button>
-        <button id="cancelProductEdit" type="button" style="background: #666;">રદ કરો</button>
-      </form>
+        <button id="saveProductBtn">પ્રોડક્ટ ઉમેરો</button>
+      </section>
 
       <hr>
 
-      <h2>મારી દુકાનો</h2>
-      <div id="sellerShops"></div>
+      <section>
+        <h3>મારી દુકાનના પ્રોડક્ટ્સ</h3>
+        <div id="myProductList"></div>
+      </section>
 
       <hr>
 
-      <h2>મારી બધી વસ્તુઓ</h2>
-      <div id="sellerProducts"></div>
+      <section>
+        <h3>મારા ઓર્ડર</h3>
+        <div id="myOrderList"></div>
+      </section>
 
-      <p id="sellerMessage" role="status" style="font-weight: bold; margin-top: 15px;"></p>
+      <p id="sellerMessage" class="message"></p>
+
     </section>
+
   </main>
+
+  <footer>
+    <p>© K.H Fresh & Fashion</p>
+  </footer>
 
   <script type="module" src="seller.js"></script>
 </body>
