@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="gu">
 <head>
@@ -35,29 +36,31 @@
       </p>
     </section>
 
-    <section>
-      <h2>દુકાનો</h2>
+    <section id="shopsSection">
+      <h2>તમારા વિસ્તારની દુકાનો</h2>
 
-      <input
-        id="shopSearch"
-        type="search"
-        placeholder="દુકાન શોધો"
-      >
+      <p>દુકાનના ફોટા પર ક્લિક કરીને વસ્તુઓ જુઓ.</p>
 
       <div id="shopList"></div>
     </section>
 
     <section id="productsSection" hidden>
-      <h2 id="selectedShopName">વસ્તુઓ</h2>
 
-      <button id="backToShops" type="button">
-        પાછા જાઓ
+      <button
+        id="backToShops"
+        type="button"
+        class="back-button"
+      >
+        ← બધી દુકાનોમાં પાછા જાઓ
       </button>
 
+      <h2 id="selectedShopName">વસ્તુઓ</h2>
+
       <div id="productList"></div>
+
     </section>
 
-    <section>
+    <section id="cartSection">
       <h2>તમારો ઓર્ડર</h2>
 
       <div id="cartItems">
