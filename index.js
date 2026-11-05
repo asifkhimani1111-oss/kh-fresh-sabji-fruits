@@ -1,3 +1,4 @@
+
 import { db } from "./firebase.js";
 
 import {
@@ -20,6 +21,9 @@ const orderForm = document.getElementById("customerOrderForm");
 const orderMessage = document.getElementById("orderMessage");
 const orderButton = document.getElementById("whatsappOrderButton");
 
+const productsSection = document.getElementById("productsSection");
+const backButton = document.getElementById("backToShops");
+
 function safeText(value) {
   return String(value ?? "").replace(/[&<>"']/g, char => ({
     "&": "&amp;",
@@ -28,6 +32,34 @@ function safeText(value) {
     '"': "&quot;",
     "'": "&#39;"
   })[char]);
+}
+
+function getPhotoSource(item) {
+  return item.photoBase64 || item.imageUrl || item.photoUrl || "";
+}
+
+function addPhoto(parent, item, altText, className) {
+  const source = getPhotoSource(item);
+
+  if (!source) {
+    const placeholder = document.createElement("div");
+    placeholder.className = className + " photo-placeholder";
+    placeholder.textContent = "ફોટો ઉપલબ્ધ નથી";
+    parent.appendChild(placeholder);
+    return;
+  }
+
+  const image = document.createElement("img");
+  image.className = className;
+  image.src = source;
+  image.alt = altText;
+  image.loading = "lazy";
+
+  image.onerror = () => {
+    image.style.display = "none";
+  };
+
+  parent.appendChild(image);
 }
 
 function getExpiryDate(shop) {
@@ -96,28 +128,19 @@ function loadData() {
 }
 
 function showShops() {
-  const search = document.getElementById("shopSearch")
-    .value.toLowerCase().trim();
-
-  const filteredShops = shops.filter(shop =>
-    (
-      String(shop.name || "") +
-      String(shop.category || "") +
-      String(shop.area || "")
-    ).toLowerCase().includes(search)
-  );
-
   shopList.innerHTML = "";
 
-  if (!filteredShops.length) {
+  if (!shops.length) {
     shopList.textContent =
       "હાલમાં કોઈ ચાલુ દુકાન ઉપલબ્ધ નથી.";
     return;
   }
 
-  filteredShops.forEach(shop => {
+  shops.forEach(shop => {
     const card = document.createElement("div");
     card.className = "shop-card";
+
+    addPhoto(card, shop, shop.name, "shop-photo");
 
     const heading = document.createElement("h3");
     heading.textContent = shop.name;
@@ -130,7 +153,7 @@ function showShops() {
 
     const button = document.createElement("button");
     button.type = "button";
-    button.textContent = "દુકાન જુઓ";
+    button.textContent = "દુકાન ખોલો";
 
     button.addEventListener("click", () => {
       openShop(shop.id);
@@ -142,14 +165,22 @@ function showShops() {
 }
 
 function openShop(id) {
-  selectedShop = shops.find(shop => shop.id === id);
+  const shop = shops.find(item => item.id === id);
 
-  if (!selectedShop || !isShopAvailable(selectedShop)) {
+  if (!shop || !isShopAvailable(shop)) {
     alert("આ દુકાન હાલમાં બંધ છે.");
     return;
   }
 
-  document.getElementById("productsSection").hidden = false;
+  // બીજી દુકાન ખોલતાં જૂની કાર્ટ ખાલી કરો.
+  if (!selectedShop || selectedShop.id !== id) {
+    cart = [];
+    showCart();
+  }
+
+  selectedShop = shop;
+
+  productsSection.hidden = false;
 
   document.getElementById("selectedShopName").textContent =
     selectedShop.name;
@@ -170,6 +201,8 @@ function openShop(id) {
     const card = document.createElement("div");
     card.className = "product-card";
 
+    addPhoto(card, product, product.name, "product-photo");
+
     const heading = document.createElement("h3");
     heading.textContent = product.name;
 
@@ -187,6 +220,26 @@ function openShop(id) {
 
     card.append(heading, price, button);
     productList.appendChild(card);
+  });
+
+  productsSection.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+function goBackToShops() {
+  cart = [];
+  selectedShop = null;
+
+  productList.innerHTML = "";
+  productsSection.hidden = true;
+
+  showCart();
+
+  shopList.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
   });
 }
 
@@ -287,12 +340,6 @@ function createOrderMessage(customer, shop, total) {
       " × " + item.quantity +
       " " + (item.unit || "") +
       " = ₹" + itemTotal.toFixed(2) + "\n";
-
-    const imageUrl = item.imageUrl || item.photoUrl || "";
-
-    if (imageUrl) {
-      message += "ફોટો: " + imageUrl + "\n";
-    }
   });
 
   message += "\nકુલ બિલ: ₹" + total.toFixed(2);
@@ -333,7 +380,7 @@ orderForm.addEventListener("submit", async function(event) {
 
   if (!whatsappNumber) {
     showOrderMessage(
-      "આ દુકાનનો WhatsApp નંબર ઉપલબ્ધ નથી. દુકાનદારનો સંપર્ક કરો.",
+      "આ દુકાનનો WhatsApp નંબર ઉપલબ્ધ નથી.",
       true
     );
     return;
@@ -362,12 +409,6 @@ orderForm.addEventListener("submit", async function(event) {
     0
   );
 
-  const customer = {
-    name,
-    mobile,
-    address
-  };
-
   const items = cart.map(item => ({
     productId: item.id,
     productName: item.name,
@@ -376,6 +417,8 @@ orderForm.addEventListener("submit", async function(event) {
     unit: item.unit || "",
     imageUrl: item.imageUrl || item.photoUrl || ""
   }));
+
+  const customer = { name, mobile, address };
 
   const message = createOrderMessage(
     customer,
@@ -426,14 +469,17 @@ orderForm.addEventListener("submit", async function(event) {
   }
 });
 
-document.getElementById("shopSearch")
-  .addEventListener("input", showShops);
+// પાછા જવાનો બટન
+if (backButton) {
+  backButton.addEventListener("click", goBackToShops);
+}
 
-document.getElementById("backToShops")
-  .addEventListener("click", () => {
-    document.getElementById("productsSection").hidden = true;
-    selectedShop = null;
-  });
+// જૂના HTMLમાં search input હોય તો તેને છુપાવો.
+const shopSearch = document.getElementById("shopSearch");
+
+if (shopSearch) {
+  shopSearch.hidden = true;
+}
 
 showCart();
 loadData();
