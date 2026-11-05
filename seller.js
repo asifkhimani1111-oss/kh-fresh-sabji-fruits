@@ -29,16 +29,21 @@ let myProducts = [];
 
 let shopPhotoBase64 = "";
 let productPhotoBase64 = "";
-
 let editShopPhotoBase64 = "";
 let editProductPhotoBase64 = "";
 
 let editShopPhotoReady = true;
 let editProductPhotoReady = true;
 
+let addingProduct = false;
+let addingShop = false;
+
 const MAX_IMAGE_SIZE = 180 * 1024;
 
-// ફોટો નાનો કરીને JPEG Base64 બનાવવો
+// ------------------------------
+// ફોટો નાનો કરીને તૈયાર કરવો
+// ------------------------------
+
 async function compressImage(file) {
   if (!file || !file.type.startsWith("image/")) {
     throw new Error("કૃપા કરીને સાચો ફોટો પસંદ કરો.");
@@ -66,15 +71,8 @@ async function compressImage(file) {
         maxSize / Math.max(image.width, image.height)
       );
 
-      const width = Math.max(
-        1,
-        Math.round(image.width * ratio)
-      );
-
-      const height = Math.max(
-        1,
-        Math.round(image.height * ratio)
-      );
+      const width = Math.max(1, Math.round(image.width * ratio));
+      const height = Math.max(1, Math.round(image.height * ratio));
 
       const canvas = document.createElement("canvas");
       canvas.width = width;
@@ -83,7 +81,7 @@ async function compressImage(file) {
       const context = canvas.getContext("2d");
 
       if (!context) {
-        throw new Error("ફોટો કમ્પ્રેસ થઈ શક્યો નથી.");
+        throw new Error("ફોટો તૈયાર થઈ શક્યો નથી.");
       }
 
       context.drawImage(image, 0, 0, width, height);
@@ -109,7 +107,7 @@ async function compressImage(file) {
     }
 
     throw new Error(
-      "ફોટો હજી મોટો છે. કૃપા કરીને નાનો ફોટો પસંદ કરો."
+      "ફોટો મોટો છે. કૃપા કરીને બીજો નાનો ફોટો પસંદ કરો."
     );
 
   } finally {
@@ -117,9 +115,12 @@ async function compressImage(file) {
   }
 }
 
+// ------------------------------
+// મેસેજ અને બટન
+// ------------------------------
+
 function showMessage(message, isError = false) {
   const element = $("sellerMessage");
-
   if (!element) return;
 
   element.textContent = message;
@@ -139,7 +140,7 @@ function makePhoto(src, alt, maxWidth = "140px") {
 
   const image = document.createElement("img");
   image.src = src;
-  image.alt = alt;
+  image.alt = alt || "ફોટો";
   image.style.maxWidth = maxWidth;
   image.style.maxHeight = "160px";
   image.style.objectFit = "contain";
@@ -148,7 +149,10 @@ function makePhoto(src, alt, maxWidth = "140px") {
   return image;
 }
 
-// નવી દુકાન અને વસ્તુના ફોટા
+// ------------------------------
+// નવા ફોટા પસંદ કરવા
+// ------------------------------
+
 async function preparePhoto(inputId, previewId, type) {
   const file = $(inputId).files[0];
   const preview = $(previewId);
@@ -163,21 +167,16 @@ async function preparePhoto(inputId, previewId, type) {
 
   try {
     preview.hidden = false;
-    preview.alt = "ફોટો તૈયાર થઈ રહ્યો છે...";
     preview.removeAttribute("src");
+    preview.alt = "ફોટો તૈયાર થઈ રહ્યો છે...";
 
     const compressed = await compressImage(file);
 
     preview.src = compressed;
     preview.alt = "ફોટાનું પ્રિવ્યૂ";
 
-    if (type === "shop") {
-      shopPhotoBase64 = compressed;
-    }
-
-    if (type === "product") {
-      productPhotoBase64 = compressed;
-    }
+    if (type === "shop") shopPhotoBase64 = compressed;
+    if (type === "product") productPhotoBase64 = compressed;
 
     showMessage("ફોટો તૈયાર થઈ ગયો છે.");
 
@@ -198,17 +197,18 @@ $("productPhoto").addEventListener("change", () => {
   preparePhoto("productPhoto", "productPhotoPreview", "product");
 });
 
-// દુકાનના ફોટામાં ફેરફાર
+// ------------------------------
+// Edit ફોટા
+// ------------------------------
+
 $("editShopPhoto").addEventListener("change", async () => {
   const file = $("editShopPhoto").files[0];
-
   if (!file) return;
 
   editShopPhotoReady = false;
 
   try {
     const compressed = await compressImage(file);
-
     editShopPhotoBase64 = compressed;
 
     const preview = $("editShopPhotoPreview");
@@ -216,7 +216,7 @@ $("editShopPhoto").addEventListener("change", async () => {
     preview.hidden = false;
 
     editShopPhotoReady = true;
-    showMessage("દુકાનનો નવો ફોટો તૈયાર છે.");
+    showMessage("દુકાનનો ફોટો તૈયાર છે.");
 
   } catch (error) {
     editShopPhotoReady = true;
@@ -224,17 +224,14 @@ $("editShopPhoto").addEventListener("change", async () => {
   }
 });
 
-// વસ્તુના ફોટામાં ફેરફાર
 $("editProductPhoto").addEventListener("change", async () => {
   const file = $("editProductPhoto").files[0];
-
   if (!file) return;
 
   editProductPhotoReady = false;
 
   try {
     const compressed = await compressImage(file);
-
     editProductPhotoBase64 = compressed;
 
     const preview = $("editProductPhotoPreview");
@@ -242,7 +239,7 @@ $("editProductPhoto").addEventListener("change", async () => {
     preview.hidden = false;
 
     editProductPhotoReady = true;
-    showMessage("વસ્તુનો નવો ફોટો તૈયાર છે.");
+    showMessage("વસ્તુનો ફોટો તૈયાર છે.");
 
   } catch (error) {
     editProductPhotoReady = true;
@@ -250,7 +247,10 @@ $("editProductPhoto").addEventListener("change", async () => {
   }
 });
 
-// Seller રજિસ્ટ્રેશન
+// ------------------------------
+// રજિસ્ટ્રેશન
+// ------------------------------
+
 $("registerForm").addEventListener("submit", async (event) => {
   event.preventDefault();
 
@@ -270,23 +270,23 @@ $("registerForm").addEventListener("submit", async (event) => {
       password
     );
 
-    await setDoc(
-      doc(db, "sellerProfiles", result.user.uid),
-      {
-        name,
-        email,
-        createdAt: serverTimestamp()
-      }
-    );
+    await setDoc(doc(db, "sellerProfiles", result.user.uid), {
+      name,
+      email,
+      createdAt: serverTimestamp()
+    });
 
     showMessage("એકાઉન્ટ બની ગયું છે.");
 
   } catch (error) {
-    showMessage(error.message, true);
+    showMessage("રજિસ્ટ્રેશન: " + error.message, true);
   }
 });
 
-// Seller Login
+// ------------------------------
+// Login
+// ------------------------------
+
 $("loginForm").addEventListener("submit", async (event) => {
   event.preventDefault();
 
@@ -300,11 +300,14 @@ $("loginForm").addEventListener("submit", async (event) => {
     showMessage("લોગિન સફળ થયું.");
 
   } catch (error) {
-    showMessage(error.message, true);
+    showMessage("લોગિન: " + error.message, true);
   }
 });
 
+// ------------------------------
 // Logout
+// ------------------------------
+
 $("logoutButton").addEventListener("click", async () => {
   try {
     await signOut(auth);
@@ -314,7 +317,10 @@ $("logoutButton").addEventListener("click", async () => {
   }
 });
 
+// ------------------------------
 // Login સ્થિતિ
+// ------------------------------
+
 onAuthStateChanged(auth, async (user) => {
   currentUser = user;
 
@@ -330,12 +336,16 @@ onAuthStateChanged(auth, async (user) => {
   } else {
     myShops = [];
     myProducts = [];
+
     $("sellerShops").replaceChildren();
     $("sellerProducts").replaceChildren();
   }
 });
 
+// ------------------------------
 // પોતાની દુકાનો લોડ કરવી
+// ------------------------------
+
 async function loadMyShops() {
   if (!currentUser) return;
 
@@ -355,14 +365,14 @@ async function loadMyShops() {
     renderMyShops();
 
   } catch (error) {
-    showMessage(
-      "દુકાનો લોડ થઈ શકી નથી: " + error.message,
-      true
-    );
+    showMessage("દુકાનો લોડ થઈ નથી: " + error.message, true);
   }
 }
 
-// પોતાની વસ્તુઓ લોડ કરવી
+// ------------------------------
+// પોતાની બધી વસ્તુઓ લોડ કરવી
+// ------------------------------
+
 async function loadMyProducts() {
   if (!currentUser) return;
 
@@ -382,20 +392,19 @@ async function loadMyProducts() {
     renderMyProducts();
 
   } catch (error) {
-    showMessage(
-      "વસ્તુઓ લોડ થઈ શકી નથી: " + error.message,
-      true
-    );
+    showMessage("વસ્તુઓ લોડ થઈ નથી: " + error.message, true);
   }
 }
 
+// ------------------------------
 // દુકાનો બતાવવી
+// ------------------------------
+
 function renderMyShops() {
   const list = $("sellerShops");
   const select = $("myShop");
 
   list.replaceChildren();
-
   select.replaceChildren();
 
   const firstOption = document.createElement("option");
@@ -406,7 +415,7 @@ function renderMyShops() {
   myShops.forEach((shop) => {
     const option = document.createElement("option");
     option.value = shop.id;
-    option.textContent = shop.name;
+    option.textContent = shop.name || "દુકાન";
     select.appendChild(option);
 
     const card = document.createElement("div");
@@ -467,7 +476,10 @@ function renderMyShops() {
   }
 }
 
-// પોતાની વસ્તુઓ બતાવવી
+// ------------------------------
+// બધી વસ્તુઓ બતાવવી
+// ------------------------------
+
 function renderMyProducts() {
   const list = $("sellerProducts");
   list.replaceChildren();
@@ -532,9 +544,14 @@ function renderMyProducts() {
   }
 }
 
+// ------------------------------
 // નવી દુકાન ઉમેરવી
+// ------------------------------
+
 $("shopForm").addEventListener("submit", async (event) => {
   event.preventDefault();
+
+  if (addingShop) return;
 
   if (!currentUser) {
     showMessage("પહેલા લોગિન કરો.", true);
@@ -553,7 +570,14 @@ $("shopForm").addEventListener("submit", async (event) => {
     return;
   }
 
+  const button = $("shopForm").querySelector(
+    'button[type="submit"]'
+  );
+
   try {
+    addingShop = true;
+    button.disabled = true;
+
     await addDoc(collection(db, "shops"), {
       ownerUid: currentUser.uid,
       name: $("shopName").value.trim(),
@@ -570,20 +594,26 @@ $("shopForm").addEventListener("submit", async (event) => {
     $("shopPhotoPreview").hidden = true;
     shopPhotoBase64 = "";
 
-    showMessage(
-      "દુકાન ઉમેરાઈ ગઈ. Adminની મંજૂરીની રાહ જુઓ."
-    );
-
     await loadMyShops();
+
+    showMessage("દુકાન ઉમેરાઈ ગઈ. Adminની મંજૂરીની રાહ જુઓ.");
 
   } catch (error) {
     showMessage("દુકાન ઉમેરી શકાઈ નથી: " + error.message, true);
+  } finally {
+    addingShop = false;
+    button.disabled = false;
   }
 });
 
+// ------------------------------
 // નવી વસ્તુ ઉમેરવી
+// ------------------------------
+
 $("productForm").addEventListener("submit", async (event) => {
   event.preventDefault();
+
+  if (addingProduct) return;
 
   if (!currentUser) {
     showMessage("પહેલા લોગિન કરો.", true);
@@ -615,34 +645,65 @@ $("productForm").addEventListener("submit", async (event) => {
     return;
   }
 
+  const button = $("productForm").querySelector(
+    'button[type="submit"]'
+  );
+
   try {
-    await addDoc(collection(db, "products"), {
-      ownerUid: currentUser.uid,
-      shopId,
-      name,
-      price,
-      unit,
-      photoBase64: productPhotoBase64,
-      approved: false,
-      createdAt: serverTimestamp()
-    });
+    addingProduct = true;
+    button.disabled = true;
+    button.textContent = "સેવ થઈ રહ્યું છે...";
+
+    // addDoc દરેક વસ્તુ માટે નવો અને અલગ Document ID બનાવે છે.
+    const newProductRef = await addDoc(
+      collection(db, "products"),
+      {
+        ownerUid: currentUser.uid,
+        shopId,
+        name,
+        price,
+        unit,
+        photoBase64: productPhotoBase64,
+        approved: false,
+        createdAt: serverTimestamp()
+      }
+    );
+
+    // નવી વસ્તુનું ID ચકાસવું
+    if (!newProductRef.id) {
+      throw new Error("નવી વસ્તુનો ID મળ્યો નથી.");
+    }
+
+    // Firebaseમાંથી ફરી બધી વસ્તુઓ લોડ કરવી
+    await loadMyProducts();
 
     $("productForm").reset();
     $("productPhotoPreview").hidden = true;
     productPhotoBase64 = "";
 
     showMessage(
-      "વસ્તુ ઉમેરાઈ ગઈ. Adminની મંજૂરીની રાહ જુઓ."
+      "વસ્તુ સફળતાપૂર્વક સેવ થઈ ગઈ!" +
+      "\nનવી વસ્તુનું ID: " + newProductRef.id +
+      "\nતમારી કુલ વસ્તુઓ: " + myProducts.length +
+      "\nAdminની મંજૂરી બાકી છે."
     );
 
-    await loadMyProducts();
-
   } catch (error) {
-    showMessage("વસ્તુ ઉમેરી શકાઈ નથી: " + error.message, true);
+    showMessage(
+      "વસ્તુ સેવ થઈ શકી નથી: " + error.message,
+      true
+    );
+  } finally {
+    addingProduct = false;
+    button.disabled = false;
+    button.textContent = "વસ્તુ ઉમેરો";
   }
 });
 
-// દુકાન Edit ફોર્મ ખોલવું
+// ------------------------------
+// દુકાન Edit ખોલવું
+// ------------------------------
+
 function openShopEdit(shop) {
   $("editShopId").value = shop.id;
   $("editShopName").value = shop.name || "";
@@ -674,7 +735,10 @@ function openShopEdit(shop) {
   });
 }
 
-// દુકાનની માહિતી સેવ કરવી
+// ------------------------------
+// દુકાન Edit સેવ
+// ------------------------------
+
 $("editShopForm").addEventListener("submit", async (event) => {
   event.preventDefault();
 
@@ -705,21 +769,23 @@ $("editShopForm").addEventListener("submit", async (event) => {
 
     $("editShopForm").hidden = true;
 
-    showMessage("દુકાનની માહિતી અપડેટ થઈ ગઈ.");
-
     await loadMyShops();
 
+    showMessage("દુકાનની માહિતી અપડેટ થઈ ગઈ.");
+
   } catch (error) {
-    showMessage("દુકાન અપડેટ થઈ શકી નથી: " + error.message, true);
+    showMessage("દુકાન અપડેટ થઈ નથી: " + error.message, true);
   }
 });
 
-// દુકાન Edit રદ
 $("cancelShopEdit").addEventListener("click", () => {
   $("editShopForm").hidden = true;
 });
 
+// ------------------------------
 // દુકાન Delete
+// ------------------------------
+
 async function deleteMyShop(shop) {
   if (!currentUser || shop.ownerUid !== currentUser.uid) {
     showMessage("આ દુકાન ડિલીટ કરવાની પરવાનગી નથી.", true);
@@ -727,27 +793,24 @@ async function deleteMyShop(shop) {
   }
 
   const confirmed = confirm(
-    "શું તમે ખરેખર આ દુકાન ડિલીટ કરવા માંગો છો?\n\n" +
-    "આ દુકાનની બધી વસ્તુઓ પણ ડિલીટ થશે. જૂના ઓર્ડર આપમેળે ડિલીટ નહીં થાય."
+    "શું તમે આ દુકાન ડિલીટ કરવા માંગો છો?\n\n" +
+    "આ દુકાનની બધી વસ્તુઓ પણ ડિલીટ થશે."
   );
 
   if (!confirmed) return;
 
   try {
-    showMessage("દુકાનની વસ્તુઓ ડિલીટ થઈ રહી છે...");
+    showMessage("દુકાનની વસ્તુઓ તપાસી રહ્યા છીએ...");
 
     const q = query(
       collection(db, "products"),
-      where("shopId", "==", shop.id)
+      where("shopId", "==", shop.id),
+      where("ownerUid", "==", currentUser.uid)
     );
 
     const snapshot = await getDocs(q);
 
     for (const item of snapshot.docs) {
-      if (item.data().ownerUid !== currentUser.uid) {
-        throw new Error("કોઈ વસ્તુની માલિકીની તપાસ નિષ્ફળ ગઈ.");
-      }
-
       await deleteDoc(doc(db, "products", item.id));
     }
 
@@ -755,17 +818,20 @@ async function deleteMyShop(shop) {
 
     $("editShopForm").hidden = true;
 
-    showMessage("દુકાન અને તેની વસ્તુઓ ડિલીટ થઈ ગઈ.");
-
     await loadMyShops();
     await loadMyProducts();
 
+    showMessage("દુકાન અને તેની વસ્તુઓ ડિલીટ થઈ ગઈ.");
+
   } catch (error) {
-    showMessage("દુકાન ડિલીટ થઈ શકી નથી: " + error.message, true);
+    showMessage("દુકાન ડિલીટ થઈ નથી: " + error.message, true);
   }
 }
 
-// વસ્તુ Edit ફોર્મ ખોલવું
+// ------------------------------
+// વસ્તુ Edit ખોલવું
+// ------------------------------
+
 function openProductEdit(product) {
   $("editProductId").value = product.id;
   $("editProductName").value = product.name || "";
@@ -795,7 +861,10 @@ function openProductEdit(product) {
   });
 }
 
-// વસ્તુની માહિતી સેવ કરવી
+// ------------------------------
+// વસ્તુ Edit સેવ
+// ------------------------------
+
 $("editProductForm").addEventListener("submit", async (event) => {
   event.preventDefault();
 
@@ -835,21 +904,23 @@ $("editProductForm").addEventListener("submit", async (event) => {
 
     $("editProductForm").hidden = true;
 
-    showMessage("વસ્તુની માહિતી અપડેટ થઈ ગઈ.");
-
     await loadMyProducts();
 
+    showMessage("વસ્તુની માહિતી અપડેટ થઈ ગઈ.");
+
   } catch (error) {
-    showMessage("વસ્તુ અપડેટ થઈ શકી નથી: " + error.message, true);
+    showMessage("વસ્તુ અપડેટ થઈ નથી: " + error.message, true);
   }
 });
 
-// વસ્તુ Edit રદ
 $("cancelProductEdit").addEventListener("click", () => {
   $("editProductForm").hidden = true;
 });
 
-// વસ્તુ Delete
+// ------------------------------
+// એક વસ્તુ Delete
+// ------------------------------
+
 async function deleteMyProduct(product) {
   if (!currentUser || product.ownerUid !== currentUser.uid) {
     showMessage("આ વસ્તુ ડિલીટ કરવાની પરવાનગી નથી.", true);
@@ -865,11 +936,11 @@ async function deleteMyProduct(product) {
 
     $("editProductForm").hidden = true;
 
-    showMessage("વસ્તુ ડિલીટ થઈ ગઈ.");
-
     await loadMyProducts();
 
+    showMessage("વસ્તુ ડિલીટ થઈ ગઈ.");
+
   } catch (error) {
-    showMessage("વસ્તુ ડિલીટ થઈ શકી નથી: " + error.message, true);
+    showMessage("વસ્તુ ડિલીટ થઈ નથી: " + error.message, true);
   }
 }
