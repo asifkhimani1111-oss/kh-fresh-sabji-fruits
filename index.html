@@ -1,106 +1,148 @@
+
 <!DOCTYPE html>
 <html lang="gu">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>K.H Fresh & Fashion - Meesho Style Shopping</title>
+  <meta name="theme-color" content="#087f5b">
+  <meta name="description" content="K.H Fresh & Fashion - તમારા વિસ્તારની દુકાનોમાંથી ઓનલાઇન ખરીદી કરો.">
+  <title>K.H Fresh & Fashion</title>
   <link rel="stylesheet" href="index.css">
-  <link href="https://fonts.googleapis.com/css2?family=Hind+Vadodara:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-  <!-- Meesho Style Header -->
-  <header class="app-header">
-    <div class="header-top">
-      <div class="brand-info">
-        <span class="brand-badge">K.H</span>
-        <h2>Fresh & Fashion</h2>
+  <!-- HEADER -->
+  <header class="main-header">
+    <div class="brand">
+      <div class="brand-logo">K.H</div>
+      <div>
+        <h1>K.H Fresh & Fashion</h1>
+        <p>તમારા વિસ્તારની ખરીદી એક જ જગ્યાએ</p>
       </div>
-      <nav class="header-nav">
-        <a href="seller.html" class="nav-btn">Seller</a>
-        <a href="admin.html" class="nav-btn">Admin</a>
-      </nav>
     </div>
-    
-    <!-- Search Bar -->
-    <div class="search-wrapper">
-      <input type="text" id="globalSearch" placeholder="તમારી પસંદગીની વસ્તુ કે દુકાન શોધો..." />
-      <span class="search-icon">🔍</span>
-    </div>
+
+    <button id="cartToggle" class="cart-button">
+      🛒 કાર્ટ <span id="cartCount">0</span>
+    </button>
   </header>
 
-  <!-- Category Slider (Meesho Style) -->
-  <div class="category-scroll">
-    <button class="cat-chip active" data-cat="બધી">🛍️ બધી વસ્તુઓ</button>
-    <button class="cat-chip" data-cat="શાકભાજી">🥦 શાકભાજી</button>
-    <button class="cat-chip" data-cat="ફળો">🍎 ફળો</button>
-    <button class="cat-chip" data-cat="કપડાં">👗 કપડાં &amp; ફેશન</button>
-    <button class="cat-chip" data-cat="ફૂટવેર">👟 ફૂટવેર</button>
-    <button class="cat-chip" data-cat="કરિયાણું">🛒 કરિયાણું</button>
-  </div>
+  <!-- SEARCH -->
+  <section class="search-section">
+    <h2>તમારી પસંદગીની વસ્તુ શોધો</h2>
 
-  <main class="container">
+    <input
+      type="search"
+      id="searchInput"
+      placeholder="દુકાન અથવા પ્રોડક્ટ શોધો..."
+    >
 
-    <!-- Shops Section -->
-    <section id="shopsSection">
-      <div class="section-title">
-        <h3>📍 તમારા વિસ્તારની દુકાનો</h3>
-        <span class="sub-text">દુકાન પર ક્લિક કરીને બધી પ્રોડક્ટ જુઓ</span>
-      </div>
-      <div id="shopList" class="meesho-grid"></div>
-    </section>
+    <select id="areaFilter">
+      <option value="">બધા વિસ્તાર</option>
+    </select>
+  </section>
 
-    <!-- Products Section -->
-    <section id="productsSection" hidden>
-      <div class="product-header-bar">
-        <button id="backToShops" class="btn-back">← બધી દુકાનો</button>
-        <h3 id="selectedShopName">દુકાનની વસ્તુઓ</h3>
-      </div>
-      <div id="productList" class="meesho-product-grid"></div>
-    </section>
-
-  </main>
-
-  <!-- Meesho Floating Bottom Cart Bar -->
-  <div id="floatingCartBar" class="floating-cart hidden">
-    <div class="cart-info">
-      <span id="cartCountBadge" class="count-badge">0</span>
-      <div class="cart-price">
-        <span id="cartTotalText">₹0</span>
-        <small>કુલ રકમ</small>
-      </div>
+  <!-- CATEGORIES -->
+  <section class="section">
+    <h2>કેટેગરી પસંદ કરો</h2>
+    <div id="categoryList" class="category-list">
+      <button class="category-btn active" data-category="all">બધી વસ્તુઓ</button>
     </div>
-    <button id="openCartBtn" class="view-cart-btn">કાર્ટ જુઓ 🛒</button>
-  </div>
+  </section>
 
-  <!-- Cart Modal Drawer (Meesho Style) -->
-  <div id="cartDrawer" class="cart-drawer hidden">
-    <div class="drawer-overlay" id="closeCartOverlay"></div>
-    <div class="drawer-content">
-      <div class="drawer-header">
-        <h3>તમારું કાર્ટ (Order Details)</h3>
-        <button id="closeCartBtn" class="close-btn">✕</button>
-      </div>
+  <!-- SHOPS -->
+  <section class="section">
+    <div class="section-heading">
+      <h2>તમારા વિસ્તારની દુકાનો</h2>
+      <span id="shopCount">દુકાનો લોડ થઈ રહી છે...</span>
+    </div>
 
-      <div class="drawer-body">
-        <div id="cartItemsList" class="cart-items-wrapper"></div>
-        <div id="cartSummary" class="price-summary-box"></div>
+    <div id="shopList" class="shop-grid">
+      <p>દુકાનો લોડ થઈ રહી છે...</p>
+    </div>
+  </section>
 
-        <!-- Customer Form -->
-        <form id="customerOrderForm" class="order-form">
-          <h4>🚚 ડિલિવરી માટેની માહિતી</h4>
-          <input type="text" id="customerName" placeholder="તમારું પૂરું નામ" required />
-          <input type="tel" id="customerMobile" maxlength="10" pattern="[6-9][0-9]{9}" placeholder="10 અંકનો મોબાઇલ નંબર" required />
-          <textarea id="customerAddress" rows="2" placeholder="ગામ / વિસ્તાર અને ઘરનું સરનામું" required></textarea>
+  <!-- PRODUCTS -->
+  <section class="section">
+    <div class="section-heading">
+      <h2 id="productHeading">બધી પ્રોડક્ટ્સ</h2>
+      <button id="showAllProducts" class="text-button">
+        બધી જુઓ
+      </button>
+    </div>
 
-          <button type="submit" id="whatsappOrderButton" class="whatsapp-btn">
-            🟢 WhatsApp પર ઓર્ડર કન્ફર્મ કરો
-          </button>
-        </form>
-      </div>
+    <div id="productList" class="product-grid">
+      <p>પ્રોડક્ટ્સ લોડ થઈ રહી છે...</p>
+    </div>
+  </section>
+
+  <!-- CART -->
+  <div id="cartPanel" class="cart-panel hidden">
+
+    <div class="cart-header">
+      <h2>તમારો શોપિંગ કાર્ટ</h2>
+      <button id="closeCart" class="close-button">✕</button>
+    </div>
+
+    <div id="cartItems">
+      <p>તમારો કાર્ટ ખાલી છે.</p>
+    </div>
+
+    <div class="cart-total">
+      કુલ રકમ:
+      <strong id="cartTotal">₹0</strong>
+    </div>
+
+    <div class="customer-form">
+      <h3>ઓર્ડર માટેની માહિતી</h3>
+
+      <input
+        type="text"
+        id="customerName"
+        placeholder="તમારું નામ"
+      >
+
+      <input
+        type="tel"
+        id="customerPhone"
+        placeholder="મોબાઇલ નંબર"
+      >
+
+      <textarea
+        id="customerAddress"
+        placeholder="તમારું પૂરું સરનામું"
+        rows="3"
+      ></textarea>
+
+      <button id="placeOrder" class="primary-button">
+        WhatsApp પર ઓર્ડર કરો
+      </button>
     </div>
   </div>
 
+  <!-- CART BACKGROUND -->
+  <div id="cartOverlay" class="cart-overlay hidden"></div>
+
+  <!-- FOOTER -->
+  <footer>
+    <h3>K.H Fresh & Fashion</h3>
+    <p>તમારા વિસ્તારની દુકાનો, તમારી નજીક.</p>
+
+    <div class="footer-links">
+      <a href="seller.html">Seller Account</a>
+      <a href="admin.html">Admin</a>
+    </div>
+
+    <p class="copyright">
+      © 2026 K.H Fresh & Fashion
+    </p>
+  </footer>
+
+  <!-- NOTIFICATION -->
+  <div id="notification" class="notification hidden"></div>
+
+  <!-- JAVASCRIPT -->
   <script type="module" src="index.js"></script>
+
 </body>
 </html>
