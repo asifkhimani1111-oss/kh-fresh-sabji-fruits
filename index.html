@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>K.H Fresh & Fashion</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <header>
+    <h2>K.H Fresh & Fashion</h2>
+    <nav>
+      <a href="seller.html">Seller</a>
+      <a href="admin.html">Admin</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>તમારા વિસ્તારની ખરીદી એક જ જગ્યાએ</h1>
+      <p>ફળો, શાકભાજી, કરિયાણા, કપડાં, ફૂટવેર અને બીજી વસ્તુઓ.</p>
+      <p>ઓર્ડરનો સમય: સવારે 9 થી સાંજે 6 વાગ્યા સુધી</p>
+    </section>
+
+    <section>
+      <h2>દુકાનો</h2>
+      <input id="shopSearch" type="search" placeholder="દુકાન શોધો">
+      <div id="shopList"></div>
+    </section>
+
+    <section id="productsSection" hidden>
+      <h2 id="selectedShopName">વસ્તુઓ</h2>
+      <button id="backToShops">પાછા જાઓ</button>
+      <div id="productList"></div>
+    </section>
+
+    <section>
+      <h2>તમારો ઓર્ડર</h2>
+      <div id="cartItems">હજુ કોઈ વસ્તુ પસંદ કરી નથી.</div>
+      <h3>કુલ: <span id="cartTotal">₹0</span></h3>
+    </section>
+  </main>
+
+  <script src="index.js" defer></script>
+</body>
+</html>
