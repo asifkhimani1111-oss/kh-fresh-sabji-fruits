@@ -1,31 +1,15 @@
 
-const KEY = "kh_fresh_fashion_data";
+import { db } from "./firebase.js";
 
-const demoData = {
-  shops: [
-    {
-      id: "shop1",
-      name: "K.H Fresh Sabji & Fruits",
-      category: "ફળો અને શાકભાજી",
-      area: "તમારો વિસ્તાર",
-      approved: true,
-      products: [
-        { id: "p1", name: "બટાકા", price: 30, unit: "કિલો" },
-        { id: "p2", name: "ડુંગળી", price: 35, unit: "કિલો" },
-        { id: "p3", name: "કેળા", price: 60, unit: "ડઝન" }
-      ]
-    }
-  ]
-};
+import {
+  collection,
+  getDocs,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-let data;
-
-try {
-  data = JSON.parse(localStorage.getItem(KEY)) || demoData;
-} catch (error) {
-  data = demoData;
-}
-
+let shops = [];
+let products = [];
 let selectedShop = null;
 let cart = [];
 
@@ -33,7 +17,7 @@ const shopList = document.getElementById("shopList");
 const productList = document.getElementById("productList");
 
 function safeText(value) {
-  return String(value).replace(/[&<>"']/g, char => ({
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
@@ -42,26 +26,67 @@ function safeText(value) {
   })[char]);
 }
 
-function showShops() {
-  const search = document
-    .getElementById("shopSearch")
-    .value.toLowerCase();
+// Firebaseમાંથી મંજૂર દુકાનો અને વસ્તુઓ લાવો
+async function loadData() {
+  shopList.textContent = "દુકાનો લોડ થઈ રહી છે...";
 
-  const shops = data.shops.filter(shop =>
-    shop.approved &&
-    (shop.name + shop.category + shop.area)
+  try {
+    const shopQuery = query(
+      collection(db, "shops"),
+      where("approved", "==", true)
+    );
+
+    const productQuery = query(
+      collection(db, "products"),
+      where("approved", "==", true)
+    );
+
+    const [shopSnapshot, productSnapshot] = await Promise.all([
+      getDocs(shopQuery),
+      getDocs(productQuery)
+    ]);
+
+    shops = shopSnapshot.docs.map(item => ({
+      id: item.id,
+      ...item.data()
+    }));
+
+    products = productSnapshot.docs.map(item => ({
+      id: item.id,
+      ...item.data()
+    }));
+
+    showShops();
+
+  } catch (error) {
+    console.error("Firebase error:", error);
+    shopList.textContent =
+      "ડેટા લોડ કરવામાં ભૂલ: " + error.message;
+  }
+}
+
+// દુકાનો બતાવો
+function showShops() {
+  const search = document.getElementById("shopSearch").value
+    .toLowerCase()
+    .trim();
+
+  const filteredShops = shops.filter(shop =>
+    (String(shop.name || "") +
+     String(shop.category || "") +
+     String(shop.area || ""))
       .toLowerCase()
       .includes(search)
   );
 
   shopList.innerHTML = "";
 
-  if (shops.length === 0) {
+  if (!filteredShops.length) {
     shopList.textContent = "હાલમાં કોઈ દુકાન ઉપલબ્ધ નથી.";
     return;
   }
 
-  shops.forEach(shop => {
+  filteredShops.forEach(shop => {
     const card = document.createElement("div");
     card.className = "shop-card";
 
@@ -69,33 +94,46 @@ function showShops() {
       <h3>${safeText(shop.name)}</h3>
       <p>${safeText(shop.category)}</p>
       <p>${safeText(shop.area)}</p>
-      <button>દુકાન જુઓ</button>
+      <button type="button">દુકાન જુઓ</button>
     `;
 
-    card.querySelector("button").onclick = () => openShop(shop.id);
+    card.querySelector("button").onclick = () =>
+      openShop(shop.id);
+
     shopList.appendChild(card);
   });
 }
 
+// દુકાનની વસ્તુઓ બતાવો
 function openShop(id) {
-  selectedShop = data.shops.find(shop => shop.id === id);
+  selectedShop = shops.find(shop => shop.id === id);
 
   if (!selectedShop) return;
 
   document.getElementById("productsSection").hidden = false;
+
   document.getElementById("selectedShopName").textContent =
     selectedShop.name;
 
   productList.innerHTML = "";
 
-  selectedShop.products.forEach(product => {
+  const shopProducts = products.filter(product =>
+    product.shopId === selectedShop.id
+  );
+
+  if (!shopProducts.length) {
+    productList.textContent = "આ દુકાનમાં હજુ કોઈ વસ્તુ નથી.";
+    return;
+  }
+
+  shopProducts.forEach(product => {
     const card = document.createElement("div");
     card.className = "product-card";
 
     card.innerHTML = `
       <h3>${safeText(product.name)}</h3>
       <p>₹${Number(product.price)} / ${safeText(product.unit)}</p>
-      <button>કાર્ટમાં ઉમેરો</button>
+      <button type="button">કાર્ટમાં ઉમેરો</button>
     `;
 
     card.querySelector("button").onclick = () =>
@@ -105,8 +143,13 @@ function openShop(id) {
   });
 }
 
+// કાર્ટમાં ઉમેરો
 function addToCart(id) {
-  const product = selectedShop.products.find(p => p.id === id);
+  if (!selectedShop) return;
+
+  const product = products.find(p =>
+    p.id === id && p.shopId === selectedShop.id
+  );
 
   if (!product) return;
 
@@ -130,36 +173,41 @@ function addToCart(id) {
   showCart();
 }
 
+// કાર્ટ બતાવો
 function showCart() {
   const cartItems = document.getElementById("cartItems");
 
-  if (cart.length === 0) {
+  if (!cart.length) {
     cartItems.textContent = "હજુ કોઈ વસ્તુ પસંદ કરી નથી.";
   } else {
     cartItems.innerHTML = cart.map(item => `
       <div>
         ${safeText(item.name)} × ${item.quantity}
-        = ₹${item.price * item.quantity}
+        = ₹${Number(item.price) * item.quantity}
       </div>
     `).join("");
   }
 
   const total = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) =>
+      sum + Number(item.price) * item.quantity,
     0
   );
 
   document.getElementById("cartTotal").textContent = "₹" + total;
 }
 
+// Search
 document.getElementById("shopSearch")
   .addEventListener("input", showShops);
 
+// પાછા દુકાનોમાં
 document.getElementById("backToShops")
   .addEventListener("click", () => {
     document.getElementById("productsSection").hidden = true;
     selectedShop = null;
   });
 
-showShops();
+// શરૂઆત
 showCart();
+loadData();
