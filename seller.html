@@ -22,9 +22,9 @@
 
       <form id="registerForm">
         <h3>નવું એકાઉન્ટ બનાવો</h3>
-        <input id="sellerName" type="text" placeholder="તમારું નામ">
-        <input id="sellerEmail" type="email" placeholder="ઈમેલ">
-        <input id="sellerPassword" type="password" placeholder="પાસવર્ડ">
+        <input id="sellerName" type="text" placeholder="તમારું નામ" required>
+        <input id="sellerEmail" type="email" placeholder="ઈમેલ" required>
+        <input id="sellerPassword" type="password" placeholder="પાસવર્ડ" required>
         <button type="submit">રજિસ્ટર કરો</button>
       </form>
 
@@ -67,11 +67,7 @@
         >
 
         <label>દુકાનનો ફોટો પસંદ કરો</label>
-        <input
-          id="shopPhoto"
-          type="file"
-          accept="image/*"
-        >
+        <input id="shopPhoto" type="file" accept="image/*">
         <img
           id="shopPhotoPreview"
           alt="દુકાનના ફોટાનું પ્રિવ્યૂ"
@@ -106,14 +102,15 @@
         <input id="productPrice" type="number" min="1" step="0.01" required>
 
         <label>એકમ</label>
-        <input id="productUnit" type="text" placeholder="જેમ કે 1 kilo, 1 piece" required>
+        <input
+          id="productUnit"
+          type="text"
+          placeholder="જેમ કે 1 kilo, 1 piece"
+          required
+        >
 
         <label>વસ્તુનો ફોટો પસંદ કરો</label>
-        <input
-          id="productPhoto"
-          type="file"
-          accept="image/*"
-        >
+        <input id="productPhoto" type="file" accept="image/*">
         <img
           id="productPhotoPreview"
           alt="વસ્તુના ફોટાનું પ્રિવ્યૂ"
@@ -126,10 +123,92 @@
 
       <hr>
 
+      <h2>દુકાનની માહિતીમાં ફેરફાર</h2>
+
+      <form id="editShopForm" hidden>
+        <input id="editShopId" type="hidden">
+
+        <label>દુકાનનું નામ</label>
+        <input id="editShopName" type="text" required>
+
+        <label>કેટેગરી</label>
+        <input id="editShopCategory" type="text" required>
+
+        <label>ગામ / વિસ્તાર</label>
+        <input id="editShopArea" type="text" required>
+
+        <label>WhatsApp નંબર</label>
+        <input
+          id="editShopWhatsapp"
+          type="tel"
+          inputmode="numeric"
+          maxlength="10"
+          pattern="[6-9][0-9]{9}"
+          required
+        >
+
+        <label>ઓર્ડર નિયમ</label>
+        <select id="editShopRule" required>
+          <option value="veg2kg">ફળો/શાકભાજી - ઓછામાં ઓછા 2 કિલો</option>
+          <option value="amount500">ઓછામાં ઓછા ₹500</option>
+          <option value="none">કોઈ મિનિમમ નહીં</option>
+        </select>
+
+        <label>નવો દુકાનનો ફોટો પસંદ કરો</label>
+        <input id="editShopPhoto" type="file" accept="image/*">
+
+        <img
+          id="editShopPhotoPreview"
+          alt="દુકાનના ફોટાનું પ્રિવ્યૂ"
+          hidden
+          style="max-width:180px;display:block"
+        >
+
+        <button type="submit">દુકાનની માહિતી સેવ કરો</button>
+        <button id="cancelShopEdit" type="button">રદ કરો</button>
+      </form>
+
+      <hr>
+
+      <h2>વસ્તુમાં ફેરફાર</h2>
+
+      <form id="editProductForm" hidden>
+        <input id="editProductId" type="hidden">
+
+        <label>વસ્તુનું નામ</label>
+        <input id="editProductName" type="text" required>
+
+        <label>ભાવ (₹)</label>
+        <input id="editProductPrice" type="number" min="1" step="0.01" required>
+
+        <label>એકમ</label>
+        <input id="editProductUnit" type="text" required>
+
+        <label>નવો વસ્તુનો ફોટો પસંદ કરો</label>
+        <input id="editProductPhoto" type="file" accept="image/*">
+
+        <img
+          id="editProductPhotoPreview"
+          alt="વસ્તુના ફોટાનું પ્રિવ્યૂ"
+          hidden
+          style="max-width:180px;display:block"
+        >
+
+        <button type="submit">વસ્તુની માહિતી સેવ કરો</button>
+        <button id="cancelProductEdit" type="button">રદ કરો</button>
+      </form>
+
+      <hr>
+
       <h2>મારી દુકાનો</h2>
       <div id="sellerShops"></div>
 
-      <p id="sellerMessage"></p>
+      <hr>
+
+      <h2>મારી બધી વસ્તુઓ</h2>
+      <div id="sellerProducts"></div>
+
+      <p id="sellerMessage" role="status"></p>
     </section>
   </main>
 
