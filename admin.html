@@ -18,26 +18,17 @@
   <h1>Admin Panel</h1>
   <p>દુકાનો અને સેલર એકાઉન્ટનું સંચાલન</p>
 
-  <!-- Admin Login -->
   <section id="adminLogin">
     <h2>Admin Login</h2>
 
     <form id="adminLoginForm">
       <label for="adminEmail">Admin Email</label>
-      <input
-        id="adminEmail"
-        type="email"
-        placeholder="Admin ઈમેલ"
-        required
-      >
+      <input id="adminEmail" type="email"
+        placeholder="Admin ઈમેલ" required>
 
       <label for="adminPassword">Password</label>
-      <input
-        id="adminPassword"
-        type="password"
-        placeholder="Admin પાસવર્ડ"
-        required
-      >
+      <input id="adminPassword" type="password"
+        placeholder="Admin પાસવર્ડ" required>
 
       <button type="submit">Admin Login</button>
     </form>
@@ -45,15 +36,12 @@
     <p id="adminMessage"></p>
   </section>
 
-  <!-- Admin Dashboard -->
   <div id="adminDashboard" hidden>
 
     <section>
       <h2>Admin Account</h2>
       <p id="adminWelcome"></p>
-      <button type="button" id="adminLogout">
-        Logout
-      </button>
+      <button type="button" id="adminLogout">Logout</button>
     </section>
 
     <section>
@@ -62,7 +50,11 @@
     </section>
 
     <section>
-      <h2>બધી દુકાનો</h2>
+      <h2>બધી દુકાનો અને ફી વ્યવસ્થા</h2>
+      <p>
+        પહેલી વખત ₹300માં પહેલો મહિનો સામેલ છે.
+        ત્યારબાદ દર મહિને પ્રોડક્ટની સંખ્યા પ્રમાણે ફી લાગશે.
+      </p>
       <div id="allShops"></div>
     </section>
 
@@ -74,6 +66,16 @@
     <section>
       <h2>બધી વસ્તુઓ</h2>
       <div id="allProducts"></div>
+    </section>
+
+    <section>
+      <h2>માસિક ફીનો નિયમ</h2>
+      <p>1 થી 30 પ્રોડક્ટ: ₹60</p>
+      <p>31 થી 60 પ્રોડક્ટ: ₹120</p>
+      <p>61 થી 90 પ્રોડક્ટ: ₹180</p>
+      <p>91 થી 120 પ્રોડક્ટ: ₹240</p>
+      <p>પૈસા રોકડા મળ્યા પછી જ Admin દુકાન ON કરશે.</p>
+      <p>એક મહિનો પૂરો થતાં દુકાન આપમેળે OFF થશે.</p>
     </section>
 
   </div>
