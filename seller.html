@@ -17,7 +17,6 @@
 <main>
   <h1>Seller Account</h1>
 
-  <!-- Seller Login / Registration -->
   <section id="sellerAuth">
     <h2>સેલર એકાઉન્ટ</h2>
     <p>નવું એકાઉન્ટ બનાવો અથવા તમારા એકાઉન્ટમાં લોગિન કરો.</p>
@@ -45,15 +44,12 @@
     <p id="sellerAuthMessage"></p>
   </section>
 
-  <!-- Seller Dashboard -->
   <div id="sellerDashboard" hidden>
 
     <section>
       <h2>તમારું એકાઉન્ટ</h2>
       <p id="sellerWelcome"></p>
-      <button type="button" id="sellerLogout">
-        લોગઆઉટ
-      </button>
+      <button type="button" id="sellerLogout">લોગઆઉટ</button>
     </section>
 
     <section>
@@ -69,6 +65,17 @@
 
         <label for="shopArea">ગામ / વિસ્તાર</label>
         <input id="shopArea" type="text" required>
+
+        <label for="shopWhatsapp">દુકાનનો WhatsApp નંબર</label>
+        <div>
+          <span>+91</span>
+          <input id="shopWhatsapp" type="tel"
+            inputmode="numeric"
+            maxlength="10"
+            pattern="[6-9][0-9]{9}"
+            placeholder="10 અંકનો મોબાઇલ નંબર"
+            required>
+        </div>
 
         <label for="shopRule">ઓર્ડર નિયમ</label>
         <select id="shopRule" required>
