@@ -1,140 +1,106 @@
-
 <!DOCTYPE html>
 <html lang="gu">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>K.H Fresh & Fashion</title>
-
+  <title>K.H Fresh & Fashion - Meesho Style Shopping</title>
   <link rel="stylesheet" href="index.css">
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Vadodara:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
-  <header>
-    <h2>K.H Fresh & Fashion</h2>
-
-    <nav>
-      <a href="seller.html">Seller</a>
-      <a href="admin.html">Admin</a>
-    </nav>
+  <!-- Meesho Style Header -->
+  <header class="app-header">
+    <div class="header-top">
+      <div class="brand-info">
+        <span class="brand-badge">K.H</span>
+        <h2>Fresh & Fashion</h2>
+      </div>
+      <nav class="header-nav">
+        <a href="seller.html" class="nav-btn">Seller</a>
+        <a href="admin.html" class="nav-btn">Admin</a>
+      </nav>
+    </div>
+    
+    <!-- Search Bar -->
+    <div class="search-wrapper">
+      <input type="text" id="globalSearch" placeholder="તમારી પસંદગીની વસ્તુ કે દુકાન શોધો..." />
+      <span class="search-icon">🔍</span>
+    </div>
   </header>
 
-  <main>
+  <!-- Category Slider (Meesho Style) -->
+  <div class="category-scroll">
+    <button class="cat-chip active" data-cat="બધી">🛍️ બધી વસ્તુઓ</button>
+    <button class="cat-chip" data-cat="શાકભાજી">🥦 શાકભાજી</button>
+    <button class="cat-chip" data-cat="ફળો">🍎 ફળો</button>
+    <button class="cat-chip" data-cat="કપડાં">👗 કપડાં &amp; ફેશન</button>
+    <button class="cat-chip" data-cat="ફૂટવેર">👟 ફૂટવેર</button>
+    <button class="cat-chip" data-cat="કરિયાણું">🛒 કરિયાણું</button>
+  </div>
 
-    <section class="hero">
-      <h1>તમારા વિસ્તારની ખરીદી એક જ જગ્યાએ</h1>
+  <main class="container">
 
-      <p>
-        ફળો, શાકભાજી, કરિયાણા, કપડાં,
-        ફૂટવેર અને બીજી વસ્તુઓ.
-      </p>
-
-      <p>
-        ઓર્ડરનો સમય: સવારે 9 થી સાંજે 6 વાગ્યા સુધી
-      </p>
-    </section>
-
+    <!-- Shops Section -->
     <section id="shopsSection">
-      <h2>તમારા વિસ્તારની દુકાનો</h2>
-
-      <p>દુકાનના ફોટા પર ક્લિક કરીને વસ્તુઓ જુઓ.</p>
-
-      <div id="shopList"></div>
-    </section>
-
-    <section id="productsSection" hidden>
-
-      <button
-        id="backToShops"
-        type="button"
-        class="back-button"
-      >
-        ← બધી દુકાનોમાં પાછા જાઓ
-      </button>
-
-      <h2 id="selectedShopName">વસ્તુઓ</h2>
-
-      <div id="productList"></div>
-
-    </section>
-
-    <section id="cartSection">
-      <h2>તમારો ઓર્ડર</h2>
-
-      <div id="cartItems">
-        હજુ કોઈ વસ્તુ પસંદ કરી નથી.
+      <div class="section-title">
+        <h3>📍 તમારા વિસ્તારની દુકાનો</h3>
+        <span class="sub-text">દુકાન પર ક્લિક કરીને બધી પ્રોડક્ટ જુઓ</span>
       </div>
-
-      <h3>
-        કુલ: <span id="cartTotal">₹0</span>
-      </h3>
+      <div id="shopList" class="meesho-grid"></div>
     </section>
 
-    <section id="customerOrderSection">
-
-      <h2>ગ્રાહકની માહિતી</h2>
-
-      <form id="customerOrderForm">
-
-        <label for="customerName">
-          તમારું નામ
-        </label>
-
-        <input
-          id="customerName"
-          type="text"
-          placeholder="તમારું પૂરું નામ"
-          required
-        >
-
-        <label for="customerMobile">
-          મોબાઇલ નંબર
-        </label>
-
-        <input
-          id="customerMobile"
-          type="tel"
-          inputmode="numeric"
-          maxlength="10"
-          pattern="[6-9][0-9]{9}"
-          placeholder="10 અંકનો મોબાઇલ નંબર"
-          required
-        >
-
-        <label for="customerAddress">
-          પૂરું સરનામું
-        </label>
-
-        <textarea
-          id="customerAddress"
-          rows="4"
-          placeholder="ગામ, વિસ્તાર અને ઘરનું સરનામું"
-          required
-        ></textarea>
-
-        <button
-          id="whatsappOrderButton"
-          type="submit"
-        >
-          WhatsApp પર ઓર્ડર મોકલો
-        </button>
-
-      </form>
-
-      <p id="orderMessage"></p>
-
-      <p>
-        નોંધ: ઓર્ડર મોકલ્યા પછી WhatsApp ખુલશે.
-        ત્યાં મેસેજ તપાસીને Send દબાવશો.
-      </p>
-
+    <!-- Products Section -->
+    <section id="productsSection" hidden>
+      <div class="product-header-bar">
+        <button id="backToShops" class="btn-back">← બધી દુકાનો</button>
+        <h3 id="selectedShopName">દુકાનની વસ્તુઓ</h3>
+      </div>
+      <div id="productList" class="meesho-product-grid"></div>
     </section>
 
   </main>
 
-  <script type="module" src="index.js"></script>
+  <!-- Meesho Floating Bottom Cart Bar -->
+  <div id="floatingCartBar" class="floating-cart hidden">
+    <div class="cart-info">
+      <span id="cartCountBadge" class="count-badge">0</span>
+      <div class="cart-price">
+        <span id="cartTotalText">₹0</span>
+        <small>કુલ રકમ</small>
+      </div>
+    </div>
+    <button id="openCartBtn" class="view-cart-btn">કાર્ટ જુઓ 🛒</button>
+  </div>
 
+  <!-- Cart Modal Drawer (Meesho Style) -->
+  <div id="cartDrawer" class="cart-drawer hidden">
+    <div class="drawer-overlay" id="closeCartOverlay"></div>
+    <div class="drawer-content">
+      <div class="drawer-header">
+        <h3>તમારું કાર્ટ (Order Details)</h3>
+        <button id="closeCartBtn" class="close-btn">✕</button>
+      </div>
+
+      <div class="drawer-body">
+        <div id="cartItemsList" class="cart-items-wrapper"></div>
+        <div id="cartSummary" class="price-summary-box"></div>
+
+        <!-- Customer Form -->
+        <form id="customerOrderForm" class="order-form">
+          <h4>🚚 ડિલિવરી માટેની માહિતી</h4>
+          <input type="text" id="customerName" placeholder="તમારું પૂરું નામ" required />
+          <input type="tel" id="customerMobile" maxlength="10" pattern="[6-9][0-9]{9}" placeholder="10 અંકનો મોબાઇલ નંબર" required />
+          <textarea id="customerAddress" rows="2" placeholder="ગામ / વિસ્તાર અને ઘરનું સરનામું" required></textarea>
+
+          <button type="submit" id="whatsappOrderButton" class="whatsapp-btn">
+            🟢 WhatsApp પર ઓર્ડર કન્ફર્મ કરો
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="index.js"></script>
 </body>
 </html>
