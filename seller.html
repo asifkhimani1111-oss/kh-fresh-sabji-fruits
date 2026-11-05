@@ -5,7 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>K.H Fresh & Fashion - Seller</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="seller.css">
 </head>
 <body>
@@ -17,59 +16,105 @@
 
 <main>
   <h1>Seller Account</h1>
-  <p>તમારી દુકાન અને વસ્તુઓ અહીં ઉમેરો.</p>
 
-  <section>
-    <h2>નવી દુકાન બનાવો</h2>
+  <!-- Seller Login / Registration -->
+  <section id="sellerAuth">
+    <h2>સેલર એકાઉન્ટ</h2>
+    <p>નવું એકાઉન્ટ બનાવો અથવા તમારા એકાઉન્ટમાં લોગિન કરો.</p>
 
-    <form id="shopForm">
-      <label for="shopName">દુકાનનું નામ</label>
-      <input id="shopName" type="text" required>
+    <form id="sellerAuthForm">
+      <label for="sellerName">તમારું નામ (નવા એકાઉન્ટ માટે)</label>
+      <input id="sellerName" type="text" placeholder="તમારું નામ">
 
-      <label for="shopCategory">કેટેગરી</label>
-      <input id="shopCategory" type="text"
-        placeholder="કરિયાણા, કપડાં, ફળો..." required>
+      <label for="sellerEmail">ઈમેલ</label>
+      <input id="sellerEmail" type="email"
+        placeholder="તમારો ઈમેલ" required>
 
-      <label for="shopArea">ગામ / વિસ્તાર</label>
-      <input id="shopArea" type="text" required>
+      <label for="sellerPassword">પાસવર્ડ</label>
+      <input id="sellerPassword" type="password"
+        placeholder="પાસવર્ડ" minlength="6" required>
 
-      <label for="shopRule">ઓર્ડર નિયમ</label>
-      <select id="shopRule" required>
-        <option value="veg2kg">ફળો/શાકભાજી - ઓછામાં ઓછા 2 કિલો</option>
-        <option value="amount500">ઓછામાં ઓછા ₹500</option>
-        <option value="none">કોઈ મિનિમમ નહીં</option>
-      </select>
+      <button type="submit" name="action" value="register">
+        નવું એકાઉન્ટ બનાવો
+      </button>
 
-      <button type="submit">દુકાન ઉમેરો</button>
+      <button type="submit" name="action" value="login">
+        લોગિન કરો
+      </button>
     </form>
+    <p id="sellerAuthMessage"></p>
   </section>
 
-  <section>
-    <h2>વસ્તુ ઉમેરો</h2>
+  <!-- Seller Dashboard -->
+  <div id="sellerDashboard" hidden>
 
-    <form id="productForm">
-      <label for="myShop">દુકાન પસંદ કરો</label>
-      <select id="myShop" required></select>
+    <section>
+      <h2>તમારું એકાઉન્ટ</h2>
+      <p id="sellerWelcome"></p>
+      <button type="button" id="sellerLogout">
+        લોગઆઉટ
+      </button>
+    </section>
 
-      <label for="productName">વસ્તુનું નામ</label>
-      <input id="productName" type="text" required>
+    <section>
+      <h2>નવી દુકાન બનાવો</h2>
 
-      <label for="productPrice">ભાવ (₹)</label>
-      <input id="productPrice" type="number"
-        min="0" step="0.01" required>
+      <form id="shopForm">
+        <label for="shopName">દુકાનનું નામ</label>
+        <input id="shopName" type="text" required>
 
-      <label for="productUnit">એકમ</label>
-      <input id="productUnit" type="text"
-        placeholder="કિલો, નંગ, પેકેટ" required>
+        <label for="shopCategory">કેટેગરી</label>
+        <input id="shopCategory" type="text"
+          placeholder="કરિયાણા, કપડાં, ફળો..." required>
 
-      <button type="submit">વસ્તુ ઉમેરો</button>
-    </form>
-  </section>
+        <label for="shopArea">ગામ / વિસ્તાર</label>
+        <input id="shopArea" type="text" required>
 
-  <section>
-    <h2>મારી દુકાનો</h2>
-    <div id="sellerShops"></div>
-  </section>
+        <label for="shopRule">ઓર્ડર નિયમ</label>
+        <select id="shopRule" required>
+          <option value="veg2kg">
+            ફળો/શાકભાજી - ઓછામાં ઓછા 2 કિલો
+          </option>
+          <option value="amount500">
+            ઓછામાં ઓછા ₹500
+          </option>
+          <option value="none">
+            કોઈ મિનિમમ નહીં
+          </option>
+        </select>
+
+        <button type="submit">દુકાન ઉમેરો</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>વસ્તુ ઉમેરો</h2>
+
+      <form id="productForm">
+        <label for="myShop">દુકાન પસંદ કરો</label>
+        <select id="myShop" required></select>
+
+        <label for="productName">વસ્તુનું નામ</label>
+        <input id="productName" type="text" required>
+
+        <label for="productPrice">ભાવ (₹)</label>
+        <input id="productPrice" type="number"
+          min="0.01" step="0.01" required>
+
+        <label for="productUnit">એકમ</label>
+        <input id="productUnit" type="text"
+          placeholder="કિલો, નંગ, પેકેટ" required>
+
+        <button type="submit">વસ્તુ ઉમેરો</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>મારી દુકાનો</h2>
+      <div id="sellerShops"></div>
+    </section>
+
+  </div>
 </main>
 
 <script type="module" src="seller.js"></script>
