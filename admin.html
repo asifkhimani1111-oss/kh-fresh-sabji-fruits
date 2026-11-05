@@ -4,82 +4,249 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#087f5b">
   <title>K.H Fresh & Fashion - Admin</title>
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
 
-<header>
-  <h2>K.H Fresh & Fashion</h2>
+<header class="admin-header">
+  <div>
+    <h1>K.H Fresh & Fashion</h1>
+    <p>Admin Control Panel</p>
+  </div>
   <a href="index.html">Customer Page</a>
 </header>
 
-<main>
-  <h1>Admin Panel</h1>
-  <p>દુકાનો અને સેલર એકાઉન્ટનું સંચાલન</p>
+<main class="admin-container">
 
-  <section id="adminLogin">
+  <!-- LOGIN -->
+  <section id="loginSection" class="admin-card">
     <h2>Admin Login</h2>
+    <p>તમારા Admin એકાઉન્ટથી લોગિન કરો.</p>
 
-    <form id="adminLoginForm">
-      <label for="adminEmail">Admin Email</label>
-      <input id="adminEmail" type="email"
-        placeholder="Admin ઈમેલ" required>
+    <input
+      type="email"
+      id="adminEmail"
+      placeholder="Admin Email"
+      autocomplete="username"
+    >
 
-      <label for="adminPassword">Password</label>
-      <input id="adminPassword" type="password"
-        placeholder="Admin પાસવર્ડ" required>
+    <input
+      type="password"
+      id="adminPassword"
+      placeholder="Password"
+      autocomplete="current-password"
+    >
 
-      <button type="submit">Admin Login</button>
-    </form>
+    <button id="adminLogin" class="primary-btn">
+      Admin Login કરો
+    </button>
 
-    <p id="adminMessage"></p>
+    <p id="loginMessage" class="message"></p>
   </section>
 
-  <div id="adminDashboard" hidden>
+  <!-- DASHBOARD -->
+  <section id="dashboardSection" class="hidden">
 
-    <section>
-      <h2>Admin Account</h2>
-      <p id="adminWelcome"></p>
-      <button type="button" id="adminLogout">Logout</button>
+    <div class="welcome-card">
+      <div>
+        <h2>Admin Dashboard</h2>
+        <p>K.H Fresh & Fashion મેનેજમેન્ટ</p>
+      </div>
+
+      <button id="adminLogout" class="logout-btn">
+        Logout
+      </button>
+    </div>
+
+    <!-- STATISTICS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3 id="totalShops">0</h3>
+        <p>કુલ દુકાનો</p>
+      </div>
+
+      <div class="stat-card">
+        <h3 id="totalProducts">0</h3>
+        <p>કુલ પ્રોડક્ટ્સ</p>
+      </div>
+
+      <div class="stat-card">
+        <h3 id="totalOrders">0</h3>
+        <p>કુલ ઓર્ડર</p>
+      </div>
+
+      <div class="stat-card">
+        <h3 id="totalSellers">0</h3>
+        <p>કુલ Sellers</p>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <nav class="admin-tabs">
+      <button class="tab-btn active" data-tab="shopsTab">
+        દુકાનો
+      </button>
+
+      <button class="tab-btn" data-tab="productsTab">
+        પ્રોડક્ટ્સ
+      </button>
+
+      <button class="tab-btn" data-tab="categoriesTab">
+        કેટેગરી
+      </button>
+
+      <button class="tab-btn" data-tab="ordersTab">
+        ઓર્ડર
+      </button>
+
+      <button class="tab-btn" data-tab="sellersTab">
+        Sellers
+      </button>
+    </nav>
+
+    <!-- SHOPS -->
+    <section id="shopsTab" class="tab-content">
+
+      <div class="admin-card">
+        <h2>નવી દુકાન ઉમેરો / સુધારો</h2>
+
+        <input type="hidden" id="shopEditId">
+
+        <input id="shopName" placeholder="દુકાનનું નામ">
+        <input id="shopOwner" placeholder="માલિકનું નામ">
+        <input id="shopArea" placeholder="ગામ / વિસ્તાર">
+        <input id="shopPhone" placeholder="મોબાઇલ નંબર">
+        <input id="shopWhatsapp" placeholder="WhatsApp નંબર">
+        <input id="shopImage" placeholder="દુકાન ફોટાની URL">
+
+        <label>Minimum Order Rule</label>
+        <select id="shopMinimumRule">
+          <option value="none">કોઈ Minimum નહીં</option>
+          <option value="kg2">ઓછામાં ઓછા 2 KG</option>
+          <option value="amount500">ઓછામાં ઓછા ₹500</option>
+          <option value="custom">Custom Minimum</option>
+        </select>
+
+        <input
+          type="number"
+          id="shopMinimumValue"
+          placeholder="Custom Minimum રકમ"
+          min="0"
+        >
+
+        <label>દુકાનની સ્થિતિ</label>
+        <select id="shopStatus">
+          <option value="true">ચાલુ</option>
+          <option value="false">બંધ</option>
+        </select>
+
+        <button id="saveShop" class="primary-btn">
+          દુકાન સેવ કરો
+        </button>
+
+        <button id="cancelShopEdit" class="secondary-btn hidden">
+          Cancel Edit
+        </button>
+      </div>
+
+      <div class="admin-card">
+        <h2>બધી દુકાનો</h2>
+        <div id="adminShopList">Loading...</div>
+      </div>
+
     </section>
 
-    <section>
-      <h2>મંજૂરી બાકી દુકાનો</h2>
-      <div id="pending"></div>
+    <!-- PRODUCTS -->
+    <section id="productsTab" class="tab-content hidden">
+
+      <div class="admin-card">
+        <h2>નવી પ્રોડક્ટ ઉમેરો / સુધારો</h2>
+
+        <input type="hidden" id="productEditId">
+
+        <select id="productShop">
+          <option value="">દુકાન પસંદ કરો</option>
+        </select>
+
+        <input id="productName" placeholder="પ્રોડક્ટનું નામ">
+        <input id="productCategory" placeholder="કેટેગરી">
+        <input id="productPrice" type="number" placeholder="ભાવ">
+        <input id="productUnit" placeholder="એકમ: kg, નંગ, લિટર">
+        <input id="productImage" placeholder="પ્રોડક્ટ ફોટાની URL">
+
+        <label>પ્રોડક્ટ સ્થિતિ</label>
+        <select id="productStatus">
+          <option value="true">ઉપલબ્ધ</option>
+          <option value="false">બંધ</option>
+        </select>
+
+        <button id="saveProduct" class="primary-btn">
+          પ્રોડક્ટ સેવ કરો
+        </button>
+
+        <button id="cancelProductEdit" class="secondary-btn hidden">
+          Cancel Edit
+        </button>
+      </div>
+
+      <div class="admin-card">
+        <h2>બધી પ્રોડક્ટ્સ</h2>
+        <div id="adminProductList">Loading...</div>
+      </div>
+
     </section>
 
-    <section>
-      <h2>બધી દુકાનો અને ફી વ્યવસ્થા</h2>
-      <p>
-        પહેલી વખત ₹300માં પહેલો મહિનો સામેલ છે.
-        ત્યારબાદ દર મહિને પ્રોડક્ટની સંખ્યા પ્રમાણે ફી લાગશે.
-      </p>
-      <div id="allShops"></div>
+    <!-- CATEGORIES -->
+    <section id="categoriesTab" class="tab-content hidden">
+
+      <div class="admin-card">
+        <h2>નવી કેટેગરી ઉમેરો</h2>
+
+        <input id="categoryName" placeholder="કેટેગરીનું નામ">
+
+        <button id="saveCategory" class="primary-btn">
+          કેટેગરી ઉમેરો
+        </button>
+      </div>
+
+      <div class="admin-card">
+        <h2>બધી કેટેગરી</h2>
+        <div id="adminCategoryList">Loading...</div>
+      </div>
+
     </section>
 
-    <section>
-      <h2>મંજૂરી બાકી વસ્તુઓ</h2>
-      <div id="pendingProducts"></div>
+    <!-- ORDERS -->
+    <section id="ordersTab" class="tab-content hidden">
+
+      <div class="admin-card">
+        <h2>ગ્રાહકોના ઓર્ડર</h2>
+        <div id="adminOrderList">Loading...</div>
+      </div>
+
     </section>
 
-    <section>
-      <h2>બધી વસ્તુઓ</h2>
-      <div id="allProducts"></div>
+    <!-- SELLERS -->
+    <section id="sellersTab" class="tab-content hidden">
+
+      <div class="admin-card">
+        <h2>Seller Accounts</h2>
+        <div id="adminSellerList">Loading...</div>
+      </div>
+
     </section>
 
-    <section>
-      <h2>માસિક ફીનો નિયમ</h2>
-      <p>1 થી 30 પ્રોડક્ટ: ₹60</p>
-      <p>31 થી 60 પ્રોડક્ટ: ₹120</p>
-      <p>61 થી 90 પ્રોડક્ટ: ₹180</p>
-      <p>91 થી 120 પ્રોડક્ટ: ₹240</p>
-      <p>પૈસા રોકડા મળ્યા પછી જ Admin દુકાન ON કરશે.</p>
-      <p>એક મહિનો પૂરો થતાં દુકાન આપમેળે OFF થશે.</p>
-    </section>
+  </section>
 
-  </div>
 </main>
+
+<footer>
+  <p>© 2026 K.H Fresh & Fashion</p>
+</footer>
+
+<div id="adminNotification" class="notification hidden"></div>
 
 <script type="module" src="admin.js"></script>
 
