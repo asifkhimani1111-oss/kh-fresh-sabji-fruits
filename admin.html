@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#f3f6f9">
   <title>K.H Fresh & Fashion - Admin</title>
   <link rel="stylesheet" href="admin.css">
 </head>
@@ -17,26 +16,67 @@
 
 <main>
   <h1>Admin Panel</h1>
+  <p>દુકાનો અને સેલર એકાઉન્ટનું સંચાલન</p>
 
-  <div class="warning">
-    આ પ્રારંભિક Admin પેજ છે. Admin Login અને સુરક્ષિત પરવાનગીઓનું
-    સેટઅપ પૂર્ણ ન થાય ત્યાં સુધી અહીં વાસ્તવિક દુકાનોનું સંચાલન ન કરશો.
+  <!-- Admin Login -->
+  <section id="adminLogin">
+    <h2>Admin Login</h2>
+
+    <form id="adminLoginForm">
+      <label for="adminEmail">Admin Email</label>
+      <input
+        id="adminEmail"
+        type="email"
+        placeholder="Admin ઈમેલ"
+        required
+      >
+
+      <label for="adminPassword">Password</label>
+      <input
+        id="adminPassword"
+        type="password"
+        placeholder="Admin પાસવર્ડ"
+        required
+      >
+
+      <button type="submit">Admin Login</button>
+    </form>
+
+    <p id="adminMessage"></p>
+  </section>
+
+  <!-- Admin Dashboard -->
+  <div id="adminDashboard" hidden>
+
+    <section>
+      <h2>Admin Account</h2>
+      <p id="adminWelcome"></p>
+      <button type="button" id="adminLogout">
+        Logout
+      </button>
+    </section>
+
+    <section>
+      <h2>મંજૂરી બાકી દુકાનો</h2>
+      <div id="pending"></div>
+    </section>
+
+    <section>
+      <h2>બધી દુકાનો</h2>
+      <div id="allShops"></div>
+    </section>
+
+    <section>
+      <h2>મંજૂરી બાકી વસ્તુઓ</h2>
+      <div id="pendingProducts"></div>
+    </section>
+
+    <section>
+      <h2>બધી વસ્તુઓ</h2>
+      <div id="allProducts"></div>
+    </section>
+
   </div>
-
-  <section>
-    <h2>દુકાન મંજૂરી</h2>
-    <div id="pending">
-      દુકાનોની માહિતી લોડ થઈ રહી છે...
-    </div>
-  </section>
-
-  <section>
-    <h2>બધી દુકાનો</h2>
-    <div id="allShops">
-      દુકાનોની માહિતી લોડ થઈ રહી છે...
-    </div>
-  </section>
-
 </main>
 
 <script type="module" src="admin.js"></script>
