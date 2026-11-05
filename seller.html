@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>K.H Fresh & Fashion - Seller</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="seller.css">
 </head>
 <body>
@@ -22,17 +23,18 @@
     <h2>નવી દુકાન બનાવો</h2>
 
     <form id="shopForm">
-      <label>દુકાનનું નામ</label>
-      <input id="shopName" required>
+      <label for="shopName">દુકાનનું નામ</label>
+      <input id="shopName" type="text" required>
 
-      <label>કેટેગરી</label>
-      <input id="shopCategory" placeholder="કરિયાણા, કપડાં, ફળો..." required>
+      <label for="shopCategory">કેટેગરી</label>
+      <input id="shopCategory" type="text"
+        placeholder="કરિયાણા, કપડાં, ફળો..." required>
 
-      <label>ગામ / વિસ્તાર</label>
-      <input id="shopArea" required>
+      <label for="shopArea">ગામ / વિસ્તાર</label>
+      <input id="shopArea" type="text" required>
 
-      <label>ઓર્ડર નિયમ</label>
-      <select id="shopRule">
+      <label for="shopRule">ઓર્ડર નિયમ</label>
+      <select id="shopRule" required>
         <option value="veg2kg">ફળો/શાકભાજી - ઓછામાં ઓછા 2 કિલો</option>
         <option value="amount500">ઓછામાં ઓછા ₹500</option>
         <option value="none">કોઈ મિનિમમ નહીં</option>
@@ -46,17 +48,19 @@
     <h2>વસ્તુ ઉમેરો</h2>
 
     <form id="productForm">
-      <label>દુકાન પસંદ કરો</label>
+      <label for="myShop">દુકાન પસંદ કરો</label>
       <select id="myShop" required></select>
 
-      <label>વસ્તુનું નામ</label>
-      <input id="productName" required>
+      <label for="productName">વસ્તુનું નામ</label>
+      <input id="productName" type="text" required>
 
-      <label>ભાવ (₹)</label>
-      <input id="productPrice" type="number" min="0" step="0.01" required>
+      <label for="productPrice">ભાવ (₹)</label>
+      <input id="productPrice" type="number"
+        min="0" step="0.01" required>
 
-      <label>એકમ</label>
-      <input id="productUnit" placeholder="કિલો, નંગ, પેકેટ" required>
+      <label for="productUnit">એકમ</label>
+      <input id="productUnit" type="text"
+        placeholder="કિલો, નંગ, પેકેટ" required>
 
       <button type="submit">વસ્તુ ઉમેરો</button>
     </form>
@@ -68,6 +72,7 @@
   </section>
 </main>
 
-<script src="seller.js" defer></script>
+<script type="module" src="seller.js"></script>
+
 </body>
 </html>
