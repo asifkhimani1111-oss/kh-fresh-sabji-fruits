@@ -10,33 +10,34 @@ import {
 import {
   collection,
   getDocs,
-  doc,
+  addDoc,
   updateDoc,
   deleteDoc,
-  Timestamp
+  doc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-const ADMIN_UID = "uFXdUEzRvaOYQ5IwGio6GRDzgSG2";
+// =====================================
+// K.H FRESH & FASHION - ADMIN SYSTEM
+// =====================================
 
-const adminLogin = document.getElementById("adminLogin");
-const adminLoginForm = document.getElementById("adminLoginForm");
-const adminEmail = document.getElementById("adminEmail");
-const adminPassword = document.getElementById("adminPassword");
-const adminMessage = document.getElementById("adminMessage");
+const ADMIN_UID = "uFXdUEzRvaOYQ5IwGio6GRDzgSG";
 
-const adminDashboard = document.getElementById("adminDashboard");
-const adminWelcome = document.getElementById("adminWelcome");
-const adminLogout = document.getElementById("adminLogout");
+const $ = id => document.getElementById(id);
 
-const pending = document.getElementById("pending");
-const allShops = document.getElementById("allShops");
-const pendingProducts = document.getElementById("pendingProducts");
-const allProducts = document.getElementById("allProducts");
+let shops = [];
+let products = [];
+let categories = [];
+let orders = [];
+let sellers = [];
 
-let currentAdmin = false;
-let allProductsData = [];
+let currentAdmin = null;
 
-function safeText(value) {
+// =====================================
+// COMMON FUNCTIONS
+// =====================================
+
+function safe(value) {
   return String(value ?? "").replace(/[&<>"']/g, char => ({
     "&": "&amp;",
     "<": "&lt;",
@@ -46,453 +47,754 @@ function safeText(value) {
   })[char]);
 }
 
-function getProductCount(shopId) {
-  return allProductsData.filter(product =>
-    product.shopId === shopId
-  ).length;
+function money(value) {
+  return "₹" + Number(value || 0).toFixed(2);
 }
 
-function getMonthlyFee(productCount) {
-  const blocks = Math.max(1, Math.ceil(productCount / 30));
-  return blocks * 60;
+function notify(message) {
+  const box = $("adminNotification");
+
+  box.textContent = message;
+  box.classList.remove("hidden");
+
+  setTimeout(() => {
+    box.classList.add("hidden");
+  }, 3000);
 }
 
-function getExpiryDate(shop) {
-  if (!shop.activeUntil) return null;
+function showLogin() {
+  $("loginSection").classList.remove("hidden");
+  $("dashboardSection").classList.add("hidden");
+}
 
-  if (typeof shop.activeUntil.toDate === "function") {
-    return shop.activeUntil.toDate();
+function showDashboard() {
+  $("loginSection").classList.add("hidden");
+  $("dashboardSection").classList.remove("hidden");
+}
+
+// =====================================
+// ADMIN AUTHENTICATION
+// =====================================
+
+$("adminLogin").addEventListener("click", async () => {
+  const email = $("adminEmail").value.trim();
+  const password = $("adminPassword").value;
+
+  if (!email || !password) {
+    $("loginMessage").textContent =
+      "Email અને Password લખો.";
+    return;
   }
 
-  const date = new Date(shop.activeUntil);
+  $("adminLogin").disabled = true;
+  $("loginMessage").textContent = "Login થઈ રહ્યું છે...";
 
-  return Number.isNaN(date.getTime()) ? null : date;
+  try {
+    const result = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+    if (result.user.uid !== ADMIN_UID) {
+      await signOut(auth);
+
+      $("loginMessage").textContent =
+        "આ એકાઉન્ટને Admin પરવાનગી નથી.";
+
+      return;
+    }
+
+    $("loginMessage").textContent = "";
+
+  } catch (error) {
+    console.error(error);
+
+    $("loginMessage").textContent =
+      "Login નિષ્ફળ. Email અને Password તપાસો.";
+  } finally {
+    $("adminLogin").disabled = false;
+  }
+});
+
+$("adminLogout").addEventListener("click", async () => {
+  await signOut(auth);
+  notify("Logout થઈ ગયું.");
+});
+
+onAuthStateChanged(auth, async user => {
+  if (user && user.uid === ADMIN_UID) {
+    currentAdmin = user;
+    showDashboard();
+    await loadDashboard();
+  } else {
+    currentAdmin = null;
+    showLogin();
+  }
+});
+
+// =====================================
+// DASHBOARD DATA
+// =====================================
+
+async function loadDashboard() {
+  if (!currentAdmin) return;
+
+  try {
+    const results = await Promise.all([
+      getDocs(collection(db, "shops")),
+      getDocs(collection(db, "products")),
+      getDocs(collection(db, "categories")),
+      getDocs(collection(db, "orders")),
+      getDocs(collection(db, "users"))
+    ]);
+
+    shops = results[0].docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    }));
+
+    products = results[1].docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    }));
+
+    categories = results[2].docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    }));
+
+    orders = results[3].docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    }));
+
+    sellers = results[4].docs.map(d => ({
+      id: d.id,
+      ...d.data()
+    }));
+
+    renderAll();
+
+  } catch (error) {
+    console.error("Dashboard Error:", error);
+    notify("ડેટા લોડ થઈ શક્યો નથી. Firebase Rules તપાસો.");
+  }
 }
 
-function formatDate(date) {
-  if (!date) return "તારીખ ઉપલબ્ધ નથી";
+function renderAll() {
+  $("totalShops").textContent = shops.length;
+  $("totalProducts").textContent = products.length;
+  $("totalOrders").textContent = orders.length;
+  $("totalSellers").textContent = sellers.length;
 
-  return date.toLocaleDateString("gu-IN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric"
+  renderShops();
+  renderProducts();
+  renderCategories();
+  renderOrders();
+  renderSellers();
+  renderShopOptions();
+}
+
+// =====================================
+// TAB SYSTEM
+// =====================================
+
+document.querySelectorAll(".tab-btn").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b =>
+      b.classList.remove("active")
+    );
+
+    document.querySelectorAll(".tab-content").forEach(tab =>
+      tab.classList.add("hidden")
+    );
+
+    button.classList.add("active");
+
+    $(button.dataset.tab).classList.remove("hidden");
+  });
+});
+
+// =====================================
+// SHOP MANAGEMENT
+// =====================================
+
+$("saveShop").addEventListener("click", saveShop);
+
+async function saveShop() {
+  if (!currentAdmin) return;
+
+  const editId = $("shopEditId").value;
+
+  const name = $("shopName").value.trim();
+  const ownerName = $("shopOwner").value.trim();
+  const area = $("shopArea").value.trim();
+  const phone = $("shopPhone").value.trim();
+  const whatsapp = $("shopWhatsapp").value.trim();
+  const image = $("shopImage").value.trim();
+  const minimumRule = $("shopMinimumRule").value;
+  const minimumValue = Number(
+    $("shopMinimumValue").value || 0
+  );
+
+  const active = $("shopStatus").value === "true";
+
+  if (!name || !area) {
+    notify("દુકાનનું નામ અને વિસ્તાર જરૂરી છે.");
+    return;
+  }
+
+  if (minimumRule === "custom" && minimumValue <= 0) {
+    notify("Custom Minimum રકમ લખો.");
+    return;
+  }
+
+  const data = {
+    name,
+    shopName: name,
+    ownerName,
+    area,
+    village: area,
+    phone,
+    whatsapp,
+    image,
+    minimumRule,
+    minimumValue,
+    active,
+    isActive: active,
+    status: active ? "active" : "off",
+    updatedAt: serverTimestamp()
+  };
+
+  try {
+    if (editId) {
+      await updateDoc(doc(db, "shops", editId), data);
+      notify("દુકાન અપડેટ થઈ ગઈ.");
+    } else {
+      data.ownerUid = currentAdmin.uid;
+      data.createdAt = serverTimestamp();
+
+      await addDoc(collection(db, "shops"), data);
+      notify("નવી દુકાન ઉમેરાઈ ગઈ.");
+    }
+
+    resetShopForm();
+    await loadDashboard();
+
+  } catch (error) {
+    console.error(error);
+    notify("દુકાન સેવ થઈ શકી નથી.");
+  }
+}
+
+function renderShops() {
+  const box = $("adminShopList");
+
+  if (!shops.length) {
+    box.innerHTML = "<p>હજુ કોઈ દુકાન નથી.</p>";
+    return;
+  }
+
+  box.innerHTML = shops.map(shop => `
+    <div class="admin-list-item">
+      <h3>${safe(shop.name || shop.shopName)}</h3>
+
+      <p>માલિક: ${safe(shop.ownerName)}</p>
+      <p>વિસ્તાર: ${safe(shop.area || shop.village)}</p>
+      <p>WhatsApp: ${safe(shop.whatsapp)}</p>
+      <p>નિયમ: ${safe(shop.minimumRule || "none")}</p>
+
+      <p>સ્થિતિ:
+        <strong>${shop.active === false ? "બંધ" : "ચાલુ"}</strong>
+      </p>
+
+      <div class="admin-list-actions">
+        <button data-edit-shop="${safe(shop.id)}">
+          સુધારો
+        </button>
+
+        <button data-toggle-shop="${safe(shop.id)}">
+          ${shop.active === false ? "ચાલુ કરો" : "બંધ કરો"}
+        </button>
+
+        <button class="delete-btn" data-delete-shop="${safe(shop.id)}">
+          Delete
+        </button>
+      </div>
+    </div>
+  `).join("");
+
+  box.querySelectorAll("[data-edit-shop]").forEach(button => {
+    button.addEventListener("click", () => {
+      editShop(button.dataset.editShop);
+    });
+  });
+
+  box.querySelectorAll("[data-toggle-shop]").forEach(button => {
+    button.addEventListener("click", () => {
+      toggleShop(button.dataset.toggleShop);
+    });
+  });
+
+  box.querySelectorAll("[data-delete-shop]").forEach(button => {
+    button.addEventListener("click", () => {
+      deleteShop(button.dataset.deleteShop);
+    });
   });
 }
 
-// Login
-adminLoginForm.addEventListener("submit", async function(event) {
-  event.preventDefault();
+function editShop(id) {
+  const shop = shops.find(s => s.id === id);
+  if (!shop) return;
 
-  adminMessage.textContent = "લોગિન થઈ રહ્યું છે...";
+  $("shopEditId").value = id;
+  $("shopName").value = shop.name || shop.shopName || "";
+  $("shopOwner").value = shop.ownerName || "";
+  $("shopArea").value = shop.area || shop.village || "";
+  $("shopPhone").value = shop.phone || "";
+  $("shopWhatsapp").value = shop.whatsapp || "";
+  $("shopImage").value = shop.image || "";
+  $("shopMinimumRule").value = shop.minimumRule || "none";
+  $("shopMinimumValue").value = shop.minimumValue || "";
+  $("shopStatus").value = shop.active === false ? "false" : "true";
+
+  $("saveShop").textContent = "દુકાન અપડેટ કરો";
+  $("cancelShopEdit").classList.remove("hidden");
+
+  $("shopsTab").scrollIntoView({ behavior: "smooth" });
+}
+
+async function toggleShop(id) {
+  const shop = shops.find(s => s.id === id);
+  if (!shop) return;
+
+  const active = shop.active === false;
 
   try {
-    await signInWithEmailAndPassword(
-      auth,
-      adminEmail.value.trim(),
-      adminPassword.value
-    );
+    await updateDoc(doc(db, "shops", id), {
+      active,
+      isActive: active,
+      status: active ? "active" : "off",
+      updatedAt: serverTimestamp()
+    });
+
+    notify(active ? "દુકાન ચાલુ થઈ." : "દુકાન બંધ થઈ.");
+
+    await loadDashboard();
+
   } catch (error) {
-    adminMessage.textContent = "લોગિન નિષ્ફળ: " + error.message;
-  }
-});
-
-// Auth check
-onAuthStateChanged(auth, async function(user) {
-  currentAdmin = false;
-
-  if (!user) {
-    adminLogin.hidden = false;
-    adminDashboard.hidden = true;
-    adminMessage.textContent = "";
-    return;
-  }
-
-  if (user.uid !== ADMIN_UID) {
-    adminLogin.hidden = false;
-    adminDashboard.hidden = true;
-    adminMessage.textContent =
-      "આ એકાઉન્ટને Adminની પરવાનગી નથી.";
-    return;
-  }
-
-  currentAdmin = true;
-  adminLogin.hidden = true;
-  adminDashboard.hidden = false;
-
-  adminWelcome.textContent =
-    "સ્વાગત છે, " + (user.email || "Admin");
-
-  await loadAdminData();
-});
-
-// Logout
-adminLogout.addEventListener("click", async function() {
-  await signOut(auth);
-});
-
-// Expired shops OFF કરો
-async function turnExpiredShopsOff(shops) {
-  const now = new Date();
-
-  for (const shop of shops) {
-    const expiry = getExpiryDate(shop);
-
-    if (
-      shop.active === true &&
-      expiry &&
-      expiry <= now
-    ) {
-      await updateDoc(doc(db, "shops", shop.id), {
-        active: false
-      });
-
-      shop.active = false;
-    }
+    console.error(error);
+    notify("દુકાનની સ્થિતિ બદલી શકાઈ નથી.");
   }
 }
 
-// બધા ડેટા લોડ કરો
-async function loadAdminData() {
+async function deleteShop(id) {
+  if (!confirm("શું ખરેખર આ દુકાન અને તેની બધી પ્રોડક્ટ્સ Delete કરવી છે?")) {
+    return;
+  }
+
+  try {
+    const shopProducts = products.filter(p => p.shopId === id);
+
+    for (const product of shopProducts) {
+      await deleteDoc(doc(db, "products", product.id));
+    }
+
+    await deleteDoc(doc(db, "shops", id));
+
+    notify("દુકાન અને તેની પ્રોડક્ટ્સ Delete થઈ ગઈ.");
+
+    resetShopForm();
+    await loadDashboard();
+
+  } catch (error) {
+    console.error(error);
+    notify("દુકાન Delete થઈ શકી નથી.");
+  }
+}
+
+function resetShopForm() {
+  $("shopEditId").value = "";
+  $("shopName").value = "";
+  $("shopOwner").value = "";
+  $("shopArea").value = "";
+  $("shopPhone").value = "";
+  $("shopWhatsapp").value = "";
+  $("shopImage").value = "";
+  $("shopMinimumRule").value = "none";
+  $("shopMinimumValue").value = "";
+  $("shopStatus").value = "true";
+
+  $("saveShop").textContent = "દુકાન સેવ કરો";
+  $("cancelShopEdit").classList.add("hidden");
+}
+
+$("cancelShopEdit").addEventListener("click", resetShopForm);
+
+// =====================================
+// PRODUCT MANAGEMENT
+// =====================================
+
+$("saveProduct").addEventListener("click", saveProduct);
+
+async function saveProduct() {
   if (!currentAdmin) return;
 
-  pending.textContent = "લોડ થઈ રહ્યું છે...";
-  allShops.textContent = "લોડ થઈ રહ્યું છે...";
-  pendingProducts.textContent = "લોડ થઈ રહ્યું છે...";
-  allProducts.textContent = "લોડ થઈ રહ્યું છે...";
+  const editId = $("productEditId").value;
+  const shopId = $("productShop").value;
+  const name = $("productName").value.trim();
+  const category = $("productCategory").value.trim();
+  const price = Number($("productPrice").value);
+  const unit = $("productUnit").value.trim();
+  const image = $("productImage").value.trim();
+  const active = $("productStatus").value === "true";
+
+  if (!shopId || !name || !category || !unit) {
+    notify("બધી જરૂરી માહિતી ભરો.");
+    return;
+  }
+
+  if (!Number.isFinite(price) || price <= 0) {
+    notify("યોગ્ય પ્રોડક્ટ ભાવ લખો.");
+    return;
+  }
+
+  const data = {
+    shopId,
+    name,
+    title: name,
+    category,
+    price,
+    unit,
+    image,
+    active,
+    isActive: active,
+    status: active ? "active" : "off",
+    updatedAt: serverTimestamp()
+  };
 
   try {
-    const shopSnapshot = await getDocs(collection(db, "shops"));
-    const productSnapshot = await getDocs(collection(db, "products"));
+    if (editId) {
+      await updateDoc(doc(db, "products", editId), data);
+      notify("પ્રોડક્ટ અપડેટ થઈ ગઈ.");
+    } else {
+      data.createdAt = serverTimestamp();
 
-    const shops = shopSnapshot.docs.map(item => ({
-      id: item.id,
-      ...item.data()
-    }));
+      await addDoc(collection(db, "products"), data);
+      notify("નવી પ્રોડક્ટ ઉમેરાઈ ગઈ.");
+    }
 
-    allProductsData = productSnapshot.docs.map(item => ({
-      id: item.id,
-      ...item.data()
-    }));
-
-    await turnExpiredShopsOff(shops);
-
-    showPendingShops(
-      shops.filter(shop => shop.approved !== true)
-    );
-
-    showAllShops(shops);
-
-    showPendingProducts(
-      allProductsData.filter(product => product.approved !== true)
-    );
-
-    showAllProducts(allProductsData, shops);
+    resetProductForm();
+    await loadDashboard();
 
   } catch (error) {
-    const message =
-      "ડેટા લોડ કરવામાં ભૂલ: " + safeText(error.message);
-
-    pending.innerHTML = message;
-    allShops.innerHTML = message;
-    pendingProducts.innerHTML = message;
-    allProducts.innerHTML = message;
+    console.error(error);
+    notify("પ્રોડક્ટ સેવ થઈ શકી નથી.");
   }
 }
 
-// Pending Shops
-function showPendingShops(shops) {
-  if (!shops.length) {
-    pending.textContent = "કોઈ નવી Shop મંજૂરી માટે નથી.";
-    return;
-  }
-
-  pending.innerHTML = shops.map(shop => `
-    <div class="admin-card">
-      <h3>${safeText(shop.name)}</h3>
-      <p>કેટેગરી: ${safeText(shop.category)}</p>
-      <p>વિસ્તાર: ${safeText(shop.area)}</p>
-      <p>નિયમ: ${safeText(shop.rule)}</p>
-
-      <button data-action="approve-shop"
-        data-id="${safeText(shop.id)}">
-        મંજૂરી આપો
-      </button>
-
-      <button data-action="delete-shop"
-        data-id="${safeText(shop.id)}">
-        Delete
-      </button>
-    </div>
-  `).join("");
+function renderShopOptions() {
+  $("productShop").innerHTML =
+    '<option value="">દુકાન પસંદ કરો</option>' +
+    shops.map(shop => `
+      <option value="${safe(shop.id)}">
+        ${safe(shop.name || shop.shopName)}
+      </option>
+    `).join("");
 }
 
-// બધી Shops અને ફી વ્યવસ્થા
-function showAllShops(shops) {
-  if (!shops.length) {
-    allShops.textContent = "હજુ કોઈ Shop નથી.";
+function renderProducts() {
+  const box = $("adminProductList");
+
+  if (!products.length) {
+    box.innerHTML = "<p>હજુ કોઈ પ્રોડક્ટ નથી.</p>";
     return;
   }
 
-  allShops.innerHTML = shops.map(shop => {
-    const count = getProductCount(shop.id);
-    const monthlyFee = getMonthlyFee(count);
-    const expiry = getExpiryDate(shop);
-
-    const isActive =
-      shop.active === true &&
-      expiry &&
-      expiry > new Date();
-
-    const status = isActive ? "ચાલુ છે" : "બંધ છે";
-
-    const firstPaymentDone =
-      shop.firstPaymentDone === true;
-
-    const nextFee = firstPaymentDone
-      ? monthlyFee
-      : 300;
+  box.innerHTML = products.map(product => {
+    const shop = shops.find(s => s.id === product.shopId);
 
     return `
-      <div class="admin-card">
-        <h3>${safeText(shop.name)}</h3>
+      <div class="admin-list-item">
+        <h3>${safe(product.name || product.title)}</h3>
 
-        <p>વિસ્તાર: ${safeText(shop.area)}</p>
-        <p>કેટેગરી: ${safeText(shop.category)}</p>
-
-        <p>મંજૂરી:
-          ${shop.approved === true ? "મંજૂર" : "મંજૂરી બાકી"}
-        </p>
-
-        <p>પ્રોડક્ટની સંખ્યા: ${count}</p>
-
-        <p>દુકાનની સ્થિતિ:
-          <strong>${status}</strong>
-        </p>
-
-        <p>ફી:
-          ${firstPaymentDone
-            ? "આગામી મહિને ₹" + monthlyFee
-            : "પહેલી વખત ₹300 (પહેલો મહિનો સામેલ)"}
-        </p>
-
-        <p>દુકાન ચાલુ રહેવાની છેલ્લી તારીખ:
-          ${formatDate(expiry)}
-        </p>
-
-        ${shop.approved !== true ? `
-          <button data-action="approve-shop"
-            data-id="${safeText(shop.id)}">
-            મંજૂરી આપો
-          </button>
-        ` : ""}
-
-        ${isActive ? `
-          <button data-action="deactivate-shop"
-            data-id="${safeText(shop.id)}">
-            દુકાન OFF કરો
-          </button>
-        ` : `
-          <button data-action="activate-shop"
-            data-id="${safeText(shop.id)}">
-            ₹${nextFee} રોકડા મળ્યા - ON કરો
-          </button>
-        `}
-
-        <button data-action="delete-shop"
-          data-id="${safeText(shop.id)}">
-          Delete
-        </button>
-      </div>
-    `;
-  }).join("");
-}
-
-// Pending Products
-function showPendingProducts(products) {
-  if (!products.length) {
-    pendingProducts.textContent =
-      "કોઈ Product મંજૂરી માટે બાકી નથી.";
-    return;
-  }
-
-  pendingProducts.innerHTML = products.map(product => `
-    <div class="admin-card">
-      <h3>${safeText(product.name)}</h3>
-      <p>કિંમત: ₹${safeText(product.price)}</p>
-      <p>યુનિટ: ${safeText(product.unit)}</p>
-
-      <button data-action="approve-product"
-        data-id="${safeText(product.id)}">
-        મંજૂરી આપો
-      </button>
-
-      <button data-action="delete-product"
-        data-id="${safeText(product.id)}">
-        Delete
-      </button>
-    </div>
-  `).join("");
-}
-
-// બધા Products
-function showAllProducts(products, shops) {
-  if (!products.length) {
-    allProducts.textContent = "હજુ કોઈ Product નથી.";
-    return;
-  }
-
-  allProducts.innerHTML = products.map(product => {
-    const shop = shops.find(item => item.id === product.shopId);
-    const shopName = shop ? shop.name : "Shop મળી નથી";
-
-    return `
-      <div class="admin-card">
-        <h3>${safeText(product.name)}</h3>
-        <p>Shop: ${safeText(shopName)}</p>
-        <p>કિંમત: ₹${safeText(product.price)}</p>
-        <p>યુનિટ: ${safeText(product.unit)}</p>
+        <p>દુકાન: ${safe(shop?.name || "દુકાન મળી નથી")}</p>
+        <p>કેટેગરી: ${safe(product.category)}</p>
+        <p>ભાવ: ${money(product.price)} / ${safe(product.unit)}</p>
 
         <p>સ્થિતિ:
-          ${product.approved === true ? "મંજૂર" : "મંજૂરી બાકી"}
+          ${product.active === false ? "બંધ" : "ઉપલબ્ધ"}
         </p>
 
-        ${product.approved !== true ? `
-          <button data-action="approve-product"
-            data-id="${safeText(product.id)}">
-            મંજૂરી આપો
+        <div class="admin-list-actions">
+          <button data-edit-product="${safe(product.id)}">
+            સુધારો
           </button>
-        ` : ""}
 
-        <button data-action="delete-product"
-          data-id="${safeText(product.id)}">
-          Delete
-        </button>
+          <button data-toggle-product="${safe(product.id)}">
+            ${product.active === false ? "ચાલુ કરો" : "બંધ કરો"}
+          </button>
+
+          <button class="delete-btn" data-delete-product="${safe(product.id)}">
+            Delete
+          </button>
+        </div>
       </div>
     `;
   }).join("");
+
+  box.querySelectorAll("[data-edit-product]").forEach(button => {
+    button.addEventListener("click", () => {
+      editProduct(button.dataset.editProduct);
+    });
+  });
+
+  box.querySelectorAll("[data-toggle-product]").forEach(button => {
+    button.addEventListener("click", () => {
+      toggleProduct(button.dataset.toggleProduct);
+    });
+  });
+
+  box.querySelectorAll("[data-delete-product]").forEach(button => {
+    button.addEventListener("click", () => {
+      deleteProduct(button.dataset.deleteProduct);
+    });
+  });
 }
 
-// Admin actions
-document.addEventListener("click", async function(event) {
-  const button = event.target.closest("button[data-action]");
+function editProduct(id) {
+  const product = products.find(p => p.id === id);
+  if (!product) return;
 
-  if (!button || !currentAdmin) return;
+  $("productEditId").value = id;
+  $("productShop").value = product.shopId;
+  $("productName").value = product.name || product.title || "";
+  $("productCategory").value = product.category || "";
+  $("productPrice").value = product.price || "";
+  $("productUnit").value = product.unit || "";
+  $("productImage").value = product.image || "";
+  $("productStatus").value = product.active === false ? "false" : "true";
 
-  const action = button.dataset.action;
-  const id = button.dataset.id;
+  $("saveProduct").textContent = "પ્રોડક્ટ અપડેટ કરો";
+  $("cancelProductEdit").classList.remove("hidden");
+}
 
-  if (!id) return;
+async function toggleProduct(id) {
+  const product = products.find(p => p.id === id);
+  if (!product) return;
+
+  const active = product.active === false;
 
   try {
-    button.disabled = true;
+    await updateDoc(doc(db, "products", id), {
+      active,
+      isActive: active,
+      status: active ? "active" : "off",
+      updatedAt: serverTimestamp()
+    });
 
-    if (action === "approve-shop") {
-      await updateDoc(doc(db, "shops", id), {
-        approved: true
-      });
-    }
-
-    else if (action === "approve-product") {
-      await updateDoc(doc(db, "products", id), {
-        approved: true
-      });
-    }
-
-    else if (action === "activate-shop") {
-      const shopSnapshot = await getDocs(collection(db, "shops"));
-      const productSnapshot = await getDocs(collection(db, "products"));
-
-      const shopDoc = shopSnapshot.docs.find(item => item.id === id);
-
-      if (!shopDoc) {
-        throw new Error("દુકાન મળી નથી.");
-      }
-
-      const shop = shopDoc.data();
-
-      if (shop.approved !== true) {
-        alert("પહેલા દુકાનને મંજૂરી આપો.");
-        button.disabled = false;
-        return;
-      }
-
-      const productCount = productSnapshot.docs.filter(item =>
-        item.data().shopId === id
-      ).length;
-
-      const firstPaymentDone =
-        shop.firstPaymentDone === true;
-
-      const amount = firstPaymentDone
-        ? getMonthlyFee(productCount)
-        : 300;
-
-      const message = firstPaymentDone
-        ? `દુકાનના ${productCount} પ્રોડક્ટ છે.\nઆ મહિના માટે ₹${amount} રોકડા મળ્યા છે?`
-        : "પહેલી વખત ₹300 રોકડા મળ્યા છે?\nઆ રકમમાં પહેલો મહિનો સામેલ છે.";
-
-      if (!confirm(message)) {
-        button.disabled = false;
-        return;
-      }
-
-      const now = new Date();
-      const oldExpiry = getExpiryDate(shop);
-
-      const startDate =
-        oldExpiry && oldExpiry > now ? oldExpiry : now;
-
-      const expiryDate = new Date(startDate);
-      expiryDate.setMonth(expiryDate.getMonth() + 1);
-
-      await updateDoc(doc(db, "shops", id), {
-        active: true,
-        firstPaymentDone: true,
-        activeUntil: Timestamp.fromDate(expiryDate),
-        lastCashAmount: amount,
-        lastCashAt: Timestamp.now()
-      });
-
-      alert(
-        "દુકાન ON થઈ ગઈ છે.\nફી: ₹" + amount +
-        "\nચાલુ રહેવાની છેલ્લી તારીખ: " +
-        formatDate(expiryDate)
-      );
-    }
-
-    else if (action === "deactivate-shop") {
-      if (!confirm("શું આ દુકાન તરત OFF કરવી છે?")) {
-        button.disabled = false;
-        return;
-      }
-
-      await updateDoc(doc(db, "shops", id), {
-        active: false
-      });
-    }
-
-    else if (action === "delete-shop") {
-      if (!confirm("આ Shop Delete કરવી છે?")) {
-        button.disabled = false;
-        return;
-      }
-
-      await deleteDoc(doc(db, "shops", id));
-    }
-
-    else if (action === "delete-product") {
-      if (!confirm("આ Product Delete કરવો છે?")) {
-        button.disabled = false;
-        return;
-      }
-
-      await deleteDoc(doc(db, "products", id));
-    }
-
-    await loadAdminData();
+    notify("પ્રોડક્ટની સ્થિતિ બદલાઈ ગઈ.");
+    await loadDashboard();
 
   } catch (error) {
-    alert("કામ પૂર્ણ થયું નથી: " + error.message);
-    button.disabled = false;
+    console.error(error);
+    notify("પ્રોડક્ટ અપડેટ થઈ નથી.");
+  }
+}
+
+async function deleteProduct(id) {
+  if (!confirm("શું આ પ્રોડક્ટ Delete કરવી છે?")) return;
+
+  try {
+    await deleteDoc(doc(db, "products", id));
+
+    notify("પ્રોડક્ટ Delete થઈ ગઈ.");
+
+    resetProductForm();
+    await loadDashboard();
+
+  } catch (error) {
+    console.error(error);
+    notify("પ્રોડક્ટ Delete થઈ નથી.");
+  }
+}
+
+function resetProductForm() {
+  $("productEditId").value = "";
+  $("productShop").value = "";
+  $("productName").value = "";
+  $("productCategory").value = "";
+  $("productPrice").value = "";
+  $("productUnit").value = "";
+  $("productImage").value = "";
+  $("productStatus").value = "true";
+
+  $("saveProduct").textContent = "પ્રોડક્ટ સેવ કરો";
+  $("cancelProductEdit").classList.add("hidden");
+}
+
+$("cancelProductEdit").addEventListener("click", resetProductForm);
+
+// =====================================
+// CATEGORY MANAGEMENT
+// =====================================
+
+$("saveCategory").addEventListener("click", async () => {
+  const name = $("categoryName").value.trim();
+
+  if (!name) {
+    notify("કેટેગરીનું નામ લખો.");
+    return;
+  }
+
+  if (categories.some(c =>
+    String(c.name || "").toLowerCase() === name.toLowerCase()
+  )) {
+    notify("આ કેટેગરી પહેલેથી છે.");
+    return;
+  }
+
+  try {
+    await addDoc(collection(db, "categories"), {
+      name,
+      createdAt: serverTimestamp()
+    });
+
+    $("categoryName").value = "";
+
+    notify("કેટેગરી ઉમેરાઈ ગઈ.");
+    await loadDashboard();
+
+  } catch (error) {
+    console.error(error);
+    notify("કેટેગરી ઉમેરાઈ નથી.");
   }
 });
+
+function renderCategories() {
+  const box = $("adminCategoryList");
+
+  if (!categories.length) {
+    box.innerHTML = "<p>હજુ કોઈ કેટેગરી નથી.</p>";
+    return;
+  }
+
+  box.innerHTML = categories.map(category => `
+    <div class="admin-list-item">
+      <h3>${safe(category.name)}</h3>
+
+      <div class="admin-list-actions">
+        <button class="delete-btn"
+          data-delete-category="${safe(category.id)}">
+          Delete
+        </button>
+      </div>
+    </div>
+  `).join("");
+
+  box.querySelectorAll("[data-delete-category]").forEach(button => {
+    button.addEventListener("click", async () => {
+      if (!confirm("આ કેટેગરી Delete કરવી છે?")) return;
+
+      try {
+        await deleteDoc(
+          doc(db, "categories", button.dataset.deleteCategory)
+        );
+
+        notify("કેટેગરી Delete થઈ ગઈ.");
+        await loadDashboard();
+
+      } catch (error) {
+        console.error(error);
+        notify("કેટેગરી Delete થઈ નથી.");
+      }
+    });
+  });
+}
+
+// =====================================
+// ORDER MANAGEMENT
+// =====================================
+
+function renderOrders() {
+  const box = $("adminOrderList");
+
+  if (!orders.length) {
+    box.innerHTML = "<p>હજુ કોઈ ઓર્ડર નથી.</p>";
+    return;
+  }
+
+  box.innerHTML = orders.map(order => `
+    <div class="admin-list-item">
+      <h3>ઓર્ડર: ${safe(order.orderNumber || order.id)}</h3>
+
+      <p>ગ્રાહક: ${safe(order.customerName)}</p>
+      <p>મોબાઇલ: ${safe(order.customerPhone)}</p>
+      <p>દુકાન: ${safe(order.shopName)}</p>
+      <p>સરનામું: ${safe(order.customerAddress)}</p>
+      <p>કુલ: ${money(order.total)}</p>
+      <p>સ્થિતિ: ${safe(order.status || "pending")}</p>
+
+      <div class="admin-list-actions">
+        <button data-order-status="${safe(order.id)}" data-status="confirmed">
+          Confirm
+        </button>
+
+        <button data-order-status="${safe(order.id)}" data-status="completed">
+          Completed
+        </button>
+
+        <button data-order-status="${safe(order.id)}" data-status="cancelled">
+          Cancel
+        </button>
+      </div>
+    </div>
+  `).join("");
+
+  box.querySelectorAll("[data-order-status]").forEach(button => {
+    button.addEventListener("click", async () => {
+      try {
+        await updateDoc(doc(db, "orders", button.dataset.orderStatus), {
+          status: button.dataset.status,
+          updatedAt: serverTimestamp()
+        });
+
+        notify("ઓર્ડરની સ્થિતિ અપડેટ થઈ.");
+        await loadDashboard();
+
+      } catch (error) {
+        console.error(error);
+        notify("ઓર્ડર અપડેટ થઈ શક્યો નથી.");
+      }
+    });
+  });
+}
+
+// =====================================
+// SELLER MANAGEMENT
+// =====================================
+
+function renderSellers() {
+  const box = $("adminSellerList");
+
+  if (!sellers.length) {
+    box.innerHTML = "<p>હજુ કોઈ Seller નથી.</p>";
+    return;
+  }
+
+  box.innerHTML = sellers.map(seller => `
+    <div class="admin-list-item">
+      <h3>${safe(seller.name || seller.shopName || "Seller")}</h3>
+
+      <p>Email: ${safe(seller.email || "")}</p>
+      <p>મોબાઇલ: ${safe(seller.phone || "")}</p>
+      <p>Role: ${safe(seller.role || "seller")}</p>
+      <p>UID: ${safe(seller.id)}</p>
+    </div>
+  `).join("");
+}
+
+// =====================================
+// END ADMIN SYSTEM
+// =====================================
