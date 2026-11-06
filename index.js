@@ -9,23 +9,16 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 // =====================================
-// K.H FRESH & FASHION - CUSTOMER SYSTEM
+// K.H FRESH & FASHION - CUSTOMER PAGE
+// HTML IDs સાથે મેળ ખાતો કોડ
 // =====================================
 
 const $ = id => document.getElementById(id);
 
 let shops = [];
 let products = [];
-let categories = [];
 let cart = [];
-
 let selectedShop = null;
-let activeCategory = "all";
-let searchText = "";
-
-// =====================================
-// SAFE TEXT
-// =====================================
 
 function safe(value) {
   return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -41,27 +34,19 @@ function money(value) {
   return "₹" + Number(value || 0).toFixed(2);
 }
 
-function imageUrl(value) {
-  return value || "";
-}
-
-function notify(message) {
-  const box = $("notification");
-  if (!box) return;
-
-  box.textContent = message;
-  box.classList.remove("hidden");
-
-  setTimeout(() => {
-    box.classList.add("hidden");
-  }, 3000);
-}
-
 function isActive(data) {
+  const status = String(data.status || "").toLowerCase();
+
   return data.active !== false &&
     data.isActive !== false &&
-    data.status !== "off" &&
-    data.status !== "inactive";
+    status !== "off" &&
+    status !== "inactive" &&
+    status !== "બંધ";
+}
+
+function message(text) {
+  const box = $("orderMessage");
+  if (box) box.textContent = text;
 }
 
 // =====================================
@@ -69,240 +54,148 @@ function isActive(data) {
 // =====================================
 
 async function loadData() {
+  const shopBox = $("shopList");
+
+  shopBox.innerHTML = "<p>દુકાનો લોડ થઈ રહી છે...</p>";
+
   try {
-    $("shopList").innerHTML = "<p>દુકાનો લોડ થઈ રહી છે...</p>";
-    $("productList").innerHTML = "<p>પ્રોડક્ટ્સ લોડ થઈ રહી છે...</p>";
+    const [shopSnapshot, productSnapshot] = await Promise.all([
+      getDocs(collection(db, "shops")),
+      getDocs(collection(db, "products"))
+    ]);
 
-    const [shopSnapshot, productSnapshot, categorySnapshot] =
-      await Promise.all([
-        getDocs(collection(db, "shops")),
-        getDocs(collection(db, "products")),
-        getDocs(collection(db, "categories"))
-      ]);
-
-    shops = shopSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
+    shops = shopSnapshot.docs.map(item => ({
+      id: item.id,
+      ...item.data()
     }));
 
-    products = productSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-
-    categories = categorySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
+    products = productSnapshot.docs.map(item => ({
+      id: item.id,
+      ...item.data()
     }));
 
     shops = shops.filter(isActive);
     products = products.filter(isActive);
 
-    renderCategories();
-    renderAreas();
     renderShops();
-    renderProducts();
-
-    $("shopCount").textContent = shops.length + " દુકાનો";
 
   } catch (error) {
-    console.error("Firebase Error:", error);
+    console.error("Firebase Load Error:", error);
 
-    $("shopList").innerHTML =
-      "<p>દુકાનો લોડ થઈ શકી નથી. Firebase Rules તપાસો.</p>";
-
-    $("productList").innerHTML =
-      "<p>પ્રોડક્ટ્સ લોડ થઈ શકી નથી.</p>";
-
-    notify("Firebase કનેક્શનમાં સમસ્યા છે.");
-  }
-}
-
-// =====================================
-// CATEGORIES
-// =====================================
-
-function renderCategories() {
-  const box = $("categoryList");
-
-  const names = new Set([
-    "બધી વસ્તુઓ",
-    ...categories.map(c => c.name || c.title).filter(Boolean),
-    ...products.map(p => p.category).filter(Boolean)
-  ]);
-
-  box.innerHTML = [...names].map(name => {
-    const value = name === "બધી વસ્તુઓ" ? "all" : name;
-
-    return `
-      <button
-        class="category-btn ${activeCategory === value ? "active" : ""}"
-        data-category="${safe(value)}">
-        ${safe(name)}
-      </button>
+    shopBox.innerHTML = `
+      <p style="color:red">
+        દુકાનો લોડ થઈ શકી નથી.<br>
+        Error: ${safe(error.code || error.message || "Unknown error")}
+      </p>
     `;
-  }).join("");
-
-  box.querySelectorAll("[data-category]").forEach(button => {
-    button.addEventListener("click", () => {
-      activeCategory = button.dataset.category;
-      renderCategories();
-      renderProducts();
-    });
-  });
-}
-
-// =====================================
-// AREA FILTER
-// =====================================
-
-function renderAreas() {
-  const select = $("areaFilter");
-  const previous = select.value;
-
-  const areas = [...new Set(
-    shops.map(s => s.area || s.village || s.location).filter(Boolean)
-  )];
-
-  select.innerHTML =
-    '<option value="">બધા વિસ્તાર</option>' +
-    areas.map(area =>
-      `<option value="${safe(area)}">${safe(area)}</option>`
-    ).join("");
-
-  if (areas.includes(previous)) {
-    select.value = previous;
   }
 }
 
 // =====================================
-// SHOPS
+// SHOW SHOPS
 // =====================================
 
 function renderShops() {
   const box = $("shopList");
 
-  const area = $("areaFilter").value;
-
-  const filtered = shops.filter(shop => {
-    const shopArea = shop.area || shop.village || shop.location || "";
-
-    const matchesArea = !area || shopArea === area;
-
-    const matchesSearch =
-      !searchText ||
-      String(shop.name || shop.shopName || "")
-        .toLowerCase().includes(searchText) ||
-      String(shopArea).toLowerCase().includes(searchText);
-
-    return matchesArea && matchesSearch;
-  });
-
-  $("shopCount").textContent = filtered.length + " દુકાનો";
-
-  if (!filtered.length) {
-    box.innerHTML = "<p>આ વિસ્તારમાં કોઈ દુકાન મળી નથી.</p>";
+  if (!shops.length) {
+    box.innerHTML = `
+      <p>હાલમાં કોઈ ચાલુ દુકાન ઉપલબ્ધ નથી.</p>
+      <p>દુકાન ચાલુ કરવા Admin Panel માં તપાસો.</p>
+    `;
     return;
   }
 
-  box.innerHTML = filtered.map(shop => {
+  box.innerHTML = shops.map(shop => {
     const name = shop.name || shop.shopName || "દુકાન";
-    const areaName = shop.area || shop.village || shop.location || "";
-    const photo = imageUrl(shop.image || shop.photo || shop.shopImage);
+    const area = shop.area || shop.village || shop.location || "";
+    const photo = shop.image || shop.photo || shop.shopImage || "";
 
     return `
       <div class="shop-card" data-shop="${safe(shop.id)}">
-        ${photo
-          ? `<img src="${safe(photo)}" alt="${safe(name)}" loading="lazy">`
-          : `<div class="shop-placeholder">🏪</div>`
+        ${
+          photo
+            ? `<img class="shop-photo" src="${safe(photo)}"
+                alt="${safe(name)}" loading="lazy">`
+            : `<div class="photo-placeholder">🏪 દુકાન</div>`
         }
+
         <h3>${safe(name)}</h3>
-        <p>📍 ${safe(areaName)}</p>
-        <p>દુકાન જુઓ →</p>
+        <p>📍 ${safe(area)}</p>
+
+        <button type="button">દુકાન જુઓ</button>
       </div>
     `;
   }).join("");
 
   box.querySelectorAll("[data-shop]").forEach(card => {
     card.addEventListener("click", () => {
-      const shop = shops.find(s => s.id === card.dataset.shop);
+      const shop = shops.find(item => item.id === card.dataset.shop);
 
-      if (shop) {
-        selectedShop = shop;
-        $("productHeading").textContent =
-          (shop.name || shop.shopName || "દુકાન") + " ની વસ્તુઓ";
+      if (!shop) return;
 
-        renderProducts();
+      selectedShop = shop;
 
-        $("productList").scrollIntoView({
-          behavior: "smooth"
-        });
-      }
+      $("selectedShopName").textContent =
+        (shop.name || shop.shopName || "દુકાન") + " ની વસ્તુઓ";
+
+      $("shopsSection").hidden = true;
+      $("productsSection").hidden = false;
+
+      renderProducts();
+
+      $("productsSection").scrollIntoView({
+        behavior: "smooth"
+      });
     });
   });
 }
 
 // =====================================
-// PRODUCTS
+// SHOW PRODUCTS
 // =====================================
 
 function renderProducts() {
   const box = $("productList");
 
-  let filtered = products.filter(product => {
-    const categoryMatch =
-      activeCategory === "all" ||
-      product.category === activeCategory;
-
-    const shopMatch =
-      !selectedShop || product.shopId === selectedShop.id;
-
-    const productName =
-      String(product.name || product.title || "").toLowerCase();
-
-    const searchMatch =
-      !searchText ||
-      productName.includes(searchText) ||
-      String(product.category || "").toLowerCase().includes(searchText);
-
-    return categoryMatch && shopMatch && searchMatch;
-  });
-
-  if (!filtered.length) {
-    box.innerHTML = "<p>હાલમાં કોઈ પ્રોડક્ટ ઉપલબ્ધ નથી.</p>";
+  if (!selectedShop) {
+    box.innerHTML = "<p>પહેલાં દુકાન પસંદ કરો.</p>";
     return;
   }
 
-  box.innerHTML = filtered.map(product => {
+  const list = products.filter(product =>
+    product.shopId === selectedShop.id
+  );
+
+  if (!list.length) {
+    box.innerHTML = "<p>આ દુકાનમાં હાલમાં કોઈ પ્રોડક્ટ નથી.</p>";
+    return;
+  }
+
+  box.innerHTML = list.map(product => {
     const name = product.name || product.title || "પ્રોડક્ટ";
     const price = Number(product.price || 0);
     const unit = product.unit || "નંગ";
-    const photo = imageUrl(product.image || product.photo || product.imageUrl);
-
-    const shop = shops.find(s => s.id === product.shopId);
-    const shopName = shop
-      ? (shop.name || shop.shopName || "")
-      : "";
+    const photo = product.image || product.photo || product.imageUrl || "";
 
     return `
       <div class="product-card">
-        ${photo
-          ? `<img src="${safe(photo)}" alt="${safe(name)}" loading="lazy">`
-          : `<div class="product-placeholder">🛍️</div>`
+        ${
+          photo
+            ? `<img class="product-photo" src="${safe(photo)}"
+                alt="${safe(name)}" loading="lazy">`
+            : `<div class="photo-placeholder">🛍️ પ્રોડક્ટ</div>`
         }
 
         <div class="product-info">
           <h3>${safe(name)}</h3>
           <p>${safe(product.category || "સામાન")}</p>
-          <p>${safe(shopName)}</p>
 
-          <div class="product-price">
+          <p class="product-price">
             ${money(price)} / ${safe(unit)}
-          </div>
+          </p>
 
-          <button
-            class="add-button"
-            data-add="${safe(product.id)}">
+          <button type="button" data-add="${safe(product.id)}">
             કાર્ટમાં ઉમેરો
           </button>
         </div>
@@ -313,7 +206,7 @@ function renderProducts() {
   box.querySelectorAll("[data-add]").forEach(button => {
     button.addEventListener("click", () => {
       const product = products.find(
-        p => p.id === button.dataset.add
+        item => item.id === button.dataset.add
       );
 
       if (product) addToCart(product);
@@ -322,7 +215,7 @@ function renderProducts() {
 }
 
 // =====================================
-// CART
+// QUANTITY STEP
 // =====================================
 
 function getStep(product) {
@@ -338,16 +231,13 @@ function getStep(product) {
   return 1;
 }
 
+// =====================================
+// CART
+// =====================================
+
 function addToCart(product) {
-  const shop = shops.find(s => s.id === product.shopId);
-
-  if (!shop) {
-    notify("આ પ્રોડક્ટની દુકાન ઉપલબ્ધ નથી.");
-    return;
-  }
-
-  if (cart.length && cart[0].shopId !== product.shopId) {
-    notify("એક સમયે એક જ દુકાનમાંથી ઓર્ડર કરી શકશો.");
+  if (!selectedShop || product.shopId !== selectedShop.id) {
+    message("પ્રોડક્ટની દુકાન પસંદ કરો.");
     return;
   }
 
@@ -367,27 +257,28 @@ function addToCart(product) {
   }
 
   updateCart();
-  notify("પ્રોડક્ટ કાર્ટમાં ઉમેરાઈ ગઈ.");
+  message("પ્રોડક્ટ કાર્ટમાં ઉમેરાઈ ગઈ.");
 }
 
 function updateCart() {
   const box = $("cartItems");
 
   if (!cart.length) {
-    box.innerHTML = "<p>તમારો કાર્ટ ખાલી છે.</p>";
+    box.innerHTML = "હજુ કોઈ વસ્તુ પસંદ કરી નથી.";
   } else {
     box.innerHTML = cart.map(item => `
-      <div class="cart-item">
-        <div>
-          <strong>${safe(item.name)}</strong>
-          <p>${money(item.price)} × ${safe(item.quantity)} ${safe(item.unit)}</p>
-          <strong>${money(item.price * item.quantity)}</strong>
-        </div>
+      <div class="cart-item" style="padding:8px 0;border-bottom:1px solid #eee">
+        <strong>${safe(item.name)}</strong>
+        <p>
+          ${money(item.price)} ×
+          ${safe(item.quantity)} ${safe(item.unit)}
+        </p>
+        <strong>${money(item.price * item.quantity)}</strong>
 
-        <div>
-          <button data-minus="${safe(item.id)}">−</button>
-          <button data-plus="${safe(item.id)}">+</button>
-          <button data-remove="${safe(item.id)}">✕</button>
+        <div style="display:flex;gap:6px;margin-top:7px">
+          <button type="button" data-minus="${safe(item.id)}">−</button>
+          <button type="button" data-plus="${safe(item.id)}">+</button>
+          <button type="button" data-remove="${safe(item.id)}">કાઢો</button>
         </div>
       </div>
     `).join("");
@@ -400,21 +291,23 @@ function updateCart() {
 
   $("cartTotal").textContent = money(total);
 
-  $("cartCount").textContent = cart.reduce(
-    (sum, item) => sum + 1,
-    0
-  );
-
   box.querySelectorAll("[data-minus]").forEach(button => {
-    button.addEventListener("click", () => changeQuantity(button.dataset.minus, -1));
+    button.addEventListener("click", () => {
+      changeQuantity(button.dataset.minus, -1);
+    });
   });
 
   box.querySelectorAll("[data-plus]").forEach(button => {
-    button.addEventListener("click", () => changeQuantity(button.dataset.plus, 1));
+    button.addEventListener("click", () => {
+      changeQuantity(button.dataset.plus, 1);
+    });
   });
 
   box.querySelectorAll("[data-remove]").forEach(button => {
-    button.addEventListener("click", () => removeItem(button.dataset.remove));
+    button.addEventListener("click", () => {
+      cart = cart.filter(item => item.id !== button.dataset.remove);
+      updateCart();
+    });
   });
 }
 
@@ -428,34 +321,25 @@ function changeQuantity(id, direction) {
   item.quantity += step * direction;
 
   if (item.quantity <= 0) {
-    removeItem(id);
-    return;
-  }
-
-  item.quantity = Math.round(item.quantity * 1000) / 1000;
-  updateCart();
-}
-
-function removeItem(id) {
-  cart = cart.filter(item => item.id !== id);
-
-  if (!cart.length) {
-    selectedShop = null;
-    $("productHeading").textContent = "બધી પ્રોડક્ટ્સ";
+    cart = cart.filter(i => i.id !== id);
+  } else {
+    item.quantity = Math.round(item.quantity * 1000) / 1000;
   }
 
   updateCart();
-  renderProducts();
 }
 
 // =====================================
-// SHOP MINIMUM RULES
+// MINIMUM ORDER RULE
 // =====================================
 
 function checkMinimum(shop, total) {
   const rule = shop.minimumRule || shop.minType || "none";
 
-  if (rule === "none" || rule === "no-minimum") {
+  if (
+    rule === "none" ||
+    rule === "no-minimum"
+  ) {
     return { valid: true };
   }
 
@@ -464,18 +348,20 @@ function checkMinimum(shop, total) {
       ? { valid: true }
       : {
           valid: false,
-          message: "આ દુકાનમાં ઓછામાં ઓછો ₹500 નો ઓર્ડર કરવો પડશે."
+          message: "આ દુકાનમાં ઓછામાં ઓછો ₹500 નો ઓર્ડર જરૂરી છે."
         };
   }
 
   if (rule === "custom") {
-    const minimum = Number(shop.minimumValue || shop.minValue || 0);
+    const minimum = Number(
+      shop.minimumValue || shop.minValue || 0
+    );
 
     return total >= minimum
       ? { valid: true }
       : {
           valid: false,
-          message: `આ દુકાનમાં ઓછામાં ઓછો ${money(minimum)} નો ઓર્ડર કરવો પડશે.`
+          message: `ઓછામાં ઓછો ${money(minimum)} નો ઓર્ડર જરૂરી છે.`
         };
   }
 
@@ -487,9 +373,7 @@ function checkMinimum(shop, total) {
 
       if (unit === "kg" || unit === "કિલો") {
         totalKg += item.quantity;
-      }
-
-      if (unit === "g" || unit === "ગ્રામ") {
+      } else if (unit === "g" || unit === "ગ્રામ") {
         totalKg += item.quantity / 1000;
       }
     });
@@ -498,7 +382,7 @@ function checkMinimum(shop, total) {
       ? { valid: true }
       : {
           valid: false,
-          message: `આ દુકાનમાં ઓછામાં ઓછો 2 કિલો ઓર્ડર જરૂરી છે. હાલ ${totalKg.toFixed(2)} કિલો છે.`
+          message: `ઓછામાં ઓછો 2 કિલો ઓર્ડર જરૂરી છે. હાલ ${totalKg.toFixed(2)} કિલો છે.`
         };
   }
 
@@ -506,48 +390,20 @@ function checkMinimum(shop, total) {
 }
 
 // =====================================
-// CART OPEN / CLOSE
+// BACK TO SHOPS
 // =====================================
 
-function openCart() {
-  $("cartPanel").classList.remove("hidden");
-  $("cartOverlay").classList.remove("hidden");
-}
+$("backToShops").addEventListener("click", () => {
+  $("productsSection").hidden = true;
+  $("shopsSection").hidden = false;
 
-function closeCart() {
-  $("cartPanel").classList.add("hidden");
-  $("cartOverlay").classList.add("hidden");
-}
-
-$("cartToggle").addEventListener("click", openCart);
-$("closeCart").addEventListener("click", closeCart);
-$("cartOverlay").addEventListener("click", closeCart);
-
-// =====================================
-// SEARCH
-// =====================================
-
-$("searchInput").addEventListener("input", event => {
-  searchText = event.target.value.trim().toLowerCase();
-
-  renderShops();
-  renderProducts();
-});
-
-$("areaFilter").addEventListener("change", renderShops);
-
-$("showAllProducts").addEventListener("click", () => {
   selectedShop = null;
-  activeCategory = "all";
 
-  $("productHeading").textContent = "બધી પ્રોડક્ટ્સ";
-
-  renderCategories();
-  renderProducts();
+  $("productList").innerHTML = "";
 });
 
 // =====================================
-// ORDER TIME
+// ORDER TIME: 9 AM TO 6 PM
 // =====================================
 
 function isOrderTime() {
@@ -561,35 +417,37 @@ function isOrderTime() {
 // WHATSAPP ORDER
 // =====================================
 
-$("placeOrder").addEventListener("click", async () => {
+$("customerOrderForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
   if (!cart.length) {
-    notify("પહેલાં કાર્ટમાં પ્રોડક્ટ ઉમેરો.");
+    message("પહેલાં કાર્ટમાં પ્રોડક્ટ ઉમેરો.");
     return;
   }
 
   if (!isOrderTime()) {
-    notify("ઓર્ડરનો સમય સવારે 9 થી સાંજે 6 વાગ્યા સુધી છે.");
+    message("ઓર્ડરનો સમય સવારે 9 થી સાંજે 6 વાગ્યા સુધી છે.");
     return;
   }
 
   const name = $("customerName").value.trim();
-  const phone = $("customerPhone").value.trim();
+  const phone = $("customerMobile").value.trim();
   const address = $("customerAddress").value.trim();
 
   if (!name || !phone || !address) {
-    notify("નામ, મોબાઇલ નંબર અને સરનામું લખો.");
+    message("તમારી બધી માહિતી ભરો.");
     return;
   }
 
-  if (!/^[0-9]{10}$/.test(phone)) {
-    notify("યોગ્ય 10 અંકનો મોબાઇલ નંબર લખો.");
+  if (!/^[6-9][0-9]{9}$/.test(phone)) {
+    message("યોગ્ય 10 અંકનો મોબાઇલ નંબર લખો.");
     return;
   }
 
   const shop = shops.find(s => s.id === cart[0].shopId);
 
   if (!shop) {
-    notify("દુકાન મળી નથી.");
+    message("દુકાન મળી નથી.");
     return;
   }
 
@@ -601,7 +459,7 @@ $("placeOrder").addEventListener("click", async () => {
   const minimum = checkMinimum(shop, total);
 
   if (!minimum.valid) {
-    notify(minimum.message);
+    message(minimum.message);
     return;
   }
 
@@ -609,13 +467,8 @@ $("placeOrder").addEventListener("click", async () => {
     shop.whatsapp || shop.phone || shop.mobile || ""
   ).replace(/\D/g, "");
 
-  if (!whatsapp) {
-    notify("આ દુકાનનો WhatsApp નંબર ઉપલબ્ધ નથી.");
-    return;
-  }
-
   if (whatsapp.length < 10) {
-    notify("દુકાનનો WhatsApp નંબર તપાસવો જરૂરી છે.");
+    message("દુકાનનો WhatsApp નંબર ઉપલબ્ધ નથી અથવા ખોટો છે.");
     return;
   }
 
@@ -625,11 +478,10 @@ $("placeOrder").addEventListener("click", async () => {
     `${index + 1}. ${item.name} - ${item.quantity} ${item.unit} × ${money(item.price)} = ${money(item.price * item.quantity)}`
   ).join("\n");
 
-  const message = `
+  const whatsappMessage = `
 *K.H Fresh & Fashion - નવો ઓર્ડર*
 
 ઓર્ડર નંબર: ${orderNumber}
-
 દુકાન: ${shop.name || shop.shopName || ""}
 
 ગ્રાહક: ${name}
@@ -644,57 +496,52 @@ ${itemLines}
 કૃપા કરીને ઓર્ડરની પુષ્ટિ કરો.
 `;
 
-  const orderData = {
-    orderNumber,
-    shopId: shop.id,
-    shopName: shop.name || shop.shopName || "",
-    customerName: name,
-    customerPhone: phone,
-    customerAddress: address,
-    items: cart.map(item => ({
-      productId: item.id,
-      name: item.name,
-      price: item.price,
-      quantity: item.quantity,
-      unit: item.unit
-    })),
-    total,
-    status: "pending",
-    createdAt: serverTimestamp()
-  };
-
-  const button = $("placeOrder");
+  const button = $("whatsappOrderButton");
   button.disabled = true;
   button.textContent = "ઓર્ડર સેવ થઈ રહ્યો છે...";
 
   try {
-    await addDoc(collection(db, "orders"), orderData);
+    await addDoc(collection(db, "orders"), {
+      orderNumber,
+      shopId: shop.id,
+      shopName: shop.name || shop.shopName || "",
+      customerName: name,
+      customerPhone: phone,
+      customerAddress: address,
+      items: cart.map(item => ({
+        productId: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        unit: item.unit
+      })),
+      total,
+      status: "pending",
+      createdAt: serverTimestamp()
+    });
 
     const url =
       "https://wa.me/" +
       whatsapp +
       "?text=" +
-      encodeURIComponent(message);
+      encodeURIComponent(whatsappMessage);
 
-    window.open(url, "_blank");
-
-    notify("ઓર્ડર સેવ થયો. હવે WhatsApp માં મોકલો.");
-
-    cart = [];
-    updateCart();
-    closeCart();
+    window.location.href = url;
 
   } catch (error) {
     console.error("Order Error:", error);
-    notify("ઓર્ડર સેવ થયો નથી. ફરી પ્રયાસ કરો.");
+    message(
+      "ઓર્ડર સેવ થયો નથી: " +
+      (error.code || error.message || "Firebase Error")
+    );
   } finally {
     button.disabled = false;
-    button.textContent = "WhatsApp પર ઓર્ડર કરો";
+    button.textContent = "WhatsApp પર ઓર્ડર મોકલો";
   }
 });
 
 // =====================================
-// START CUSTOMER PAGE
+// START
 // =====================================
 
 updateCart();
