@@ -21,7 +21,7 @@ import {
 // K.H FRESH & FASHION - ADMIN SYSTEM
 // =====================================
 
-const ADMIN_UID = "uFXdUEzRvaOYQ5IwGio6GRDzgSG";
+const ADMIN_UID = "uFXdUEzRvaOYQ5IwGio6GRDzgSG2";
 
 const $ = id => document.getElementById(id);
 
@@ -54,6 +54,11 @@ function money(value) {
 function notify(message) {
   const box = $("adminNotification");
 
+  if (!box) {
+    alert(message);
+    return;
+  }
+
   box.textContent = message;
   box.classList.remove("hidden");
 
@@ -73,7 +78,7 @@ function showDashboard() {
 }
 
 // =====================================
-// ADMIN AUTHENTICATION
+// ADMIN LOGIN
 // =====================================
 
 $("adminLogin").addEventListener("click", async () => {
@@ -81,8 +86,7 @@ $("adminLogin").addEventListener("click", async () => {
   const password = $("adminPassword").value;
 
   if (!email || !password) {
-    $("loginMessage").textContent =
-      "Email અને Password લખો.";
+    $("loginMessage").textContent = "Email અને Password લખો.";
     return;
   }
 
@@ -108,7 +112,7 @@ $("adminLogin").addEventListener("click", async () => {
     $("loginMessage").textContent = "";
 
   } catch (error) {
-    console.error(error);
+    console.error("Admin Login Error:", error);
 
     $("loginMessage").textContent =
       "Login નિષ્ફળ. Email અને Password તપાસો.";
@@ -117,10 +121,24 @@ $("adminLogin").addEventListener("click", async () => {
   }
 });
 
+// =====================================
+// ADMIN LOGOUT
+// =====================================
+
 $("adminLogout").addEventListener("click", async () => {
-  await signOut(auth);
-  notify("Logout થઈ ગયું.");
+  try {
+    await signOut(auth);
+    currentAdmin = null;
+    notify("Logout થઈ ગયું.");
+  } catch (error) {
+    console.error(error);
+    notify("Logout થઈ શક્યું નથી.");
+  }
 });
+
+// =====================================
+// AUTH STATE
+// =====================================
 
 onAuthStateChanged(auth, async user => {
   if (user && user.uid === ADMIN_UID) {
@@ -202,17 +220,21 @@ function renderAll() {
 
 document.querySelectorAll(".tab-btn").forEach(button => {
   button.addEventListener("click", () => {
-    document.querySelectorAll(".tab-btn").forEach(b =>
-      b.classList.remove("active")
-    );
+    document.querySelectorAll(".tab-btn").forEach(b => {
+      b.classList.remove("active");
+    });
 
-    document.querySelectorAll(".tab-content").forEach(tab =>
-      tab.classList.add("hidden")
-    );
+    document.querySelectorAll(".tab-content").forEach(tab => {
+      tab.classList.add("hidden");
+    });
 
     button.classList.add("active");
 
-    $(button.dataset.tab).classList.remove("hidden");
+    const target = $(button.dataset.tab);
+
+    if (target) {
+      target.classList.remove("hidden");
+    }
   });
 });
 
@@ -233,7 +255,9 @@ async function saveShop() {
   const phone = $("shopPhone").value.trim();
   const whatsapp = $("shopWhatsapp").value.trim();
   const image = $("shopImage").value.trim();
+
   const minimumRule = $("shopMinimumRule").value;
+
   const minimumValue = Number(
     $("shopMinimumValue").value || 0
   );
@@ -299,26 +323,23 @@ function renderShops() {
   box.innerHTML = shops.map(shop => `
     <div class="admin-list-item">
       <h3>${safe(shop.name || shop.shopName)}</h3>
-
       <p>માલિક: ${safe(shop.ownerName)}</p>
       <p>વિસ્તાર: ${safe(shop.area || shop.village)}</p>
       <p>WhatsApp: ${safe(shop.whatsapp)}</p>
       <p>નિયમ: ${safe(shop.minimumRule || "none")}</p>
-
       <p>સ્થિતિ:
         <strong>${shop.active === false ? "બંધ" : "ચાલુ"}</strong>
       </p>
 
       <div class="admin-list-actions">
-        <button data-edit-shop="${safe(shop.id)}">
-          સુધારો
-        </button>
+        <button data-edit-shop="${safe(shop.id)}">સુધારો</button>
 
         <button data-toggle-shop="${safe(shop.id)}">
           ${shop.active === false ? "ચાલુ કરો" : "બંધ કરો"}
         </button>
 
-        <button class="delete-btn" data-delete-shop="${safe(shop.id)}">
+        <button class="delete-btn"
+          data-delete-shop="${safe(shop.id)}">
           Delete
         </button>
       </div>
@@ -380,7 +401,6 @@ async function toggleShop(id) {
     });
 
     notify(active ? "દુકાન ચાલુ થઈ." : "દુકાન બંધ થઈ.");
-
     await loadDashboard();
 
   } catch (error) {
@@ -518,11 +538,9 @@ function renderProducts() {
     return `
       <div class="admin-list-item">
         <h3>${safe(product.name || product.title)}</h3>
-
         <p>દુકાન: ${safe(shop?.name || "દુકાન મળી નથી")}</p>
         <p>કેટેગરી: ${safe(product.category)}</p>
         <p>ભાવ: ${money(product.price)} / ${safe(product.unit)}</p>
-
         <p>સ્થિતિ:
           ${product.active === false ? "બંધ" : "ઉપલબ્ધ"}
         </p>
@@ -536,7 +554,8 @@ function renderProducts() {
             ${product.active === false ? "ચાલુ કરો" : "બંધ કરો"}
           </button>
 
-          <button class="delete-btn" data-delete-product="${safe(product.id)}">
+          <button class="delete-btn"
+            data-delete-product="${safe(product.id)}">
             Delete
           </button>
         </div>
@@ -728,7 +747,6 @@ function renderOrders() {
   box.innerHTML = orders.map(order => `
     <div class="admin-list-item">
       <h3>ઓર્ડર: ${safe(order.orderNumber || order.id)}</h3>
-
       <p>ગ્રાહક: ${safe(order.customerName)}</p>
       <p>મોબાઇલ: ${safe(order.customerPhone)}</p>
       <p>દુકાન: ${safe(order.shopName)}</p>
@@ -737,17 +755,14 @@ function renderOrders() {
       <p>સ્થિતિ: ${safe(order.status || "pending")}</p>
 
       <div class="admin-list-actions">
-        <button data-order-status="${safe(order.id)}" data-status="confirmed">
-          Confirm
-        </button>
+        <button data-order-status="${safe(order.id)}"
+          data-status="confirmed">Confirm</button>
 
-        <button data-order-status="${safe(order.id)}" data-status="completed">
-          Completed
-        </button>
+        <button data-order-status="${safe(order.id)}"
+          data-status="completed">Completed</button>
 
-        <button data-order-status="${safe(order.id)}" data-status="cancelled">
-          Cancel
-        </button>
+        <button data-order-status="${safe(order.id)}"
+          data-status="cancelled">Cancel</button>
       </div>
     </div>
   `).join("");
@@ -786,7 +801,6 @@ function renderSellers() {
   box.innerHTML = sellers.map(seller => `
     <div class="admin-list-item">
       <h3>${safe(seller.name || seller.shopName || "Seller")}</h3>
-
       <p>Email: ${safe(seller.email || "")}</p>
       <p>મોબાઇલ: ${safe(seller.phone || "")}</p>
       <p>Role: ${safe(seller.role || "seller")}</p>
