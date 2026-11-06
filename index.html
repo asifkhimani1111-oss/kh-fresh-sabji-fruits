@@ -3,146 +3,408 @@
 <html lang="gu">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#087f5b">
-  <meta name="description" content="K.H Fresh & Fashion - તમારા વિસ્તારની દુકાનોમાંથી ઓનલાઇન ખરીદી કરો.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>K.H Fresh & Fashion</title>
-  <link rel="stylesheet" href="index.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f6f6f6;
+      color: #292929;
+      padding-bottom: 25px;
+    }
+
+    header {
+      background: white;
+      padding: 13px 15px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 8px #00000012;
+    }
+
+    .topbar {
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand {
+      color: #e83e8c;
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    nav {
+      display: flex;
+      gap: 12px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #555;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: auto;
+      padding: 14px;
+    }
+
+    .hero {
+      background: linear-gradient(120deg, #ffe1ef, #fff2dc);
+      border-radius: 15px;
+      padding: 25px 18px;
+      margin: 8px 0 18px;
+    }
+
+    .hero h1 {
+      font-size: 25px;
+      color: #b92d70;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #555;
+    }
+
+    .offer {
+      display: inline-block;
+      margin-top: 12px;
+      background: white;
+      color: #c52e76;
+      border-radius: 20px;
+      padding: 7px 13px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .section {
+      background: white;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 17px;
+      box-shadow: 0 2px 8px #00000008;
+    }
+
+    .section h2 {
+      font-size: 19px;
+      margin-bottom: 7px;
+    }
+
+    .subtitle {
+      color: #777;
+      font-size: 13px;
+      margin-bottom: 15px;
+    }
+
+    #shopList,
+    #productList {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .shop-card,
+    .product-card {
+      min-width: 0;
+      border: 1px solid #eeeeee;
+      border-radius: 12px;
+      padding: 9px;
+      background: white;
+      overflow: hidden;
+      box-shadow: 0 2px 7px #00000008;
+    }
+
+    .shop-photo,
+    .product-photo {
+      width: 100%;
+      height: 145px;
+      object-fit: cover;
+      border-radius: 9px;
+      background: #f2f2f2;
+      display: block;
+      margin-bottom: 9px;
+    }
+
+    .photo-placeholder {
+      height: 145px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f3f3f3;
+      color: #888;
+      border-radius: 9px;
+      font-size: 12px;
+      margin-bottom: 9px;
+    }
+
+    .shop-card h3,
+    .product-card h3 {
+      font-size: 15px;
+      margin: 5px 0;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .shop-card p,
+    .product-card p {
+      color: #777;
+      font-size: 12px;
+      margin: 5px 0;
+    }
+
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 11px 12px;
+      background: #e83e8c;
+      color: white;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .shop-card button,
+    .product-card button {
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    button:disabled {
+      opacity: .6;
+    }
+
+    .back-button {
+      background: #333;
+      margin-bottom: 14px;
+    }
+
+    #productsSection[hidden] {
+      display: none;
+    }
+
+    #cartItems {
+      font-size: 14px;
+      line-height: 2;
+      color: #555;
+    }
+
+    #cartTotal {
+      color: #d62d7c;
+    }
+
+    #cartSection h3 {
+      margin-top: 12px;
+      border-top: 1px solid #eee;
+      padding-top: 12px;
+    }
+
+    form {
+      display: grid;
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      background: #fff;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: 1px solid #e83e8c;
+      border-color: #e83e8c;
+    }
+
+    #whatsappOrderButton {
+      background: #159b55;
+      padding: 14px;
+      font-size: 15px;
+      margin-top: 8px;
+    }
+
+    #orderMessage {
+      font-size: 13px;
+      margin-top: 12px;
+      line-height: 1.6;
+    }
+
+    .notice {
+      background: #fff5df;
+      padding: 11px;
+      border-radius: 8px;
+      color: #79551b;
+      font-size: 12px;
+      line-height: 1.6;
+      margin-top: 12px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #888;
+      font-size: 12px;
+    }
+
+    @media (min-width: 650px) {
+      #shopList,
+      #productList {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .shop-photo,
+      .product-photo {
+        height: 190px;
+      }
+
+      .hero {
+        padding: 40px;
+      }
+
+      .hero h1 {
+        font-size: 32px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-  <!-- HEADER -->
-  <header class="main-header">
-    <div class="brand">
-      <div class="brand-logo">K.H</div>
-      <div>
-        <h1>K.H Fresh & Fashion</h1>
-        <p>તમારા વિસ્તારની ખરીદી એક જ જગ્યાએ</p>
-      </div>
-    </div>
+<header>
+  <div class="topbar">
+    <div class="brand">K.H Fresh & Fashion</div>
+    <nav>
+      <a href="seller.html">Seller</a>
+      <a href="admin.html">Admin</a>
+    </nav>
+  </div>
+</header>
 
-    <button id="cartToggle" class="cart-button">
-      🛒 કાર્ટ <span id="cartCount">0</span>
+<main>
+
+  <section class="hero">
+    <h1>તમારી મનપસંદ ખરીદી હવે એક જ જગ્યાએ!</h1>
+    <p>
+      ફળો, શાકભાજી, કરિયાણા, કપડાં,
+      ફૂટવેર અને બીજી ઘણી વસ્તુઓ.
+    </p>
+    <p>તમારા વિસ્તારની દુકાનોમાંથી ખરીદી કરો.</p>
+    <div class="offer">ઓર્ડરનો સમય: સવારે 9 થી સાંજે 6</div>
+  </section>
+
+  <section class="section" id="shopsSection">
+    <h2>તમારા વિસ્તારની દુકાનો 🏪</h2>
+    <p class="subtitle">
+      દુકાન પસંદ કરો અને તેની વસ્તુઓ જુઓ.
+    </p>
+    <div id="shopList">
+      દુકાનો લોડ થઈ રહી છે...
+    </div>
+  </section>
+
+  <section class="section" id="productsSection" hidden>
+    <button id="backToShops" class="back-button" type="button">
+      ← બધી દુકાનોમાં પાછા જાઓ
     </button>
-  </header>
 
-  <!-- SEARCH -->
-  <section class="search-section">
-    <h2>તમારી પસંદગીની વસ્તુ શોધો</h2>
+    <h2 id="selectedShopName">વસ્તુઓ</h2>
+    <p class="subtitle">તમને ગમતી વસ્તુ કાર્ટમાં ઉમેરો.</p>
 
-    <input
-      type="search"
-      id="searchInput"
-      placeholder="દુકાન અથવા પ્રોડક્ટ શોધો..."
-    >
-
-    <select id="areaFilter">
-      <option value="">બધા વિસ્તાર</option>
-    </select>
+    <div id="productList"></div>
   </section>
 
-  <!-- CATEGORIES -->
-  <section class="section">
-    <h2>કેટેગરી પસંદ કરો</h2>
-    <div id="categoryList" class="category-list">
-      <button class="category-btn active" data-category="all">બધી વસ્તુઓ</button>
-    </div>
-  </section>
-
-  <!-- SHOPS -->
-  <section class="section">
-    <div class="section-heading">
-      <h2>તમારા વિસ્તારની દુકાનો</h2>
-      <span id="shopCount">દુકાનો લોડ થઈ રહી છે...</span>
-    </div>
-
-    <div id="shopList" class="shop-grid">
-      <p>દુકાનો લોડ થઈ રહી છે...</p>
-    </div>
-  </section>
-
-  <!-- PRODUCTS -->
-  <section class="section">
-    <div class="section-heading">
-      <h2 id="productHeading">બધી પ્રોડક્ટ્સ</h2>
-      <button id="showAllProducts" class="text-button">
-        બધી જુઓ
-      </button>
-    </div>
-
-    <div id="productList" class="product-grid">
-      <p>પ્રોડક્ટ્સ લોડ થઈ રહી છે...</p>
-    </div>
-  </section>
-
-  <!-- CART -->
-  <div id="cartPanel" class="cart-panel hidden">
-
-    <div class="cart-header">
-      <h2>તમારો શોપિંગ કાર્ટ</h2>
-      <button id="closeCart" class="close-button">✕</button>
-    </div>
+  <section class="section" id="cartSection">
+    <h2>🛒 તમારો શોપિંગ કાર્ટ</h2>
+    <p class="subtitle">તમારી પસંદ કરેલી વસ્તુઓ અહીં દેખાશે.</p>
 
     <div id="cartItems">
-      <p>તમારો કાર્ટ ખાલી છે.</p>
+      હજુ કોઈ વસ્તુ પસંદ કરી નથી.
     </div>
 
-    <div class="cart-total">
-      કુલ રકમ:
-      <strong id="cartTotal">₹0</strong>
-    </div>
+    <h3>કુલ: <span id="cartTotal">₹0</span></h3>
+  </section>
 
-    <div class="customer-form">
-      <h3>ઓર્ડર માટેની માહિતી</h3>
+  <section class="section" id="customerOrderSection">
+    <h2>📦 ઓર્ડર માટેની માહિતી</h2>
+    <p class="subtitle">
+      ઓર્ડર આપવા માટે તમારી માહિતી ભરો.
+    </p>
 
+    <form id="customerOrderForm">
+
+      <label for="customerName">તમારું નામ</label>
       <input
-        type="text"
         id="customerName"
-        placeholder="તમારું નામ"
+        type="text"
+        placeholder="તમારું પૂરું નામ"
+        required
       >
 
+      <label for="customerMobile">મોબાઇલ નંબર</label>
       <input
+        id="customerMobile"
         type="tel"
-        id="customerPhone"
-        placeholder="મોબાઇલ નંબર"
+        inputmode="numeric"
+        maxlength="10"
+        pattern="[6-9][0-9]{9}"
+        placeholder="10 અંકનો મોબાઇલ નંબર"
+        required
       >
 
+      <label for="customerAddress">પૂરું સરનામું</label>
       <textarea
         id="customerAddress"
-        placeholder="તમારું પૂરું સરનામું"
         rows="3"
+        placeholder="ગામ, વિસ્તાર અને ઘરનું સરનામું"
+        required
       ></textarea>
 
-      <button id="placeOrder" class="primary-button">
-        WhatsApp પર ઓર્ડર કરો
+      <button id="whatsappOrderButton" type="submit">
+        WhatsApp પર ઓર્ડર મોકલો
       </button>
+    </form>
+
+    <p id="orderMessage"></p>
+
+    <div class="notice">
+      નોંધ: ઓર્ડરનો સમય સવારે 9 થી સાંજે 6 વાગ્યા સુધી છે.
+      WhatsApp ખુલ્યા પછી મેસેજ તપાસીને Send દબાવશો.
     </div>
-  </div>
+  </section>
 
-  <!-- CART BACKGROUND -->
-  <div id="cartOverlay" class="cart-overlay hidden"></div>
+</main>
 
-  <!-- FOOTER -->
-  <footer>
-    <h3>K.H Fresh & Fashion</h3>
-    <p>તમારા વિસ્તારની દુકાનો, તમારી નજીક.</p>
+<footer>
+  © 2026 K.H Fresh & Fashion
+  <br>
+  તમારા વિસ્તારની ખરીદીનું એક સરનામું.
+</footer>
 
-    <div class="footer-links">
-      <a href="seller.html">Seller Account</a>
-      <a href="admin.html">Admin</a>
-    </div>
-
-    <p class="copyright">
-      © 2026 K.H Fresh & Fashion
-    </p>
-  </footer>
-
-  <!-- NOTIFICATION -->
-  <div id="notification" class="notification hidden"></div>
-
-  <!-- JAVASCRIPT -->
-  <script type="module" src="index.js"></script>
+<script type="module" src="index.js"></script>
 
 </body>
 </html>
