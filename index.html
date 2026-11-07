@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#07152e">
+<title>AYAN – Free Technology</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#07152e;color:#f4f7ff;font-family:Arial,"Noto Sans Gujarati",sans-serif}
+header,main,footer{max-width:850px;margin:auto;padding:16px}
+header{display:flex;align-items:center;gap:12px}
+.logo{background:#63d8ff;color:#07152e;border-radius:14px;padding:12px 17px;font-size:24px;font-weight:bold}
+h1{margin:0;color:#63d8ff}
+.tag{color:#b7c7df;font-size:13px}
+section{background:#10213c;border:1px solid #294263;border-radius:16px;padding:16px;margin:14px 0}
+h2{font-size:19px;margin:0 0 12px}
+p{line-height:1.6}
+small,.muted{color:#b7c7df}
+button,select,input,textarea{font:inherit}
+button{background:#63d8ff;color:#06152b;border:0;border-radius:10px;padding:11px 14px;font-weight:bold;margin:4px 3px;cursor:pointer}
+button.secondary{background:#203957;color:#fff;border:1px solid #426080}
+button:disabled{opacity:.5}
+input,select,textarea{width:100%;padding:12px;margin:7px 0;background:#1a3150;color:white;border:1px solid #426080;border-radius:10px}
+textarea{min-height:85px}
+.status,.result{background:#1a3150;border-radius:10px;padding:12px;margin-top:10px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6}
+.result{color:#fff}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.tile{background:#142b49;border:1px solid #365575;color:white;text-align:left;min-height:76px}
+.tile b{display:block;margin-top:5px}
+video,canvas{width:100%;max-height:380px;object-fit:contain;background:#000;border-radius:12px;margin-top:10px}
+.hidden{display:none!important}
+.chatline{padding:10px;margin:7px 0;border-radius:10px;white-space:pre-wrap;line-height:1.5}
+.user{background:#21466a}
+.ayan{background:#263452}
+footer{text-align:center;color:#b7c7df;font-size:13px}
+@media(max-width:420px){header{padding:12px}.grid{grid-template-columns:1fr 1fr}button{padding:10px}}
+</style>
+</head>
+
+<body>
+<header>
+ <div class="logo">A</div>
+ <div>
+  <h1>AYAN</h1>
+  <div class="tag">દરેકના મોબાઇલમાં મફત ટેક્નોલોજી</div>
+ </div>
+</header>
+
+<main>
+<section>
+ <h2>AYANમાં તમારું સ્વાગત છે</h2>
+ <p>તમારા મોબાઇલની ક્ષમતા પ્રમાણે ટેક્નોલોજીનો ઉપયોગ કરો.</p>
+ <div class="status" id="internetStatus">ઇન્ટરનેટ તપાસી રહ્યા છીએ...</div>
+ <div class="status" id="deviceInfo">મોબાઇલની ક્ષમતા તપાસી રહ્યા છીએ...</div>
+ <button class="secondary" id="checkDevice">📱 મોબાઇલ ફરી તપાસો</button>
+</section>
+
+<section>
+ <h2>🧠 AYAN ટેક્નોલોજી</h2>
+ <div class="grid">
+  <button class="tile" onclick="goTo('aiPanel')">🤖 <b>AI સાથે વાત કરો</b><small>લોકલ AI ચેટ</small></button>
+  <button class="tile" onclick="goTo('cameraPanel')">📷 <b>સ્માર્ટ કેમેરા</b><small>ફોટો લો</small></button>
+  <button class="tile" onclick="goTo('ocrPanel')">📄 <b>લખાણ વાંચો</b><small>ફોટામાંથી લખાણ</small></button>
+  <button class="tile" onclick="goTo('objectPanel')">👁️ <b>વસ્તુ ઓળખો</b><small>સામાન્ય વસ્તુઓ</small></button>
+  <button class="tile" onclick="goTo('voicePanel')">🎙️ <b>અવાજ</b><small>બોલો અને જવાબ સાંભળો</small></button>
+  <button class="tile" onclick="goTo('offlinePanel')">📡 <b>ઓફલાઇન મોડ</b><small>કૅશ થયેલી એપ</small></button>
+ </div>
+</section>
+
+<section id="aiPanel">
+ <h2>🤖 AYAN સાથે વાત કરો</h2>
+ <p class="muted">લોકલ AI મોડેલ તમારા બ્રાઉઝરમાં ચાલવાનો પ્રયાસ કરશે. ચેટ કોઈ AI સર્વર પર મોકલાતો નથી.</p>
+
+ <div class="status" id="aiStatus">AI મોડેલ હજી શરૂ થયું નથી.</div>
+ <button id="loadAI">🧠 મફત AI મોડેલ લોડ કરો</button>
+
+ <div class="status" id="loadProgress">મોડેલ લોડ કરવા ઉપરનું બટન દબાવો.</div>
+ <div id="chatBox" class="result">
+  નમસ્તે! હું AYAN છું. પહેલાં AI મોડેલ લોડ કરો, પછી મારી સાથે વાત કરી શકશો.
+ </div>
+
+ <textarea id="chatInput" placeholder="અહીં તમારો પ્રશ્ન લખો..."></textarea>
+ <button id="sendChat">મોકલો ➤</button>
+ <button class="secondary" id="voiceAsk">🎙️ બોલીને પૂછો</button>
+ <button class="secondary" id="stopVoice">સાંભળવાનું બંધ કરો</button>
+ <button class="secondary" id="speakLast">🔊 છેલ્લો જવાબ સાંભળો</button>
+ <button class="secondary" id="stopSpeak">અવાજ બંધ કરો</button>
+ <button class="secondary" id="clearChat">ચેટ સાફ કરો</button>
+ <p class="muted">નોંધ: AI મોડેલ પહેલી વાર ડાઉનલોડ થશે. મોબાઇલ ડેટા અને સ્ટોરેજ વપરાશે. WebGPU અથવા પૂરતી મેમરી ન હોય તો AI નહીં ચાલે.</p>
+</section>
+
+<section id="cameraPanel">
+ <h2>📷 કેમેરા</h2>
+ <video id="video" autoplay playsinline muted></video>
+ <div>
+  <button id="startCamera">કેમેરા ચાલુ કરો</button>
+  <button class="secondary" id="takePhoto">📸 ફોટો લો</button>
+  <button class="secondary" id="stopCamera">બંધ કરો</button>
+ </div>
+ <p class="muted">અથવા ગેલેરીમાંથી ફોટો પસંદ કરો.</p>
+ <input id="galleryInput" type="file" accept="image/*">
+ <canvas id="photoCanvas" class="hidden"></canvas>
+ <div class="status" id="cameraStatus">કેમેરા તૈયાર છે.</div>
+</section>
+
+<section id="ocrPanel">
+ <h2>📄 ફોટામાંથી લખાણ વાંચો</h2>
+ <p class="muted">પહેલાં કેમેરાથી ફોટો લો અથવા ગેલેરીમાંથી ફોટો પસંદ કરો. હાલ અંગ્રેજી OCR ઉપલબ્ધ છે.</p>
+ <button id="readText">લખાણ વાંચો</button>
+ <div class="result" id="ocrResult">અહીં લખાણ દેખાશે.</div>
+</section>
+
+<section id="objectPanel">
+ <h2>👁️ વસ્તુ ઓળખો</h2>
+ <p class="muted">ફોટામાં રહેલી કેટલીક સામાન્ય વસ્તુઓ ઓળખવાનો પ્રયાસ થશે.</p>
+ <button id="detectObject">વસ્તુ તપાસો</button>
+ <div class="result" id="objectResult">અહીં પરિણામ દેખાશે.</div>
+</section>
+
+<section id="voicePanel">
+ <h2>🎙️ અવાજ સુવિધા</h2>
+ <p class="muted">અહીં બોલેલું લખાણ AIને મોકલાશે. AYAN AIનો જવાબ આપશે અને એ જવાબ સંભળાવશે.</p>
+ <button id="voiceAsk2">🎤 અવાજથી પ્રશ્ન પૂછો</button>
+ <button class="secondary" id="stopVoice2">સાંભળવાનું બંધ કરો</button>
+ <button class="secondary" id="speakLast2">🔊 છેલ્લો AI જવાબ બોલો</button>
+ <div class="status" id="voiceStatus">બોલવા માટે બટન દબાવો.</div>
+</section>
+
+<section id="offlinePanel">
+ <h2>📡 ઑફલાઇન સુવિધાઓ</h2>
+ <div class="status" id="offlineStatus">ઑફલાઇન સ્થિતિ તપાસી રહ્યા છીએ...</div>
+ <p class="muted">કૅશ થયેલી એપ ફાઇલો ઑફલાઇન ખુલી શકે છે. AI મોડેલ અને નવી લાઇબ્રેરી ડાઉનલોડ કરવા ઇન્ટરનેટ જરૂરી હોઈ શકે છે.</p>
+</section>
+
+<section>
+ <h2>⚙️ AYAN સેટિંગ્સ</h2>
+ <label for="language">ભાષા પસંદ કરો</label>
+ <select id="language">
+  <option value="gu">ગુજરાતી</option>
+  <option value="hi">હિન્દી</option>
+  <option value="en">English</option>
+ </select>
+ <p class="muted">ભાષા પસંદગી અવાજ ઓળખવા અને AI જવાબ માટે વપરાશે.</p>
+ <div class="status">કોઈ પેઇડ API, પેઇડ AI સર્વર કે સબ્સ્ક્રિપ્શન નથી. CDN પરથી લાઇબ્રેરી અને મોડેલ ડાઉનલોડ કરવા ઇન્ટરનેટ ડેટા વપરાશે.</div>
+</section>
+</main>
+
+<footer>
+ AYAN · Free Technology For Everyone<br>
+ કોઈ પેઇડ API નહીં • કોઈ પેઇડ સર્વર નહીં • કોઈ સબ્સ્ક્રિપ્શન નહીં<br>
+ AYAN Version 1.2
+</footer>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+let engine = null;
+let aiReady = false;
+let lastAnswer = "";
+let recognition = null;
+let cameraStream = null;
+let photoReady = false;
+let ocrWorker = null;
+let objectModel = null;
+let chatHistory = [];
+
+const MODEL_ID = "Qwen2-0.5B-Instruct-q0f16-MLC";
+
+function goTo(id){
+ $(id).scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function languageName(){
+ const v=$("language").value;
+ return v==="hi"?"Hindi":v==="en"?"English":"Gujarati";
+}
+
+function speechLanguage(){
+ const v=$("language").value;
+ return v==="hi"?"hi-IN":v==="en"?"en-IN":"gu-IN";
+}
+
+function updateDevice(){
+ const cores=navigator.hardwareConcurrency||"માહિતી નથી";
+ const memory=navigator.deviceMemory
+  ? "લગભગ "+navigator.deviceMemory+" GB (બ્રાઉઝરની અંદાજિત માહિતી)"
+  : "માહિતી ઉપલબ્ધ નથી";
+ const gpu=navigator.gpu?"WebGPU API ઉપલબ્ધ":"WebGPU API ઉપલબ્ધ નથી";
+
+ $("deviceInfo").textContent=
+  "પ્રોસેસર: "+cores+" logical cores\n"+
+  "મેમરી: "+memory+"\n"+
+  "બ્રાઉઝર: "+navigator.userAgent.split(" ").slice(-2).join(" ")+"\n"+
+  gpu;
+}
+
+function updateInternet(){
+ $("internetStatus").textContent=navigator.onLine
+  ?"ઇન્ટરનેટ ચાલુ છે"
+  :"ઇન્ટરનેટ બંધ છે";
+ $("offlineStatus").textContent=navigator.onLine
+  ?"ઇન્ટરનેટ ચાલુ છે. કૅશ થયેલી એપ ફાઇલો ઑફલાઇન પણ ખુલી શકે છે."
+  :"ઇન્ટરનેટ બંધ છે. ફક્ત કૅશ થયેલી એપ ફાઇલો ખૂલશે.";
+}
+
+$("checkDevice").onclick=updateDevice;
+window.addEventListener("online",updateInternet);
+window.addEventListener("offline",updateInternet);
+updateDevice();
+updateInternet();
+
+/* ---------------- LOCAL AI ---------------- */
+
+$("loadAI").onclick=loadAI;
+
+async function loadAI(){
+ if(aiReady)return;
+
+ if(!navigator.gpu){
+  $("aiStatus").textContent=
+   "આ બ્રાઉઝરમાં WebGPU ઉપલબ્ધ નથી. આ ફોન/બ્રાઉઝરમાં લોકલ AI શરૂ થઈ શકશે નહીં.";
+  return;
+ }
+
+ $("loadAI").disabled=true;
+ $("aiStatus").textContent="AI લાઇબ્રેરી લોડ થઈ રહી છે...";
+ $("loadProgress").textContent="કૃપા કરીને રાહ જુઓ. પ્રથમ વખત મોડેલ ડાઉનલોડ થશે.";
+
+ try{
+  const webllm=await import("https://esm.run/@mlc-ai/web-llm");
+
+  engine=await webllm.CreateMLCEngine(MODEL_ID,{
+   initProgressCallback:(p)=>{
+    $("loadProgress").textContent=
+     p.text||"AI મોડેલ લોડ થઈ રહ્યું છે...";
+   }
+  });
+
+  aiReady=true;
+  $("aiStatus").textContent="AI તૈયાર છે. હવે પ્રશ્ન પૂછો.";
+  $("loadProgress").textContent="મોડેલ સફળતાપૂર્વક શરૂ થયું.";
+  $("loadAI").textContent="AI તૈયાર છે";
+ }catch(error){
+  engine=null;
+  aiReady=false;
+  $("aiStatus").textContent="AI શરૂ થઈ શક્યું નથી.";
+  $("loadProgress").textContent=
+   "મોડેલ લોડ કરવામાં સમસ્યા આવી: "+(error.message||String(error));
+  $("loadAI").disabled=false;
+ }
+}
+
+function addChat(text,type){
+ const box=$("chatBox");
+ const line=document.createElement("div");
+ line.className="chatline "+type;
+ line.textContent=(type==="user"?"તમે: ":"AYAN: ")+text;
+ box.appendChild(line);
+ box.scrollTop=box.scrollHeight;
+}
+
+async function sendMessage(text){
+ const question=String(text||"").trim();
+ if(!question)return;
+
+ $("chatInput").value="";
+ addChat(question,"user");
+
+ if(!aiReady||!engine){
+  addChat("હજુ AI મોડેલ તૈયાર નથી. પહેલાં મફત AI મોડેલ લોડ કરો.","ayan");
+  $("aiStatus").textContent="AI મોડેલ લોડ કરવાનું બાકી છે.";
+  return;
+ }
+
+ $("sendChat").disabled=true;
+ $("aiStatus").textContent="તમારો પ્રશ્ન સમજી રહ્યો છું...";
+
+ const systemPrompt=
+  "You are AYAN, a helpful assistant. Reply in "+languageName()+
+  ". Use simple language and concise answers. Do not claim to have performed actions you did not perform.";
+
+ chatHistory.push({role:"user",content:question});
+ if(chatHistory.length>12)chatHistory=chatHistory.slice(-12);
+
+ try{
+  const messages=[
+   {role:"system",content:systemPrompt},
+   ...chatHistory
+  ];
+
+  const response=await engine.chat.completions.create({
+   messages,
+   temperature:0.7,
+   max_tokens:300
+  });
+
+  const reply=response.choices?.[0]?.message?.content?.trim()
+   ||"માફ કરશો, જવાબ મળ્યો નથી.";
+
+  lastAnswer=reply;
+  chatHistory.push({role:"assistant",content:reply});
+  addChat(reply,"ayan");
+  $("aiStatus").textContent="જવાબ તૈયાર છે.";
+  speakText(reply);
+ }catch(error){
+  $("aiStatus").textContent="જવાબ બનાવવામાં ભૂલ: "+error.message;
+  addChat("હાલ જવાબ બનાવી શક્યો નથી. ફરી પ્રયાસ કરો.","ayan");
+ }finally{
+  $("sendChat").disabled=false;
+ }
+}
+
+$("sendChat").onclick=()=>sendMessage($("chatInput").value);
+$("chatInput").addEventListener("keydown",e=>{
+ if(e.key==="Enter"&&!e.shiftKey){
+  e.preventDefault();
+  sendMessage($("chatInput").value);
+ }
+});
+
+$("clearChat").onclick=()=>{
+ chatHistory=[];
+ lastAnswer="";
+ $("chatBox").textContent="ચેટ સાફ થઈ ગઈ. નવો પ્રશ્ન પૂછો.";
+};
+
+/* ---------------- VOICE: SPEECH TO AI ---------------- */
+
+function startVoice(){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+
+ if(!SR){
+  $("voiceStatus").textContent=
+   "આ બ્રાઉઝરમાં અવાજ ઓળખવાની સુવિધા ઉપલબ્ધ નથી. લખીને પ્રશ્ન પૂછો.";
+  return;
+ }
+
+ if(recognition){
+  try{recognition.stop();}catch(e){}
+ }
+
+ recognition=new SR();
+ recognition.lang=speechLanguage();
+ recognition.interimResults=false;
+ recognition.maxAlternatives=1;
+
+ recognition.onstart=()=>{
+  $("voiceStatus").textContent="AYAN સાંભળે છે... હવે બોલો.";
+ };
+
+ recognition.onresult=async event=>{
+  const spoken=event.results[0][0].transcript;
+  $("voiceStatus").textContent="તમે કહ્યું: "+spoken+"\nAI જવાબ તૈયાર કરી રહ્યો છે.";
+  await sendMessage(spoken);
+ };
+
+ recognition.onerror=event=>{
+  $("voiceStatus").textContent="માઇક્રોફોન ભૂલ: "+event.error;
+ };
+
+ recognition.onend=()=>{
+  if($("voiceStatus").textContent.includes("સાંભળે છે")){
+   $("voiceStatus").textContent="સાંભળવાનું બંધ થયું.";
+  }
+ };
+
+ try{
+  recognition.start();
+ }catch(error){
+  $("voiceStatus").textContent="માઇક્રોફોન શરૂ થયો નથી: "+error.message;
+ }
+}
+
+function stopVoice(){
+ if(recognition){
+  try{recognition.stop();}catch(e){}
+ }
+ $("voiceStatus").textContent="સાંભળવાનું બંધ કર્યું.";
+}
+
+$("voiceAsk").onclick=startVoice;
+$("voiceAsk2").onclick=startVoice;
+$("stopVoice").onclick=stopVoice;
+$("stopVoice2").onclick=stopVoice;
+
+function speakText(text){
+ if(!("speechSynthesis" in window)){
+  $("voiceStatus").textContent="આ બ્રાઉઝરમાં અવાજ સંભળાવવાની સુવિધા નથી.";
+  return;
+ }
+
+ speechSynthesis.cancel();
+ const utterance=new SpeechSynthesisUtterance(text);
+ utterance.lang=speechLanguage();
+ utterance.rate=0.95;
+ speechSynthesis.speak(utterance);
+}
+
+function speakLast(){
+ if(lastAnswer)speakText(lastAnswer);
+ else $("voiceStatus").textContent="હજુ AIનો કોઈ જવાબ આવ્યો નથી.";
+}
+
+$("speakLast").onclick=speakLast;
+$("speakLast2").onclick=speakLast;
+$("stopSpeak").onclick=()=>{
+ if("speechSynthesis" in window)speechSynthesis.cancel();
+};
+
+/* ---------------- CAMERA AND GALLERY ---------------- */
+
+async function startCamera(){
+ try{
+  if(!navigator.mediaDevices?.getUserMedia){
+   throw new Error("આ બ્રાઉઝરમાં કેમેરા સપોર્ટ નથી.");
+  }
+
+  stopCamera();
+
+  cameraStream=await navigator.mediaDevices.getUserMedia({
+   video:{facingMode:{ideal:"environment"}},
+   audio:false
+  });
+
+  $("video").srcObject=cameraStream;
+  await $("video").play();
+  $("cameraStatus").textContent="કેમેરા ચાલુ છે.";
+ }catch(error){
+  $("cameraStatus").textContent="કેમેરા શરૂ થયો નથી: "+error.message;
+ }
+}
+
+function stopCamera(){
+ if(cameraStream){
+  cameraStream.getTracks().forEach(track=>track.stop());
+  cameraStream=null;
+ }
+ $("video").srcObject=null;
+}
+
+$("startCamera").onclick=startCamera;
+$("stopCamera").onclick=stopCamera;
+
+function drawPhoto(source,width,height){
+ const canvas=$("photoCanvas");
+ const max=1600;
+ const scale=Math.min(1,max/Math.max(width,height));
+
+ canvas.width=Math.max(1,Math.round(width*scale));
+ canvas.height=Math.max(1,Math.round(height*scale));
+
+ const ctx=canvas.getContext("2d");
+ ctx.drawImage(source,0,0,canvas.width,canvas.height);
+
+ canvas.classList.remove("hidden");
+ photoReady=true;
+}
+
+$("takePhoto").onclick=()=>{
+ const video=$("video");
+
+ if(!cameraStream||!video.videoWidth){
+  $("cameraStatus").textContent="પહેલાં કેમેરા ચાલુ કરો.";
+  return;
+ }
+
+ drawPhoto(video,video.videoWidth,video.videoHeight);
+ $("cameraStatus").textContent="ફોટો લેવામાં આવ્યો છે.";
+};
+
+$("galleryInput").onchange=event=>{
+ const file=event.target.files?.[0];
+ if(!file)return;
+
+ if(!file.type.startsWith("image/")){
+  $("cameraStatus").textContent="કૃપા કરીને ફોટો પસંદ કરો.";
+  return;
+ }
+
+ const image=new Image();
+ const url=URL.createObjectURL(file);
+
+ image.onload=()=>{
+  drawPhoto(image,image.width,image.height);
+  URL.revokeObjectURL(url);
+  $("cameraStatus").textContent="ગેલેરીમાંથી ફોટો પસંદ થયો.";
+ };
+
+ image.onerror=()=>{
+  URL.revokeObjectURL(url);
+  $("cameraStatus").textContent="ફોટો ખૂલી શક્યો નથી.";
+ };
+
+ image.src=url;
+};
+
+function requirePhoto(){
+ if(!photoReady){
+  $("cameraStatus").textContent=
+   "પહેલાં કેમેરાથી ફોટો લો અથવા ગેલેરીમાંથી ફોટો પસંદ કરો.";
+  return false;
+ }
+ return true;
+}
+
+/* ---------------- OCR: TESSERACT V5 ---------------- */
+
+let ocrLoading=false;
+
+$("readText").onclick=runOCR;
+
+async function runOCR(){
+ if(!requirePhoto())return;
+ if(ocrLoading)return;
+
+ ocrLoading=true;
+ $("readText").disabled=true;
+ $("ocrResult").textContent="OCR લાઇબ્રેરી અને અંગ્રેજી મોડેલ લોડ થઈ રહ્યા છે...";
+
+ try{
+  await loadScript(
+   "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"
+  );
+
+  if(!window.Tesseract||typeof Tesseract.createWorker!=="function"){
+   throw new Error("Tesseract લાઇબ્રેરી ઉપલબ્ધ નથી.");
+  }
+
+  ocrWorker=await Tesseract.createWorker("eng",1,{
+   logger:message=>{
+    if(message.status){
+     const percent=message.progress
+      ? " "+Math.round(message.progress*100)+"%"
+      :"";
+     $("ocrResult").textContent=
+      "લખાણ વાંચી રહ્યા છીએ: "+message.status+percent;
+    }
+   }
+  });
+
+  const result=await ocrWorker.recognize($("photoCanvas"));
+  const text=result?.data?.text?.trim()||"";
+
+  $("ocrResult").textContent=text||
+   "લખાણ વાંચી શકાયું નથી. ફોટો વધુ પ્રકાશમાં અને સીધો લો.";
+
+ }catch(error){
+  $("ocrResult").textContent="લખાણ વાંચી શકાયું નથી: "+error.message;
+ }finally{
+  if(ocrWorker){
+   try{await ocrWorker.terminate();}catch(e){}
+   ocrWorker=null;
+  }
+  ocrLoading=false;
+  $("readText").disabled=false;
+ }
+}
+
+/* ---------------- OBJECT DETECTION ---------------- */
+
+$("detectObject").onclick=runObjectDetection;
+
+async function runObjectDetection(){
+ if(!requirePhoto())return;
+
+ $("detectObject").disabled=true;
+ $("objectResult").textContent="વસ્તુ ઓળખવાનું મોડેલ લોડ થઈ રહ્યું છે...";
+
+ try{
+  await loadScript(
+   "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"
+  );
+
+  await loadScript(
+   "https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"
+  );
+
+  if(!window.cocoSsd){
+   throw new Error("વસ્તુ ઓળખવાની લાઇબ્રેરી મળી નથી.");
+  }
+
+  if(!objectModel){
+   objectModel=await cocoSsd.load();
+  }
+
+  $("objectResult").textContent="ફોટાની તપાસ થઈ રહી છે...";
+
+  const predictions=await objectModel.detect($("photoCanvas"));
+
+  if(!predictions.length){
+   $("objectResult").textContent=
+    "આ મોડેલ ઓળખી શકે તેવી સામાન્ય વસ્તુ મળી નથી.";
+  }else{
+   $("objectResult").textContent=predictions.map(item=>
+    item.class+" — "+Math.round(item.score*100)+"%"
+   ).join("\n");
+  }
+
+ }catch(error){
+  $("objectResult").textContent="વસ્તુ ઓળખી શકાઈ નથી: "+error.message;
+ }finally{
+  $("detectObject").disabled=false;
+ }
+}
+
+/* ---------------- SCRIPT LOADER ---------------- */
+
+const scriptPromises=new Map();
+
+function loadScript(src){
+ if(scriptPromises.has(src))return scriptPromises.get(src);
+
+ const promise=new Promise((resolve,reject)=>{
+  const script=document.createElement("script");
+  script.src=src;
+  script.async=true;
+  script.onload=()=>resolve();
+  script.onerror=()=>{
+   script.remove();
+   scriptPromises.delete(src);
+   reject(new Error("લાઇબ્રેરી ડાઉનલોડ થઈ નથી. ઇન્ટરનેટ તપાસો."));
+  };
+  document.head.appendChild(script);
+ });
+
+ scriptPromises.set(src,promise);
+ return promise;
+}
+
+/* ---------------- SERVICE WORKER ---------------- */
+
+if("serviceWorker" in navigator){
+ window.addEventListener("load",async()=>{
+  try{
+   await navigator.serviceWorker.register("./sw.js");
+   $("offlineStatus").textContent=
+    "Service Worker નોંધાયો છે. કૅશ થયેલી એપ ફાઇલો ઑફલાઇન ખૂલી શકે છે.";
+  }catch(error){
+   $("offlineStatus").textContent=
+    "ઑફલાઇન ફાઇલ નોંધાઈ નથી. sw.js અને HTTPS તપાસો.";
+  }
+ });
+}else{
+ $("offlineStatus").textContent=
+  "આ બ્રાઉઝરમાં Service Worker સપોર્ટ નથી.";
+}
+
+</script>
+</body>
+</html>
