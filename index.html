@@ -1,447 +1,328 @@
-
 <!DOCTYPE html>
 <html lang="gu">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#101827">
-<title>K.H – New Experience</title>
+<meta name="theme-color" content="#080d1c">
+<title>AYAN - Technology World</title>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#080d1c;
+  color:white;
+  min-height:100vh;
+  transition:.3s;
 }
-
-body {
-  font-family: Arial, sans-serif;
-  background: #101827;
-  color: white;
-  min-height: 100vh;
-  transition: 0.4s;
+body.light{background:#f1f5ff;color:#10182b}
+body.purple{background:#170d2b;color:white}
+body.ocean{background:#062b36;color:white}
+header{
+  padding:22px 18px 10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
-
-body.light {
-  background: #f1f5f9;
-  color: #172033;
+.logo{font-size:27px;font-weight:bold;letter-spacing:4px}
+.tag{font-size:11px;color:#9caed0;letter-spacing:2px}
+.clock{text-align:right;font-size:20px}
+.date{font-size:11px;color:#9caed0;margin-top:4px}
+main{padding:12px 18px 35px;max-width:600px;margin:auto}
+.orb-area{
+  display:flex;justify-content:center;align-items:center;
+  height:210px;
 }
-
-header {
-  padding: 25px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.orb{
+  width:145px;height:145px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#a7f3ff,#3578ff 40%,#351b91 75%);
+  box-shadow:0 0 35px #367aff,0 0 80px #4422a955;
+  animation:float 4s ease-in-out infinite;
 }
-
-.logo {
-  font-size: 30px;
-  font-weight: 900;
-  letter-spacing: 3px;
+@keyframes float{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-10px) scale(1.04)}
 }
-
-.subtitle {
-  font-size: 11px;
-  opacity: .65;
-  letter-spacing: 2px;
+.subtitle{text-align:center;color:#aab8d3;font-size:13px;margin-bottom:22px}
+.section-title{font-size:16px;margin:20px 0 12px}
+.grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:12px;
 }
-
-.round {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  border: 1px solid #64748b;
-  background: transparent;
-  color: inherit;
-  font-size: 20px;
+.tile{
+  background:#151f36;border:1px solid #263653;
+  border-radius:17px;padding:18px 12px;
+  color:white;text-align:left;min-height:95px;
+  cursor:pointer;font-size:15px;
 }
-
-.hero {
-  margin: 10px 18px 22px;
-  padding: 28px 20px;
-  border-radius: 25px;
-  background: linear-gradient(135deg,#163c70,#542a83,#126b80);
-  text-align: center;
-  box-shadow: 0 12px 35px #0005;
+.light .tile{background:white;color:#14203a;border-color:#d8e0f0}
+.tile .emoji{font-size:25px;display:block;margin-bottom:10px}
+.tile small{display:block;color:#9baecc;margin-top:5px}
+button{font-family:inherit}
+.voice-btn{
+  width:100%;border:0;border-radius:16px;padding:16px;
+  background:linear-gradient(100deg,#367cff,#793bdb);
+  color:white;font-size:17px;font-weight:bold;margin-top:18px;
 }
-
-.orb {
-  width: 115px;
-  height: 115px;
-  margin: 5px auto 20px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 25%,
-    #ffffff, #71dfff 18%, #6c54dc 50%, #141c50 80%);
-  box-shadow: 0 0 35px #6c8dff, 0 0 75px #348bff66;
-  animation: float 3s ease-in-out infinite;
+.panel{
+  display:none;background:#151f36;border:1px solid #263653;
+  border-radius:17px;padding:16px;margin-top:15px;
 }
-
-@keyframes float {
-  0%,100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-9px) scale(1.04); }
+.light .panel{background:white;color:#14203a;border-color:#d8e0f0}
+.panel h3{margin:0 0 12px}
+.panel input,.panel textarea,.panel select{
+  width:100%;padding:12px;border-radius:10px;border:1px solid #62708a;
+  margin:7px 0;background:transparent;color:inherit;font-size:15px;
 }
-
-.hero h1 {
-  font-size: 27px;
-  margin-bottom: 8px;
+.panel button{
+  border:0;border-radius:10px;padding:11px 14px;
+  background:#347bff;color:white;margin:5px 4px 5px 0;
 }
-
-.hero p {
-  font-size: 13px;
-  opacity: .85;
-}
-
-.clock {
-  font-size: 23px;
-  font-weight: bold;
-  margin-top: 17px;
-}
-
-.section-title {
-  margin: 25px 20px 15px;
-  font-size: 18px;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2,1fr);
-  gap: 13px;
-  padding: 0 18px;
-}
-
-.tile {
-  padding: 20px 13px;
-  min-height: 125px;
-  border-radius: 20px;
-  background: #202e43;
-  border: 1px solid #ffffff13;
-  color: white;
-  text-align: left;
-  cursor: pointer;
-  transition: .25s;
-}
-
-.light .tile {
-  background: white;
-  color: #172033;
-  border-color: #dbe3ed;
-}
-
-.tile:active {
-  transform: scale(.95);
-}
-
-.tile .emoji {
-  font-size: 29px;
-  display: block;
-  margin-bottom: 12px;
-}
-
-.tile strong {
-  font-size: 15px;
-}
-
-.tile small {
-  display: block;
-  margin-top: 5px;
-  opacity: .65;
-  font-size: 11px;
-}
-
-.voice {
-  margin: 22px 18px;
-  width: calc(100% - 36px);
-  padding: 17px;
-  border: none;
-  border-radius: 17px;
-  background: linear-gradient(100deg,#6556e8,#168bc1);
-  color: white;
-  font-size: 17px;
-  font-weight: bold;
-}
-
-#message {
-  margin: 10px 20px;
-  padding: 15px;
-  border-radius: 14px;
-  background: #25364e;
-  text-align: center;
-  font-size: 13px;
-  min-height: 45px;
-}
-
-.light #message {
-  background: #e0eaf6;
-}
-
-footer {
-  text-align: center;
-  padding: 30px 10px;
-  opacity: .5;
-  font-size: 11px;
-}
-
-input[type=file] {
-  display: none;
-}
-
-#preview {
-  display: none;
-  width: calc(100% - 36px);
-  max-height: 250px;
-  object-fit: contain;
-  margin: 15px 18px;
-  border-radius: 18px;
-}
+#chat{height:150px;overflow:auto;font-size:14px;line-height:1.6}
+.message{padding:8px 10px;border-radius:10px;margin:6px 0;background:#253451}
+.light .message{background:#e9efff}
+#preview{width:100%;border-radius:12px;margin-top:10px;display:none}
+.footer{text-align:center;color:#8293b3;font-size:11px;margin-top:28px}
 </style>
 </head>
 
 <body>
-
 <header>
   <div>
-    <div class="logo">K.H</div>
-    <div class="subtitle">A NEW EXPERIENCE</div>
+    <div class="logo">AYAN</div>
+    <div class="tag">YOUR TECHNOLOGY WORLD</div>
   </div>
-  <button class="round" onclick="changeTheme()" id="themeButton">☀️</button>
+  <div class="clock">
+    <div id="clock">--:--</div>
+    <div class="date" id="date"></div>
+  </div>
 </header>
 
-<section class="hero">
-  <div class="orb"></div>
-  <h1>તમારી નવી દુનિયામાં સ્વાગત છે</h1>
-  <p>Explore • Experience • Enjoy</p>
-  <div class="clock" id="clock">00:00</div>
-  <p id="date"></p>
-</section>
+<main>
+  <div class="orb-area"><div class="orb"></div></div>
+  <div class="subtitle">એક નવી ટેકનોલોજીની દુનિયામાં તમારું સ્વાગત છે</div>
 
-<h2 class="section-title">તમારી દુનિયા</h2>
+  <div class="section-title">તમારી AYAN દુનિયા</div>
+  <div class="grid">
+    <button class="tile" onclick="showPanel('assistant')">
+      <span class="emoji">🎙️</span>ગુજરાતી સહાયક
+      <small>તમારી સાથે વાત કરો</small>
+    </button>
+    <button class="tile" onclick="showPanel('camera')">
+      <span class="emoji">📷</span>કેમેરા
+      <small>ફોટો લો</small>
+    </button>
+    <button class="tile" onclick="showPanel('gallery')">
+      <span class="emoji">🖼️</span>ગેલેરી
+      <small>તમારા ફોટા જુઓ</small>
+    </button>
+    <button class="tile" onclick="showPanel('themes')">
+      <span class="emoji">🎨</span>થીમ બદલો
+      <small>તમારી પસંદગીનો રંગ</small>
+    </button>
+    <button class="tile" onclick="playMusic()">
+      <span class="emoji">🎵</span>AYAN સાઉન્ડ
+      <small>મૂળ બનાવેલો ટ્યુન</small>
+    </button>
+    <button class="tile" onclick="showPanel('world')">
+      <span class="emoji">🌌</span>નવી દુનિયા
+      <small>AYANની ખાસ જગ્યા</small>
+    </button>
+  </div>
 
-<section class="grid">
+  <button class="voice-btn" onclick="startVoice()">🎤 AYAN સાથે વાત કરો</button>
 
-  <button class="tile" onclick="speakWelcome()">
-    <span class="emoji">🎙️</span>
-    <strong>ગુજરાતી સહાયક</strong>
-    <small>અવાજથી વાત કરો</small>
-  </button>
+  <section class="panel" id="assistant">
+    <h3>🎙️ AYAN ગુજરાતી સહાયક</h3>
+    <div id="chat">
+      <div class="message">નમસ્તે! હું AYANનો પ્રોટોટાઇપ સહાયક છું. તમે લખીને અથવા અવાજથી વાત કરી શકો છો.</div>
+    </div>
+    <input id="userText" placeholder="અહીં તમારો પ્રશ્ન લખો...">
+    <button onclick="sendMessage()">મોકલો</button>
+    <button onclick="startVoice()">🎤 બોલો</button>
+  </section>
 
-  <button class="tile" onclick="openCamera()">
-    <span class="emoji">📸</span>
-    <strong>કેમેરા</strong>
-    <small>ફોટો લો</small>
-  </button>
+  <section class="panel" id="camera">
+    <h3>📷 કેમેરા</h3>
+    <p>કેમેરા ખોલવા માટે નીચે બટન દબાવો.</p>
+    <input type="file" accept="image/*" capture="environment" onchange="previewFile(event)">
+    <img id="cameraPreview" id="preview" alt="ફોટો પ્રિવ્યૂ">
+  </section>
 
-  <button class="tile" onclick="openGallery()">
-    <span class="emoji">🖼️</span>
-    <strong>ગેલેરી</strong>
-    <small>તમારા ફોટા જુઓ</small>
-  </button>
+  <section class="panel" id="gallery">
+    <h3>🖼️ ગેલેરી</h3>
+    <p>તમારા ફોનમાંથી ફોટો પસંદ કરો.</p>
+    <input type="file" accept="image/*" multiple onchange="previewGallery(event)">
+    <div id="galleryPreview"></div>
+  </section>
 
-  <button class="tile" onclick="changeTheme()">
-    <span class="emoji">🎨</span>
-    <strong>થીમ</strong>
-    <small>તમારી પસંદગી</small>
-  </button>
+  <section class="panel" id="themes">
+    <h3>🎨 તમારી થીમ પસંદ કરો</h3>
+    <button onclick="setTheme('')">ડાર્ક</button>
+    <button onclick="setTheme('light')">લાઇટ</button>
+    <button onclick="setTheme('purple')">પર્પલ</button>
+    <button onclick="setTheme('ocean')">ઓશન</button>
+  </section>
 
-  <button class="tile" onclick="playSound()">
-    <span class="emoji">🔊</span>
-    <strong>સાઉન્ડ</strong>
-    <small>સાઉન્ડ અનુભવ</small>
-  </button>
+  <section class="panel" id="world">
+    <h3>🌌 AYANની નવી દુનિયા</h3>
+    <p id="worldText">વિચારોને નવી દિશા આપો. ટેકનોલોજીથી નવી શક્યતાઓ શોધો.</p>
+    <button onclick="newIdea()">નવો વિચાર બતાવો</button>
+  </section>
 
-  <button class="tile" onclick="showInfo()">
-    <span class="emoji">✨</span>
-    <strong>નવી દુનિયા</strong>
-    <small>વધુ અનુભવો</small>
-  </button>
-
-</section>
-
-<button class="voice" onclick="startVoice()">
-  🎤 K.H સાથે વાત કરો
-</button>
-
-<div id="message">
-  K.H તૈયાર છે. તમારો અનુભવ શરૂ કરો!
-</div>
-
-<img id="preview" alt="તમારો પસંદ કરેલો ફોટો">
-
-<input id="cameraInput" type="file"
-accept="image/*" capture="environment"
-onchange="showPhoto(this)">
-
-<input id="galleryInput" type="file"
-accept="image/*"
-onchange="showPhoto(this)">
-
-<footer>
-  K.H – A NEW MOBILE EXPERIENCE
-  <br><br>
-  Made with creativity ❤️
-</footer>
+  <div class="footer">AYAN • TECHNOLOGY WORLD</div>
+</main>
 
 <script>
-const message = document.getElementById("message");
-
-function updateClock() {
-  const now = new Date();
-
-  document.getElementById("clock").textContent =
-    now.toLocaleTimeString("en-IN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit"
-    });
-
-  document.getElementById("date").textContent =
-    now.toLocaleDateString("gu-IN", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric"
-    });
+function updateClock(){
+  const now=new Date();
+  document.getElementById("clock").textContent=
+    now.toLocaleTimeString("gu-IN",{hour:"2-digit",minute:"2-digit"});
+  document.getElementById("date").textContent=
+    now.toLocaleDateString("gu-IN",{weekday:"short",day:"numeric",month:"short"});
 }
-
 updateClock();
-setInterval(updateClock, 1000);
+setInterval(updateClock,1000);
 
-function say(text) {
-  if (!("speechSynthesis" in window)) {
-    message.textContent = "આ ફોનમાં વોઇસ સપોર્ટ ઉપલબ્ધ નથી.";
+function showPanel(id){
+  document.querySelectorAll(".panel").forEach(p=>p.style.display="none");
+  const panel=document.getElementById(id);
+  if(panel) panel.style.display="block";
+  panel?.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function setTheme(theme){
+  document.body.className=theme;
+}
+
+function speak(text){
+  if(!("speechSynthesis" in window)){
+    alert("આ બ્રાઉઝરમાં અવાજની સુવિધા ઉપલબ્ધ નથી.");
     return;
   }
-
-  speechSynthesis.cancel();
-
-  const speech = new SpeechSynthesisUtterance(text);
-  speech.lang = "gu-IN";
-  speech.rate = 0.9;
-
-  speechSynthesis.speak(speech);
+  window.speechSynthesis.cancel();
+  const msg=new SpeechSynthesisUtterance(text);
+  msg.lang="gu-IN";
+  msg.rate=0.92;
+  window.speechSynthesis.speak(msg);
 }
 
-function speakWelcome() {
-  message.textContent = "K.H તમને આવકારે છે!";
-  say("નમસ્તે! K.H માં તમારું સ્વાગત છે.");
+function answerQuestion(q){
+  const s=q.toLowerCase();
+  if(s.includes("નામ") || s.includes("name"))
+    return "મારું નામ AYAN છે. આ તમારી ટેકનોલોજીની દુનિયા છે.";
+  if(s.includes("સમય") || s.includes("time"))
+    return "હમણાં સમય છે "+new Date().toLocaleTimeString("gu-IN");
+  if(s.includes("કેમ છો") || s.includes("hello") || s.includes("નમસ્તે"))
+    return "નમસ્તે! હું AYANનો સહાયક પ્રોટોટાઇપ છું. તમને કેવી રીતે મદદ કરું?";
+  if(s.includes("તારીખ") || s.includes("date"))
+    return "આજની તારીખ છે "+new Date().toLocaleDateString("gu-IN");
+  if(s.includes("મદદ") || s.includes("help"))
+    return "તમે મને સમય, તારીખ અથવા AYAN વિશે પૂછી શકો છો.";
+  return "તમારો પ્રશ્ન મળ્યો. હાલ હું પ્રોટોટાઇપ છું, એટલે દરેક પ્રશ્નનો જવાબ આપી શકતો નથી. સંપૂર્ણ AI માટે અલગ AI સેવા જરૂરી થઈ શકે છે.";
 }
 
-function changeTheme() {
-  document.body.classList.toggle("light");
-
-  const light =
-    document.body.classList.contains("light");
-
-  document.getElementById("themeButton").textContent =
-    light ? "🌙" : "☀️";
-
-  localStorage.setItem("kh-theme", light ? "light" : "dark");
-
-  message.textContent =
-    light ? "લાઇટ થીમ ચાલુ થઈ." : "ડાર્ક થીમ ચાલુ થઈ.";
+function addMessage(text,who){
+  const chat=document.getElementById("chat");
+  const div=document.createElement("div");
+  div.className="message";
+  div.textContent=(who==="user"?"તમે: ":"AYAN: ")+text;
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
 }
 
-if (localStorage.getItem("kh-theme") === "light") {
-  document.body.classList.add("light");
-  document.getElementById("themeButton").textContent = "🌙";
+function sendMessage(){
+  const input=document.getElementById("userText");
+  const q=input.value.trim();
+  if(!q)return;
+  addMessage(q,"user");
+  const answer=answerQuestion(q);
+  addMessage(answer,"ayan");
+  input.value="";
+  speak(answer);
 }
 
-function openCamera() {
-  document.getElementById("cameraInput").click();
-}
+document.getElementById("userText").addEventListener("keydown",e=>{
+  if(e.key==="Enter")sendMessage();
+});
 
-function openGallery() {
-  document.getElementById("galleryInput").click();
-}
-
-function showPhoto(input) {
-  if (!input.files || !input.files[0]) return;
-
-  const file = input.files[0];
-
-  if (!file.type.startsWith("image/")) {
-    message.textContent = "કૃપા કરીને ફોટો પસંદ કરો.";
+function startVoice(){
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SpeechRecognition){
+    alert("આ બ્રાઉઝરમાં અવાજ ઓળખવાની સુવિધા નથી. તમે લખીને વાત કરી શકો છો.");
+    showPanel("assistant");
     return;
   }
-
-  const url = URL.createObjectURL(file);
-  const preview = document.getElementById("preview");
-
-  preview.src = url;
-  preview.style.display = "block";
-
-  message.textContent = "તમારો ફોટો પસંદ થયો!";
-}
-
-function playSound() {
-  try {
-    const AudioContext =
-      window.AudioContext || window.webkitAudioContext;
-
-    if (!AudioContext) {
-      message.textContent = "સાઉન્ડ સપોર્ટ ઉપલબ્ધ નથી.";
-      return;
-    }
-
-    const ctx = new AudioContext();
-    const oscillator = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    oscillator.connect(gain);
-    gain.connect(ctx.destination);
-
-    oscillator.frequency.value = 520;
-    gain.gain.value = 0.08;
-
-    oscillator.start();
-    oscillator.stop(ctx.currentTime + 0.25);
-
-    message.textContent = "K.H સાઉન્ડ ચાલુ થયો!";
-    oscillator.onended = () => ctx.close();
-
-  } catch (error) {
-    message.textContent = "સાઉન્ડ ચાલુ થઈ શક્યો નહીં.";
-  }
-}
-
-function startVoice() {
-  const SpeechRecognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-  if (!SpeechRecognition) {
-    message.textContent =
-      "આ બ્રાઉઝરમાં વોઇસ ઓળખવાની સુવિધા ઉપલબ્ધ નથી.";
-    return;
-  }
-
-  const recognition = new SpeechRecognition();
-  recognition.lang = "gu-IN";
-  recognition.interimResults = false;
-
-  message.textContent = "હવે બોલો...";
-
-  recognition.onresult = function(event) {
-    const result =
-      event.results[0][0].transcript;
-
-    message.textContent = "તમે કહ્યું: " + result;
-
-    say("તમે કહ્યું: " + result);
+  const recognition=new SpeechRecognition();
+  recognition.lang="gu-IN";
+  recognition.interimResults=false;
+  recognition.onresult=e=>{
+    const q=e.results[0][0].transcript;
+    showPanel("assistant");
+    document.getElementById("userText").value=q;
+    sendMessage();
   };
-
-  recognition.onerror = function() {
-    message.textContent =
-      "વોઇસ ઓળખી શકાયો નથી. ફરી પ્રયાસ કરો.";
-  };
-
+  recognition.onerror=()=>alert("અવાજ ઓળખાયો નથી. ફરી પ્રયાસ કરો અથવા લખીને મોકલો.");
   recognition.start();
 }
 
-function showInfo() {
-  message.textContent =
-    "K.H માં નવી સુવિધાઓ ધીમે ધીમે ઉમેરાશે!";
+function previewFile(event){
+  const file=event.target.files[0];
+  if(!file)return;
+  const img=document.getElementById("cameraPreview");
+  img.src=URL.createObjectURL(file);
+  img.style.display="block";
+}
+
+function previewGallery(event){
+  const area=document.getElementById("galleryPreview");
+  area.innerHTML="";
+  Array.from(event.target.files).forEach(file=>{
+    const img=document.createElement("img");
+    img.src=URL.createObjectURL(file);
+    img.style.width="100px";
+    img.style.height="100px";
+    img.style.objectFit="cover";
+    img.style.borderRadius="10px";
+    img.style.margin="5px";
+    area.appendChild(img);
+  });
+}
+
+function playMusic(){
+  try{
+    const AudioContext=window.AudioContext||window.webkitAudioContext;
+    const ctx=new AudioContext();
+    const notes=[392,494,587,494,440,392,330,392];
+    notes.forEach((freq,i)=>{
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.type="sine";
+      osc.frequency.value=freq;
+      gain.gain.setValueAtTime(0.0001,ctx.currentTime+i*.22);
+      gain.gain.exponentialRampToValueAtTime(.12,ctx.currentTime+i*.22+.03);
+      gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+i*.22+.19);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime+i*.22);
+      osc.stop(ctx.currentTime+i*.22+.2);
+    });
+  }catch(e){
+    alert("આ ફોનમાં સાઉન્ડ શરૂ થઈ શક્યો નથી.");
+  }
+}
+
+const ideas=[
+ "નવા વિચારોને ટેકનોલોજી સાથે જોડો.",
+ "નાની શરૂઆત પણ મોટો ફેરફાર લાવી શકે છે.",
+ "શીખતા રહો અને નવી શક્યતાઓ શોધતા રહો.",
+ "તમારી કલ્પનાને નવી દિશા આપો."
+];
+let ideaIndex=0;
+function newIdea(){
+  ideaIndex=(ideaIndex+1)%ideas.length;
+  document.getElementById("worldText").textContent=ideas[ideaIndex];
 }
 </script>
-
 </body>
 </html>
