@@ -1,0 +1,419 @@
+
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#07152e">
+<meta name="description" content="AYAN - Only Entertainment App">
+<title>AYAN – મનોરંજન એપ</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#07152e;color:#fff;
+ font-family:Arial,sans-serif;line-height:1.6
+}
+header{
+ text-align:center;padding:25px 15px;
+ background:linear-gradient(135deg,#102d55,#075985)
+}
+header h1{font-size:38px;margin:0;color:#67e8f9}
+header p{margin:4px 0}
+main{max-width:850px;margin:auto;padding:12px}
+section{
+ background:#10233f;border:1px solid #29476b;
+ border-radius:15px;padding:16px;margin:13px 0
+}
+h2{font-size:20px;color:#67e8f9;margin:0 0 12px}
+button{
+ background:#087eaa;color:white;border:0;
+ border-radius:9px;padding:11px 15px;
+ font-size:15px;font-weight:bold;margin:4px;
+ cursor:pointer
+}
+button:active{transform:scale(.97)}
+button.secondary{background:#334b69}
+button.green{background:#087b55}
+button:disabled{opacity:.5}
+.result{
+ background:#07152e;padding:14px;border-radius:10px;
+ margin:10px 0;min-height:55px;white-space:pre-line;
+ overflow-wrap:anywhere
+}
+.grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:10px
+}
+.tile{
+ background:#0b3150;padding:15px 8px;
+ border-radius:12px;text-align:center
+}
+.tile .emoji{font-size:30px}
+.tile strong{display:block;color:#67e8f9}
+input,select,textarea{
+ width:100%;padding:12px;border-radius:9px;
+ border:1px solid #527092;background:#07152e;
+ color:white;font:inherit;margin:5px 0
+}
+textarea{min-height:80px}
+.option{
+ display:block;width:100%;text-align:left;
+ background:#183d5c;margin:7px 0
+}
+.correct{background:#087b55!important}
+.wrong{background:#a32e38!important}
+.small{font-size:13px;color:#b7c9dc}
+.score{color:#67e8f9;font-weight:bold}
+footer{text-align:center;color:#b7c9dc;padding:20px;font-size:13px}
+hr{border:0;border-top:1px solid #29476b;margin:15px 0}
+@media(min-width:600px){
+ .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <h1>AYAN</h1>
+ <p><strong>ONLY ENTERTAINMENT APP</strong></p>
+ <p>જોક્સ • કોયડા • ક્વિઝ • વાર્તાઓ • રમતો</p>
+ <p id="internet" class="small">ઇન્ટરનેટ તપાસી રહ્યા છીએ...</p>
+</header>
+
+<main>
+
+<section>
+ <h2>🎉 AYAN મનોરંજન ઝોન</h2>
+ <p>તમારા મનોરંજન માટે અહીં પસંદ કરો.</p>
+ <div class="grid">
+  <div class="tile"><div class="emoji">😂</div><strong>જોક્સ</strong><span class="small">નવા રમૂજી જોક્સ</span></div>
+  <div class="tile"><div class="emoji">🧩</div><strong>કોયડા</strong><span class="small">મગજની કસરત</span></div>
+  <div class="tile"><div class="emoji">🏆</div><strong>ક્વિઝ</strong><span class="small">જ્ઞાનની રમત</span></div>
+  <div class="tile"><div class="emoji">📖</div><strong>વાર્તાઓ</strong><span class="small">મૌલિક વાર્તાઓ</span></div>
+  <div class="tile"><div class="emoji">🎲</div><strong>નસીબ અજમાવો</strong><span class="small">મજેદાર પસંદગી</span></div>
+  <div class="tile"><div class="emoji">🎙️</div><strong>અવાજ</strong><span class="small">સામગ્રી સાંભળો</span></div>
+ </div>
+</section>
+
+<section id="jokes">
+ <h2>😂 જોક્સ વિભાગ</h2>
+ <div class="result" id="jokeResult">જોક્સ જોવા માટે બટન દબાવો.</div>
+ <button onclick="newJoke()">નવો જોક કહો 😂</button>
+ <button class="secondary" onclick="speakResult('jokeResult')">🔊 સાંભળો</button>
+</section>
+
+<section id="riddles">
+ <h2>🧩 કોયડા વિભાગ</h2>
+ <div class="result" id="riddleQuestion">કોયડો શરૂ કરવા બટન દબાવો.</div>
+ <div id="riddleAnswer" class="result" hidden></div>
+ <button onclick="newRiddle()">નવો કોયડો</button>
+ <button class="green" onclick="showRiddleAnswer()">જવાબ જુઓ</button>
+ <button class="secondary" onclick="speakResult('riddleQuestion')">🔊 સાંભળો</button>
+</section>
+
+<section id="quiz">
+ <h2>🏆 જ્ઞાન ક્વિઝ</h2>
+ <div class="score" id="quizScore">સ્કોર: 0</div>
+ <div class="result" id="quizQuestion">ક્વિઝ શરૂ કરવા બટન દબાવો.</div>
+ <div id="quizOptions"></div>
+ <div class="result" id="quizFeedback" hidden></div>
+ <button onclick="startQuiz()">નવી ક્વિઝ શરૂ કરો</button>
+ <button class="secondary" onclick="nextQuestion()" id="nextQuiz" hidden>આગળનો સવાલ ➜</button>
+</section>
+
+<section id="stories">
+ <h2>📖 વાર્તાઓ વિભાગ</h2>
+ <label for="storyType">વાર્તાનો પ્રકાર પસંદ કરો:</label>
+ <select id="storyType">
+  <option value="funny">રમૂજી વાર્તા</option>
+  <option value="inspiring">પ્રેરણાદાયક વાર્તા</option>
+  <option value="friendship">મિત્રતાની વાર્તા</option>
+  <option value="mystery">રહસ્યમય વાર્તા</option>
+ </select>
+ <div class="result" id="storyResult">નવી વાર્તા માટે બટન દબાવો.</div>
+ <button onclick="newStory()">નવી વાર્તા બનાવો 📖</button>
+ <button class="secondary" onclick="speakResult('storyResult')">🔊 વાર્તા સાંભળો</button>
+</section>
+
+<section id="random">
+ <h2>🎲 મજેદાર રેન્ડમ રમત</h2>
+ <p>બટન દબાવો અને જુઓ આજે શું મળે છે!</p>
+ <div class="result" id="randomResult">તમારા માટે એક મજેદાર પડકાર રાહ જોઈ રહ્યો છે.</div>
+ <button onclick="randomFun()">નસીબ અજમાવો 🎲</button>
+</section>
+
+<section id="voice">
+ <h2>🎙️ અવાજ સુવિધા</h2>
+ <p class="small">ઉપરના વિભાગોમાં જે લખાણ દેખાય છે તે અવાજમાં સાંભળી શકો છો.</p>
+ <button onclick="stopSpeaking()" class="secondary">⏹️ અવાજ બંધ કરો</button>
+ <div class="result" id="voiceStatus">અવાજ સુવિધા તૈયાર છે.</div>
+</section>
+
+<section>
+ <h2>📱 AYAN વિશે</h2>
+ <div class="result">
+ AYAN – Only Entertainment App
+
+આ એપમાં જોક્સ, કોયડા, ક્વિઝ, વાર્તાઓ અને મનોરંજનની રમતો છે.
+
+આ આવૃત્તિની સામગ્રી ફોનમાં જ તૈયાર થાય છે.
+કોઈ પેઇડ AI API કે સબ્સ્ક્રિપ્શન જરૂરી નથી.
+ </div>
+</section>
+
+<footer>
+ AYAN · ONLY ENTERTAINMENT APP<br>
+ મફત મનોરંજન માટે બનાવેલી એપ<br>
+ Version 2.0
+</footer>
+
+</main>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+function show(id,text){
+ const el = $(id);
+ if(el) el.textContent = text;
+}
+
+function randomItem(items){
+ return items[Math.floor(Math.random()*items.length)];
+}
+
+/* Internet status */
+function checkInternet(){
+ show("internet",navigator.onLine ?
+ "🌐 ઇન્ટરનેટ ચાલુ છે" :
+ "📴 ઇન્ટરનેટ બંધ છે – સ્થાનિક મનોરંજન ચાલુ છે");
+}
+window.addEventListener("online",checkInternet);
+window.addEventListener("offline",checkInternet);
+checkInternet();
+
+/* JOKES */
+const jokes = [
+"શિક્ષક: સૌથી ઝડપથી શું દોડે છે?\nવિદ્યાર્થી: વિચાર!\nશિક્ષક: કેમ?\nવિદ્યાર્થી: વિચાર ક્યાંથી ક્યાં પહોંચી જાય ખબર જ ન પડે! 😂",
+"મિત્ર: તું દરરોજ વહેલો કેમ ઊઠે છે?\nબીજો: કારણ કે એલાર્મ મને સૂવા જ નથી દેતું! 😂",
+"શિક્ષક: હોમવર્ક ક્યાં છે?\nવિદ્યાર્થી: સર, ઘરે જ છે. 😂",
+"મિત્ર: તું મોબાઇલને શું કહે છે?\nબીજો: મારો નાનો મિત્ર, જે ક્યારેય રજા લેતો નથી! 😄",
+"શિક્ષક: પાણીનું સૂત્ર શું છે?\nવિદ્યાર્થી: H2O.\nશિક્ષક: બહુ સરસ!\nવિદ્યાર્થી: પણ બોટલમાં હોય ત્યારે જ! 😂",
+"મિત્ર: તું આટલો ખુશ કેમ છે?\nબીજો: આજે મારા મોબાઇલની બેટરી આખો દિવસ ચાલી! 😂",
+"ઘડિયાળે કેલેન્ડરને કહ્યું: તારા દિવસો ગણાઈ રહ્યા છે! 😄",
+"પુસ્તકે પેનને કહ્યું: તું મારા વગર કંઈ લખી શકે? 😂"
+];
+
+function newJoke(){
+ show("jokeResult",randomItem(jokes));
+}
+
+/* RIDDLES */
+const riddles = [
+ {q:"એવી કઈ વસ્તુ છે જે પાણી પીવે છે પણ જીવતી નથી?",a:"સ્પોન્જ (પાણી શોષે છે)."},
+ {q:"જેના દાંત છે પણ ખાઈ શકતું નથી, એ શું?",a:"કાંસકો."},
+ {q:"જેટલું વધારે કાઢો એટલું મોટું થાય, એ શું?",a:"ખાડો."},
+ {q:"એવી કઈ વસ્તુ છે જે તમારી છે, પણ બીજા લોકો વધારે વાપરે છે?",a:"તમારું નામ."},
+ {q:"પગ નથી છતાં ચાલે છે, મોઢું નથી છતાં બોલે છે, એ શું?",a:"ઘડિયાળ."},
+ {q:"સવારમાં ચાર પગ, બપોરે બે પગ અને સાંજે ત્રણ પગ – કોણ?",a:"માણસ: બાળક, યુવાન અને વૃદ્ધાવસ્થા."},
+ {q:"કાપો તો પણ રડતું નથી, પણ તમને રડાવે છે. એ શું?",a:"ડુંગળી."}
+];
+
+let currentRiddle = null;
+
+function newRiddle(){
+ currentRiddle = randomItem(riddles);
+ show("riddleQuestion","🧩 "+currentRiddle.q);
+ show("riddleAnswer","જવાબ: "+currentRiddle.a);
+ $("riddleAnswer").hidden = true;
+}
+
+function showRiddleAnswer(){
+ if(!currentRiddle){
+  show("riddleAnswer","પહેલાં નવો કોયડો પસંદ કરો.");
+  $("riddleAnswer").hidden = false;
+  return;
+ }
+ $("riddleAnswer").hidden = false;
+}
+
+/* QUIZ */
+const questions = [
+ {q:"ભારતની રાજધાની કઈ છે?",o:["મુંબઈ","નવી દિલ્હી","અમદાવાદ","જયપુર"],a:1},
+ {q:"સૂર્ય કઈ દિશામાં ઊગે છે?",o:["પશ્ચિમ","ઉત્તર","પૂર્વ","દક્ષિણ"],a:2},
+ {q:"એક અઠવાડિયામાં કેટલા દિવસ હોય છે?",o:["5","6","7","8"],a:2},
+ {q:"પાણીનું રાસાયણિક સૂત્ર કયું છે?",o:["CO2","H2O","O2","NaCl"],a:1},
+ {q:"ગુજરાતની રાજધાની કઈ છે?",o:["સુરત","રાજકોટ","ગાંધીનગર","વડોદરા"],a:2},
+ {q:"કયો ગ્રહ લાલ ગ્રહ તરીકે ઓળખાય છે?",o:["મંગળ","શુક્ર","બુધ","શનિ"],a:0},
+ {q:"ભારતનો રાષ્ટ્રીય પક્ષી કયું છે?",o:["કબૂતર","મોર","ગરુડ","ચકલી"],a:1},
+ {q:"2 × 8 કેટલા થાય?",o:["12","14","16","18"],a:2},
+ {q:"કમ્પ્યુટરનું મગજ કોને કહેવાય છે?",o:["કીબોર્ડ","માઉસ","CPU","મોનિટર"],a:2},
+ {q:"સૌથી મોટો મહાસાગર કયો છે?",o:["હિંદ મહાસાગર","પ્રશાંત મહાસાગર","આર્કટિક","એટલાન્ટિક"],a:1}
+];
+
+let quizList = [];
+let quizIndex = 0;
+let score = 0;
+let answered = false;
+
+function startQuiz(){
+ quizList = [...questions].sort(()=>Math.random()-.5);
+ quizIndex = 0;
+ score = 0;
+ show("quizScore","સ્કોર: 0");
+ $("nextQuiz").hidden = true;
+ showQuestion();
+}
+
+function showQuestion(){
+ if(quizIndex >= quizList.length){
+  show("quizQuestion","🎉 ક્વિઝ પૂર્ણ થઈ!");
+  show("quizOptions","");
+  show("quizFeedback","તમારો અંતિમ સ્કોર: "+score+" / "+quizList.length);
+  $("quizFeedback").hidden = false;
+  $("nextQuiz").hidden = true;
+  return;
+ }
+
+ answered = false;
+ const q = quizList[quizIndex];
+ show("quizQuestion","પ્રશ્ન "+(quizIndex+1)+": "+q.q);
+ show("quizFeedback","");
+ $("quizFeedback").hidden = true;
+ $("nextQuiz").hidden = true;
+
+ const container = $("quizOptions");
+ container.innerHTML = "";
+
+ q.o.forEach((option,index)=>{
+  const btn = document.createElement("button");
+  btn.className = "option";
+  btn.textContent = String.fromCharCode(65+index)+". "+option;
+  btn.addEventListener("click",()=>answerQuestion(index,btn));
+  container.appendChild(btn);
+ });
+}
+
+function answerQuestion(index,button){
+ if(answered) return;
+ answered = true;
+ const q = quizList[quizIndex];
+ const buttons = $("quizOptions").querySelectorAll("button");
+
+ buttons.forEach((b,i)=>{
+  b.disabled = true;
+  if(i === q.a) b.classList.add("correct");
+ });
+ if(index === q.a){
+  score++;
+  button.classList.add("correct");
+  show("quizFeedback","✅ સાચો જવાબ! ખૂબ સરસ!");
+ }else{
+  button.classList.add("wrong");
+  show("quizFeedback","❌ સાચો જવાબ: "+q.o[q.a]);
+ }
+ $("quizFeedback").hidden = false;
+ show("quizScore","સ્કોર: "+score);
+ $("nextQuiz").hidden = false;
+}
+
+function nextQuestion(){
+ if(!answered) return;
+ quizIndex++;
+ showQuestion();
+}
+
+/* ORIGINAL STORY TEMPLATES */
+const stories = {
+ funny:[
+  "એક ગામમાં મોન્ટુ નામનો છોકરો હતો. તે હંમેશાં પોતાના પ્રશ્નોથી બધાને હસાવતો. એક દિવસ તેણે ઘડિયાળને પૂછ્યું: તું આખો દિવસ કેમ દોડે છે? ઘડિયાળ તો કંઈ બોલી નહીં, પણ મોન્ટુ હસી પડ્યો: અરે, તારી પાસે તો પગ પણ નથી! આખું ઘર હસવા લાગ્યું. તે દિવસથી મોન્ટુના ઘરમાં હાસ્યનો માહોલ રહેવા લાગ્યો.",
+  "એક દિવસ ચિન્ટુએ નક્કી કર્યું કે આજે તે બહુ હોશિયાર બનશે. તેણે પુસ્તક ખોલ્યું અને વાંચવા બેઠો. પાંચ મિનિટ પછી તેણે પુસ્તક બંધ કર્યું. મમ્મીએ પૂછ્યું: શું થયું? ચિન્ટુ બોલ્યો: પુસ્તકમાં બધું લખેલું છે, હવે મારે યાદ રાખવાની મહેનત કરવી પડશે!"
+ ],
+ inspiring:[
+  "એક નાનકડા ગામમાં એક છોકરી રહેતી હતી. તેને ચિત્ર દોરવાનો ખૂબ શોખ હતો. શરૂઆતમાં તેના ચિત્રો સામાન્ય હતા, પરંતુ તેણે રોજ થોડો સમય પ્રેક્ટિસ કરી. ધીમે ધીમે તેની કળા સુધરતી ગઈ. એક દિવસ તેના ચિત્રની શાળામાં પ્રશંસા થઈ. તેને સમજાયું કે નાની શરૂઆત અને સતત મહેનત મોટું પરિણામ આપી શકે છે.",
+  "એક બાળક દરરોજ એક નવું પુસ્તક વાંચતું. તેના મિત્રો તેને પૂછતા કે આટલું વાંચવાથી શું મળશે? તેણે જવાબ આપ્યો: દરેક પુસ્તક મને એક નવો વિચાર આપે છે. વર્ષો પછી એ જ વિચારો તેની સફળતાનો આધાર બન્યા."
+ ],
+ friendship:[
+  "બે મિત્રો એક જ શાળામાં ભણતા હતા. એકને ગણિત આવડતું અને બીજાને ચિત્રકામ. તેઓ એકબીજાને મદદ કરતા. પરીક્ષામાં બંનેએ સારું પરિણામ મેળવ્યું. તેમને સમજાયું કે મિત્રતા એટલે એકબીજાની શક્તિ ઓળખવી અને સાથે આગળ વધવું.",
+  "એક દિવસ વરસાદમાં બે મિત્રો રસ્તે જતા હતા. એક પાસે છત્રી હતી. તેણે છત્રી પોતાના મિત્ર સાથે વહેંચી. બંને થોડા ભીના થયા, પણ હસતા હસતા ઘરે પહોંચ્યા. નાની મદદ પણ મિત્રતાને વધુ મજબૂત બનાવે છે."
+ ],
+ mystery:[
+  "જૂના પુસ્તકાલયમાં એક નાની ઘંટડી દર સાંજે વાગતી હતી. કોઈને ખબર નહોતી કે અવાજ ક્યાંથી આવે છે. એક દિવસ બે મિત્રોએ ધ્યાનથી તપાસ્યું. તેમને એક જૂની ઘડિયાળ મળી, જેનો એલાર્મ રોજ સાંજે વાગતો હતો. રહસ્યનો જવાબ ખૂબ સામાન્ય હતો, પણ શોધવાની મજા અદ્ભુત હતી.",
+  "એક ઘરમાં રોજ સવારે ટેબલ પર એક નાનું પાન દેખાતું. પરિવારના બધા આશ્ચર્યમાં હતા. એક રવિવારે તેમણે બારી પાસે રાહ જોઈ. એક નાનું પંખી બારીમાંથી અંદર આવીને પાન મૂકી ગયું. હવે રહસ્ય ઉકેલાઈ ગયું હતું."
+ ]
+};
+
+function newStory(){
+ const type = $("storyType").value;
+ show("storyResult",randomItem(stories[type]));
+}
+
+/* RANDOM FUN */
+const funIdeas = [
+"આજે તમારા મિત્રને એક સરસ પ્રશંસા આપો! 😊",
+"તમારા મનપસંદ ગીતનું નામ યાદ કરો અને ગણગણાવો! 🎵",
+"તમારા ગ્રુપમાં એક મજેદાર કોયડો પૂછો! 🧩",
+"આજે કોઈ નવી વસ્તુ વિશે જાણો! 💡",
+"એક મિનિટમાં તમારા મનપસંદ સ્થળનું ચિત્ર દોરો! 🎨",
+"તમારા મિત્ર સાથે એક જૂની મજાની યાદ શેર કરો! 😄",
+"આજે ત્રણ નવી ગુજરાતી કહેવતો શોધો! 📚",
+"તમારા પરિવાર સાથે એક રમૂજી વાત શેર કરો! 😂",
+"તમારા મનમાં એક નવી વાર્તાનો વિચાર બનાવો! 📖"
+];
+
+function randomFun(){
+ show("randomResult",randomItem(funIdeas));
+}
+
+/* VOICE */
+function speakResult(id){
+ if(!("speechSynthesis" in window)){
+  show("voiceStatus","આ બ્રાઉઝરમાં અવાજ સુવિધા ઉપલબ્ધ નથી.");
+  return;
+ }
+ const text = $(id).textContent.trim();
+ if(!text){
+  show("voiceStatus","સાંભળવા માટે લખાણ ઉપલબ્ધ નથી.");
+  return;
+ }
+ speechSynthesis.cancel();
+ const utterance = new SpeechSynthesisUtterance(text);
+ utterance.lang = "gu-IN";
+ utterance.rate = 0.9;
+ utterance.onstart = ()=>show("voiceStatus","🔊 અવાજ શરૂ થયો છે.");
+ utterance.onend = ()=>show("voiceStatus","અવાજ પૂર્ણ થયો.");
+ utterance.onerror = ()=>show("voiceStatus","અવાજ ચલાવવામાં સમસ્યા આવી.");
+ speechSynthesis.speak(utterance);
+}
+
+function stopSpeaking(){
+ if("speechSynthesis" in window){
+  speechSynthesis.cancel();
+  show("voiceStatus","અવાજ બંધ કર્યો.");
+ }else{
+  show("voiceStatus","અવાજ સુવિધા ઉપલબ્ધ નથી.");
+ }
+}
+
+/* GLOBAL ERROR DISPLAY */
+window.addEventListener("error",()=>{
+ show("voiceStatus","એપમાં એક ભૂલ આવી. પેજ ફરી ખોલીને તપાસો.");
+});
+
+/* SERVICE WORKER */
+if("serviceWorker" in navigator){
+ window.addEventListener("load",async()=>{
+  try{
+   await navigator.serviceWorker.register("./sw.js");
+  }catch(error){
+   console.log("Service Worker ઉપલબ્ધ નથી:",error);
+  }
+ });
+}
+</script>
+
+</body>
+</html>
