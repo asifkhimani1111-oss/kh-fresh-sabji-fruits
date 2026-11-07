@@ -2,409 +2,446 @@
 <!DOCTYPE html>
 <html lang="gu">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>K.H Fresh & Fashion</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<title>K.H – New Experience</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    body {
-      font-family: Arial, sans-serif;
-      background: #f6f6f6;
-      color: #292929;
-      padding-bottom: 25px;
-    }
+body {
+  font-family: Arial, sans-serif;
+  background: #101827;
+  color: white;
+  min-height: 100vh;
+  transition: 0.4s;
+}
 
-    header {
-      background: white;
-      padding: 13px 15px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      box-shadow: 0 2px 8px #00000012;
-    }
+body.light {
+  background: #f1f5f9;
+  color: #172033;
+}
 
-    .topbar {
-      max-width: 1100px;
-      margin: auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
+header {
+  padding: 25px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-    .brand {
-      color: #e83e8c;
-      font-size: 21px;
-      font-weight: 800;
-    }
+.logo {
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
 
-    nav {
-      display: flex;
-      gap: 12px;
-    }
+.subtitle {
+  font-size: 11px;
+  opacity: .65;
+  letter-spacing: 2px;
+}
 
-    nav a {
-      text-decoration: none;
-      color: #555;
-      font-size: 13px;
-      font-weight: bold;
-    }
+.round {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 1px solid #64748b;
+  background: transparent;
+  color: inherit;
+  font-size: 20px;
+}
 
-    main {
-      max-width: 1100px;
-      margin: auto;
-      padding: 14px;
-    }
+.hero {
+  margin: 10px 18px 22px;
+  padding: 28px 20px;
+  border-radius: 25px;
+  background: linear-gradient(135deg,#163c70,#542a83,#126b80);
+  text-align: center;
+  box-shadow: 0 12px 35px #0005;
+}
 
-    .hero {
-      background: linear-gradient(120deg, #ffe1ef, #fff2dc);
-      border-radius: 15px;
-      padding: 25px 18px;
-      margin: 8px 0 18px;
-    }
+.orb {
+  width: 115px;
+  height: 115px;
+  margin: 5px auto 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%,
+    #ffffff, #71dfff 18%, #6c54dc 50%, #141c50 80%);
+  box-shadow: 0 0 35px #6c8dff, 0 0 75px #348bff66;
+  animation: float 3s ease-in-out infinite;
+}
 
-    .hero h1 {
-      font-size: 25px;
-      color: #b92d70;
-      margin-bottom: 10px;
-    }
+@keyframes float {
+  0%,100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-9px) scale(1.04); }
+}
 
-    .hero p {
-      font-size: 14px;
-      line-height: 1.7;
-      color: #555;
-    }
+.hero h1 {
+  font-size: 27px;
+  margin-bottom: 8px;
+}
 
-    .offer {
-      display: inline-block;
-      margin-top: 12px;
-      background: white;
-      color: #c52e76;
-      border-radius: 20px;
-      padding: 7px 13px;
-      font-size: 12px;
-      font-weight: bold;
-    }
+.hero p {
+  font-size: 13px;
+  opacity: .85;
+}
 
-    .section {
-      background: white;
-      padding: 16px;
-      border-radius: 14px;
-      margin-bottom: 17px;
-      box-shadow: 0 2px 8px #00000008;
-    }
+.clock {
+  font-size: 23px;
+  font-weight: bold;
+  margin-top: 17px;
+}
 
-    .section h2 {
-      font-size: 19px;
-      margin-bottom: 7px;
-    }
+.section-title {
+  margin: 25px 20px 15px;
+  font-size: 18px;
+}
 
-    .subtitle {
-      color: #777;
-      font-size: 13px;
-      margin-bottom: 15px;
-    }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 13px;
+  padding: 0 18px;
+}
 
-    #shopList,
-    #productList {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
+.tile {
+  padding: 20px 13px;
+  min-height: 125px;
+  border-radius: 20px;
+  background: #202e43;
+  border: 1px solid #ffffff13;
+  color: white;
+  text-align: left;
+  cursor: pointer;
+  transition: .25s;
+}
 
-    .shop-card,
-    .product-card {
-      min-width: 0;
-      border: 1px solid #eeeeee;
-      border-radius: 12px;
-      padding: 9px;
-      background: white;
-      overflow: hidden;
-      box-shadow: 0 2px 7px #00000008;
-    }
+.light .tile {
+  background: white;
+  color: #172033;
+  border-color: #dbe3ed;
+}
 
-    .shop-photo,
-    .product-photo {
-      width: 100%;
-      height: 145px;
-      object-fit: cover;
-      border-radius: 9px;
-      background: #f2f2f2;
-      display: block;
-      margin-bottom: 9px;
-    }
+.tile:active {
+  transform: scale(.95);
+}
 
-    .photo-placeholder {
-      height: 145px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #f3f3f3;
-      color: #888;
-      border-radius: 9px;
-      font-size: 12px;
-      margin-bottom: 9px;
-    }
+.tile .emoji {
+  font-size: 29px;
+  display: block;
+  margin-bottom: 12px;
+}
 
-    .shop-card h3,
-    .product-card h3 {
-      font-size: 15px;
-      margin: 5px 0;
-      line-height: 1.4;
-      overflow-wrap: anywhere;
-    }
+.tile strong {
+  font-size: 15px;
+}
 
-    .shop-card p,
-    .product-card p {
-      color: #777;
-      font-size: 12px;
-      margin: 5px 0;
-    }
+.tile small {
+  display: block;
+  margin-top: 5px;
+  opacity: .65;
+  font-size: 11px;
+}
 
-    button {
-      border: none;
-      border-radius: 8px;
-      padding: 11px 12px;
-      background: #e83e8c;
-      color: white;
-      font-size: 13px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+.voice {
+  margin: 22px 18px;
+  width: calc(100% - 36px);
+  padding: 17px;
+  border: none;
+  border-radius: 17px;
+  background: linear-gradient(100deg,#6556e8,#168bc1);
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+}
 
-    .shop-card button,
-    .product-card button {
-      width: 100%;
-      margin-top: 8px;
-    }
+#message {
+  margin: 10px 20px;
+  padding: 15px;
+  border-radius: 14px;
+  background: #25364e;
+  text-align: center;
+  font-size: 13px;
+  min-height: 45px;
+}
 
-    button:disabled {
-      opacity: .6;
-    }
+.light #message {
+  background: #e0eaf6;
+}
 
-    .back-button {
-      background: #333;
-      margin-bottom: 14px;
-    }
+footer {
+  text-align: center;
+  padding: 30px 10px;
+  opacity: .5;
+  font-size: 11px;
+}
 
-    #productsSection[hidden] {
-      display: none;
-    }
+input[type=file] {
+  display: none;
+}
 
-    #cartItems {
-      font-size: 14px;
-      line-height: 2;
-      color: #555;
-    }
-
-    #cartTotal {
-      color: #d62d7c;
-    }
-
-    #cartSection h3 {
-      margin-top: 12px;
-      border-top: 1px solid #eee;
-      padding-top: 12px;
-    }
-
-    form {
-      display: grid;
-      gap: 9px;
-      margin-top: 12px;
-    }
-
-    label {
-      font-size: 13px;
-      font-weight: bold;
-    }
-
-    input,
-    textarea {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 14px;
-      background: #fff;
-    }
-
-    input:focus,
-    textarea:focus {
-      outline: 1px solid #e83e8c;
-      border-color: #e83e8c;
-    }
-
-    #whatsappOrderButton {
-      background: #159b55;
-      padding: 14px;
-      font-size: 15px;
-      margin-top: 8px;
-    }
-
-    #orderMessage {
-      font-size: 13px;
-      margin-top: 12px;
-      line-height: 1.6;
-    }
-
-    .notice {
-      background: #fff5df;
-      padding: 11px;
-      border-radius: 8px;
-      color: #79551b;
-      font-size: 12px;
-      line-height: 1.6;
-      margin-top: 12px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      color: #888;
-      font-size: 12px;
-    }
-
-    @media (min-width: 650px) {
-      #shopList,
-      #productList {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-      }
-
-      .shop-photo,
-      .product-photo {
-        height: 190px;
-      }
-
-      .hero {
-        padding: 40px;
-      }
-
-      .hero h1 {
-        font-size: 32px;
-      }
-    }
-  </style>
+#preview {
+  display: none;
+  width: calc(100% - 36px);
+  max-height: 250px;
+  object-fit: contain;
+  margin: 15px 18px;
+  border-radius: 18px;
+}
+</style>
 </head>
 
 <body>
 
 <header>
-  <div class="topbar">
-    <div class="brand">K.H Fresh & Fashion</div>
-    <nav>
-      <a href="seller.html">Seller</a>
-      <a href="admin.html">Admin</a>
-    </nav>
+  <div>
+    <div class="logo">K.H</div>
+    <div class="subtitle">A NEW EXPERIENCE</div>
   </div>
+  <button class="round" onclick="changeTheme()" id="themeButton">☀️</button>
 </header>
 
-<main>
+<section class="hero">
+  <div class="orb"></div>
+  <h1>તમારી નવી દુનિયામાં સ્વાગત છે</h1>
+  <p>Explore • Experience • Enjoy</p>
+  <div class="clock" id="clock">00:00</div>
+  <p id="date"></p>
+</section>
 
-  <section class="hero">
-    <h1>તમારી મનપસંદ ખરીદી હવે એક જ જગ્યાએ!</h1>
-    <p>
-      ફળો, શાકભાજી, કરિયાણા, કપડાં,
-      ફૂટવેર અને બીજી ઘણી વસ્તુઓ.
-    </p>
-    <p>તમારા વિસ્તારની દુકાનોમાંથી ખરીદી કરો.</p>
-    <div class="offer">ઓર્ડરનો સમય: સવારે 9 થી સાંજે 6</div>
-  </section>
+<h2 class="section-title">તમારી દુનિયા</h2>
 
-  <section class="section" id="shopsSection">
-    <h2>તમારા વિસ્તારની દુકાનો 🏪</h2>
-    <p class="subtitle">
-      દુકાન પસંદ કરો અને તેની વસ્તુઓ જુઓ.
-    </p>
-    <div id="shopList">
-      દુકાનો લોડ થઈ રહી છે...
-    </div>
-  </section>
+<section class="grid">
 
-  <section class="section" id="productsSection" hidden>
-    <button id="backToShops" class="back-button" type="button">
-      ← બધી દુકાનોમાં પાછા જાઓ
-    </button>
+  <button class="tile" onclick="speakWelcome()">
+    <span class="emoji">🎙️</span>
+    <strong>ગુજરાતી સહાયક</strong>
+    <small>અવાજથી વાત કરો</small>
+  </button>
 
-    <h2 id="selectedShopName">વસ્તુઓ</h2>
-    <p class="subtitle">તમને ગમતી વસ્તુ કાર્ટમાં ઉમેરો.</p>
+  <button class="tile" onclick="openCamera()">
+    <span class="emoji">📸</span>
+    <strong>કેમેરા</strong>
+    <small>ફોટો લો</small>
+  </button>
 
-    <div id="productList"></div>
-  </section>
+  <button class="tile" onclick="openGallery()">
+    <span class="emoji">🖼️</span>
+    <strong>ગેલેરી</strong>
+    <small>તમારા ફોટા જુઓ</small>
+  </button>
 
-  <section class="section" id="cartSection">
-    <h2>🛒 તમારો શોપિંગ કાર્ટ</h2>
-    <p class="subtitle">તમારી પસંદ કરેલી વસ્તુઓ અહીં દેખાશે.</p>
+  <button class="tile" onclick="changeTheme()">
+    <span class="emoji">🎨</span>
+    <strong>થીમ</strong>
+    <small>તમારી પસંદગી</small>
+  </button>
 
-    <div id="cartItems">
-      હજુ કોઈ વસ્તુ પસંદ કરી નથી.
-    </div>
+  <button class="tile" onclick="playSound()">
+    <span class="emoji">🔊</span>
+    <strong>સાઉન્ડ</strong>
+    <small>સાઉન્ડ અનુભવ</small>
+  </button>
 
-    <h3>કુલ: <span id="cartTotal">₹0</span></h3>
-  </section>
+  <button class="tile" onclick="showInfo()">
+    <span class="emoji">✨</span>
+    <strong>નવી દુનિયા</strong>
+    <small>વધુ અનુભવો</small>
+  </button>
 
-  <section class="section" id="customerOrderSection">
-    <h2>📦 ઓર્ડર માટેની માહિતી</h2>
-    <p class="subtitle">
-      ઓર્ડર આપવા માટે તમારી માહિતી ભરો.
-    </p>
+</section>
 
-    <form id="customerOrderForm">
+<button class="voice" onclick="startVoice()">
+  🎤 K.H સાથે વાત કરો
+</button>
 
-      <label for="customerName">તમારું નામ</label>
-      <input
-        id="customerName"
-        type="text"
-        placeholder="તમારું પૂરું નામ"
-        required
-      >
+<div id="message">
+  K.H તૈયાર છે. તમારો અનુભવ શરૂ કરો!
+</div>
 
-      <label for="customerMobile">મોબાઇલ નંબર</label>
-      <input
-        id="customerMobile"
-        type="tel"
-        inputmode="numeric"
-        maxlength="10"
-        pattern="[6-9][0-9]{9}"
-        placeholder="10 અંકનો મોબાઇલ નંબર"
-        required
-      >
+<img id="preview" alt="તમારો પસંદ કરેલો ફોટો">
 
-      <label for="customerAddress">પૂરું સરનામું</label>
-      <textarea
-        id="customerAddress"
-        rows="3"
-        placeholder="ગામ, વિસ્તાર અને ઘરનું સરનામું"
-        required
-      ></textarea>
+<input id="cameraInput" type="file"
+accept="image/*" capture="environment"
+onchange="showPhoto(this)">
 
-      <button id="whatsappOrderButton" type="submit">
-        WhatsApp પર ઓર્ડર મોકલો
-      </button>
-    </form>
-
-    <p id="orderMessage"></p>
-
-    <div class="notice">
-      નોંધ: ઓર્ડરનો સમય સવારે 9 થી સાંજે 6 વાગ્યા સુધી છે.
-      WhatsApp ખુલ્યા પછી મેસેજ તપાસીને Send દબાવશો.
-    </div>
-  </section>
-
-</main>
+<input id="galleryInput" type="file"
+accept="image/*"
+onchange="showPhoto(this)">
 
 <footer>
-  © 2026 K.H Fresh & Fashion
-  <br>
-  તમારા વિસ્તારની ખરીદીનું એક સરનામું.
+  K.H – A NEW MOBILE EXPERIENCE
+  <br><br>
+  Made with creativity ❤️
 </footer>
 
-<script type="module" src="index.js"></script>
+<script>
+const message = document.getElementById("message");
+
+function updateClock() {
+  const now = new Date();
+
+  document.getElementById("clock").textContent =
+    now.toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+
+  document.getElementById("date").textContent =
+    now.toLocaleDateString("gu-IN", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    });
+}
+
+updateClock();
+setInterval(updateClock, 1000);
+
+function say(text) {
+  if (!("speechSynthesis" in window)) {
+    message.textContent = "આ ફોનમાં વોઇસ સપોર્ટ ઉપલબ્ધ નથી.";
+    return;
+  }
+
+  speechSynthesis.cancel();
+
+  const speech = new SpeechSynthesisUtterance(text);
+  speech.lang = "gu-IN";
+  speech.rate = 0.9;
+
+  speechSynthesis.speak(speech);
+}
+
+function speakWelcome() {
+  message.textContent = "K.H તમને આવકારે છે!";
+  say("નમસ્તે! K.H માં તમારું સ્વાગત છે.");
+}
+
+function changeTheme() {
+  document.body.classList.toggle("light");
+
+  const light =
+    document.body.classList.contains("light");
+
+  document.getElementById("themeButton").textContent =
+    light ? "🌙" : "☀️";
+
+  localStorage.setItem("kh-theme", light ? "light" : "dark");
+
+  message.textContent =
+    light ? "લાઇટ થીમ ચાલુ થઈ." : "ડાર્ક થીમ ચાલુ થઈ.";
+}
+
+if (localStorage.getItem("kh-theme") === "light") {
+  document.body.classList.add("light");
+  document.getElementById("themeButton").textContent = "🌙";
+}
+
+function openCamera() {
+  document.getElementById("cameraInput").click();
+}
+
+function openGallery() {
+  document.getElementById("galleryInput").click();
+}
+
+function showPhoto(input) {
+  if (!input.files || !input.files[0]) return;
+
+  const file = input.files[0];
+
+  if (!file.type.startsWith("image/")) {
+    message.textContent = "કૃપા કરીને ફોટો પસંદ કરો.";
+    return;
+  }
+
+  const url = URL.createObjectURL(file);
+  const preview = document.getElementById("preview");
+
+  preview.src = url;
+  preview.style.display = "block";
+
+  message.textContent = "તમારો ફોટો પસંદ થયો!";
+}
+
+function playSound() {
+  try {
+    const AudioContext =
+      window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContext) {
+      message.textContent = "સાઉન્ડ સપોર્ટ ઉપલબ્ધ નથી.";
+      return;
+    }
+
+    const ctx = new AudioContext();
+    const oscillator = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    oscillator.connect(gain);
+    gain.connect(ctx.destination);
+
+    oscillator.frequency.value = 520;
+    gain.gain.value = 0.08;
+
+    oscillator.start();
+    oscillator.stop(ctx.currentTime + 0.25);
+
+    message.textContent = "K.H સાઉન્ડ ચાલુ થયો!";
+    oscillator.onended = () => ctx.close();
+
+  } catch (error) {
+    message.textContent = "સાઉન્ડ ચાલુ થઈ શક્યો નહીં.";
+  }
+}
+
+function startVoice() {
+  const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    message.textContent =
+      "આ બ્રાઉઝરમાં વોઇસ ઓળખવાની સુવિધા ઉપલબ્ધ નથી.";
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "gu-IN";
+  recognition.interimResults = false;
+
+  message.textContent = "હવે બોલો...";
+
+  recognition.onresult = function(event) {
+    const result =
+      event.results[0][0].transcript;
+
+    message.textContent = "તમે કહ્યું: " + result;
+
+    say("તમે કહ્યું: " + result);
+  };
+
+  recognition.onerror = function() {
+    message.textContent =
+      "વોઇસ ઓળખી શકાયો નથી. ફરી પ્રયાસ કરો.";
+  };
+
+  recognition.start();
+}
+
+function showInfo() {
+  message.textContent =
+    "K.H માં નવી સુવિધાઓ ધીમે ધીમે ઉમેરાશે!";
+}
+</script>
 
 </body>
 </html>
