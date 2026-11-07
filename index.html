@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#07152e">
+<meta name="description" content="AYAN - Only Entertainment App | Reels, Jokes, Stories & Riddles">
+<title>AYAN – મનોરંજન એપ</title>
+
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #07152e;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.5;
+  padding-bottom: 75px;
+}
+
+/* App Bar & Header */
+header {
+  text-align: center;
+  padding: 15px 12px;
+  background: linear-gradient(135deg, #0f2b48, #075985);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+header h1 { font-size: 28px; margin: 0; color: #67e8f9; letter-spacing: 1px; }
+header p { margin: 2px 0 0; font-size: 12px; color: #94a3b8; }
+
+/* Navigation Bar */
+nav.nav-tabs {
+  display: flex;
+  background: #0b1d3a;
+  border-bottom: 1px solid #1e3a5f;
+  position: sticky;
+  top: 62px;
+  z-index: 99;
+  overflow-x: auto;
+}
+nav.nav-tabs button {
+  flex: 1;
+  min-width: 75px;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  padding: 12px 6px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+nav.nav-tabs button.active {
+  color: #67e8f9;
+  border-bottom-color: #67e8f9;
+  background: rgba(103, 232, 249, 0.08);
+}
+
+/* Container */
+main { max-width: 700px; margin: auto; padding: 12px; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Cards & Sections */
+.card {
+  background: #10233f;
+  border: 1px solid #1e3a5f;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+h2 { font-size: 19px; color: #67e8f9; margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
+
+/* Buttons */
+.btn {
+  background: #087eaa;
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 4px 4px 4px 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.1s, background 0.2s;
+}
+.btn:active { transform: scale(0.97); }
+.btn-secondary { background: #223854; color: #cbd5e1; }
+.btn-green { background: #059669; }
+.btn-danger { background: #dc2626; }
+.btn-outline { background: transparent; border: 1px solid #087eaa; color: #67e8f9; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Output Boxes */
+.result-box {
+  background: #07152e;
+  padding: 14px;
+  border-radius: 10px;
+  margin: 10px 0;
+  min-height: 50px;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  border-left: 4px solid #087eaa;
+  font-size: 15px;
+}
+
+/* Reels / Shorts Container */
+.reel-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9/16;
+  max-height: 75vh;
+  background: #000;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.reel-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+.reel-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+/* Quiz Styles */
+.option-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #183d5c;
+  color: #fff;
+  border: 1px solid #29476b;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 6px 0;
+  font-size: 14px;
+  cursor: pointer;
+}
+.option-btn.correct { background: #059669 !important; border-color: #10b981; }
+.option-btn.wrong { background: #dc2626 !important; border-color: #ef4444; }
+
+/* Input Controls */
+select, input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #29476b;
+  background: #07152e;
+  color: white;
+  font: inherit;
+  margin: 6px 0 12px;
+}
+
+/* Status & Helpers */
+.small { font-size: 12px; color: #94a3b8; }
+.score-badge { font-weight: bold; color: #67e8f9; background: #082846; padding: 4px 10px; border-radius: 20px; font-size: 13px; }
+
+/* Bottom Voice Controller */
+.voice-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #0b1d3a;
+  border-top: 1px solid #1e3a5f;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>AYAN</h1>
+  <p>ALL-IN-ONE ENTERTAINMENT PLATFORM</p>
+</header>
+
+<nav class="nav-tabs">
+  <button class="active" onclick="switchTab('reels', this)">🎬 Reels</button>
+  <button onclick="switchTab('stories', this)">📖 વાર્તાઓ</button>
+  <button onclick="switchTab('jokes', this)">😂 જોક્સ</button>
+  <button onclick="switchTab('riddles', this)">🧩 કોયડા</button>
+  <button onclick="switchTab('quiz', this)">🏆 ક્વિઝ</button>
+</nav>
+
+<main>
+
+  <!-- TAB 1: REELS / SHORTS -->
+  <div id="tab-reels" class="tab-content active">
+    <div class="card">
+      <h2>🎬 Short Videos (AA Reels)</h2>
+      <div class="reel-container">
+        <iframe id="youtubeReel" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div class="reel-actions">
+        <div>
+          <button class="btn btn-green" onclick="likeReel()">❤️ <span id="likeCount">128</span></button>
+          <button class="btn btn-secondary" onclick="shareReel()">🔗 શેર કરો</button>
+        </div>
+        <button class="btn" onclick="nextReel()">બીજો Shorts જુઓ ⏭️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: STORIES -->
+  <div id="tab-stories" class="tab-content">
+    <div class="card">
+      <h2>📖 અનલિમિટેડ વાર્તાઓ</h2>
+      <label for="storyCategory">વાર્તાનો પ્રકાર પસંદ કરો:</label>
+      <select id="storyCategory">
+        <option value="funny">😂 રમૂજી વાર્તાઓ</option>
+        <option value="inspiring">🌟 પ્રેરણાદાયક વાર્તાઓ</option>
+        <option value="panchatantra">🦊 પંચતંત્ર / બોધવાર્તા</option>
+        <option value="mystery">🔍 રહસ્યમય વાર્તાઓ</option>
+      </select>
+      <div class="result-box" id="storyOutput">નવી વાર્તા વાંચવા કે સાંભળવા બટન દબાવો.</div>
+      <button class="btn" onclick="generateStory()">નવી વાર્તા બનાવો 📖</button>
+      <button class="btn btn-secondary" onclick="speakText('storyOutput')">🔊 સાંભળો ( slow sound )</button>
+    </div>
+  </div>
+
+  <!-- TAB 3: JOKES -->
+  <div id="tab-jokes" class="tab-content">
+    <div class="card">
+      <h2>😂 હાસ્ય દરબાર (Jokes)</h2>
+      <div class="result-box" id="jokeOutput">નવો રમુજી જોક જોવા માટે બટન દબાવો!</div>
+      <button class="btn" onclick="generateJoke()">નવો જોક 😂</button>
+      <button class="btn btn-secondary" onclick="speakText('jokeOutput')">🔊 ધીમેથી સાંભળો</button>
+    </div>
+  </div>
+
+  <!-- TAB 4: RIDDLES -->
+  <div id="tab-riddles" class="tab-content">
+    <div class="card">
+      <h2>🧩 ઉખાણા અને કોયડા</h2>
+      <div class="result-box" id="riddleQuestion">કોયડો શરૂ કરવા બટન દબાવો.</div>
+      <div class="result-box" id="riddleAnswer" style="border-left-color:#059669;" hidden></div>
+      <button class="btn" onclick="generateRiddle()">નવો કોયડો 🧩</button>
+      <button class="btn btn-green" onclick="showRiddleAnswer()">જવાબ જુઓ 💡</button>
+      <button class="btn btn-secondary" onclick="speakText('riddleQuestion')">🔊 સાંભળો</button>
+    </div>
+  </div>
+
+  <!-- TAB 5: QUIZ -->
+  <div id="tab-quiz" class="tab-content">
+    <div class="card">
+      <div style="display:flex; justify-shadow:space-between; align-items:center;">
+        <h2>🏆 જ્ઞાન ક્વિઝ</h2>
+        <span class="score-badge" id="quizScore">સ્કોર: 0</span>
+      </div>
+      <div class="result-box" id="quizQuestion">ક્વિઝ શરૂ કરવા નીચેનું બટન દબાવો.</div>
+      <div id="quizOptions"></div>
+      <div class="result-box" id="quizFeedback" hidden></div>
+      <button class="btn" onclick="startQuiz()">નવી ક્વિઝ શરૂ કરો</button>
+      <button class="btn btn-secondary" id="nextQuizBtn" onclick="nextQuizQuestion()" hidden>આગળનો પ્રશ્ન ➜</button>
+    </div>
+  </div>
+
+</main>
+
+<!-- Audio Controller Bar -->
+<div class="voice-bar">
+  <span class="small" id="voiceStatus">🔊 અવાજ સુવિધા તૈયાર છે (Slow Speech Enabled)</span>
+  <button class="btn btn-danger" style="margin:0; padding:6px 10px; font-size:12px;" onclick="stopVoice()">⏹️ બંધ કરો</button>
+</div>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+/* Navigation System */
+function switchTab(tabName, btn) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tabs button').forEach(el => el.classList.remove('active'));
+  
+  $('tab-' + tabName).classList.add('active');
+  btn.classList.add('active');
+  stopVoice();
+}
+
+/* --- YOUTUBE REELS SYSTEM --- */
+const youtubeShorts = [
+  "https://www.youtube.com/embed/5qap5aO4i9A?autoplay=1",
+  "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1",
+  "https://www.youtube.com/embed/3JZ_D3ELwOQ?autoplay=1",
+  "https://www.youtube.com/embed/2Vv-BfVoq4g?autoplay=1",
+  "https://www.youtube.com/embed/fJ9rUzIMcZQ?autoplay=1"
+];
+let currentReelIndex = 0;
+
+function loadReel(index) {
+  $('youtubeReel').src = youtubeShorts[index];
+  $('likeCount').textContent = Math.floor(Math.random() * 500) + 50;
+}
+
+function nextReel() {
+  currentReelIndex = (currentReelIndex + 1) % youtubeShorts.length;
+  loadReel(currentReelIndex);
+}
+
+function likeReel() {
+  const el = $('likeCount');
+  el.textContent = parseInt(el.textContent) + 1;
+}
+
+function shareReel() {
+  if (navigator.share) {
+    navigator.share({ title: 'AYAN Shorts', url: window.location.href });
+  } else {
+    alert("લિંક કૉપિ થઈ ગઈ છે!");
+  }
+}
+loadReel(0);
+
+/* --- SLOW & CLEAR TEXT TO SPEECH (GUJARATI) --- */
+function speakText(elementId) {
+  if (!('speechSynthesis' in window)) {
+    $('voiceStatus').textContent = "આ બ્રાઉઝરમાં અવાજ સપોર્ટ નથી.";
+    return;
+  }
+  
+  const text = $(elementId).textContent.trim();
+  if (!text) return;
+
+  speechSynthesis.cancel(); // Stop current playing sound
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "gu-IN";
+  
+  // SLOW SPEED FIX (0.75x)
+  utterance.rate = 0.75; 
+  utterance.pitch = 1.0;
+
+  utterance.onstart = () => { $('voiceStatus').textContent = "🔊 અવાજ શરૂ થયો છે (ધીમી સ્પીડ)..."; };
+  utterance.onend = () => { $('voiceStatus').textContent = "અવાજ પૂર્ણ થયો."; };
+  utterance.onerror = () => { $('voiceStatus').textContent = "અવાજ પ્લે કરવામાં સમસ્યા આવી."; };
+
+  speechSynthesis.speak(utterance);
+}
+
+function stopVoice() {
+  if ('speechSynthesis' in window) {
+    speechSynthesis.cancel();
+    $('voiceStatus').textContent = "અવાજ બંધ કર્યો.";
+  }
+}
+
+/* --- JOKES GENERATOR --- */
+const jokeTemplates = [
+  { p: "શિક્ષક", c: "મોન્ટુ", q: "સૌથી ઝડપી શું દોડે છે?", a: "વિચારો! કારણ કે તે ક્ષણમાં ક્યાંય પણ પહોંચી શકે!" },
+  { p: "રાજુ", c: "કાજુ", q: "મોબાઇલ વગરનો માણસ કેવો લાગે?", a: "જેમ કે 100 વર્ષ જૂના જમાનાનો રાજા!" },
+  { p: "ડોક્ટર", c: "દર્દી", q: "તમને રાત્રે ઊંઘ નથી આવતી?", a: "સાહેબ, દિવસે ઊંઘાઈ જાય એટલે રાત્રે જાગવું પડે!" },
+  { p: "મમ્મી", c: "ચિન્ટુ", q: "આટલી વારથી ચોપડી ખોલીને શું કરે છે?", a: "જોઉં છું કે કાગળ ક્યાં સુધી શાંત રહે છે!" }
+];
+
+function generateJoke() {
+  const j = jokeTemplates[Math.floor(Math.random() * jokeTemplates.length)];
+  const txt = `${j.p}: ${j.q}\n${j.c}: ${j.a} 😂`;
+  $('jokeOutput').textContent = txt;
+}
+
+/* --- RIDDLES GENERATOR --- */
+const riddlesList = [
+  { q: "એવી કઈ વસ્તુ છે જે પાણી પીવે છે પણ જીવતી નથી?", a: "સ્પોન્જ (Sponge)" },
+  { q: "જેના દાંત છે પણ ખાઈ શકતું નથી, એ શું?", a: "કાંસકો" },
+  { q: "જેટલું વધારે કાઢો એટલું મોટું થાય, એ શું?", a: "ખાડો" },
+  { q: "પગ નથી છતાં ચાલે છે, બોલતું નથી છતાં સમય બતાવે છે?", a: "ઘડિયાળ" }
+];
+let activeRiddle = null;
+
+function generateRiddle() {
+  activeRiddle = riddlesList[Math.floor(Math.random() * riddlesList.length)];
+  $('riddleQuestion').textContent = "🧩 " + activeRiddle.q;
+  $('riddleAnswer').hidden = true;
+}
+
+function showRiddleAnswer() {
+  if (activeRiddle) {
+    $('riddleAnswer').textContent = "💡 જવાબ: " + activeRiddle.a;
+    $('riddleAnswer').hidden = false;
+  }
+}
+
+/* --- UNLIMITED STORY GENERATOR ENGINE --- */
+const storyParts = {
+  funny: [
+    "એક નાનકડા ગામમાં મોન્ટુ રહેતો હતો. એક દિવસ તેણે નક્કી કર્યું કે તે ગામના સૌથી ડાહ્યા માણસ બનશે. તેણે આખો દિવસ એક જ જગ્યાએ બેસીને વિચારવાનું શરૂ કર્યું. જ્યારે ગામ લોકોએ પૂછ્યું કે તું શું કરે છે, ત્યારે મોન્ટુએ કહ્યું કે તે વિચારવાની સ્પીડ ચેક કરી રહ્યો છે! આ સાંભળી બધા હસી પડ્યા.",
+    "ચિન્ટુએ તેના કૂતરાને ભણાવવાનું નક્કી કર્યું. તેણે આખો દિવસ કૂતરા સામે ચોપડીઓ રાખી. સાંજે પપ્પાએ પૂછ્યું કે કૂતરો કંઈ શીખ્યો? ચિન્ટુ બોલ્યો: તે બધું સમજી ગયો પણ મૌન વ્રત રાખ્યું છે!"
+  ],
+  inspiring: [
+    "એક નાની છોકરીને દરરોજ સાયકલ ચલાવતા પડવાનું થતું હતું. છતાં તેણે હાર માની નહીં. રોજ સવારે ઊઠીને તે નવી રીતે પ્રેક્ટિસ કરતી. થોડા જ મહિનાઓમાં તે ગામની સૌથી ઝડપી સાયકલિસ્ટ બની ગઈ. મહેનત અને ચાલુ રાખવાની વૃત્તિ જ સફળતા લાવે છે.",
+    "એક નાના છોડને પથ્થર વચ્ચેથી ઉગવું પડ્યું. તેને પૂરતો તડકો ન મળતો છતાં તેણે હિંમત ન હારી. ધીમે ધીમે તેણે પથ્થરને ખસેડીને પોતાના રસ્તા પર સૂર્યનો પ્રકાશ મેળવ્યો."
+  ],
+  panchatantra: [
+    "એક જંગલમાં એક સસલું અને કાચબો રહેતા હતા. સસલાને પોતાના વેગ પર ગર્વ હતો. તેમણે સ્પર્ધા કરી. સસલું વચ્ચે ઊંઘી ગયું પણ કાચબો સતત ચાલતો રહ્યો અને જીતી ગયો. સતત પ્રયત્ન જ વિજય આપે છે.",
+    "એક કાગડો તરસ્યો હતો. તેણે માટલામાં કાંકરા નાખીને પાણી ઉપર લાવ્યું અને પીધું. બુદ્ધિ અને ચતુરાઈથી મુશ્કેલ કામ પણ સરળ બને છે."
+  ],
+  mystery: [
+    "જૂના ઘરના ઓરડામાંથી રોજ રાત્રે ધીમો સંગીતનો અવાજ આવતો હતો. કોઈ ત્યાં જવાની હિંમત ન કરતું. એક દિવસ રમેશે તપાસ કરી તો જાણવા મળ્યું કે જૂની ઘડિયાળમાં રમકડાંનું પંખી ફસાઈ ગયું હતું જે પવનથી વાગતું હતું."
+  ]
+};
+
+function generateStory() {
+  const cat = $('storyCategory').value;
+  const list = storyParts[cat] || storyParts.funny;
+  const txt = list[Math.floor(Math.random() * list.length)];
+  $('storyOutput').textContent = txt;
+}
+
+/* --- QUIZ SYSTEM --- */
+const quizDb = [
+  { q: "ગુજરાતનું રાજ્ય પક્ષી કયું છે?", o: ["મોર", "હંસ", "સુરખાબ (ફ્લેમિંગો)", "પોપટ"], a: 2 },
+  { q: "સૂર્ય કઈ દિશામાં ઊગે છે?", o: ["ઉત્તર", "દક્ષિણ", "પૂર્વ", "પશ્ચિમ"], a: 2 },
+  { q: "પાણીનું રાસાયણિક સૂત્ર કયું છે?", o: ["CO2", "H2O", "O2", "NaCl"], a: 1 },
+  { q: "કમ્પ્યુટરનું મગજ કોને કહેવાય છે?", o: ["માઉસ", "કીબોર્ડ", "CPU", "મોનિટર"], a: 2 }
+];
+let quizIdx = 0, currentScore = 0;
+
+function startQuiz() {
+  quizIdx = 0; currentScore = 0;
+  $('quizScore').textContent = "સ્કોર: 0";
+  showQuizQuestion();
+}
+
+function showQuizQuestion() {
+  if (quizIdx >= quizDb.length) {
+    $('quizQuestion').textContent = "🎉 ક્વિઝ પૂર્ણ થઈ!";
+    $('quizOptions').innerHTML = "";
+    $('quizFeedback').textContent = `તમારો અંતિમ સ્કોર: ${currentScore} / ${quizDb.length}`;
+    $('quizFeedback').hidden = false;
+    $('nextQuizBtn').hidden = true;
+    return;
+  }
+  const q = quizDb[quizIdx];
+  $('quizQuestion').textContent = `પ્રશ્ન ${quizIdx + 1}: ${q.q}`;
+  $('quizFeedback').hidden = true;
+  $('nextQuizBtn').hidden = true;
+
+  const cont = $('quizOptions');
+  cont.innerHTML = "";
+  q.o.forEach((opt, i) => {
+    const b = document.createElement('button');
+    b.className = 'option-btn';
+    b.textContent = `${String.fromCharCode(65+i)}. ${opt}`;
+    b.onclick = () => selectQuizAnswer(i, b);
+    cont.appendChild(b);
+  });
+}
+
+function selectQuizAnswer(idx, btn) {
+  const q = quizDb[quizIdx];
+  const allBtns = document.querySelectorAll('.option-btn');
+  allBtns.forEach(b => b.disabled = true);
+
+  if (idx === q.a) {
+    currentScore++;
+    btn.classList.add('correct');
+    $('quizFeedback').textContent = "✅ સાચો જવાબ!";
+  } else {
+    btn.classList.add('wrong');
+    allBtns[q.a].classList.add('correct');
+    $('quizFeedback').textContent = "❌ ખોટો જવાબ!";
+  }
+  $('quizFeedback').hidden = false;
+  $('quizScore').textContent = `સ્કોર: ${currentScore}`;
+  $('nextQuizBtn').hidden = false;
+}
+
+function nextQuizQuestion() {
+  quizIdx++;
+  showQuizQuestion();
+}
+
+// Initial Generation
+generateJoke();
+generateStory();
+generateRiddle();
+</script>
+
+</body>
+</html>
