@@ -1,0 +1,467 @@
+
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#07152e">
+<meta name="description" content="AYAN - Free Technology For Everyone">
+<title>AYAN – Free Technology</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#07111f;
+ color:#f4f7ff;
+}
+.top-header{
+ background:linear-gradient(135deg,#07152e,#123e73);
+ padding:25px 16px;
+ text-align:center;
+ border-bottom:1px solid #284b75;
+}
+.logo{font-size:38px;font-weight:900;letter-spacing:5px;color:#54d6ff}
+.top-header p{margin:7px 0;color:#d8eaff}
+.connection{font-size:13px;margin-top:12px;color:#d8eaff}
+.dot{
+ display:inline-block;width:9px;height:9px;
+ border-radius:50%;background:#ffbf47;margin-right:6px
+}
+.container{width:min(100% - 24px,850px);margin:18px auto}
+.card{
+ background:#111f35;
+ border:1px solid #29415f;
+ border-radius:17px;
+ padding:18px;
+ margin-bottom:16px;
+ box-shadow:0 5px 18px #0004;
+}
+h1{font-size:24px}
+h2{font-size:19px;margin-top:0;color:#62d5ff}
+p{line-height:1.6;color:#d3deed}
+.welcome{text-align:center}
+.welcome-orb{
+ width:65px;height:65px;border-radius:50%;
+ display:grid;place-items:center;margin:auto;
+ background:linear-gradient(135deg,#00b8ff,#765cff);
+ font-size:35px;font-weight:bold
+}
+.message,.result{
+ background:#091629;border:1px solid #29415f;
+ border-radius:11px;padding:13px;margin-top:12px;
+ color:#dceaff;overflow-wrap:anywhere;line-height:1.6;
+ white-space:pre-wrap
+}
+.info-grid,.feature-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px
+}
+.info-item{
+ background:#0a192d;padding:13px;border-radius:12px;
+ border:1px solid #29415f;display:flex;flex-direction:column;gap:7px
+}
+.info-item span{font-size:13px;color:#a9bed8}
+.info-item strong{color:#61dcff;font-size:14px}
+button,.upload-label,select{
+ width:100%;border:0;border-radius:11px;
+ padding:13px 12px;font-size:15px;font-weight:bold;
+ cursor:pointer;margin-top:10px;
+ background:linear-gradient(135deg,#087de0,#05b8c9);
+ color:white;
+}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.secondary{background:#34465f}
+.feature{
+ min-height:112px;background:#172c48;
+ border:1px solid #365777;display:flex;
+ flex-direction:column;align-items:center;justify-content:center;
+ gap:7px;text-align:center
+}
+.feature span{font-size:27px}
+.feature strong{font-size:14px}
+.feature small{font-size:12px;color:#b8cce5}
+.feature:active,button:active{transform:scale(.98)}
+.button-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+video{
+ width:100%;background:#020711;border-radius:12px;
+ min-height:150px;margin-top:10px
+}
+#galleryInput{display:none}
+.upload-label{display:block;text-align:center}
+textarea{
+ width:100%;min-height:95px;margin-top:12px;
+ background:#091629;color:white;border:1px solid #365777;
+ border-radius:10px;padding:12px;font-size:15px
+}
+select{background:#203b5b}
+.small{font-size:13px}
+footer{
+ text-align:center;background:#050c17;
+ padding:25px 12px;color:#9db1ca
+}
+footer h2{color:#55d6ff}
+@media(min-width:600px){
+ .feature-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .info-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+</style>
+</head>
+
+<body>
+
+<header class="top-header">
+ <div class="logo">AYAN</div>
+ <p>દરેકના મોબાઇલમાં મફત ટેક્નોલોજી</p>
+ <div class="connection">
+  <span id="internetDot" class="dot"></span>
+  <span id="internetStatus">ઇન્ટરનેટ તપાસી રહ્યા છીએ...</span>
+ </div>
+</header>
+
+<main class="container">
+
+<section class="card welcome">
+ <div class="welcome-orb">A</div>
+ <h1>AYANમાં તમારું સ્વાગત છે</h1>
+ <p>તમારા મોબાઇલની ક્ષમતા પ્રમાણે ટેક્નોલોજીનો ઉપયોગ કરો.</p>
+ <div id="systemMessage" class="message">સિસ્ટમ શરૂ થઈ રહી છે...</div>
+</section>
+
+<section class="card">
+ <h2>📱 મોબાઇલની ક્ષમતા</h2>
+ <div class="info-grid">
+  <div class="info-item"><span>પ્રોસેસર</span><strong id="cpuInfo">તપાસ ચાલુ...</strong></div>
+  <div class="info-item"><span>મેમરી</span><strong id="memoryInfo">તપાસ ચાલુ...</strong></div>
+  <div class="info-item"><span>ઇન્ટરનેટ</span><strong id="networkInfo">તપાસ ચાલુ...</strong></div>
+  <div class="info-item"><span>બ્રાઉઝર</span><strong id="browserInfo">તપાસ ચાલુ...</strong></div>
+ </div>
+ <button id="checkDeviceBtn">📱 મોબાઇલ ફરી તપાસો</button>
+</section>
+
+<section class="card">
+ <h2>🧠 AYAN ટેક્નોલોજી</h2>
+ <div class="feature-grid">
+  <button class="feature" data-target="cameraSection"><span>📷</span><strong>સ્માર્ટ કેમેરા</strong><small>ફોટો લો</small></button>
+  <button class="feature" data-target="ocrSection"><span>📄</span><strong>લખાણ વાંચો</strong><small>ફોટામાંથી લખાણ</small></button>
+  <button class="feature" data-target="visionSection"><span>👁️</span><strong>વસ્તુ ઓળખો</strong><small>સામાન્ય વસ્તુઓ</small></button>
+  <button class="feature" data-target="voiceSection"><span>🎙️</span><strong>અવાજ</strong><small>બોલો અને સાંભળો</small></button>
+  <button class="feature" data-target="aiSection"><span>🤖</span><strong>લોકલ AI</strong><small>AI સુસંગતતા</small></button>
+  <button class="feature" data-target="offlineSection"><span>📡</span><strong>ઓફલાઇન મોડ</strong><small>ઓફલાઇન સ્થિતિ</small></button>
+ </div>
+</section>
+
+<section class="card" id="cameraSection">
+ <h2>📷 કેમેરા</h2>
+ <video id="cameraPreview" autoplay playsinline muted></video>
+ <canvas id="cameraCanvas" hidden></canvas>
+ <div class="button-row">
+  <button id="startCameraBtn">કેમેરા ચાલુ કરો</button>
+  <button id="captureBtn" disabled>📸 ફોટો લો</button>
+  <button id="stopCameraBtn" class="secondary">બંધ કરો</button>
+ </div>
+ <input type="file" id="galleryInput" accept="image/*">
+ <label for="galleryInput" class="upload-label">🖼️ ગેલેરીમાંથી ફોટો પસંદ કરો</label>
+ <div id="cameraResult" class="result">કેમેરા તૈયાર છે.</div>
+</section>
+
+<section class="card" id="ocrSection">
+ <h2>📄 ફોટામાંથી લખાણ વાંચો</h2>
+ <p>પહેલાં કેમેરાથી અથવા ગેલેરીમાંથી ફોટો પસંદ કરો.</p>
+ <button id="readTextBtn">લખાણ વાંચો</button>
+ <div id="ocrResult" class="result">અહીં લખાણ દેખાશે.</div>
+</section>
+
+<section class="card" id="visionSection">
+ <h2>👁️ વસ્તુ ઓળખો</h2>
+ <p>ફોટામાં રહેલી કેટલીક સામાન્ય વસ્તુઓ ઓળખવાનો પ્રયાસ થશે.</p>
+ <button id="detectBtn">વસ્તુ તપાસો</button>
+ <div id="visionResult" class="result">અહીં પરિણામ દેખાશે.</div>
+</section>
+
+<section class="card" id="voiceSection">
+ <h2>🎙️ અવાજ સુવિધા</h2>
+ <button id="listenBtn">🎤 અવાજ સાંભળો</button>
+ <button id="stopListenBtn" class="secondary">સાંભળવાનું બંધ કરો</button>
+ <textarea id="voiceText" placeholder="તમારું બોલેલું લખાણ અહીં દેખાશે..."></textarea>
+ <button id="speakBtn">🔊 લખાણ બોલીને સંભળાવો</button>
+ <button id="stopSpeakBtn" class="secondary">અવાજ બંધ કરો</button>
+ <div id="voiceResult" class="result">અવાજ સુવિધા તૈયાર છે.</div>
+</section>
+
+<section class="card" id="aiSection">
+ <h2>🤖 લોકલ AI મોડેલ</h2>
+ <p>મોબાઇલમાં લોકલ AI ચલાવવાની સુસંગતતા.</p>
+ <div id="aiCompatibility" class="result">હજી કોઈ લોકલ AI મોડેલ જોડાયેલું નથી.</div>
+ <div id="modelDownloadInfo" class="result">કોઈ મોડેલ ડાઉનલોડ થતું નથી.</div>
+</section>
+
+<section class="card" id="offlineSection">
+ <h2>📡 ઑફલાઇન સુવિધાઓ</h2>
+ <div id="offlineStatus" class="result">ઑફલાઇન સ્થિતિ તપાસી રહ્યા છીએ.</div>
+</section>
+
+<section class="card">
+ <h2>⚙️ AYAN સેટિંગ્સ</h2>
+ <label for="languageSelect">ભાષા પસંદ કરો</label>
+ <select id="languageSelect">
+  <option value="gu-IN">ગુજરાતી</option>
+  <option value="hi-IN">હિન્દી</option>
+  <option value="en-US">English</option>
+ </select>
+ <p class="small">AYANમાં કોઈ પેઇડ API કે પેઇડ સર્વર નથી. ઇન્ટરનેટ વાપરતી સુવિધાઓમાં તમારા મોબાઇલ ડેટાનો ઉપયોગ થઈ શકે છે.</p>
+</section>
+
+</main>
+
+<footer>
+ <h2>AYAN</h2>
+ <p>Free Technology For Everyone</p>
+ <p>કોઈ પેઇડ API નહીં • કોઈ પેઇડ સર્વર નહીં • કોઈ સબ્સ્ક્રિપ્શન નહીં</p>
+ <small>AYAN Version 1.0</small>
+</footer>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+let cameraStream = null;
+let currentImage = null;
+let recognition = null;
+let detectorModel = null;
+
+function message(id,text){
+ const el=$(id);
+ if(el) el.textContent=text;
+}
+
+function checkDevice(){
+ message("cpuInfo",navigator.hardwareConcurrency ?
+  navigator.hardwareConcurrency+" logical cores":"માહિતી ઉપલબ્ધ નથી");
+ message("memoryInfo",navigator.deviceMemory ?
+  "લગભગ "+navigator.deviceMemory+" GB":"માહિતી ઉપલબ્ધ નથી");
+ message("networkInfo",navigator.onLine?"ઇન્ટરનેટ ચાલુ":"ઇન્ટરનેટ બંધ");
+ message("browserInfo",navigator.userAgent.includes("Chrome")?"Chrome આધારિત બ્રાઉઝર":"મોબાઇલ બ્રાઉઝર");
+ message("systemMessage","AYAN શરૂ થઈ ગયું છે.");
+}
+
+function checkNetwork(){
+ const online=navigator.onLine;
+ message("internetStatus",online?"ઇન્ટરનેટ ચાલુ છે":"ઇન્ટરનેટ બંધ છે");
+ $("internetDot").style.background=online?"#35dc86":"#ff5656";
+ message("networkInfo",online?"ઇન્ટરનેટ ચાલુ":"ઇન્ટરનેટ બંધ");
+ message("offlineStatus",online?
+  "ઇન્ટરનેટ ચાલુ છે. પહેલાંથી કૅશ થયેલી એપ ફાઇલો ઑફલાઇન ખુલી શકે છે.":
+  "ઇન્ટરનેટ બંધ છે. બધી ઓનલાઇન સુવિધાઓ અત્યારે ઉપલબ્ધ નહીં હોય.");
+}
+
+$("checkDeviceBtn").addEventListener("click",checkDevice);
+
+document.querySelectorAll("[data-target]").forEach(btn=>{
+ btn.addEventListener("click",()=>{
+  const section=$(btn.dataset.target);
+  if(section) section.scrollIntoView({behavior:"smooth",block:"start"});
+ });
+});
+
+async function startCamera(){
+ try{
+  if(!navigator.mediaDevices?.getUserMedia){
+   throw new Error("આ બ્રાઉઝરમાં કેમેરાની સુવિધા ઉપલબ્ધ નથી. HTTPS પર ખોલો.");
+  }
+  cameraStream=await navigator.mediaDevices.getUserMedia({
+   video:{facingMode:"environment"},audio:false
+  });
+  $("cameraPreview").srcObject=cameraStream;
+  $("captureBtn").disabled=false;
+  message("cameraResult","કેમેરા ચાલુ છે.");
+ }catch(error){
+  message("cameraResult","કેમેરા શરૂ થઈ શક્યો નથી: "+error.message);
+ }
+}
+
+function stopCamera(){
+ if(cameraStream){
+  cameraStream.getTracks().forEach(track=>track.stop());
+  cameraStream=null;
+ }
+ $("cameraPreview").srcObject=null;
+ $("captureBtn").disabled=true;
+ message("cameraResult","કેમેરા બંધ છે.");
+}
+
+function setPhoto(source){
+ const img=new Image();
+ img.onload=()=>{
+  const canvas=$("cameraCanvas");
+  const max=1800;
+  const scale=Math.min(1,max/Math.max(img.width,img.height));
+  canvas.width=Math.round(img.width*scale);
+  canvas.height=Math.round(img.height*scale);
+  canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);
+  currentImage=canvas;
+  message("cameraResult","ફોટો તૈયાર છે. હવે લખાણ વાંચો અથવા વસ્તુ તપાસો.");
+ };
+ img.onerror=()=>message("cameraResult","ફોટો ખોલી શકાયો નથી.");
+ img.src=source;
+}
+
+$("startCameraBtn").addEventListener("click",startCamera);
+$("stopCameraBtn").addEventListener("click",stopCamera);
+
+$("captureBtn").addEventListener("click",()=>{
+ const video=$("cameraPreview");
+ if(!video.videoWidth){
+  message("cameraResult","કેમેરાનો ફોટો હજી તૈયાર નથી.");
+  return;
+ }
+ const canvas=$("cameraCanvas");
+ canvas.width=video.videoWidth;
+ canvas.height=video.videoHeight;
+ canvas.getContext("2d").drawImage(video,0,0);
+ currentImage=canvas;
+ message("cameraResult","ફોટો લેવામાં આવ્યો છે.");
+});
+
+$("galleryInput").addEventListener("change",event=>{
+ const file=event.target.files?.[0];
+ if(!file)return;
+ if(!file.type.startsWith("image/")){
+  message("cameraResult","કૃપા કરીને ફોટો પસંદ કરો.");
+  return;
+ }
+ setPhoto(URL.createObjectURL(file));
+ event.target.value="";
+});
+
+async function readText(){
+ if(!currentImage){
+  message("ocrResult","પહેલાં કેમેરાથી ફોટો લો અથવા ગેલેરીમાંથી ફોટો પસંદ કરો.");
+  return;
+ }
+ message("ocrResult","OCR લાઇબ્રેરી ઇન્ટરનેટથી લોડ થઈ રહી છે...");
+ try{
+  const mod=await import("https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.esm.min.js");
+  message("ocrResult","ફોટો વાંચી રહ્યા છીએ. થોડી રાહ જુઓ...");
+  const result=await mod.recognize(currentImage,"eng");
+  const text=result.data.text.trim();
+  message("ocrResult",text||"ફોટામાં વાંચી શકાય એવું અંગ્રેજી લખાણ મળ્યું નથી.");
+ }catch(error){
+  message("ocrResult","લખાણ વાંચી શકાયું નથી. ઇન્ટરનેટ તપાસો. "+error.message);
+ }
+}
+$("readTextBtn").addEventListener("click",readText);
+
+function loadScript(url){
+ return new Promise((resolve,reject)=>{
+  const existing=[...document.scripts].find(s=>s.src===url);
+  if(existing){resolve();return;}
+  const script=document.createElement("script");
+  script.src=url;
+  script.onload=resolve;
+  script.onerror=()=>reject(new Error("મોડેલ લાઇબ્રેરી લોડ થઈ નથી."));
+  document.head.appendChild(script);
+ });
+}
+
+async function detectObjects(){
+ if(!currentImage){
+  message("visionResult","પહેલાં ફોટો લો અથવા ગેલેરીમાંથી ફોટો પસંદ કરો.");
+  return;
+ }
+ try{
+  message("visionResult","વસ્તુ ઓળખવાની લાઇબ્રેરી લોડ થઈ રહી છે...");
+  await loadScript("https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js");
+  await loadScript("https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js");
+  if(!detectorModel){
+   message("visionResult","વસ્તુ ઓળખવાનું મોડેલ લોડ થઈ રહ્યું છે...");
+   detectorModel=await cocoSsd.load();
+  }
+  message("visionResult","ફોટો તપાસી રહ્યા છીએ...");
+  const predictions=await detectorModel.detect(currentImage);
+  if(!predictions.length){
+   message("visionResult","આ મોડેલ ઓળખી શકે તેવી વસ્તુ મળી નથી.");
+  }else{
+   message("visionResult",predictions.map(p=>
+    p.class+" — "+Math.round(p.score*100)+"% વિશ્વાસ"
+   ).join("\n"));
+  }
+ }catch(error){
+  message("visionResult","વસ્તુ ઓળખી શકાયું નથી. ઇન્ટરનેટ અથવા મોડેલ લોડિંગ તપાસો. "+error.message);
+ }
+}
+$("detectBtn").addEventListener("click",detectObjects);
+
+function startListening(){
+ const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SpeechRecognition){
+  message("voiceResult","આ બ્રાઉઝરમાં અવાજ ઓળખવાની સુવિધા ઉપલબ્ધ નથી.");
+  return;
+ }
+ if(recognition){
+  try{recognition.stop();}catch(e){}
+ }
+ recognition=new SpeechRecognition();
+ recognition.lang=$("languageSelect").value;
+ recognition.interimResults=false;
+ recognition.onresult=event=>{
+  const text=event.results[0][0].transcript;
+  $("voiceText").value=text;
+  message("voiceResult","તમારો અવાજ લખાણમાં બદલાયો.");
+ };
+ recognition.onerror=event=>message("voiceResult","અવાજ ઓળખવામાં સમસ્યા: "+event.error);
+ recognition.onend=()=>{};
+ try{
+  recognition.start();
+  message("voiceResult","હવે બોલો...");
+ }catch(error){
+  message("voiceResult","માઇક્રોફોન શરૂ થઈ શક્યો નથી.");
+ }
+}
+$("listenBtn").addEventListener("click",startListening);
+
+$("stopListenBtn").addEventListener("click",()=>{
+ if(recognition)recognition.stop();
+ message("voiceResult","સાંભળવાનું બંધ કર્યું.");
+});
+
+$("speakBtn").addEventListener("click",()=>{
+ if(!("speechSynthesis" in window)){
+  message("voiceResult","આ બ્રાઉઝરમાં બોલવાની સુવિધા ઉપલબ્ધ નથી.");
+  return;
+ }
+ const text=$("voiceText").value.trim();
+ if(!text){
+  message("voiceResult","પહેલાં લખાણ લખો અથવા બોલીને લખાવો.");
+  return;
+ }
+ speechSynthesis.cancel();
+ const utterance=new SpeechSynthesisUtterance(text);
+ utterance.lang=$("languageSelect").value;
+ speechSynthesis.speak(utterance);
+ message("voiceResult","લખાણ બોલાઈ રહ્યું છે.");
+});
+
+$("stopSpeakBtn").addEventListener("click",()=>{
+ if("speechSynthesis" in window)speechSynthesis.cancel();
+ message("voiceResult","અવાજ બંધ કર્યો.");
+});
+
+message("aiCompatibility","હાલમાં લોકલ AI મોડેલ જોડાયેલું નથી. આ સુવિધા હજી તૈયાર નથી.");
+message("modelDownloadInfo","કોઈ મોડેલ ડાઉનલોડ થતું નથી. કોઈ પેઇડ AI API વપરાતી નથી.");
+
+window.addEventListener("online",checkNetwork);
+window.addEventListener("offline",checkNetwork);
+
+checkDevice();
+checkNetwork();
+
+if("serviceWorker" in navigator && location.protocol==="https:"){
+ navigator.serviceWorker.register("./sw.js").catch(error=>{
+  console.log("Service Worker:",error);
+ });
+}
+</script>
+
+</body>
+</html>
