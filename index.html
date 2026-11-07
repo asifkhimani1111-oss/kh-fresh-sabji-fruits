@@ -1,0 +1,742 @@
+
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<title>K.H – New Mobile Experience</title>
+
+<style>
+:root {
+  --bg:#101827;
+  --card:#202e43;
+  --text:#ffffff;
+  --muted:#aab8ca;
+  --one:#6855ed;
+  --two:#009bd4;
+}
+
+* {
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body {
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  transition:background .4s,color .4s;
+}
+
+body.light {
+  --bg:#edf3fa;
+  --card:#ffffff;
+  --text:#172033;
+  --muted:#65748a;
+}
+
+body.purple {
+  --bg:#211333;
+  --card:#39244e;
+  --text:#ffffff;
+  --muted:#d5c2e9;
+  --one:#a64ff0;
+  --two:#e04ba8;
+}
+
+body.ocean {
+  --bg:#082c38;
+  --card:#124555;
+  --text:#ffffff;
+  --muted:#b4dce5;
+  --one:#00a9bd;
+  --two:#087cce;
+}
+
+header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:23px 20px;
+}
+
+.logo {
+  font-size:32px;
+  font-weight:900;
+  letter-spacing:4px;
+}
+
+.subtitle {
+  font-size:10px;
+  letter-spacing:2px;
+  color:var(--muted);
+}
+
+.round {
+  background:var(--card);
+  color:var(--text);
+  border:1px solid #ffffff25;
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  font-size:21px;
+}
+
+.hero {
+  margin:12px 18px 25px;
+  padding:30px 18px;
+  text-align:center;
+  border-radius:26px;
+  background:linear-gradient(130deg,var(--one),var(--two));
+  box-shadow:0 12px 35px #0004;
+}
+
+.orb {
+  height:112px;
+  width:112px;
+  margin:0 auto 20px;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 25%,
+    white,#79dcff 20%,#6652e6 60%,#15234b);
+  box-shadow:0 0 30px #73aaff,0 0 65px #438bff88;
+  animation:float 3s infinite ease-in-out;
+}
+
+@keyframes float {
+  50% {transform:translateY(-10px) scale(1.05)}
+}
+
+.hero h1 {
+  font-size:24px;
+  margin-bottom:10px;
+}
+
+.hero p {
+  font-size:13px;
+  opacity:.85;
+}
+
+.clock {
+  font-size:27px;
+  font-weight:bold;
+  margin-top:18px;
+}
+
+.section-title {
+  font-size:19px;
+  margin:24px 20px 15px;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:13px;
+  padding:0 18px;
+}
+
+.tile {
+  background:var(--card);
+  color:var(--text);
+  border:1px solid #ffffff15;
+  border-radius:21px;
+  min-height:128px;
+  padding:19px 15px;
+  text-align:left;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.tile:active {
+  transform:scale(.95);
+}
+
+.emoji {
+  font-size:30px;
+  display:block;
+  margin-bottom:12px;
+}
+
+.tile strong {
+  font-size:16px;
+}
+
+.tile small {
+  display:block;
+  color:var(--muted);
+  margin-top:7px;
+}
+
+.voice {
+  margin:23px 18px;
+  width:calc(100% - 36px);
+  padding:18px;
+  border:0;
+  border-radius:18px;
+  background:linear-gradient(100deg,var(--one),var(--two));
+  color:white;
+  font-size:17px;
+  font-weight:bold;
+}
+
+.panel {
+  display:none;
+  margin:18px;
+  padding:20px;
+  background:var(--card);
+  border:1px solid #ffffff20;
+  border-radius:20px;
+}
+
+.panel h2 {
+  margin-bottom:12px;
+}
+
+.panel p {
+  color:var(--muted);
+  line-height:1.7;
+}
+
+.panel button {
+  padding:12px 16px;
+  border:0;
+  border-radius:12px;
+  margin:10px 5px 0 0;
+  background:var(--one);
+  color:white;
+  font-weight:bold;
+}
+
+#message {
+  margin:15px 18px;
+  padding:15px;
+  border-radius:15px;
+  background:var(--card);
+  color:var(--text);
+  text-align:center;
+  line-height:1.6;
+  min-height:48px;
+}
+
+#chat {
+  max-height:250px;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin:12px 0;
+}
+
+.bubble {
+  padding:12px;
+  border-radius:13px;
+  line-height:1.6;
+  background:var(--bg);
+}
+
+.bubble.user {
+  border-left:3px solid var(--two);
+}
+
+.chat-input {
+  display:flex;
+  gap:7px;
+  margin-top:12px;
+}
+
+.chat-input input {
+  flex:1;
+  min-width:0;
+  padding:13px;
+  border-radius:12px;
+  border:1px solid #9995;
+  background:var(--bg);
+  color:var(--text);
+  font-size:15px;
+}
+
+.chat-input button {
+  margin:0;
+}
+
+.theme-options {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+.theme-options button {
+  padding:16px 8px;
+  margin:0;
+}
+
+footer {
+  padding:28px 10px;
+  text-align:center;
+  font-size:11px;
+  color:var(--muted);
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div>
+    <div class="logo">K.H</div>
+    <div class="subtitle">A NEW EXPERIENCE</div>
+  </div>
+  <button class="round" onclick="toggleTheme()">☀️</button>
+</header>
+
+<section class="hero">
+  <div class="orb"></div>
+  <h1>તમારી નવી દુનિયામાં સ્વાગત છે</h1>
+  <p>Explore • Experience • Enjoy</p>
+  <div class="clock" id="clock">00:00</div>
+  <p id="date"></p>
+</section>
+
+<h2 class="section-title">તમારી દુનિયા</h2>
+
+<section class="grid">
+
+<button class="tile" onclick="openAssistant()">
+  <span class="emoji">🎙️</span>
+  <strong>ગુજરાતી સહાયક</strong>
+  <small>વાત કરો અને જવાબ સાંભળો</small>
+</button>
+
+<button class="tile" onclick="openCamera()">
+  <span class="emoji">📸</span>
+  <strong>કેમેરા</strong>
+  <small>ફોટો લો</small>
+</button>
+
+<button class="tile" onclick="openGallery()">
+  <span class="emoji">🖼️</span>
+  <strong>ગેલેરી</strong>
+  <small>ફોટા પસંદ કરો</small>
+</button>
+
+<button class="tile" onclick="openThemes()">
+  <span class="emoji">🎨</span>
+  <strong>થીમ</strong>
+  <small>ચાર સુંદર ડિઝાઇન</small>
+</button>
+
+<button class="tile" onclick="playMusic()">
+  <span class="emoji">🎵</span>
+  <strong>મ્યુઝિક</strong>
+  <small>સુંદર સાઉન્ડ અનુભવ</small>
+</button>
+
+<button class="tile" onclick="openWorld()">
+  <span class="emoji">✨</span>
+  <strong>નવી દુનિયા</strong>
+  <small>નવો ઇન્ટરેક્ટિવ અનુભવ</small>
+</button>
+
+</section>
+
+<button class="voice" onclick="startVoice()">
+  🎤 K.H સાથે વાત કરો
+</button>
+
+<div id="message">
+  નમસ્તે! K.H માં તમારું સ્વાગત છે.
+</div>
+
+<section class="panel" id="assistant">
+  <h2>🎙️ K.H ગુજરાતી સહાયક</h2>
+  <p>તમારો પ્રશ્ન લખો અથવા માઇક્રોફોનથી બોલો.</p>
+
+  <div id="chat">
+    <div class="bubble">K.H: નમસ્તે! કેમ છો? હું તમારી શું મદદ કરું?</div>
+  </div>
+
+  <div class="chat-input">
+    <input id="question" placeholder="અહીં લખો...">
+    <button onclick="sendText()">મોકલો</button>
+  </div>
+
+  <button onclick="startVoice()">🎤 બોલો</button>
+  <button onclick="stopVoice()">બંધ કરો</button>
+</section>
+
+<section class="panel" id="themes">
+  <h2>🎨 તમારી થીમ પસંદ કરો</h2>
+  <div class="theme-options">
+    <button onclick="setTheme('dark')">🌙 ડાર્ક</button>
+    <button onclick="setTheme('light')">☀️ લાઇટ</button>
+    <button onclick="setTheme('purple')">💜 પર્પલ</button>
+    <button onclick="setTheme('ocean')">🌊 ઓશન</button>
+  </div>
+</section>
+
+<section class="panel" id="world">
+  <h2>✨ K.H નવી દુનિયા</h2>
+  <p id="worldText">આજે કંઈક નવું શોધવાનો દિવસ છે!</p>
+  <button onclick="newIdea()">નવો અનુભવ મેળવો</button>
+  <button onclick="speak(worldText.textContent)">🔊 સાંભળો</button>
+</section>
+
+<img id="preview"
+style="display:none;width:calc(100% - 36px);margin:15px 18px;border-radius:18px"
+alt="પસંદ કરેલો ફોટો">
+
+<input id="camera" type="file"
+accept="image/*" capture="environment" hidden>
+
+<input id="gallery" type="file"
+accept="image/*" hidden>
+
+<footer>
+  K.H – A NEW MOBILE EXPERIENCE
+  <br><br>
+  Made with creativity
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function updateClock() {
+  const d = new Date();
+
+  $("clock").textContent =
+    d.toLocaleTimeString("en-IN");
+
+  $("date").textContent =
+    d.toLocaleDateString("gu-IN",{
+      weekday:"long",
+      day:"numeric",
+      month:"long",
+      year:"numeric"
+    });
+}
+
+updateClock();
+setInterval(updateClock,1000);
+
+// THEMES
+
+function setTheme(name) {
+  document.body.classList.remove(
+    "light","purple","ocean"
+  );
+
+  if(name !== "dark") {
+    document.body.classList.add(name);
+  }
+
+  localStorage.setItem("kh-theme",name);
+  $("message").textContent =
+    "તમારી નવી થીમ ચાલુ થઈ!";
+}
+
+function toggleTheme() {
+  const current =
+    localStorage.getItem("kh-theme") || "dark";
+
+  const next = current === "dark" ? "light" : "dark";
+  setTheme(next);
+}
+
+const savedTheme = localStorage.getItem("kh-theme");
+if(savedTheme) setTheme(savedTheme);
+
+function closePanels() {
+  ["assistant","themes","world"].forEach(id => {
+    $(id).style.display = "none";
+  });
+}
+
+function showPanel(id) {
+  closePanels();
+  $(id).style.display = "block";
+  $(id).scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function openAssistant() {
+  showPanel("assistant");
+}
+
+function openThemes() {
+  showPanel("themes");
+}
+
+function openWorld() {
+  showPanel("world");
+}
+
+function openCamera() {
+  $("camera").click();
+}
+
+function openGallery() {
+  $("gallery").click();
+}
+
+function showPhoto(input) {
+  const file = input.files && input.files[0];
+  if(!file) return;
+
+  if(!file.type.startsWith("image/")) {
+    $("message").textContent = "ફોટો પસંદ કરો.";
+    return;
+  }
+
+  const url = URL.createObjectURL(file);
+  $("preview").src = url;
+  $("preview").style.display = "block";
+  $("message").textContent = "તમારો ફોટો આવી ગયો!";
+}
+
+$("camera").addEventListener("change",function(){
+  showPhoto(this);
+});
+
+$("gallery").addEventListener("change",function(){
+  showPhoto(this);
+});
+
+// VOICE OUTPUT
+
+function speak(text) {
+  if(!("speechSynthesis" in window)) {
+    $("message").textContent =
+      "આ બ્રાઉઝરમાં અવાજની સુવિધા નથી.";
+    return;
+  }
+
+  speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "gu-IN";
+  utterance.rate = 0.88;
+  utterance.pitch = 1;
+
+  const voices = speechSynthesis.getVoices();
+  const gujarati = voices.find(v =>
+    v.lang.toLowerCase().startsWith("gu")
+  );
+
+  if(gujarati) utterance.voice = gujarati;
+
+  speechSynthesis.speak(utterance);
+}
+
+function addMessage(text,type) {
+  const div = document.createElement("div");
+  div.className = "bubble " + type;
+  div.textContent = text;
+  $("chat").appendChild(div);
+  $("chat").scrollTop = $("chat").scrollHeight;
+}
+
+// LOCAL ASSISTANT
+// This is a starter command-based assistant, not connected to an AI model.
+
+function getAnswer(question) {
+  const q = question.toLowerCase();
+
+  if(q.includes("નમસ્તે") || q.includes("હેલો") || q.includes("કેમ છો")) {
+    return "નમસ્તે! હું K.H છું. હું તમારી મદદ માટે તૈયાર છું.";
+  }
+
+  if(q.includes("નામ")) {
+    return "મારું નામ K.H છે. હું તમારો ગુજરાતી સહાયક છું.";
+  }
+
+  if(q.includes("સમય") || q.includes("કેટલા વાગ્યા")) {
+    return "અત્યારે સમય છે " + $("clock").textContent;
+  }
+
+  if(q.includes("તારીખ") || q.includes("આજની તારીખ")) {
+    return "આજની તારીખ " + $("date").textContent;
+  }
+
+  if(q.includes("થીમ")) {
+    openThemes();
+    return "તમારી પસંદગીની થીમ પસંદ કરો.";
+  }
+
+  if(q.includes("સાઉન્ડ") || q.includes("મ્યુઝિક")) {
+    playMusic();
+    return "તમારા માટે સંગીત શરૂ કર્યું.";
+  }
+
+  if(q.includes("કેમેરા") || q.includes("ફોટો લો")) {
+    openCamera();
+    return "કેમેરા ખોલી રહ્યો છું.";
+  }
+
+  if(q.includes("નવી દુનિયા")) {
+    openWorld();
+    return "નવી દુનિયા ખોલી રહ્યો છું.";
+  }
+
+  if(q.includes("આભાર") || q.includes("ધન્યવાદ")) {
+    return "તમારું સ્વાગત છે! હંમેશા ખુશ રહો.";
+  }
+
+  return "આ પ્રશ્નનો જવાબ હજી મારી પાસે નથી. હું અત્યારે મર્યાદિત ગુજરાતી સહાયક છું. વધુ પ્રશ્નો માટે આપણે મને સ્માર્ટ બનાવીશું.";
+}
+
+function reply(question) {
+  if(!question.trim()) return;
+
+  addMessage("તમે: " + question,"user");
+
+  const answer = getAnswer(question);
+
+  addMessage("K.H: " + answer,"");
+  $("message").textContent = answer;
+
+  speak(answer);
+}
+
+function sendText() {
+  const q = $("question").value.trim();
+  if(!q) return;
+
+  $("question").value = "";
+  reply(q);
+}
+
+$("question").addEventListener("keydown",e => {
+  if(e.key === "Enter") sendText();
+});
+
+// VOICE RECOGNITION
+
+let recognition = null;
+
+function startVoice() {
+  showPanel("assistant");
+
+  const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if(!SpeechRecognition) {
+    $("message").textContent =
+      "આ બ્રાઉઝરમાં વોઇસ ઓળખવાની સુવિધા નથી. Chromeમાં તપાસો.";
+    return;
+  }
+
+  if(recognition) {
+    try { recognition.abort(); } catch(e) {}
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.lang = "gu-IN";
+  recognition.interimResults = false;
+  recognition.continuous = false;
+
+  $("message").textContent = "🎤 K.H સાંભળી રહ્યું છે...";
+
+  recognition.onresult = function(event) {
+    const text = event.results[0][0].transcript;
+    reply(text);
+  };
+
+  recognition.onerror = function(event) {
+    $("message").textContent =
+      "વોઇસમાં મુશ્કેલી આવી: " + event.error;
+  };
+
+  recognition.onend = function() {
+    if($("message").textContent === "🎤 K.H સાંભળી રહ્યું છે...") {
+      $("message").textContent = "ફરી બોલવા માટે માઇક દબાવો.";
+    }
+  };
+
+  try {
+    recognition.start();
+  } catch(e) {
+    $("message").textContent = "ફરી પ્રયાસ કરો.";
+  }
+}
+
+function stopVoice() {
+  if(recognition) recognition.stop();
+
+  if("speechSynthesis" in window) {
+    speechSynthesis.cancel();
+  }
+
+  $("message").textContent = "વાતચીત બંધ થઈ.";
+}
+
+// MUSIC: ORIGINAL TONES, NO COPYRIGHTED SONG
+
+let audioContext = null;
+
+function playMusic() {
+  try {
+    const Audio =
+      window.AudioContext || window.webkitAudioContext;
+
+    if(!Audio) throw new Error();
+
+    if(!audioContext) audioContext = new Audio();
+
+    audioContext.resume();
+
+    const notes = [523.25,659.25,783.99,659.25,523.25];
+
+    notes.forEach((frequency,index) => {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+
+      oscillator.type = "sine";
+      oscillator.frequency.value = frequency;
+
+      const start = audioContext.currentTime + index * 0.22;
+
+      gain.gain.setValueAtTime(0,start);
+      gain.gain.linearRampToValueAtTime(0.12,start + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001,start + 0.20);
+
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+
+      oscillator.start(start);
+      oscillator.stop(start + 0.22);
+    });
+
+    $("message").textContent =
+      "🎵 K.H નો સંગીત અનુભવ શરૂ થયો!";
+
+  } catch(e) {
+    $("message").textContent =
+      "સાઉન્ડ ચાલુ થઈ શક્યો નહીં.";
+  }
+}
+
+// NEW WORLD
+
+const ideas = [
+  "દરેક નવો દિવસ નવી તક લઈને આવે છે.",
+  "આજે કંઈક નવું શીખવાનો પ્રયાસ કરો.",
+  "તમારી કલ્પનાને નવી દિશા આપો.",
+  "ટેકનોલોજીનો ઉપયોગ સારા કામ માટે કરો.",
+  "તમારી પોતાની નવી દુનિયા બનાવો."
+];
+
+let ideaIndex = -1;
+
+function newIdea() {
+  ideaIndex = (ideaIndex + 1) % ideas.length;
+
+  $("worldText").textContent = ideas[ideaIndex];
+
+  $("message").textContent = "તમારો નવો અનુભવ તૈયાર છે!";
+}
+
+</script>
+</body>
+</html>
